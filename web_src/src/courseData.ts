@@ -1,15 +1,35 @@
 // ── Types ──
 
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  answer: number;
+}
+
+export interface PracticeProblem {
+  title: string;
+  titleEn?: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  url: string;
+  description?: string;
+}
+
 export interface ContentBlock {
-  type: 'heading' | 'paragraph' | 'code' | 'callout' | 'diagram' | 'list';
+  type: 'heading' | 'paragraph' | 'code' | 'callout' | 'diagram' | 'list' | 'animation' | 'quiz' | 'practice';
   text?: string;
   code?: string;
   language?: string;
   label?: string;
   diagramId?: string;
+  animationId?: string;
   caption?: string;
   style?: string;
   items?: any[];
+  steps?: string[];
+  // Quiz
+  questions?: QuizQuestion[];
+  // Practice
+  problems?: PracticeProblem[];
 }
 
 export interface Lesson {
