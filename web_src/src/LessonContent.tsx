@@ -1,7 +1,7 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { Bolt, Zap, CheckCircle2, ChevronRight, Play, SkipBack, SkipForward, ArrowRight, ExternalLink } from 'lucide-react';
-import { ContentBlock } from './courseData';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Bolt, Zap, CheckCircle2, ChevronRight, Play, SkipBack, SkipForward, ArrowRight, ExternalLink, XCircle, Trophy, Code2 } from 'lucide-react';
+import { ContentBlock, QuizQuestion, PracticeProblem } from './courseData';
 
 interface LessonContentProps {
   key?: React.Key;
@@ -43,6 +43,15 @@ function renderBlock(block: ContentBlock) {
 
     case 'list':
       return <RenderList block={block} />;
+
+    case 'animation':
+      return <RenderAnimation block={block} />;
+
+    case 'quiz':
+      return <RenderQuiz block={block} />;
+
+    case 'practice':
+      return <RenderPractice block={block} />;
 
     default:
       return null;
@@ -405,11 +414,9 @@ const CBPDiagram = () => (
         <div className="bg-white/60 dark:bg-black/20 font-mono text-xs py-2 px-3 rounded text-sky-800 dark:text-sky-300 text-left border border-white dark:border-transparent">self.property = ...</div>
       </div>
     </div>
-    
     <div className="flex flex-col justify-center items-center h-10 w-10 bg-white dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-full z-10 -my-4 animate-bounce shrink-0 relative">
        <span className="text-slate-500 dark:text-slate-400 font-bold">↓</span>
     </div>
-    
     <div className="w-full bg-purple-100 dark:bg-purple-900/30 border border-purple-300 dark:border-purple-700 rounded-2xl p-6 text-center shadow-sm relative pt-8">
       <h3 className="font-headline text-xl font-bold text-purple-900 dark:text-purple-100 mb-3 tracking-tight">Object（實體）</h3>
       <div className="bg-white/60 dark:bg-black/20 font-mono text-sm py-2 px-4 rounded-lg text-purple-800 dark:text-purple-300 font-medium border border-white dark:border-transparent inline-block">
@@ -418,3 +425,522 @@ const CBPDiagram = () => (
     </div>
   </div>
 );
+
+// ═══════════════════════════════════════════════
+// ── ANIMATIONS ──
+// ═══════════════════════════════════════════════
+
+function AnimationStepper({ steps, children }: { steps: string[]; children: (step: number) => React.ReactNode }) {
+  const [step, setStep] = useState(0);
+  const total = steps.length;
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800 mb-8 w-full overflow-hidden">
+      <div className="flex justify-center w-full min-h-[200px] items-center py-4">
+        {children(step)}
+      </div>
+      <div className="mt-4 px-2">
+        <div className="flex items-center gap-1 mb-3">
+          {steps.map((_, i) => (
+            <div key={i} className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${i <= step ? 'bg-cyan-500' : 'bg-slate-200 dark:bg-slate-700'}`} />
+          ))}
+        </div>
+        <p className="text-sm text-slate-600 dark:text-slate-400 font-medium text-center mb-4 min-h-[40px]">
+          Step {step + 1}: {steps[step]}
+        </p>
+        <div className="flex justify-center gap-3">
+          <button onClick={() => setStep(0)} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Reset"><SkipBack size={16} /></button>
+          <button onClick={() => setStep(Math.max(0, step - 1))} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Previous"><ChevronRight size={16} className="rotate-180" /></button>
+          <button onClick={() => setStep(Math.min(total - 1, step + 1))} className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 transition-colors font-medium text-sm flex items-center gap-1"><Play size={14} /> Next</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RenderAnimation({ block }: { block: ContentBlock }) {
+  const id = block.animationId;
+  const steps = block.steps || [];
+
+  const animationMap: Record<string, (step: number) => React.ReactNode> = {
+    'data-flow-animation': (s) => <DataFlowAnim step={s} />,
+    'problem-decompose': (s) => <ProblemDecomposeAnim step={s} />,
+    'interpreter-exec': (s) => <InterpreterExecAnim step={s} />,
+    'self-binding': (s) => <SelfBindingAnim step={s} />,
+    'reflection-inspect': (s) => <ReflectionInspectAnim step={s} />,
+    'data-pipeline': (s) => <DataPipelineAnim step={s} />,
+    'gc-animation': (s) => <GCAnimationAnim step={s} />,
+    'pointer-animation': (s) => <PointerAnim step={s} />,
+    'immutable-swap': (s) => <ImmutableSwapAnim step={s} />,
+    'mutable-ref': (s) => <MutableRefAnim step={s} />,
+    'indent-animation': (s) => <IndentAnim step={s} />,
+  };
+
+  const renderer = animationMap[id || ''];
+
+  return (
+    <div>
+      <AnimationStepper steps={steps}>
+        {renderer || (() => <div className="text-slate-400">🎬 {block.caption || id}</div>)}
+      </AnimationStepper>
+      {block.caption && (
+        <div className="-mt-4 mb-6 text-center text-sm text-slate-500 dark:text-slate-400 font-medium italic">{block.caption}</div>
+      )}
+    </div>
+  );
+}
+
+// ── Individual Animation Components ──
+
+const Box = ({ children, active, color = 'cyan', className = '' }: { children: React.ReactNode; active: boolean; color?: string; className?: string }) => {
+  const colors: Record<string, string> = {
+    cyan: 'bg-cyan-100 dark:bg-cyan-900/30 border-cyan-300 dark:border-cyan-700 text-cyan-900 dark:text-cyan-100',
+    purple: 'bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-700 text-purple-900 dark:text-purple-100',
+    slate: 'bg-slate-800 border-slate-700 text-white',
+    amber: 'bg-amber-100 dark:bg-amber-900/30 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-100',
+    green: 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700 text-green-900 dark:text-green-100',
+    red: 'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700 text-red-900 dark:text-red-100',
+  };
+  return (
+    <motion.div animate={{ scale: active ? 1.05 : 1, opacity: active ? 1 : 0.5 }} transition={{ duration: 0.4, ease: 'easeOut' }}
+      className={`p-4 rounded-xl border font-headline font-bold text-center text-sm ${colors[color] || colors.cyan} ${className}`}>
+      {children}
+    </motion.div>
+  );
+};
+
+const AnimArrow = ({ active }: { active: boolean }) => (
+  <motion.div animate={{ opacity: active ? 1 : 0.2, x: active ? [0, 4, 0] : 0 }} transition={{ duration: 0.6, repeat: active ? Infinity : 0, repeatType: 'loop' }}
+    className="text-slate-400 text-xl font-bold mx-2">→</motion.div>
+);
+
+const DataFlowAnim = ({ step }: { step: number }) => (
+  <div className="flex items-center gap-2 flex-wrap justify-center">
+    <Box active={step === 0} color="cyan"><span className="text-2xl mb-1 block">📥</span>Input</Box>
+    <AnimArrow active={step === 0} />
+    <Box active={step === 1} color="slate"><span className="text-2xl mb-1 block">💻</span>Process</Box>
+    <AnimArrow active={step === 1} />
+    <Box active={step === 2} color="purple"><span className="text-2xl mb-1 block">📤</span>Output</Box>
+  </div>
+);
+
+const ProblemDecomposeAnim = ({ step }: { step: number }) => {
+  const items = ['📋 閱讀題目', '🔑 識別關鍵詞', '✂️ 拆分步驟', '💻 逐一實現'];
+  return (
+    <div className="flex flex-col gap-3 w-full max-w-sm">
+      {items.map((item, i) => (
+        <motion.div key={i} animate={{ opacity: i <= step ? 1 : 0.2, x: i <= step ? 0 : 20 }} transition={{ duration: 0.4, delay: 0.05 }}
+          className={`p-3 rounded-lg text-sm font-medium flex items-center gap-3 ${i <= step ? 'bg-cyan-50 dark:bg-cyan-900/20 text-cyan-900 dark:text-cyan-100 border border-cyan-200 dark:border-cyan-800' : 'bg-slate-50 dark:bg-slate-800/50 text-slate-400 border border-slate-100 dark:border-slate-700'}`}>
+          <span className="text-lg">{item.split(' ')[0]}</span><span>{item.split(' ').slice(1).join(' ')}</span>
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
+const InterpreterExecAnim = ({ step }: { step: number }) => {
+  const lines = ['a = 5', 'print(a)'];
+  const outputs = ['', '', '', '>>> 5'];
+  return (
+    <div className="flex gap-6 w-full max-w-lg">
+      <div className="flex-1 bg-slate-900 rounded-xl p-4 font-mono text-sm">
+        {lines.map((line, i) => {
+          const lineStep = i * 2;
+          return (
+            <motion.div key={i} animate={{ backgroundColor: step === lineStep || step === lineStep + 1 ? 'rgba(8,145,178,0.15)' : 'transparent' }} transition={{ duration: 0.3 }}
+              className="flex items-center gap-3 py-1 px-2 rounded">
+              <span className="text-slate-500 text-xs w-4">{i + 1}</span>
+              <span className={step >= lineStep ? 'text-slate-200' : 'text-slate-600'}>{line}</span>
+              {(step === lineStep || step === lineStep + 1) && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-2 h-2 rounded-full bg-cyan-400 ml-auto" />}
+            </motion.div>
+          );
+        })}
+      </div>
+      <div className="w-32 bg-slate-100 dark:bg-slate-800 rounded-xl p-4 flex flex-col justify-end">
+        <span className="text-xs text-slate-500 mb-2 font-medium uppercase tracking-wider">Output</span>
+        <motion.div animate={{ opacity: step >= 3 ? 1 : 0 }} className="font-mono text-sm text-green-600 dark:text-green-400">{outputs[step] || ''}</motion.div>
+      </div>
+    </div>
+  );
+};
+
+const SelfBindingAnim = ({ step }: { step: number }) => {
+  const highlights = ['定義 class', '呼叫建構子', 'self 綁定', '屬性存取'];
+  return (
+    <div className="flex flex-col items-center gap-4 w-full max-w-md">
+      <Box active={step === 0} color="cyan" className="w-full">class Dog: __init__(self, name)</Box>
+      {step >= 1 && <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="font-mono text-sm text-slate-500">Lucky = Dog("Lucky")</motion.div>}
+      {step >= 2 && (
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}
+          className="flex items-center gap-4 p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl w-full justify-center">
+          <span className="font-mono text-purple-700 dark:text-purple-300 font-bold">self</span>
+          <span className="text-purple-400 animate-pulse">→</span>
+          <span className="font-mono text-purple-700 dark:text-purple-300 font-bold">Lucky</span>
+        </motion.div>
+      )}
+      {step >= 3 && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-mono text-sm text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-4 py-2 rounded-lg">
+          self.name = Lucky.name = "Lucky" ✓
+        </motion.div>
+      )}
+    </div>
+  );
+};
+
+const ReflectionInspectAnim = ({ step }: { step: number }) => {
+  const results = ['x = [1, 2, 3]', "type(x) → <class 'list'>", "dir(x) → ['append', 'clear', ...]", "help(x.append) → 用法說明"];
+  return (
+    <div className="flex flex-col gap-3 w-full max-w-md font-mono text-sm">
+      {results.map((r, i) => (
+        <motion.div key={i} animate={{ opacity: i <= step ? 1 : 0.15, x: i <= step ? 0 : 12 }} transition={{ duration: 0.35 }}
+          className={`p-3 rounded-lg border ${i <= step ? 'bg-slate-900 text-slate-200 border-slate-700' : 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 border-slate-200 dark:border-slate-700'}`}>
+          <span className="text-cyan-400 mr-2">{'>>>'}</span>{r}
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
+const DataPipelineAnim = ({ step }: { step: number }) => {
+  const stages = [
+    { icon: '📡', label: 'Collect', color: 'cyan' },
+    { icon: '💾', label: 'Store', color: 'purple' },
+    { icon: '⚙️', label: 'Process', color: 'slate' },
+    { icon: '🗑️', label: 'Clean', color: 'red' },
+    { icon: '📤', label: 'Output', color: 'green' },
+  ];
+  return (
+    <div className="flex items-center gap-1 flex-wrap justify-center">
+      {stages.map((s, i) => (
+        <React.Fragment key={i}>
+          <Box active={step === i} color={s.color as any} className="min-w-[80px]"><span className="text-xl block mb-1">{s.icon}</span>{s.label}</Box>
+          {i < stages.length - 1 && <AnimArrow active={step === i} />}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+};
+
+const GCAnimationAnim = ({ step }: { step: number }) => {
+  const nodes = [
+    { label: 'obj_A', refs: step < 3 ? (step < 2 ? 1 : 0) : 0 },
+    { label: 'obj_B', refs: 2 },
+  ];
+  return (
+    <div className="flex flex-col items-center gap-4 w-full max-w-sm">
+      <div className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Reference Count</div>
+      {nodes.map((n, i) => (
+        <motion.div key={i} animate={{ opacity: n.refs === 0 && step >= 3 ? 0.2 : 1, scale: n.refs === 0 && step >= 3 ? 0.9 : 1 }}
+          transition={{ duration: 0.5 }} className={`flex items-center justify-between w-full p-4 rounded-xl border ${n.refs === 0 && step >= 3 ? 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-800 line-through' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700'}`}>
+          <span className="font-mono font-bold text-sm">{n.label}</span>
+          <span className={`font-mono text-sm font-bold px-3 py-1 rounded ${n.refs > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>refs: {n.refs}</span>
+        </motion.div>
+      ))}
+      {step >= 3 && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-red-500 font-medium">🗑️ obj_A 被垃圾回收！</motion.div>}
+    </div>
+  );
+};
+
+const PointerAnim = ({ step }: { step: number }) => {
+  const rows = [
+    { show: step >= 0, name: 'RAM', addr: '0x7f01', val: '5', highlight: step === 0 },
+    { show: step >= 1, name: 'a', addr: '0x7f01', val: '→', highlight: step === 1 },
+    { show: step >= 2, name: 'a → val', addr: '', val: '5', highlight: step === 2 },
+    { show: step >= 3, name: 'a', addr: '0x7f09', val: '10 (新)', highlight: step === 3 },
+  ];
+  return (
+    <div className="flex flex-col gap-3 w-full max-w-sm">
+      {rows.filter(r => r.show).map((r, i) => (
+        <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
+          className={`flex items-center justify-between p-3 rounded-lg border text-sm font-mono ${r.highlight ? 'bg-cyan-50 dark:bg-cyan-900/20 border-cyan-300 dark:border-cyan-700' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700'}`}>
+          <span className="font-bold text-purple-600 dark:text-purple-400 w-20">{r.name}</span>
+          {r.addr && <span className="text-slate-500 text-xs">{r.addr}</span>}
+          <span className="font-bold text-cyan-700 dark:text-cyan-300">{r.val}</span>
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
+const ImmutableSwapAnim = ({ step }: { step: number }) => (
+  <div className="flex flex-col items-center gap-4 w-full max-w-sm">
+    <div className="flex items-center gap-4 w-full">
+      <motion.div animate={{ opacity: step <= 1 ? 1 : 0.3 }} className="flex-1 p-4 rounded-xl bg-cyan-100 dark:bg-cyan-900/30 border border-cyan-300 dark:border-cyan-700 text-center">
+        <div className="font-mono text-lg font-bold text-cyan-800 dark:text-cyan-200">5</div>
+        <div className="text-xs text-cyan-600 mt-1">0x7f01</div>
+      </motion.div>
+      {step >= 2 && (
+        <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="flex-1 p-4 rounded-xl bg-purple-100 dark:bg-purple-900/30 border border-purple-300 dark:border-purple-700 text-center">
+          <div className="font-mono text-lg font-bold text-purple-800 dark:text-purple-200">10</div>
+          <div className="text-xs text-purple-600 mt-1">0x7f09</div>
+        </motion.div>
+      )}
+    </div>
+    <motion.div animate={{ x: step >= 2 ? 60 : 0 }} transition={{ duration: 0.5, ease: 'easeInOut' }}
+      className="px-6 py-2 bg-slate-800 text-white rounded-full font-mono font-bold text-sm shadow-lg">a ↓</motion.div>
+    {step >= 3 && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-slate-500 italic">舊物件 5 無引用 → 垃圾回收</motion.div>}
+  </div>
+);
+
+const MutableRefAnim = ({ step }: { step: number }) => {
+  const listContent = step >= 2 ? '[1,2,3,4]' : '[1,2,3]';
+  const copyContent = step >= 4 ? '[1,2,3]' : '[1,2,3]';
+  return (
+    <div className="flex flex-col gap-4 w-full max-w-md">
+      <div className="flex items-center gap-4">
+        <Box active={step <= 2} color="cyan" className="flex-1"><span className="text-xs block mb-1">a</span>{listContent}</Box>
+        {step >= 1 && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-slate-500 font-mono">b = a</motion.div>}
+        {step >= 1 && <Box active={step === 2} color="cyan" className="flex-1"><span className="text-xs block mb-1">b (ref)</span>{listContent}</Box>}
+      </div>
+      {step >= 2 && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-sm text-amber-600 dark:text-amber-400 font-medium">⚠️ a.append(4) → b 也受影響！</motion.div>}
+      {step >= 3 && (
+        <div className="flex items-center gap-4 mt-2">
+          <Box active={step === 4} color="green" className="flex-1"><span className="text-xs block mb-1">c (copy)</span>{copyContent}</Box>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-slate-500">獨立副本</motion.div>
+        </div>
+      )}
+      {step >= 4 && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-sm text-green-600 dark:text-green-400 font-medium">✅ a 改變 → c 不受影響</motion.div>}
+    </div>
+  );
+};
+
+const IndentAnim = ({ step }: { step: number }) => {
+  const cLines = ['if (x > 3) {', '    printf("big");', '}'];
+  const pyLines = ['if x > 3:', '    print("big")', ''];
+  const lines = step <= 1 ? cLines : pyLines;
+  return (
+    <div className="w-full max-w-sm">
+      <div className="flex items-center justify-between mb-3">
+        <motion.span animate={{ opacity: step <= 1 ? 1 : 0.4 }} className="text-xs font-bold text-slate-500 uppercase tracking-widest">C Language</motion.span>
+        <motion.span animate={{ opacity: step >= 2 ? 1 : 0.4 }} className="text-xs font-bold text-cyan-500 uppercase tracking-widest">Python</motion.span>
+      </div>
+      <div className="bg-slate-900 rounded-xl p-4 font-mono text-sm">
+        {lines.map((line, i) => (
+          <motion.div key={`${step}-${i}`} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: i * 0.1 }}
+            className="text-slate-200 py-0.5">{line || <span className="text-slate-700">// removed</span>}</motion.div>
+        ))}
+      </div>
+      {step === 1 && <p className="text-xs text-amber-500 mt-2 text-center">移除 {'{ }'} ...</p>}
+      {step === 2 && <p className="text-xs text-cyan-500 mt-2 text-center">加上冒號 : ...</p>}
+      {step === 3 && <p className="text-xs text-green-500 mt-2 text-center font-medium">✅ 用縮排取代大括號！</p>}
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════════
+// ── KNOWLEDGE CHECK (QUIZ) ──
+// ═══════════════════════════════════════════════
+
+function RenderQuiz({ block }: { block: ContentBlock }) {
+  const questions = block.questions || [];
+  const [selected, setSelected] = useState<Record<number, number>>({});
+  const [revealed, setRevealed] = useState<Record<number, boolean>>({});
+  const [showScore, setShowScore] = useState(false);
+
+  const handleSelect = (qIdx: number, optIdx: number) => {
+    if (revealed[qIdx]) return; // already answered
+    setSelected(prev => ({ ...prev, [qIdx]: optIdx }));
+    setRevealed(prev => ({ ...prev, [qIdx]: true }));
+
+    // Check if all answered
+    const newRevealed = { ...revealed, [qIdx]: true };
+    if (Object.keys(newRevealed).length === questions.length) {
+      setTimeout(() => setShowScore(true), 600);
+    }
+  };
+
+  const correctCount = questions.filter((q, i) => selected[i] === q.answer).length;
+
+  return (
+    <div className="mt-12 mb-8">
+      {/* Section Header */}
+      <div className="flex items-center gap-3 mb-8 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+          <Trophy className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+        </div>
+        <div>
+          <h3 className="font-headline text-xl font-bold text-slate-800 dark:text-white">Knowledge Check</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">驗證你的理解</p>
+        </div>
+      </div>
+
+      {/* Questions */}
+      <div className="space-y-6">
+        {questions.map((q, qIdx) => {
+          const isRevealed = revealed[qIdx];
+          const isCorrect = selected[qIdx] === q.answer;
+
+          return (
+            <motion.div
+              key={qIdx}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: qIdx * 0.1 }}
+              className={`p-6 rounded-2xl border transition-colors duration-300 ${
+                isRevealed
+                  ? isCorrect
+                    ? 'bg-green-50/50 dark:bg-green-900/10 border-green-200 dark:border-green-800/50'
+                    : 'bg-red-50/50 dark:bg-red-900/10 border-red-200 dark:border-red-800/50'
+                  : 'bg-slate-50 dark:bg-slate-800/30 border-slate-200 dark:border-slate-700/50'
+              }`}
+            >
+              <p className="text-[15px] font-semibold text-slate-800 dark:text-white mb-4 leading-relaxed">
+                <span className="text-slate-400 dark:text-slate-500 mr-2 font-mono text-sm">{qIdx + 1}.</span>
+                {q.question}
+              </p>
+
+              <div className="grid gap-2">
+                {q.options.map((opt, optIdx) => {
+                  const isSelected = selected[qIdx] === optIdx;
+                  const isAnswer = q.answer === optIdx;
+
+                  let optionStyle = 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-cyan-300 dark:hover:border-cyan-700 hover:bg-cyan-50/50 dark:hover:bg-cyan-900/10 cursor-pointer';
+
+                  if (isRevealed) {
+                    if (isAnswer) {
+                      optionStyle = 'bg-green-50 dark:bg-green-900/20 border-green-400 dark:border-green-600 text-green-800 dark:text-green-200';
+                    } else if (isSelected && !isAnswer) {
+                      optionStyle = 'bg-red-50 dark:bg-red-900/20 border-red-400 dark:border-red-600 text-red-800 dark:text-red-200 opacity-70';
+                    } else {
+                      optionStyle = 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 opacity-50';
+                    }
+                  }
+
+                  return (
+                    <motion.button
+                      key={optIdx}
+                      onClick={() => handleSelect(qIdx, optIdx)}
+                      disabled={isRevealed}
+                      whileTap={!isRevealed ? { scale: 0.98 } : {}}
+                      className={`flex items-center gap-3 p-4 rounded-xl border text-left text-sm font-medium transition-all duration-200 ${optionStyle}`}
+                    >
+                      <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 border ${
+                        isRevealed && isAnswer
+                          ? 'bg-green-500 text-white border-green-500'
+                          : isRevealed && isSelected && !isAnswer
+                            ? 'bg-red-500 text-white border-red-500'
+                            : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-600'
+                      }`}>
+                        {isRevealed && isAnswer ? <CheckCircle2 size={14} /> : isRevealed && isSelected ? <XCircle size={14} /> : String.fromCharCode(65 + optIdx)}
+                      </span>
+                      <span className="flex-1">{opt}</span>
+                      {isRevealed && isAnswer && (
+                        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-green-500 text-xs font-bold">✓ 正確</motion.span>
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Score Summary */}
+      <AnimatePresence>
+        {showScore && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            transition={{ duration: 0.5 }}
+            className={`mt-6 p-6 rounded-2xl border text-center ${
+              correctCount === questions.length
+                ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                : correctCount >= questions.length / 2
+                  ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                  : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+            }`}
+          >
+            <div className="text-3xl mb-2">
+              {correctCount === questions.length ? '🎉' : correctCount >= questions.length / 2 ? '👍' : '💪'}
+            </div>
+            <p className="font-headline font-bold text-lg text-slate-800 dark:text-white">
+              {correctCount} / {questions.length} 正確
+            </p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              {correctCount === questions.length
+                ? '完美！你已經完全掌握了這個概念！'
+                : correctCount >= questions.length / 2
+                  ? '不錯！再複習一下錯的題目吧。'
+                  : '建議重新閱讀本節內容後再試一次。'}
+            </p>
+            <button
+              onClick={() => { setSelected({}); setRevealed({}); setShowScore(false); }}
+              className="mt-4 px-5 py-2 rounded-full bg-slate-800 dark:bg-white text-white dark:text-slate-900 text-sm font-bold hover:scale-105 transition-transform"
+            >
+              重新作答
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════
+// ── PRACTICE ON LEETCODE ──
+// ═══════════════════════════════════════════════
+
+function RenderPractice({ block }: { block: ContentBlock }) {
+  const problems = block.problems || [];
+  if (problems.length === 0) return null;
+
+  const diffColors: Record<string, string> = {
+    Easy: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+    Medium: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+    Hard: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
+  };
+
+  return (
+    <div className="mt-8 mb-8">
+      {/* Section Header */}
+      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="w-10 h-10 rounded-xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center">
+          <Code2 className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+        </div>
+        <div>
+          <span className="text-[10px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest">Practice</span>
+          <h3 className="font-headline text-xl font-bold text-slate-800 dark:text-white">Practice on LeetCode</h3>
+        </div>
+      </div>
+
+      <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+        透過以下題目練習本節所學的概念。專注於理解 Input → Process → Output 的思維模式。
+      </p>
+
+      {/* Problem Cards */}
+      <div className="grid gap-4">
+        {problems.map((p, i) => (
+          <motion.a
+            key={i}
+            href={p.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: i * 0.1 }}
+            whileHover={{ x: 4 }}
+            className="group flex items-center gap-4 p-5 bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50 rounded-2xl hover:border-cyan-300 dark:hover:border-cyan-700 hover:shadow-lg transition-all cursor-pointer"
+          >
+            {/* Difficulty Badge */}
+            <div className={`px-3 py-1.5 rounded-lg text-xs font-bold border shrink-0 ${diffColors[p.difficulty] || diffColors.Easy}`}>
+              {p.difficulty}
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+              <h4 className="font-headline font-bold text-slate-800 dark:text-white text-sm group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors truncate">
+                {p.title}
+              </h4>
+              {p.description && (
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">{p.description}</p>
+              )}
+            </div>
+
+            {/* Arrow */}
+            <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-cyan-500 transition-colors shrink-0" />
+          </motion.a>
+        ))}
+      </div>
+    </div>
+  );
+}
