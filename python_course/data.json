@@ -1,0 +1,647 @@
+{
+  "course": {
+    "title": "PythonClassPenter",
+    "subtitle": "Python 程式設計課程",
+    "version": "2026y2m17d",
+    "language": "zh-TW"
+  },
+  "modules": [
+    {
+      "id": "mod-01",
+      "title": "什麼是 Code",
+      "titleEn": "What is Code",
+      "icon": "⚡",
+      "lessons": [
+        {
+          "id": "les-01-01",
+          "title": "教學結構",
+          "titleEn": "Course Structure",
+          "pdfPages": [2, 3],
+          "content": [
+            {
+              "type": "heading",
+              "text": "教學結構如下"
+            },
+            {
+              "type": "paragraph",
+              "text": "本課程分為「總則」與「分則」兩大部分。總則提供全面介紹，分則進行特定分析。"
+            },
+            {
+              "type": "diagram",
+              "diagramId": "course-structure-timeline",
+              "caption": "課程結構時間軸：總則（全面介紹）→ 分則（特定分析）"
+            },
+            {
+              "type": "list",
+              "style": "directory",
+              "items": [
+                "什麼是 Code",
+                "Python 介紹",
+                "物件導向",
+                "資料收納/儲存",
+                "反思"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-01-02",
+          "title": "Input → Process → Output",
+          "titleEn": "Input Process Output",
+          "pdfPages": [4, 5],
+          "content": [
+            {
+              "type": "heading",
+              "text": "什麼是 Code？"
+            },
+            {
+              "type": "paragraph",
+              "text": "程式碼是一組指令，讓電腦知道該做什麼。所有程式都遵循同一個模式：輸入 → 處理 → 輸出。"
+            },
+            {
+              "type": "diagram",
+              "diagramId": "input-process-output",
+              "caption": "Input → Process (code / 11010110) → Output"
+            },
+            {
+              "type": "callout",
+              "label": "範例 1",
+              "text": "你輸入數字 15，電腦處理後，輸出結果 5。Input=你給電腦的東西，Output=電腦給你看的東西。"
+            },
+            {
+              "type": "callout",
+              "label": "範例 2",
+              "text": "print(5+10) → 電腦輸出 15。這裡 5+10 是 process，15 是 output。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "print(5 + 10)\n# Output: 15"
+            }
+          ]
+        },
+        {
+          "id": "les-01-03",
+          "title": "指令的拆解",
+          "titleEn": "Breaking Down Instructions",
+          "pdfPages": [6],
+          "content": [
+            {
+              "type": "heading",
+              "text": "下指令的思維"
+            },
+            {
+              "type": "paragraph",
+              "text": "給電腦下指令就像教一個完全不懂的人做事。你必須把每一步都寫清楚，電腦才能理解。"
+            },
+            {
+              "type": "paragraph",
+              "text": "操控電腦的方式有兩種：圖型(GUI) 與 文字(CLI/程式)。程式就是用文字來操控電腦。"
+            },
+            {
+              "type": "callout",
+              "label": "比喻",
+              "text": "想像你要教一個機器人泡咖啡：1. 拿杯子 2. 加水 3. 加咖啡粉 4. 攪拌。每一步都不能省略！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mod-02",
+      "title": "Python 介紹",
+      "titleEn": "Python Introduction",
+      "icon": "🐍",
+      "lessons": [
+        {
+          "id": "les-02-01",
+          "title": "直譯器 vs 編譯器",
+          "titleEn": "Interpreter vs Compiler",
+          "pdfPages": [7, 8],
+          "content": [
+            {
+              "type": "heading",
+              "text": "Python 介紹"
+            },
+            {
+              "type": "paragraph",
+              "text": "Python 使用「直譯器 (Interpreter)」，而非「編譯器 (Compiler)」。這是 Python 的一大特色。"
+            },
+            {
+              "type": "diagram",
+              "diagramId": "interpreter-vs-compiler",
+              "caption": "直譯器：從頭看、從頭寫 ✓ vs 編譯器：先看過一遍再從某個地方開始 ✗"
+            },
+            {
+              "type": "paragraph",
+              "text": "直譯器像是逐行翻譯的口譯員，一行一行地執行。編譯器則像翻譯整本書後再從 main() 開始。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 直譯器範例 (Python)\na = 5\nprint(a)  # 立即執行，立即輸出 5"
+            },
+            {
+              "type": "code",
+              "language": "csharp",
+              "code": "// 編譯器範例 (C#)\n// 先看過一遍，再從 main() 開始\n// 速度快：只要 50ms"
+            },
+            {
+              "type": "callout",
+              "label": "重要",
+              "text": "C# 使用編譯器，速度可以快到只要 50ms。但 Python 使用直譯器，寫起來更簡單直覺。"
+            }
+          ]
+        },
+        {
+          "id": "les-02-02",
+          "title": "物件導向語言",
+          "titleEn": "Object-Oriented Language",
+          "pdfPages": [9, 10],
+          "content": [
+            {
+              "type": "heading",
+              "text": "Python 是物件導向語言"
+            },
+            {
+              "type": "paragraph",
+              "text": "Python 是一種「物件導向語言 (Object-Oriented Language)」。在 Python 中，一切都是物件。"
+            },
+            {
+              "type": "diagram",
+              "diagramId": "class-object-flow",
+              "caption": "s=5 → object 與 class 的關係：寫 class 後 寫 object"
+            },
+            {
+              "type": "paragraph",
+              "text": "class 就像是論文（藍圖），object 就是根據論文做出來的實作品。寫完光學瞄具論文後，可以做出 3 倍鏡、15 倍鏡，還可以引用其他論文。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# everything can be class\n# function 也是一個 class\nprint(type(某個東西))  # → <class xxx>"
+            },
+            {
+              "type": "callout",
+              "label": "記住",
+              "text": "class = 論文（藍圖），object = 實作（實體）。"
+            }
+          ]
+        },
+        {
+          "id": "les-02-03",
+          "title": "Class 與 Object",
+          "titleEn": "Class and Object",
+          "pdfPages": [11, 12],
+          "content": [
+            {
+              "type": "heading",
+              "text": "Class and Object"
+            },
+            {
+              "type": "paragraph",
+              "text": "定義一個 class，然後建立（初始化）它的 object。Object 可以存取 class 的屬性 (property)、方法 (method) 和事件 (event)。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "class py():      # 設一個 class 叫做 py\n    ......\n\nmath = py()      # py 放到 math 變數 (variable)\n                 # math 變數的 type 變成 object\n\nmath.pi          # 屬性 property → 主詞.受詞\nmath.gcd(2, 3)   # 方法 method → 主詞.動詞(受詞)\n# xxx            # 事件 event → xxx"
+            },
+            {
+              "type": "callout",
+              "label": "語法結構",
+              "text": "property = 主詞.受詞 | method = 主詞.動詞(受詞) | event = 事件觸發"
+            }
+          ]
+        },
+        {
+          "id": "les-02-04",
+          "title": "程序導向 vs 物件導向",
+          "titleEn": "Procedural vs Object-Oriented",
+          "pdfPages": [13],
+          "content": [
+            {
+              "type": "heading",
+              "text": "程序導向語言"
+            },
+            {
+              "type": "paragraph",
+              "text": "除了物件導向，還有「程序導向語言」。程序導向要求有一定的邏輯順序，程式碼按部就班地執行。"
+            },
+            {
+              "type": "paragraph",
+              "text": "Python 兼具兩者：可以寫程序導向的 code，也可以寫物件導向的 code。"
+            }
+          ]
+        },
+        {
+          "id": "les-02-05",
+          "title": "Python Code 的種類",
+          "titleEn": "Types of Python Code",
+          "pdfPages": [14, 15, 16],
+          "content": [
+            {
+              "type": "heading",
+              "text": "Python Code 分類"
+            },
+            {
+              "type": "diagram",
+              "diagramId": "python-code-types",
+              "caption": "Python code → 普通 (function + class) vs 特別 (if/else, for/while)"
+            },
+            {
+              "type": "paragraph",
+              "text": "普通 Python code = function + class。特別的語法包括 if/else（條件判斷）和 for/while（迴圈）。C# 用 {} 包起來，Python 用縮排。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 普通 Python code\n# function 函式\n# class → object → method 方法(class)\n#                → property 屬性(class)\n\n# 內建的有 int, str..."
+            },
+            {
+              "type": "paragraph",
+              "text": "s=8 其實就是 s=int(value=8)。int 是一個 class，放進 s 變數後，s 就變成 object。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "s = 8           # s = int(value=8)\n                # int is a class\n                # put int class in s variable,\n                # then s will be a object\n\ns = 100         # s = int(value=100)\n                # put other in s variable"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "s = \"h i\"       # \"h i\" 的 class 是為 str\n# class str 的 method 有 split\nx = s.split(\" \")"
+            }
+          ]
+        },
+        {
+          "id": "les-02-06",
+          "title": "如何理解需求",
+          "titleEn": "Understanding Requirements",
+          "pdfPages": [17],
+          "content": [
+            {
+              "type": "heading",
+              "text": "如何理解要求 → 拆分"
+            },
+            {
+              "type": "paragraph",
+              "text": "寫程式的第一步是理解需求，然後將需求拆分成小步驟。"
+            },
+            {
+              "type": "callout",
+              "label": "範例 A",
+              "text": "請寫出 10 個 \"hi\" → 有一件事要做 10 次，那事叫做 print(\"hi\")"
+            },
+            {
+              "type": "callout",
+              "label": "範例 B",
+              "text": "使用者輸入 10 個 int，找最大的 → 要輸入很多東西（需要 list），然後分析，找最大的"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 範例 A：印出 10 個 hi\nfor i in range(10):\n    print(\"hi\")\n\n# 範例 B：找最大值\nnums = []\nfor i in range(10):\n    nums.append(int(input()))\nprint(max(nums))"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mod-03",
+      "title": "物件導向",
+      "titleEn": "Object-Oriented Programming",
+      "icon": "🧱",
+      "lessons": [
+        {
+          "id": "les-03-01",
+          "title": "記憶體與資料儲存",
+          "titleEn": "Memory and Data Storage",
+          "pdfPages": [18, 19],
+          "content": [
+            {
+              "type": "heading",
+              "text": "資料收納 / 儲存"
+            },
+            {
+              "type": "paragraph",
+              "text": "電腦的記憶體 (RAM) 是程式執行時儲存資料的地方。CPU 負責處理，RAM 負責暫存。"
+            },
+            {
+              "type": "diagram",
+              "diagramId": "cpu-ram-cycle",
+              "caption": "Programmer → Code → RAM ↔ CPU 處理循環"
+            },
+            {
+              "type": "paragraph",
+              "text": "程式設計師寫 code，code 載入 RAM，CPU 從 RAM 讀取指令並執行，結果再寫回 RAM。"
+            },
+            {
+              "type": "callout",
+              "label": "關鍵概念",
+              "text": "RAM = 工作桌，CPU = 工人。工人從桌上拿材料、加工、放回去。"
+            }
+          ]
+        },
+        {
+          "id": "les-03-02",
+          "title": "變數與記憶體位址",
+          "titleEn": "Variables and Memory Addresses",
+          "pdfPages": [20, 21],
+          "content": [
+            {
+              "type": "heading",
+              "text": "變數 (Variable) 與記憶體"
+            },
+            {
+              "type": "paragraph",
+              "text": "變數就是一個「名牌」，貼在記憶體的某個位置上。當你寫 a=5 時，電腦在 RAM 中找一個空位放 5，然後把 'a' 這個名牌貼上去。"
+            },
+            {
+              "type": "diagram",
+              "diagramId": "variable-memory-map",
+              "caption": "變數名稱 → 記憶體位址 → 值"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "a = 5       # 在 RAM 中存入 5，名牌叫 a\nb = a       # b 也指向同一個 5\na = 10      # a 改指向新的 10，b 還是 5"
+            },
+            {
+              "type": "callout",
+              "label": "重要",
+              "text": "Python 的變數是「標籤」，不是「盒子」。改變 a 不會影響 b。"
+            }
+          ]
+        },
+        {
+          "id": "les-03-03",
+          "title": "資料型態",
+          "titleEn": "Data Types",
+          "pdfPages": [22, 23],
+          "content": [
+            {
+              "type": "heading",
+              "text": "Python 的資料型態"
+            },
+            {
+              "type": "paragraph",
+              "text": "Python 有多種內建資料型態，每一種都是一個 class。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                { "term": "int", "definition": "整數，例如 5, -3, 100" },
+                { "term": "float", "definition": "浮點數，例如 3.14, -0.5" },
+                { "term": "str", "definition": "字串，例如 \"hello\", 'world'" },
+                { "term": "bool", "definition": "布林值，True 或 False" },
+                { "term": "list", "definition": "有序可變集合，例如 [1, 2, 3]" },
+                { "term": "dict", "definition": "鍵值對集合，例如 {\"name\": \"Python\"}" },
+                { "term": "tuple", "definition": "有序不可變集合，例如 (1, 2, 3)" }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "x = 5           # int\ny = 3.14        # float\nname = \"hello\"  # str\nis_ok = True    # bool\nnums = [1,2,3]  # list\ninfo = {\"a\":1}  # dict"
+            }
+          ]
+        },
+        {
+          "id": "les-03-04",
+          "title": "Function 函式",
+          "titleEn": "Functions",
+          "pdfPages": [24, 25],
+          "content": [
+            {
+              "type": "heading",
+              "text": "Function 函式"
+            },
+            {
+              "type": "paragraph",
+              "text": "Function 是一段可以重複使用的程式碼區塊。用 def 關鍵字定義，可以接收參數並回傳結果。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def greet(name):\n    return f\"Hello, {name}!\"\n\n# 呼叫 function\nresult = greet(\"Python\")\nprint(result)  # Hello, Python!"
+            },
+            {
+              "type": "paragraph",
+              "text": "Function 是組織程式碼的基本工具。把重複的邏輯包裝成 function，讓程式更乾淨、更容易維護。"
+            },
+            {
+              "type": "callout",
+              "label": "比喻",
+              "text": "function 就像食譜：定義一次，想用幾次就用幾次。parameters 就是食材。"
+            }
+          ]
+        },
+        {
+          "id": "les-03-05",
+          "title": "自己寫 Class",
+          "titleEn": "Writing Your Own Class",
+          "pdfPages": [26, 27, 28],
+          "content": [
+            {
+              "type": "heading",
+              "text": "自己寫一個 Class"
+            },
+            {
+              "type": "paragraph",
+              "text": "當內建的 class 不夠用時，你可以自己寫 class。class 裡面可以定義 __init__（初始化）、method（方法）和 property（屬性）。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "class Dog:\n    def __init__(self, name, age):\n        self.name = name    # property\n        self.age = age      # property\n    \n    def bark(self):         # method\n        return f\"{self.name} says Woof!\"\n\n# 建立 object\nmy_dog = Dog(\"Buddy\", 3)\nprint(my_dog.bark())       # Buddy says Woof!\nprint(my_dog.age)          # 3"
+            },
+            {
+              "type": "diagram",
+              "diagramId": "class-blueprint",
+              "caption": "Class（藍圖）→ __init__ + methods + properties → Object（實體）"
+            },
+            {
+              "type": "callout",
+              "label": "self",
+              "text": "self 代表「這個物件自己」。每個 method 的第一個參數都是 self，讓 method 可以存取自己的屬性。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mod-04",
+      "title": "資料收納 / 儲存",
+      "titleEn": "Data Collection & Storage",
+      "icon": "📦",
+      "lessons": [
+        {
+          "id": "les-04-01",
+          "title": "List 列表",
+          "titleEn": "Lists",
+          "pdfPages": [29, 30],
+          "content": [
+            {
+              "type": "heading",
+              "text": "List 列表"
+            },
+            {
+              "type": "paragraph",
+              "text": "List 是 Python 中最常用的資料結構。它是有序的、可修改的，用方括號 [] 表示。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "fruits = [\"apple\", \"banana\", \"cherry\"]\n\n# 存取元素\nprint(fruits[0])    # apple\nprint(fruits[-1])   # cherry\n\n# 新增\nfruits.append(\"date\")\n\n# 修改\nfruits[1] = \"blueberry\"\n\n# 移除\nfruits.remove(\"cherry\")\n\n# 長度\nprint(len(fruits))  # 3"
+            },
+            {
+              "type": "callout",
+              "label": "記住",
+              "text": "List 的 index 從 0 開始！第一個元素是 [0]，不是 [1]。"
+            }
+          ]
+        },
+        {
+          "id": "les-04-02",
+          "title": "Dictionary 字典",
+          "titleEn": "Dictionaries",
+          "pdfPages": [31, 32],
+          "content": [
+            {
+              "type": "heading",
+              "text": "Dictionary 字典"
+            },
+            {
+              "type": "paragraph",
+              "text": "Dictionary 使用「鍵-值」(key-value) 配對來儲存資料。用大括號 {} 表示，讓你可以用名字而不是數字來找資料。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "student = {\n    \"name\": \"Alice\",\n    \"age\": 18,\n    \"grade\": \"A\"\n}\n\n# 存取\nprint(student[\"name\"])     # Alice\nprint(student.get(\"age\"))  # 18\n\n# 新增/修改\nstudent[\"school\"] = \"MIT\"\nstudent[\"age\"] = 19\n\n# 所有的 keys\nprint(student.keys())"
+            },
+            {
+              "type": "callout",
+              "label": "比喻",
+              "text": "Dict 就像真正的字典：用「單字」(key) 查「解釋」(value)。"
+            }
+          ]
+        },
+        {
+          "id": "les-04-03",
+          "title": "For 迴圈",
+          "titleEn": "For Loops",
+          "pdfPages": [33, 34],
+          "content": [
+            {
+              "type": "heading",
+              "text": "For 迴圈"
+            },
+            {
+              "type": "paragraph",
+              "text": "for 迴圈讓你重複做一件事。可以遍歷 list、range、字串等任何可迭代的東西。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 基本 for 迴圈\nfor i in range(5):\n    print(i)  # 0, 1, 2, 3, 4\n\n# 遍歷 list\nfruits = [\"apple\", \"banana\"]\nfor fruit in fruits:\n    print(fruit)\n\n# 搭配 enumerate\nfor idx, fruit in enumerate(fruits):\n    print(f\"{idx}: {fruit}\")"
+            },
+            {
+              "type": "callout",
+              "label": "重要",
+              "text": "range(5) 產生 0 到 4，不包含 5！range(1, 6) 才是 1 到 5。"
+            }
+          ]
+        },
+        {
+          "id": "les-04-04",
+          "title": "If / Else 條件判斷",
+          "titleEn": "Conditionals",
+          "pdfPages": [35, 36],
+          "content": [
+            {
+              "type": "heading",
+              "text": "If / Else 條件判斷"
+            },
+            {
+              "type": "paragraph",
+              "text": "if/else 讓程式可以根據條件做不同的事。條件為 True 就執行 if 區塊，否則執行 else 區塊。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "age = 18\n\nif age >= 18:\n    print(\"成年了！\")\nelif age >= 12:\n    print(\"青少年\")\nelse:\n    print(\"兒童\")\n\n# 比較運算子\n# ==  等於\n# !=  不等於\n# >   大於\n# <   小於\n# >=  大於等於\n# <=  小於等於"
+            },
+            {
+              "type": "callout",
+              "label": "注意",
+              "text": "= 是賦值，== 是比較！a = 5 是把 5 放進 a，a == 5 是問 a 是不是 5。"
+            }
+          ]
+        },
+        {
+          "id": "les-04-05",
+          "title": "While 迴圈",
+          "titleEn": "While Loops",
+          "pdfPages": [37, 38],
+          "content": [
+            {
+              "type": "heading",
+              "text": "While 迴圈"
+            },
+            {
+              "type": "paragraph",
+              "text": "while 迴圈在條件為 True 時會一直重複執行。適合用在「不確定要重複幾次」的情況。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 基本 while\ncount = 0\nwhile count < 5:\n    print(count)\n    count += 1\n\n# 使用者輸入驗證\npassword = \"\"\nwhile password != \"secret\":\n    password = input(\"請輸入密碼: \")\nprint(\"登入成功！\")"
+            },
+            {
+              "type": "callout",
+              "label": "小心",
+              "text": "while True: 會永遠執行！記得加 break 條件來跳出迴圈。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mod-05",
+      "title": "反思",
+      "titleEn": "Reflection",
+      "icon": "🔍",
+      "lessons": [
+        {
+          "id": "les-05-01",
+          "title": "綜合練習",
+          "titleEn": "Comprehensive Exercises",
+          "pdfPages": [39, 40],
+          "content": [
+            {
+              "type": "heading",
+              "text": "反思與綜合練習"
+            },
+            {
+              "type": "paragraph",
+              "text": "回顧所學的概念，將它們組合起來解決實際問題。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 綜合練習：建立一個學生管理系統\nclass Student:\n    def __init__(self, name, scores):\n        self.name = name\n        self.scores = scores  # list\n    \n    def average(self):\n        return sum(self.scores) / len(self.scores)\n    \n    def grade(self):\n        avg = self.average()\n        if avg >= 90:\n            return \"A\"\n        elif avg >= 80:\n            return \"B\"\n        elif avg >= 70:\n            return \"C\"\n        else:\n            return \"F\"\n\n# 建立學生 objects\nstudents = [\n    Student(\"Alice\", [95, 88, 92]),\n    Student(\"Bob\", [78, 85, 72]),\n    Student(\"Charlie\", [60, 55, 68])\n]\n\n# 用 for 迴圈印出每個學生的成績\nfor s in students:\n    print(f\"{s.name}: {s.average():.1f} ({s.grade()})\")"
+            },
+            {
+              "type": "callout",
+              "label": "練習重點",
+              "text": "這個範例結合了 class、list、for、if/else、method — 所有你學過的概念！"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
