@@ -38,3 +38,9 @@
 .dark .glass-panel {
   background: rgba(15, 23, 42, 0.6);
 }
+
+/* 確保深色背景下的影像和文件視覺不會太過刺眼 */
+.dark img {
+  opacity: 0.9;
+}
+

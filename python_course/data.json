@@ -16,7 +16,9 @@
           "id": "les-01-01",
           "title": "Input → Process → Output",
           "titleEn": "Input Process Output",
-          "pdfPages": [3],
+          "pdfPages": [
+            3
+          ],
           "content": [
             {
               "type": "heading",
@@ -51,12 +53,20 @@
               "questions": [
                 {
                   "question": "按下鍵盤的按鍵代表程式流程中的哪個階段？",
-                  "options": ["Input", "Process", "Output"],
+                  "options": [
+                    "Input",
+                    "Process",
+                    "Output"
+                  ],
                   "answer": 0
                 },
                 {
                   "question": "print() 函式屬於程式流程中的哪個步驟？",
-                  "options": ["Input", "Process", "Output"],
+                  "options": [
+                    "Input",
+                    "Process",
+                    "Output"
+                  ],
                   "answer": 2
                 }
               ]
@@ -84,7 +94,9 @@
           "id": "les-01-02",
           "title": "程式 = 資料處理",
           "titleEn": "Code is Data Processing",
-          "pdfPages": [4],
+          "pdfPages": [
+            4
+          ],
           "content": [
             {
               "type": "heading",
@@ -109,12 +121,20 @@
               "questions": [
                 {
                   "question": "程式的本質是什麼？",
-                  "options": ["畫圖", "做很多有關資料的事情", "播放音樂"],
+                  "options": [
+                    "畫圖",
+                    "做很多有關資料的事情",
+                    "播放音樂"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "print(\"Hi\" * 3) 的輸出是什麼？",
-                  "options": ["Hi3", "HiHiHi", "Hi + Hi + Hi"],
+                  "options": [
+                    "Hi3",
+                    "HiHiHi",
+                    "Hi + Hi + Hi"
+                  ],
                   "answer": 1
                 }
               ]
@@ -144,7 +164,9 @@
           "id": "les-02-01",
           "title": "拆解問題的思維",
           "titleEn": "Decomposing Problems",
-          "pdfPages": [5],
+          "pdfPages": [
+            5
+          ],
           "content": [
             {
               "type": "heading",
@@ -185,12 +207,20 @@
               "questions": [
                 {
                   "question": "「寫出 10 個 hi」應該拆解成什麼？",
-                  "options": ["寫一個很長的字串", "有一件事要做 10 次", "建立 10 個變數"],
+                  "options": [
+                    "寫一個很長的字串",
+                    "有一件事要做 10 次",
+                    "建立 10 個變數"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "需要儲存大量輸入資料時，應該用什麼？",
-                  "options": ["很多個變數", "print()", "list"],
+                  "options": [
+                    "很多個變數",
+                    "print()",
+                    "list"
+                  ],
                   "answer": 2
                 }
               ]
@@ -220,7 +250,9 @@
           "id": "les-03-01",
           "title": "直譯器 vs 編譯器",
           "titleEn": "Interpreter vs Compiler",
-          "pdfPages": [7],
+          "pdfPages": [
+            7
+          ],
           "content": [
             {
               "type": "heading",
@@ -261,12 +293,20 @@
               "questions": [
                 {
                   "question": "Python 使用哪種方式執行程式碼？",
-                  "options": ["編譯器", "直譯器", "組譯器"],
+                  "options": [
+                    "編譯器",
+                    "直譯器",
+                    "組譯器"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "直譯器的執行方式是？",
-                  "options": ["先看過全部再執行", "一行一行地執行", "隨機執行"],
+                  "options": [
+                    "先看過全部再執行",
+                    "一行一行地執行",
+                    "隨機執行"
+                  ],
                   "answer": 1
                 }
               ]
@@ -277,7 +317,9 @@
           "id": "les-03-02",
           "title": "Class 與 Object",
           "titleEn": "Class and Object",
-          "pdfPages": [8],
+          "pdfPages": [
+            8
+          ],
           "content": [
             {
               "type": "heading",
@@ -307,12 +349,20 @@
               "questions": [
                 {
                   "question": "Class 和 Object 的關係是？",
-                  "options": ["Class 是實體，Object 是藍圖", "Class 是藍圖，Object 是實體", "兩者完全相同"],
+                  "options": [
+                    "Class 是實體，Object 是藍圖",
+                    "Class 是藍圖，Object 是實體",
+                    "兩者完全相同"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "在 Python 中，type(5) 會回傳什麼？",
-                  "options": ["<class 'int'>", "5", "number"],
+                  "options": [
+                    "<class 'int'>",
+                    "5",
+                    "number"
+                  ],
                   "answer": 0
                 }
               ]
@@ -323,7 +373,9 @@
           "id": "les-03-03",
           "title": "Property 與 Method",
           "titleEn": "Properties and Methods",
-          "pdfPages": [9],
+          "pdfPages": [
+            9
+          ],
           "content": [
             {
               "type": "heading",
@@ -342,9 +394,18 @@
               "type": "list",
               "style": "definition",
               "items": [
-                { "term": "Property", "definition": "屬性 → 語法：主詞.受詞（如 math.pi）" },
-                { "term": "Method", "definition": "方法 → 語法：主詞.動詞(受詞)（如 math.gcd(2,3)）" },
-                { "term": "Event", "definition": "事件 → 由特定觸發條件啟動" }
+                {
+                  "term": "Property",
+                  "definition": "屬性 → 語法：主詞.受詞（如 math.pi）"
+                },
+                {
+                  "term": "Method",
+                  "definition": "方法 → 語法：主詞.動詞(受詞)（如 math.gcd(2,3)）"
+                },
+                {
+                  "term": "Event",
+                  "definition": "事件 → 由特定觸發條件啟動"
+                }
               ]
             },
             {
@@ -352,12 +413,20 @@
               "questions": [
                 {
                   "question": "math.pi 是 Property 還是 Method？",
-                  "options": ["Property（屬性）", "Method（方法）", "Event（事件）"],
+                  "options": [
+                    "Property（屬性）",
+                    "Method（方法）",
+                    "Event（事件）"
+                  ],
                   "answer": 0
                 },
                 {
                   "question": "math.gcd(12, 8) 使用的語法模式是？",
-                  "options": ["主詞.受詞", "主詞.動詞(受詞)", "動詞(主詞)"],
+                  "options": [
+                    "主詞.受詞",
+                    "主詞.動詞(受詞)",
+                    "動詞(主詞)"
+                  ],
                   "answer": 1
                 }
               ]
@@ -368,7 +437,10 @@
           "id": "les-03-04",
           "title": "__init__ 與 self",
           "titleEn": "Init and Self",
-          "pdfPages": [10, 11],
+          "pdfPages": [
+            10,
+            11
+          ],
           "content": [
             {
               "type": "heading",
@@ -408,12 +480,20 @@
               "questions": [
                 {
                   "question": "__init__ 方法何時被執行？",
-                  "options": ["手動呼叫時", "建立物件時自動執行", "程式結束時"],
+                  "options": [
+                    "手動呼叫時",
+                    "建立物件時自動執行",
+                    "程式結束時"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "Lucky = Dog('Lucky') 中，方法裡的 self 代表什麼？",
-                  "options": ["Dog class 本身", "Lucky 這個物件", "字串 'Lucky'"],
+                  "options": [
+                    "Dog class 本身",
+                    "Lucky 這個物件",
+                    "字串 'Lucky'"
+                  ],
                   "answer": 1
                 }
               ]
@@ -424,7 +504,9 @@
           "id": "les-03-05",
           "title": "模組匯入 (import)",
           "titleEn": "Module Import",
-          "pdfPages": [12],
+          "pdfPages": [
+            12
+          ],
           "content": [
             {
               "type": "heading",
@@ -449,12 +531,20 @@
               "questions": [
                 {
                   "question": "from math import pi 之後，要怎麼使用 pi？",
-                  "options": ["math.pi", "pi", "import.pi"],
+                  "options": [
+                    "math.pi",
+                    "pi",
+                    "import.pi"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "import math 之後，要怎麼使用 sqrt？",
-                  "options": ["sqrt(16)", "math.sqrt(16)", "math(sqrt, 16)"],
+                  "options": [
+                    "sqrt(16)",
+                    "math.sqrt(16)",
+                    "math(sqrt, 16)"
+                  ],
                   "answer": 1
                 }
               ]
@@ -465,7 +555,10 @@
           "id": "les-03-06",
           "title": "反射 — 自省",
           "titleEn": "Reflection — Introspection",
-          "pdfPages": [13, 14],
+          "pdfPages": [
+            13,
+            14
+          ],
           "content": [
             {
               "type": "heading",
@@ -495,9 +588,18 @@
               "type": "list",
               "style": "definition",
               "items": [
-                { "term": "type()", "definition": "查看物件的資料型態" },
-                { "term": "dir()", "definition": "列出物件的所有屬性和方法" },
-                { "term": "help()", "definition": "查看 function 或方法的詳細用法" }
+                {
+                  "term": "type()",
+                  "definition": "查看物件的資料型態"
+                },
+                {
+                  "term": "dir()",
+                  "definition": "列出物件的所有屬性和方法"
+                },
+                {
+                  "term": "help()",
+                  "definition": "查看 function 或方法的詳細用法"
+                }
               ]
             },
             {
@@ -505,12 +607,20 @@
               "questions": [
                 {
                   "question": "想查看一個物件有哪些方法可以用，應該用？",
-                  "options": ["type()", "dir()", "help()"],
+                  "options": [
+                    "type()",
+                    "dir()",
+                    "help()"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "type([1,2,3]) 會回傳什麼？",
-                  "options": ["<class 'list'>", "[1,2,3]", "3"],
+                  "options": [
+                    "<class 'list'>",
+                    "[1,2,3]",
+                    "3"
+                  ],
                   "answer": 0
                 }
               ]
@@ -521,7 +631,9 @@
           "id": "les-03-07",
           "title": "反射 — 動態操作",
           "titleEn": "Reflection — Dynamic Operations",
-          "pdfPages": [15],
+          "pdfPages": [
+            15
+          ],
           "content": [
             {
               "type": "heading",
@@ -540,9 +652,18 @@
               "type": "list",
               "style": "definition",
               "items": [
-                { "term": "getattr()", "definition": "檢查屬性是否存在並取得，若是方法還能呼叫" },
-                { "term": "setattr()", "definition": "檢查並動態新增或修改屬性" },
-                { "term": "delattr()", "definition": "檢查並動態刪除屬性" }
+                {
+                  "term": "getattr()",
+                  "definition": "檢查屬性是否存在並取得，若是方法還能呼叫"
+                },
+                {
+                  "term": "setattr()",
+                  "definition": "檢查並動態新增或修改屬性"
+                },
+                {
+                  "term": "delattr()",
+                  "definition": "檢查並動態刪除屬性"
+                }
               ]
             },
             {
@@ -550,12 +671,20 @@
               "questions": [
                 {
                   "question": "想動態新增一個屬性給物件，應該用？",
-                  "options": ["getattr()", "setattr()", "delattr()"],
+                  "options": [
+                    "getattr()",
+                    "setattr()",
+                    "delattr()"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "getattr(p, 'mp', 'N/A') 中，'N/A' 的用途是？",
-                  "options": ["設定新屬性值", "屬性不存在時的預設值", "刪除屬性"],
+                  "options": [
+                    "設定新屬性值",
+                    "屬性不存在時的預設值",
+                    "刪除屬性"
+                  ],
                   "answer": 1
                 }
               ]
@@ -566,15 +695,22 @@
     },
     {
       "id": "mod-04",
-      "title": "收集資料",
-      "titleEn": "Collecting Data",
-      "icon": "📡",
+      "title": "Python 課程子章節",
+      "titleEn": "Python Course Sections",
+      "icon": "🚀",
       "lessons": [
         {
           "id": "les-04-01",
-          "title": "課程流程總覽",
-          "titleEn": "Course Flow Overview",
-          "pdfPages": [16, 17],
+          "title": "收集資料",
+          "titleEn": "Collecting Data",
+          "pdfPages": [
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ],
           "content": [
             {
               "type": "heading",
@@ -610,24 +746,24 @@
               "questions": [
                 {
                   "question": "資料處理管線的第一步是？",
-                  "options": ["處理資料", "收集資料", "輸出資料"],
+                  "options": [
+                    "處理資料",
+                    "收集資料",
+                    "輸出資料"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "為什麼處理資料之前需要先「得知資料」？",
-                  "options": ["因為 CPU 需要休息", "電腦需要先拿到資料才能處理", "為了節省電力"],
+                  "options": [
+                    "因為 CPU 需要休息",
+                    "電腦需要先拿到資料才能處理",
+                    "為了節省電力"
+                  ],
                   "answer": 1
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "les-04-02",
-          "title": "CPU 與 RAM 的關係",
-          "titleEn": "CPU and RAM Relationship",
-          "pdfPages": [18, 19],
-          "content": [
+            },
             {
               "type": "heading",
               "text": "CPU 與 RAM"
@@ -651,24 +787,24 @@
               "questions": [
                 {
                   "question": "CPU 只關心哪裡的資料？",
-                  "options": ["硬碟", "RAM", "螢幕"],
+                  "options": [
+                    "硬碟",
+                    "RAM",
+                    "螢幕"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "以比喻來說，RAM 像是？",
-                  "options": ["倉庫", "工作桌", "垃圾桶"],
+                  "options": [
+                    "倉庫",
+                    "工作桌",
+                    "垃圾桶"
+                  ],
                   "answer": 1
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "les-04-03",
-          "title": "C vs Python 記憶體管理",
-          "titleEn": "C vs Python Memory",
-          "pdfPages": [20, 21],
-          "content": [
+            },
             {
               "type": "heading",
               "text": "記憶體管理：C vs Python"
@@ -702,31 +838,45 @@
               "questions": [
                 {
                   "question": "Python 的記憶體管理方式是？",
-                  "options": ["手動 malloc/free", "Garbage Collection 自動回收", "不需要管理"],
+                  "options": [
+                    "手動 malloc/free",
+                    "Garbage Collection 自動回收",
+                    "不需要管理"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "Python 的 GC 為什麼會讓程式變慢？",
-                  "options": ["因為需要吃 CPU 做分析", "因為 RAM 不夠", "因為網路慢"],
+                  "options": [
+                    "因為需要吃 CPU 做分析",
+                    "因為 RAM 不夠",
+                    "因為網路慢"
+                  ],
                   "answer": 0
                 }
               ]
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "mod-05",
-      "title": "儲存資料",
-      "titleEn": "Storing Data",
-      "icon": "💾",
-      "lessons": [
+        },
         {
-          "id": "les-05-01",
-          "title": "變數與 Pointer",
-          "titleEn": "Variables and Pointers",
-          "pdfPages": [22],
+          "id": "les-04-02",
+          "title": "儲存資料",
+          "titleEn": "Storing Data",
+          "pdfPages": [
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34
+          ],
           "content": [
             {
               "type": "heading",
@@ -762,24 +912,24 @@
               "questions": [
                 {
                   "question": "變數存的是什麼？",
-                  "options": ["資料本身", "RAM 的位址", "CPU 的指令"],
+                  "options": [
+                    "資料本身",
+                    "RAM 的位址",
+                    "CPU 的指令"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "沒有變數指向的資料會怎樣？",
-                  "options": ["永遠保留", "被垃圾回收", "自動備份"],
+                  "options": [
+                    "永遠保留",
+                    "被垃圾回收",
+                    "自動備份"
+                  ],
                   "answer": 1
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "les-05-02",
-          "title": "Binary 寫入 RAM",
-          "titleEn": "Binary in RAM",
-          "pdfPages": [23, 24, 25],
-          "content": [
+            },
             {
               "type": "heading",
               "text": "資料如何寫入 RAM"
@@ -803,24 +953,24 @@
               "questions": [
                 {
                   "question": "CPU 把資料寫入 RAM 時，資料會被轉成什麼格式？",
-                  "options": ["文字", "Binary（0 和 1）", "圖片"],
+                  "options": [
+                    "文字",
+                    "Binary（0 和 1）",
+                    "圖片"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "bin(5) 會輸出什麼？",
-                  "options": ["5", "0b101", "00000101"],
+                  "options": [
+                    "5",
+                    "0b101",
+                    "00000101"
+                  ],
                   "answer": 1
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "les-05-03",
-          "title": "Immutable Object",
-          "titleEn": "Immutable Objects",
-          "pdfPages": [26, 27],
-          "content": [
+            },
             {
               "type": "heading",
               "text": "Immutable Object（不可變物件）"
@@ -855,24 +1005,24 @@
               "questions": [
                 {
                   "question": "a = 5 然後 a = 10，發生了什麼事？",
-                  "options": ["5 被修改成 10", "a 指向了一個新的物件 10", "記憶體位址不變"],
+                  "options": [
+                    "5 被修改成 10",
+                    "a 指向了一個新的物件 10",
+                    "記憶體位址不變"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "以下哪個是 Immutable？",
-                  "options": ["list", "dict", "int"],
+                  "options": [
+                    "list",
+                    "dict",
+                    "int"
+                  ],
                   "answer": 2
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "les-05-04",
-          "title": "變數作用域",
-          "titleEn": "Variable Scope",
-          "pdfPages": [28, 29],
-          "content": [
+            },
             {
               "type": "heading",
               "text": "變數作用域 (Scope)"
@@ -896,24 +1046,24 @@
               "questions": [
                 {
                   "question": "在函式中要修改全域變數，需要用什麼關鍵字？",
-                  "options": ["local", "global", "extern"],
+                  "options": [
+                    "local",
+                    "global",
+                    "extern"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "不加 global 的話，函式內的同名變數會怎樣？",
-                  "options": ["修改全域變數", "被當成新的區域變數", "報錯"],
+                  "options": [
+                    "修改全域變數",
+                    "被當成新的區域變數",
+                    "報錯"
+                  ],
                   "answer": 1
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "les-05-05",
-          "title": "Mutable Object",
-          "titleEn": "Mutable Objects",
-          "pdfPages": [30, 31, 32],
-          "content": [
+            },
             {
               "type": "heading",
               "text": "Mutable Object（可變物件）"
@@ -938,8 +1088,14 @@
               "type": "list",
               "style": "definition",
               "items": [
-                { "term": "搬出去住 (Copy)", "definition": "只影響某個 variable，建立了一個獨立的新物件" },
-                { "term": "改裝房子 (Reference)", "definition": "會影響所有指向這個 object 的 variable，因為是同一個物件" }
+                {
+                  "term": "搬出去住 (Copy)",
+                  "definition": "只影響某個 variable，建立了一個獨立的新物件"
+                },
+                {
+                  "term": "改裝房子 (Reference)",
+                  "definition": "會影響所有指向這個 object 的 variable，因為是同一個物件"
+                }
               ]
             },
             {
@@ -952,24 +1108,24 @@
               "questions": [
                 {
                   "question": "b = a（a 是 list）之後，修改 a 會影響 b 嗎？",
-                  "options": ["不會", "會，因為是 Reference", "會報錯"],
+                  "options": [
+                    "不會",
+                    "會，因為是 Reference",
+                    "會報錯"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "如何建立一個不受原 list 影響的副本？",
-                  "options": ["b = a", "b = a.copy()", "b = a + 0"],
+                  "options": [
+                    "b = a",
+                    "b = a.copy()",
+                    "b = a + 0"
+                  ],
                   "answer": 1
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "les-05-06",
-          "title": "id() 檢查",
-          "titleEn": "Identity Check with id()",
-          "pdfPages": [32],
-          "content": [
+            },
             {
               "type": "heading",
               "text": "用 id() 檢查物件身份"
@@ -993,24 +1149,24 @@
               "questions": [
                 {
                   "question": "a = [1,2]; b = a; a is b 的結果是？",
-                  "options": ["True", "False", "Error"],
+                  "options": [
+                    "True",
+                    "False",
+                    "Error"
+                  ],
                   "answer": 0
                 },
                 {
                   "question": "用什麼可以檢查兩個變數是否指向同一個物件？",
-                  "options": ["==", "id() 或 is", "type()"],
+                  "options": [
+                    "==",
+                    "id() 或 is",
+                    "type()"
+                  ],
                   "answer": 1
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "les-05-07",
-          "title": "型態分類表",
-          "titleEn": "Type Classification",
-          "pdfPages": [33, 34],
-          "content": [
+            },
             {
               "type": "heading",
               "text": "Immutable vs Mutable 分類"
@@ -1023,8 +1179,14 @@
               "type": "list",
               "style": "definition",
               "items": [
-                { "term": "Immutable", "definition": "int, float, complex, bool, str, tuple, frozenset, bytes — 不能修改內容" },
-                { "term": "Mutable", "definition": "list, set, dict — 可以修改內容" }
+                {
+                  "term": "Immutable",
+                  "definition": "int, float, complex, bool, str, tuple, frozenset, bytes — 不能修改內容"
+                },
+                {
+                  "term": "Mutable",
+                  "definition": "list, set, dict — 可以修改內容"
+                }
               ]
             },
             {
@@ -1042,31 +1204,39 @@
               "questions": [
                 {
                   "question": "以下哪個是 Mutable 類型？",
-                  "options": ["str", "tuple", "list"],
+                  "options": [
+                    "str",
+                    "tuple",
+                    "list"
+                  ],
                   "answer": 2
                 },
                 {
                   "question": "需要一個不會被修改的序列，應該用？",
-                  "options": ["list", "tuple", "dict"],
+                  "options": [
+                    "list",
+                    "tuple",
+                    "dict"
+                  ],
                   "answer": 1
                 }
               ]
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "mod-06",
-      "title": "程式結構",
-      "titleEn": "Code Structure",
-      "icon": "🏗️",
-      "lessons": [
+        },
         {
-          "id": "les-06-01",
-          "title": "C 語言的結構",
-          "titleEn": "C Language Structure",
-          "pdfPages": [35, 36],
+          "id": "les-04-03",
+          "title": "處理資料：程式結構",
+          "titleEn": "Processing Data: Code Structure",
+          "pdfPages": [
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+          ],
           "content": [
             {
               "type": "heading",
@@ -1091,24 +1261,24 @@
               "questions": [
                 {
                   "question": "C 語言用什麼標記一行的結束？",
-                  "options": ["冒號 :", "分號 ;", "換行"],
+                  "options": [
+                    "冒號 :",
+                    "分號 ;",
+                    "換行"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "C 語言用什麼包住一個程式區塊？",
-                  "options": ["縮排", "大括號 {}", "小括號 ()"],
+                  "options": [
+                    "縮排",
+                    "大括號 {}",
+                    "小括號 ()"
+                  ],
                   "answer": 1
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "les-06-02",
-          "title": "結構控制 vs 受結構控制",
-          "titleEn": "Control vs Controlled",
-          "pdfPages": [37, 38],
-          "content": [
+            },
             {
               "type": "heading",
               "text": "結構控制 vs 受結構控制"
@@ -1132,24 +1302,24 @@
               "questions": [
                 {
                   "question": "if (score >= 60) 屬於？",
-                  "options": ["結構控制", "受結構控制", "單行結構"],
+                  "options": [
+                    "結構控制",
+                    "受結構控制",
+                    "單行結構"
+                  ],
                   "answer": 0
                 },
                 {
                   "question": "printf(\"Pass\") 在 if 區塊內，它屬於？",
-                  "options": ["結構控制", "受結構控制", "獨立語句"],
+                  "options": [
+                    "結構控制",
+                    "受結構控制",
+                    "獨立語句"
+                  ],
                   "answer": 1
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "les-06-03",
-          "title": "Python 的結構",
-          "titleEn": "Python Structure",
-          "pdfPages": [39, 40, 41],
-          "content": [
+            },
             {
               "type": "heading",
               "text": "Python 的程式結構"
@@ -1189,12 +1359,20 @@
               "questions": [
                 {
                   "question": "Python 用什麼取代 C 語言的大括號 {}？",
-                  "options": ["分號", "冒號 + 縮排", "小括號"],
+                  "options": [
+                    "分號",
+                    "冒號 + 縮排",
+                    "小括號"
+                  ],
                   "answer": 1
                 },
                 {
                   "question": "Python 忘記縮排會發生什麼？",
-                  "options": ["正常執行", "IndentationError", "自動補縮排"],
+                  "options": [
+                    "正常執行",
+                    "IndentationError",
+                    "自動補縮排"
+                  ],
                   "answer": 1
                 }
               ]
