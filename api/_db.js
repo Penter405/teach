@@ -10,10 +10,7 @@ async function connectToDatabase() {
         const uri = process.env.MongoDB;
         if (!uri) throw new Error("Missing MongoDB connection string");
         
-        await mongoose.connect(uri, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+        await mongoose.connect(uri);
         isConnected = true;
     } catch (error) {
         console.error("Database connection failed", error);
