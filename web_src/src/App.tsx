@@ -103,8 +103,8 @@ const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
                   By signing in, you agree to our policies.
                 </p>
                 <div className="flex gap-4">
-                  <a href="/privacy.html" className="text-xs text-cyan-600 dark:text-cyan-400 hover:underline">Privacy Policy</a>
-                  <a href="/tos.html" className="text-xs text-cyan-600 dark:text-cyan-400 hover:underline">Terms of Service</a>
+                  <a href="privacy.html" className="text-xs text-cyan-600 dark:text-cyan-400 hover:underline">Privacy Policy</a>
+                  <a href="tos.html" className="text-xs text-cyan-600 dark:text-cyan-400 hover:underline">Terms of Service</a>
                 </div>
               </div>
 
