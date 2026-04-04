@@ -63,24 +63,37 @@ function RenderCodeBlock({ block }: { block: ContentBlock }) {
   // Simple highlighter for basic python syntax
   const highlightPython = (code: string) => {
     let result = code;
+    
     // Comments
-    result = result.replace(/(#.*)$/gm, '<span class="text-slate-500">$1</span>');
+    result = result.replace(/(#.*)$/gm, '__C_START__$1__SPAN_END__');
     // Strings
-    result = result.replace(/(&quot;.*?&quot;|&#x27;.*?&#x27;|".*?"|'.*?')/g, '<span class="text-green-400">$1</span>');
+    result = result.replace(/(&quot;.*?&quot;|&#x27;.*?&#x27;|".*?"|'.*?')/g, '__S_START__$1__SPAN_END__');
+    
     // Keywords
     const keywords = ['def', 'class', 'return', 'if', 'elif', 'else', 'for', 'while', 'in', 'import', 'from', 'as', 'True', 'False', 'None', 'and', 'or', 'not', 'is', 'break', 'continue', 'pass', 'try', 'except', 'finally', 'with', 'yield', 'lambda', 'self'];
     keywords.forEach(kw => {
-      const re = new RegExp(`\\b(${kw})\\b(?!")`, 'g');
-      result = result.replace(re, `<span class="text-purple-400">$1</span>`);
+      const re = new RegExp(`\\b(${kw})\\b`, 'g');
+      result = result.replace(re, `__K_START__$1__SPAN_END__`);
     });
+    
     // Built-ins
     const builtins = ['print', 'input', 'len', 'range', 'int', 'str', 'float', 'bool', 'list', 'dict', 'tuple', 'type', 'sum', 'max', 'min', 'enumerate', 'append', 'split', 'get', 'keys'];
     builtins.forEach(fn => {
       const re = new RegExp(`\\b(${fn})(?=\\()`, 'g');
-      result = result.replace(re, `<span class="text-blue-400">$1</span>`);
+      result = result.replace(re, `__B_START__$1__SPAN_END__`);
     });
+    
     // Numbers
-    result = result.replace(/\b(\d+\.?\d*)\b(?!")/g, `<span class="text-orange-400">$1</span>`);
+    result = result.replace(/\b(\d+\.?\d*)\b/g, `__N_START__$1__SPAN_END__`);
+
+    // Restore to HTML
+    result = result
+      .replace(/__C_START__/g, '<span class="text-slate-500">')
+      .replace(/__S_START__/g, '<span class="text-green-400">')
+      .replace(/__K_START__/g, '<span class="text-purple-400">')
+      .replace(/__B_START__/g, '<span class="text-blue-400">')
+      .replace(/__N_START__/g, '<span class="text-orange-400">')
+      .replace(/__SPAN_END__/g, '</span>');
 
     return result;
   };
