@@ -37,98 +37,82 @@ const ThemeToggle = ({ isDark, onToggle }: { isDark: boolean; onToggle: () => vo
   </button>
 );
 
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+
 const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
+  const handleGoogleSuccess = async (response: any) => {
+    try {
+      const apiBase = import.meta.env.VITE_API_URL || '';
+      const res = await fetch(`${apiBase}/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential: response.credential }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        onLogin();
+      } else {
+        alert("Login failed!");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Verification error.");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-surface dark:bg-slate-950 flex flex-col relative overflow-hidden transition-colors duration-500">
-      <header className="w-full top-0 sticky bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex justify-center items-center h-16 px-6 z-50 border-b border-slate-200 dark:border-slate-800">
-        <div className="flex items-center justify-between w-full max-w-7xl">
-          <div className="text-2xl font-bold tracking-tight text-slate-800 dark:text-white font-headline">
-            {courseData.course.title}
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-slate-700 dark:text-slate-300 cursor-pointer"><HelpCircle className="w-5 h-5" /></span>
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-grow flex items-center justify-center relative px-4 py-12">
-        <div className="absolute top-10 -left-20 w-96 h-96 bg-cyan-500/20 dark:bg-cyan-500/10 rounded-full blur-[100px]"></div>
-        <div className="absolute bottom-10 -right-20 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-[100px]"></div>
-
-        <div className="absolute top-[15%] right-[10%] hidden lg:block transform rotate-12 select-none pointer-events-none">
-          <div className="p-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-xl font-mono text-[10px] text-purple-600 dark:text-purple-400 shadow-xl">
-            <span className="text-cyan-600 dark:text-cyan-400">def</span> <span className="text-blue-500">synthesize</span>(knowledge):<br/>
-            &nbsp;&nbsp;<span className="text-purple-600 dark:text-purple-400">return</span> sum(knowledge)
-          </div>
-        </div>
-
-        <div className="w-full max-w-md relative z-10">
-          <motion.div 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="absolute -top-16 -right-12 w-32 h-32 hidden md:block z-20"
-          >
-            <img src={IMAGES.explorerLogin} alt="Explorer" className="w-full h-full object-contain drop-shadow-2xl" referrerPolicy="no-referrer" />
-          </motion.div>
-
-          <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-[2rem] p-8 md:p-12 shadow-2xl border border-slate-200 dark:border-slate-800 relative overflow-hidden">
-             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-500 to-purple-500"></div>
-            
-            <div className="text-center space-y-4 mb-10">
-              <div className="w-16 h-16 mx-auto bg-gradient-to-br from-cyan-500 to-purple-500 rounded-2xl flex items-center justify-center text-3xl shadow-lg mb-6">🐍</div>
-              <h1 className="font-headline text-3xl font-bold tracking-tight text-slate-800 dark:text-white">Welcome student</h1>
-              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                {courseData.course.subtitle} — {courseData.course.version}
-              </p>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''}>
+      <div className="min-h-screen bg-surface dark:bg-slate-950 flex flex-col relative overflow-hidden transition-colors duration-500">
+        <header className="w-full top-0 sticky bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex justify-center items-center h-16 px-6 z-50 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex items-center justify-between w-full max-w-7xl">
+            <div className="text-2xl font-bold tracking-tight text-slate-800 dark:text-white font-headline">
+              {courseData.course.title}
             </div>
+          </div>
+        </header>
 
-            <div className="space-y-6">
-              <button 
-                onClick={onLogin}
-                className="w-full flex items-center justify-center gap-3 py-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all rounded-full text-slate-800 dark:text-white font-semibold text-sm shadow-sm"
-              >
-                <Github className="w-5 h-5" />
-                Sign in with GitHub
-              </button>
+        <main className="flex-grow flex items-center justify-center relative px-4 py-12">
+          {/* Background blurred circles */}
+          <div className="absolute top-10 -left-20 w-96 h-96 bg-cyan-500/20 dark:bg-cyan-500/10 rounded-full blur-[100px]"></div>
+          <div className="absolute bottom-10 -right-20 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-[100px]"></div>
 
-              <div className="flex items-center gap-4 py-2">
-                <div className="h-[1px] flex-grow bg-slate-200 dark:bg-slate-700"></div>
-                <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">OR</span>
-                <div className="h-[1px] flex-grow bg-slate-200 dark:bg-slate-700"></div>
+          <div className="w-full max-w-md relative z-10">
+            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-[2rem] p-8 md:p-12 shadow-2xl border border-slate-200 dark:border-slate-800 relative overflow-hidden flex flex-col items-center">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-500 to-purple-500"></div>
+              
+              <div className="text-center space-y-4 mb-10">
+                <div className="w-16 h-16 mx-auto bg-gradient-to-br from-cyan-500 to-purple-500 rounded-2xl flex items-center justify-center text-3xl shadow-lg mb-6">🐍</div>
+                <h1 className="font-headline text-3xl font-bold tracking-tight text-slate-800 dark:text-white">Welcome student</h1>
+                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                  {courseData.course.subtitle} — {courseData.course.version}
+                </p>
               </div>
 
-              <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onLogin(); }}>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 ml-2">Email Address</label>
-                  <input 
-                    type="email" 
-                    className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm dark:text-white transition-all outline-none"
-                    placeholder="student@example.com"
-                  />
+              <div className="flex justify-center w-full mb-8">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => console.log('Login Failed')}
+                  useOneTap
+                  theme="filled_black"
+                  shape="pill"
+                />
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 w-full text-center flex flex-col items-center gap-2">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  By signing in, you agree to our policies.
+                </p>
+                <div className="flex gap-4">
+                  <a href="/privacy.html" className="text-xs text-cyan-600 dark:text-cyan-400 hover:underline">Privacy Policy</a>
+                  <a href="/tos.html" className="text-xs text-cyan-600 dark:text-cyan-400 hover:underline">Terms of Service</a>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 ml-2">Password</label>
-                    <a href="#" className="text-[10px] text-cyan-600 dark:text-cyan-400 font-bold hover:underline">FORGOT?</a>
-                  </div>
-                  <input 
-                    type="password" 
-                    className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm dark:text-white transition-all outline-none"
-                    placeholder="••••••••"
-                  />
-                </div>
-                <button 
-                  type="submit"
-                  className="w-full mt-4 py-4 bg-slate-800 dark:bg-cyan-600 hover:bg-slate-900 dark:hover:bg-cyan-500 rounded-full text-white font-bold shadow-xl shadow-slate-900/10 dark:shadow-cyan-900/20 active:scale-95 transition-all text-sm tracking-wide"
-                >
-                  Enter Course
-                </button>
-              </form>
+              </div>
+
             </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </GoogleOAuthProvider>
   );
 };
 

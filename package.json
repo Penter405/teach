@@ -1,0 +1,29 @@
+{
+  "name": "cipher_slate",
+  "version": "1.0.0",
+  "description": "An interactive Python curriculum application built using React, Vite, and Tailwind CSS. The application translates a detailed Python programming PDF into an engaging \"Guided Synthesist\" interface with progressive learning modules, rich interactive lesson rendering, and code syntax highlighting.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Penter405/teach.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Penter405/teach/issues"
+  },
+  "homepage": "https://github.com/Penter405/teach#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "google-auth-library": "^10.6.2",
+    "mongoose": "^9.4.1"
+  }
+}
