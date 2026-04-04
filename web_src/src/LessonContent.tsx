@@ -793,7 +793,7 @@ function RenderQuiz({ block }: { block: ContentBlock }) {
                   const isSelected = selected[qIdx] === optIdx;
                   const isAnswer = q.answer === optIdx;
 
-                  let optionStyle = 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-cyan-300 dark:hover:border-cyan-700 hover:bg-cyan-50/50 dark:hover:bg-cyan-900/10 cursor-pointer';
+                  let optionStyle = 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-cyan-300 dark:hover:border-cyan-700 hover:bg-cyan-50/50 dark:hover:bg-cyan-900/10 cursor-pointer';
 
                   if (isRevealed) {
                     if (isAnswer) {
@@ -801,7 +801,7 @@ function RenderQuiz({ block }: { block: ContentBlock }) {
                     } else if (isSelected && !isAnswer) {
                       optionStyle = 'bg-red-50 dark:bg-red-900/20 border-red-400 dark:border-red-600 text-red-800 dark:text-red-200 opacity-70';
                     } else {
-                      optionStyle = 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 opacity-50';
+                      optionStyle = 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-400 opacity-50';
                     }
                   }
 
