@@ -58,6 +58,6 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('Login Error:', error);
-    return res.status(401).json({ success: false, message: 'Invalid token' });
+    return res.status(401).json({ success: false, message: 'Invalid token', errorDetials: error.message, stack: error.stack });
   }
 };
