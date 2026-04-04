@@ -52,7 +52,7 @@ const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
       if (data.success) {
         onLogin();
       } else {
-        alert("Login failed!");
+        alert("Login failed! Reason: " + (data.errorDetials || data.message));
       }
     } catch (e) {
       console.error(e);
