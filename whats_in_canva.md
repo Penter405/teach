@@ -90,33 +90,33 @@
 ![Image: Page 22.png]
 - **變數 (Variable)**：資料放入 RAM 後需建立變數並 pointer 到資料的 RAM address，否則會被當作垃圾回收，程式再也找不到資料。
 
-![Image: Page 23.png]
-![Image: Page 24.png]
-![Image: Page 25.png]
-- CPU 會在 RAM 找空間，把值轉成 binary（0和1）寫入。變數存的是 RAM address，想要資料要去 RAM 看一堆 binary code。
+  ![Image: Page 23.png]
+  ![Image: Page 24.png]
+  ![Image: Page 25.png]
+  - CPU 會在 RAM 找空間，把值轉成 binary（0和1）寫入。變數存的是 RAM address，想要資料要去 RAM 看一堆 binary code。
 
-![Image: Page 26.png]
-![Image: Page 27.png]
-- **Immutable object (不可變物件)**：裡面的資料不能被修改 (Data const)。若要改變變數的資料，只能換一個家 (指向另一個 object)。
+  ![Image: Page 26.png]
+  ![Image: Page 27.png]
+  - **Immutable object (不可變物件)**：裡面的資料不能被修改 (Data const)。若要改變變數的資料，只能換一個家 (指向另一個 object)。
 
-![Image: Page 28.png]
-![Image: Page 29.png]
-- **變數作用域**：在函式中若要修改外部變數，可使用 `global` 或 `nonlocal` 讓 code 知道你想對哪個變數做事。
+  ![Image: Page 28.png]
+  ![Image: Page 29.png]
+  - **變數作用域**：在函式中若要修改外部變數，可使用 `global` 或 `nonlocal` 讓 code 知道你想對哪個變數做事。
 
-![Image: Page 30.png]
-![Image: Page 31.png]
-- **Mutable object (可變物件)**：可以改變裡面的資料、把 object 變大或變小。
-  - **搬出去住 (Coped)**：只影響某個 variable。
-  - **改裝房子 (Reference / in-place)**：會影響所有指向這個 object 的 variable。
+  ![Image: Page 30.png]
+  ![Image: Page 31.png]
+  - **Mutable object (可變物件)**：可以改變裡面的資料、把 object 變大或變小。
+    - **搬出去住 (Coped)**：只影響某個 variable。
+    - **改裝房子 (Reference / in-place)**：會影響所有指向這個 object 的 variable。
 
-![Image: Page 32.png]
-- 對於 mutable object，可能會是 coped 或 reference，可用 `id()` function 來檢查。
+  ![Image: Page 32.png]
+  - 對於 mutable object，可能會是 coped 或 reference，可用 `id()` function 來檢查。
 
-![Image: Page 33.png]
-- **Immutable 類型範例**：`int`, `float`, `complex`, `bool`, `str`, `tuple`, `frozenset`, `bytes`。
+  ![Image: Page 33.png]
+  - **Immutable 類型範例**：`int`, `float`, `complex`, `bool`, `str`, `tuple`, `frozenset`, `bytes`。
 
-![Image: Page 34.png]
-- **Mutable 類型範例**：`list`, `set`, `dict`。
+  ![Image: Page 34.png]
+  - **Mutable 類型範例**：`list`, `set`, `dict`。
 
 ### 4.3 處理資料：程式結構 (Page 35 - 41)
 ![Image: Page 35.png]
