@@ -35,16 +35,13 @@
     </div>
 
     <br><br>
-    <a href="/teach/">&larr; Back to Login / Home</a>
+    <a href="#" onclick="window.history.back(); return false;">&larr; Back to Login / Home</a>
 
     <script>
         async function fetchStats() {
             try {
-                // Determine API URL based on host or hardcode it
-                const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://teach-api.vercel.app'; // Modify Vercel URL
-                
-                // Note: User can modify the fetch endpoint above to match their Vercel Deployment Link
-                const res = await fetch('/api/stats');
+                // Fetch directly from your Vercel backend URL
+                const res = await fetch('https://teach-beige.vercel.app/api/stats');
                 const data = await res.json();
                 if (data && data.count !== undefined) {
                     document.getElementById('userCount').innerText = data.count;
