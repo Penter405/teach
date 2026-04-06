@@ -10,12 +10,10 @@
 ---
 
 ## 1. What is code (Page 3 - 4)
-### under is in your first lesson of module 1 
 ![Image: Page 3.png]
 - **執行程式的流程**：input資料 → 處理資料 → output資料。
 - 舉例說明條件判斷與輸出（如：按下 F 進入載具、輸入名字並印出）。
-###### input資料 → 處理資料 → output資料 this is in animation now, i want to add a new animation just under them : user's keyboard with wasd, and f. as the input source lights up, the keyboard's f key lights up too, (wasd+f under the input square) then, as the arraw from input square moving to process square, the f key's light goes out to the another square just under the process square, which is a pseudo-code that "if (按下F) then 進入載具" , basicly i just want you change 範例 here to animation, and under the output square, shown a guy get into car (by the way, all the photo is from internet, im not sure if owner allow us use it, if not, we need to create a new one for all the photo i tells you in the md file)
-### under is in your second lesson of module 1 
+
 ![Image: Page 4.png]
 - **核心概念**：程式 = 做很多有關資料的事情。
 
@@ -23,9 +21,9 @@
 
 ## 2. 怎麼理解題目 (Page 5)
 ![Image: Page 5.png]
-- **拆解問題**：將複雜要求拆解成具體動作（例如：寫出 10 個 "hi"，就是「有一件事要做 10 次」）。 
+- **拆解問題**：將複雜要求拆解成具體動作（例如：寫出 10 個 "hi"，就是「有一件事要做 10 次」）。
 - **資料儲存與分析**：面對大量輸入（如：輸入 10 個 int 找最大值），需要一個地方放很多東西，而 `list` 是一個好地方。
-###### make sure they can know 拆分步驟 ，your goal is from nothing data in the begining, from input, remember , and process , and remember (you could do remember and process multiple times) , at the end shows the thing you want.
+
 ---
 
 ## 3. Python 介紹 (Page 6 - 15)
@@ -36,7 +34,7 @@
 ![Image: Page 7.png]
 - **直譯器 (Python)**：從頭看、從頭寫（一行行執行）。
 - **編譯器 (如 C 語言)**：先看過一遍，再從某個地方（如 `main()`）開始執行。
-###### when my mouse on the 編譯器 Compiler, the animatin block shows a under line, the line most used to scrow left to right in the internet. i dont need the line, also , many animation( or image, in this case, its a image) have the line, make sure them disappear.
+
 ### 3.2 物件導向 (Page 8 - 12)
 ![Image: Page 8.png]
 - **Class 與 Object**：初始化一個 class（如「人類」），將其放入變數中，該變數就稱為 object（物件）。變數本身叫做 variable。
@@ -139,4 +137,3 @@
 ![Image: Page 40.png]
 ![Image: Page 41.png]
 - 單行結構與相關程式碼範例展示。
-### i am sure there are many structure that you skip, maybe you thought beacuse the lesson detail not in version 1, so you skip, no, we can copy and paste lessons from version two, which is old one

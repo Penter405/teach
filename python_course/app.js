@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════
    PythonClassPenter — Application Logic
    ═══════════════════════════════════════════════════════ */
 
@@ -73,6 +73,7 @@
   //  Welcome Screen
   // ═══════════════════════════════════════════════════════
   function renderWelcome() {
+    currentLessonId = null;
     const { course, modules } = courseData;
     mainContent.innerHTML = `
       <div class="welcome-screen">
@@ -123,10 +124,10 @@
       bodyHtml += renderContentBlock(block, i);
     });
 
-    // Prev / Next
-    const idx = flatLessons.findIndex(l => l.id === lessonId);
-    const prev = idx > 0 ? flatLessons[idx - 1] : null;
-    const next = idx < flatLessons.length - 1 ? flatLessons[idx + 1] : null;
+    // Prev / Next (stay within module)
+    const lessonIdx = module.lessons.findIndex(l => l.id === lessonId);
+    const prev = lessonIdx > 0 ? module.lessons[lessonIdx - 1] : null;
+    const next = lessonIdx < module.lessons.length - 1 ? module.lessons[lessonIdx + 1] : null;
 
     mainContent.innerHTML = `
       <section class="lesson-hero">
@@ -146,6 +147,7 @@
         <button class="nav-btn nav-btn-prev" ${prev ? `data-lesson="${prev.id}"` : 'disabled'}>
           ← ${prev ? prev.title : ''}
         </button>
+        <button class="nav-btn nav-btn-map" data-go-map="true">Go back to map</button>
         <button class="nav-btn nav-btn-next" ${next ? `data-lesson="${next.id}"` : 'disabled'}>
           ${next ? next.title : ''} →
         </button>
@@ -560,6 +562,14 @@
           });
           renderLesson(mod.lessons[0].id);
         }
+      }
+
+      const backToMap = e.target.closest('[data-go-map]');
+      if (backToMap) {
+        document.querySelectorAll('.nav-lesson').forEach(el => el.classList.remove('active'));
+        renderWelcome();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
       }
 
       // Prev / Next buttons
