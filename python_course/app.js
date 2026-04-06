@@ -194,6 +194,9 @@
       case 'diagram':
         return `<div class="${cls}">${renderDiagram(block)}</div>`;
 
+      case 'animation':
+        return `<div class="${cls}">${renderAnimation(block)}</div>`;
+
       case 'list':
         return `<div class="${cls}">${renderList(block)}</div>`;
 
@@ -215,6 +218,23 @@
       default:
         return '';
     }
+  }
+
+  // ── Animation / Flow ──
+  function renderAnimation(block) {
+    const steps = block.steps || [];
+    return `
+      <div class="animation-flow">
+        <div class="animation-steps">
+          ${steps.map((step, idx) => `
+            <div class="af-step">
+              <div class="af-badge">${idx + 1}</div>
+              <div class="af-text">${esc(step)}</div>
+            </div>
+          `).join('')}
+        </div>
+        ${block.caption ? `<div class="animation-caption">${esc(block.caption)}</div>` : ''}
+      </div>`;
   }
 
   // ── Code Block ──

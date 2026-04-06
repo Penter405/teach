@@ -28,16 +28,16 @@
               "type": "paragraph",
               "text": "所有程式都遵循同一個核心模式：輸入資料 (Input) → 處理資料 (Process) → 輸出資料 (Output)。不管程式多複雜，本質上都在做這三件事。"
             },
-            {
-              "type": "animation",
-              "animationId": "data-flow-animation",
-              "caption": "資料封包從 Input 流經 Process 到 Output 的動態流程",
-              "steps": [
-                "使用者輸入資料",
-                "程式接收並處理資料",
-                "產生輸出結果"
-              ]
-            },
+        {
+          "type": "animation",
+          "animationId": "data-flow-animation",
+          "caption": "鍵盤 F → 程式判斷 → 螢幕顯示「進入車輛」",
+          "steps": [
+            "Input：玩家按下鍵盤 F",
+            "Process：程式檢查角色附近是否有車輛可進入",
+            "Output：螢幕提示「進入車輛」並播放上車動畫"
+          ]
+        },
             {
               "type": "callout",
               "label": "範例",
