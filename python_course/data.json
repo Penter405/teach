@@ -1,14 +1,14 @@
 {
   "course": {
     "title": "PythonClassPenter",
-    "subtitle": "Python 程式設計課程",
+    "subtitle": "Python 課程完整講義（含設計筆記）",
     "version": "2026y2m17d",
     "language": "zh-TW"
   },
   "modules": [
     {
       "id": "mod-01",
-      "title": "什麼是 Code",
+      "title": "What is code",
       "titleEn": "What is Code",
       "icon": "⚡",
       "lessons": [
@@ -21,6 +21,11 @@
           ],
           "content": [
             {
+              "type": "callout",
+              "label": "結構對應（whats_in_canva2）",
+              "text": "Page 3；動畫需求：Input 亮 WASD+F、Process 顯示 `if (按下F) then 進入載具`、Output 顯示「小人進入載具」。"
+            },
+            {
               "type": "heading",
               "text": "執行程式的流程"
             },
@@ -28,16 +33,16 @@
               "type": "paragraph",
               "text": "所有程式都遵循同一個核心模式：輸入資料 (Input) → 處理資料 (Process) → 輸出資料 (Output)。不管程式多複雜，本質上都在做這三件事。"
             },
-        {
-          "type": "animation",
-          "animationId": "data-flow-animation",
-          "caption": "鍵盤 F → 程式判斷 → 螢幕顯示「進入車輛」",
-          "steps": [
-            "Input：玩家按下鍵盤 F",
-            "Process：程式檢查角色附近是否有車輛可進入",
-            "Output：螢幕提示「進入車輛」並播放上車動畫"
-          ]
-        },
+            {
+              "type": "animation",
+              "animationId": "data-flow-animation",
+              "caption": "鍵盤 F → 程式判斷 → 螢幕顯示「進入車輛」",
+              "steps": [
+                "Input：玩家按下鍵盤 F",
+                "Process：程式檢查角色附近是否有車輛可進入",
+                "Output：螢幕提示「進入車輛」並播放上車動畫"
+              ]
+            },
             {
               "type": "callout",
               "label": "範例",
@@ -98,19 +103,24 @@
             4
           ],
           "content": [
-        {
-          "type": "heading",
-          "text": "程式的核心概念"
-        },
-        {
-          "type": "paragraph",
-          "text": "程式 = 對資料做很多事。遊戲、網站、AI 都是在收集 → 儲存 → 處理 → 輸出資料的流程。"
-        },
-        {
-          "type": "callout",
-          "label": "記住",
-          "text": "寫程式就是「讓電腦幫你處理資料」。你的任務：告訴它拿什麼資料、怎麼處理、結果給誰看。"
-        },
+            {
+              "type": "callout",
+              "label": "結構對應（whats_in_canva2）",
+              "text": "Page 3,4,17,45,49；強調程式=資料處理，映射到多頁統整。"
+            },
+            {
+              "type": "heading",
+              "text": "程式的核心概念"
+            },
+            {
+              "type": "paragraph",
+              "text": "程式 = 對資料做很多事。遊戲、網站、AI 都是在收集 → 儲存 → 處理 → 輸出資料的流程。"
+            },
+            {
+              "type": "callout",
+              "label": "記住",
+              "text": "寫程式就是「讓電腦幫你處理資料」。你的任務：告訴它拿什麼資料、怎麼處理、結果給誰看。"
+            },
             {
               "type": "code",
               "language": "python",
@@ -169,13 +179,18 @@
           ],
           "content": [
             {
+              "type": "callout",
+              "label": "結構對應（whats_in_canva2）",
+              "text": "Page 5, 50；拆題流程：Input → Remember → Process → Remember 循環；例：10 個 hi、10 個 int 找最大值需 list。"
+            },
+            {
               "type": "heading",
               "text": "怎麼理解題目"
             },
-        {
-          "type": "paragraph",
-          "text": "拆題心法：資料為空 → 不斷 Input → 記住 (Remember) → Process → 再記住，最後拿到結果。先分解動作，再決定要記什麼、怎麼處理。"
-        },
+            {
+              "type": "paragraph",
+              "text": "拆題心法：資料為空 → 不斷 Input → 記住 (Remember) → Process → 再記住，最後拿到結果。先分解動作，再決定要記什麼、怎麼處理。"
+            },
             {
               "type": "animation",
               "animationId": "problem-decompose",
@@ -255,13 +270,18 @@
           ],
           "content": [
             {
+              "type": "callout",
+              "label": "結構對應（whats_in_canva2）",
+              "text": "Page 7, 46；直譯器 vs 編譯器：hover Compiler 不要出現水平滾動條，提示 main()、~50ms。"
+            },
+            {
               "type": "heading",
               "text": "直譯器 vs 編譯器"
             },
-        {
-          "type": "paragraph",
-          "text": "Python 使用直譯器 (Interpreter)：從頭看、從頭寫，一行一行執行。編譯器（如 C 語言）會先看過一遍，再從 main() 開始跑，速度通常更快（可達 ~50ms）。"
-        },
+            {
+              "type": "paragraph",
+              "text": "Python 使用直譯器 (Interpreter)：從頭看、從頭寫，一行一行執行。編譯器（如 C 語言）會先看過一遍，再從 main() 開始跑，速度通常更快（可達 ~50ms）。"
+            },
             {
               "type": "diagram",
               "diagramId": "interpreter-vs-compiler",
@@ -695,8 +715,8 @@
     },
     {
       "id": "mod-04",
-      "title": "Python 課程子章節",
-      "titleEn": "Python Course Sections",
+      "title": "Python 課程（子章節與資料生命週期）",
+      "titleEn": "Python Course (Data Lifecycle)",
       "icon": "🚀",
       "lessons": [
         {
@@ -712,6 +732,11 @@
             21
           ],
           "content": [
+            {
+              "type": "callout",
+              "label": "結構對應（whats_in_canva2）",
+              "text": "Page 16-41,51,59-61；主軸：收集→儲存/刪除→處理結構；RAM/GC 差異 C vs Python。"
+            },
             {
               "type": "heading",
               "text": "Python 課程流程"
@@ -860,8 +885,8 @@
         },
         {
           "id": "les-04-02",
-          "title": "儲存資料",
-          "titleEn": "Storing Data",
+          "title": "儲存與刪除資料",
+          "titleEn": "Store & Delete Data",
           "pdfPages": [
             22,
             23,
@@ -878,6 +903,11 @@
             34
           ],
           "content": [
+            {
+              "type": "callout",
+              "label": "結構對應（whats_in_canva2）",
+              "text": "Page 26-34；Immutable vs Mutable：換值=換地址；Mutable 原址修改；Copy vs Reference 用 id() 分辨。"
+            },
             {
               "type": "heading",
               "text": "變數與 Pointer"
@@ -1239,6 +1269,11 @@
           ],
           "content": [
             {
+              "type": "callout",
+              "label": "結構對應（whats_in_canva2）",
+              "text": "Page 35-41, 51；C: 分號 + 大括號；Python: 換行 + 縮排；控制結構 if/else/for/while。"
+            },
+            {
               "type": "heading",
               "text": "C 語言的程式結構"
             },
@@ -1374,6 +1409,63 @@
                     "自動補縮排"
                   ],
                   "answer": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-04-04",
+          "title": "Return：寫出有用的資料",
+          "titleEn": "Return: Produce Useful Data",
+          "pdfPages": [
+            59,
+            60,
+            61
+          ],
+          "content": [
+            {
+              "type": "callout",
+              "label": "結構對應（whats_in_canva2）",
+              "text": "Page 59-61；Return 本質＝把 A 換成 B，執行完函式以返回值取代。"
+            },
+            {
+              "type": "heading",
+              "text": "Return 的本質"
+            },
+            {
+              "type": "paragraph",
+              "text": "Return = 把函式呼叫換成它的結果，就像數學 3(5+8) 變成 3(13)。"
+            },
+            {
+              "type": "paragraph",
+              "text": "執行到 return 時，函式結束，呼叫點被返回值取代，這是寫出有用資料的最後一步。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 把 A 換成 B 的例子\n\ndef add(x, y):\n    return x + y  # return 的瞬間，add(x, y) 被結果取代\n\nresult = 3 * add(5, 8)\nprint(result)  # 3 * 13 = 39\n"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "return 的作用是什麼？",
+                  "options": [
+                    "輸出到螢幕",
+                    "把函式呼叫換成回傳值",
+                    "結束整個程式"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "3 * add(5,8) 在 return 後會變成什麼？",
+                  "options": [
+                    "add(5,8)",
+                    "3 * 5 + 8",
+                    "3 * 13"
+                  ],
+                  "answer": 2
                 }
               ]
             }
