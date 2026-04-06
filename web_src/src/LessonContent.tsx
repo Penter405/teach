@@ -187,7 +187,7 @@ function RenderDiagram({ block }: { block: ContentBlock }) {
   
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800 mb-8 w-full overflow-hidden">
-      <div className="flex justify-center w-full overflow-x-auto pb-4">
+      <div className="flex justify-center w-full overflow-hidden pb-4 flex-wrap gap-4">
         {id === 'course-structure-timeline' && <TimelineDiagram />}
         {id === 'input-process-output' && <IPODiagram />}
         {id === 'interpreter-vs-compiler' && <IVCDiagram />}
@@ -280,7 +280,7 @@ const IVCDiagram = () => (
       <p className="text-sm text-cyan-800 dark:text-cyan-200/80 leading-relaxed font-medium">從頭看，從頭寫<br/>逐行執行，立即回饋</p>
     </div>
     
-    <div className="flex flex-col items-center text-center p-6 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl transition-transform hover:scale-[1.02]">
+    <div className="flex flex-col items-center text-center p-6 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl transition-transform hover:scale-[1.02] hover:underline decoration-2">
       <span className="text-3xl mb-3 block opacity-50 grayscale">❌</span>
       <h3 className="font-headline text-xl font-bold text-slate-800 dark:text-white mb-1">編譯器 Compiler</h3>
       <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-4 uppercase tracking-wider">C# 使用</p>
@@ -528,11 +528,33 @@ const AnimArrow = ({ active }: { active: boolean }) => (
 
 const DataFlowAnim = ({ step }: { step: number }) => (
   <div className="flex items-center gap-2 flex-wrap justify-center">
-    <Box active={step === 0} color="cyan"><span className="text-2xl mb-1 block">📥</span>Input</Box>
-    <AnimArrow active={step === 0} />
-    <Box active={step === 1} color="slate"><span className="text-2xl mb-1 block">💻</span>Process</Box>
-    <AnimArrow active={step === 1} />
-    <Box active={step === 2} color="purple"><span className="text-2xl mb-1 block">📤</span>Output</Box>
+    <Box active={step === 0} color="cyan" className="min-w-[160px]">
+      <div className="text-xs tracking-wide uppercase opacity-70">Input</div>
+      <div className="mt-1 flex items-center justify-center gap-2 font-mono text-sm">
+        <span className="px-2 py-1 rounded-md bg-white/70 dark:bg-white/10 border border-cyan-300 dark:border-cyan-700 shadow-sm">
+          WASD
+        </span>
+        <span className={`px-2 py-1 rounded-md border font-bold ${step === 0 ? 'bg-amber-200 border-amber-500 text-amber-900 shadow' : 'bg-white/70 dark:bg-white/10 border-cyan-200 dark:border-cyan-700 text-cyan-900 dark:text-cyan-100'}`}>
+          F
+        </span>
+      </div>
+      <div className="mt-1 text-xs text-cyan-900 dark:text-cyan-100/80">按下 F</div>
+    </Box>
+    <AnimArrow active={step === 0 || step === 1} />
+    <Box active={step === 1} color="slate" className="min-w-[180px]">
+      <div className="text-xs tracking-wide uppercase opacity-70">Process</div>
+      <div className="mt-1 font-mono text-sm bg-black/30 rounded-md px-3 py-2 border border-slate-700 text-white text-left">
+        if (press F):<br />
+        &nbsp;&nbsp;enter_car()
+      </div>
+      <div className="mt-1 text-xs text-slate-200/80">程式判斷附近車輛</div>
+    </Box>
+    <AnimArrow active={step === 1 || step === 2} />
+    <Box active={step === 2} color="purple" className="min-w-[170px]">
+      <div className="text-xs tracking-wide uppercase opacity-70">Output</div>
+      <div className="mt-1 text-3xl">🚶‍♂️➡️🚗</div>
+      <div className="text-xs text-purple-900 dark:text-purple-100/80">螢幕提示「進入車輛」並播放上車動畫</div>
+    </Box>
   </div>
 );
 
