@@ -1,0 +1,1385 @@
+﻿{
+  "course": {
+    "title": "PythonClassPenter",
+    "subtitle": "Python 蝔?閮剛?隤脩?",
+    "version": "2026y2m17d",
+    "language": "zh-TW"
+  },
+  "modules": [
+    {
+      "id": "mod-01",
+      "title": "隞暻潭 Code",
+      "titleEn": "What is Code",
+      "icon": "??,
+      "lessons": [
+        {
+          "id": "les-01-01",
+          "title": "Input ??Process ??Output",
+          "titleEn": "Input Process Output",
+          "pdfPages": [
+            3
+          ],
+          "content": [
+            {
+              "type": "heading",
+              "text": "?瑁?蝔???蝔?
+            },
+            {
+              "type": "paragraph",
+              "text": "???撘?萄儐???敹芋撘?頛詨鞈? (Input) ????鞈? (Process) ??頛詨鞈? (Output)??蝞∠?撘?銴?嚗鞈芯??賢??隞嗡???
+            },
+            {
+              "type": "animation",
+              "animationId": "data-flow-animation",
+              "caption": "鞈?撠?敺?Input 瘚? Process ??Output ????蝔?,
+              "steps": [
+                "雿輻?撓?亥???,
+                "蝔??交銝西?????,
+                "?Ｙ?頛詨蝯?"
+              ]
+            },
+            {
+              "type": "callout",
+              "label": "蝭?",
+              "text": "?? F ?脣頛 ??Input: ? F嚗rocess: ?斗閫???頛嚗utput: ?脣頛??撓?亙?摮蒂?啣 ??Input: ?萇頛詨嚗rocess: ?脣?摮葡嚗utput: print() 憿舐內?啗撟?
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# Input ??Process ??Output\nname = input(\"雿???嚗")   # Input\ngreeting = \"Hello, \" + name  # Process\nprint(greeting)              # Output"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "???萇???萎誨銵函?撘?蝔葉???畾蛛?",
+                  "options": [
+                    "Input",
+                    "Process",
+                    "Output"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "print() ?賢?撅祆蝔?瘚?銝剔??芸郊撽?",
+                  "options": [
+                    "Input",
+                    "Process",
+                    "Output"
+                  ],
+                  "answer": 2
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Two Sum",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/two-sum/",
+                  "description": "蝺渡? Input ??Process ??Output ??祆?蝔?
+                },
+                {
+                  "title": "A + B Problem",
+                  "difficulty": "Easy",
+                  "url": "https://zerojudge.tw/ShowProblem?problemid=a001",
+                  "description": "?蝬??Input ??Process ??Output 蝺渡?"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-01-02",
+          "title": "蝔? = 鞈???",
+          "titleEn": "Code is Data Processing",
+          "pdfPages": [
+            4
+          ],
+          "content": [
+            {
+              "type": "heading",
+              "text": "蝔??敹?敹?
+            },
+            {
+              "type": "paragraph",
+              "text": "蝔? = ??憭?????鈭??隢?撖怎??舫??脯雯蝡???AI嚗鞈芯??賣?冽?摮??撓?箄???
+            },
+            {
+              "type": "callout",
+              "label": "閮?",
+              "text": "撖怎?撘停?胯??餉撟思???鞈????極雿?迄摰??蹂?暻潸??獐?????策隤啁???
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 蝔? = ??憭?????鈭?\nprint(5 + 10)      # ???詨?鞈? ??15\nprint(\"Hi\" * 3)    # ??摮葡鞈? ??HiHiHi\nprint(len([1,2,3])) # ???”鞈? ??3"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "蝔??鞈芣隞暻潘?",
+                  "options": [
+                    "?怠?",
+                    "??憭?????鈭?",
+                    "?剜?單?"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "print(\"Hi\" * 3) ?撓?箸隞暻潘?",
+                  "options": [
+                    "Hi3",
+                    "HiHiHi",
+                    "Hi + Hi + Hi"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Simple Array Sum",
+                  "difficulty": "Easy",
+                  "url": "https://www.hackerrank.com/challenges/simple-array-sum/",
+                  "description": "蝺渡??箸???????蜇銝蝯摮?
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mod-02",
+      "title": "?獐?圾憿",
+      "titleEn": "Understanding Problems",
+      "icon": "?妝",
+      "lessons": [
+        {
+          "id": "les-02-01",
+          "title": "?圾???雁",
+          "titleEn": "Decomposing Problems",
+          "pdfPages": [
+            5
+          ],
+          "content": [
+            {
+              "type": "heading",
+              "text": "?獐?圾憿"
+            },
+            {
+              "type": "paragraph",
+              "text": "?Ｗ?蝔?憿??蝚砌?甇交??閫??銴???瘙?閫??銝?擃?瑁???????
+            },
+            {
+              "type": "animation",
+              "animationId": "problem-decompose",
+              "caption": "撠???憿郊?圾?箏?瑁???隞餃?",
+              "steps": [
+                "?梯?摰憿閬?",
+                "霅???閰?,
+                "????甇仿?",
+                "???函?撘祕??
+              ]
+            },
+            {
+              "type": "callout",
+              "label": "蝭? A",
+              "text": "?神??10 ??hi?? ?圾嚗?銝隞嗡?閬? 10 甈∴???辣鈭??print(\"hi\")"
+            },
+            {
+              "type": "callout",
+              "label": "蝭? B",
+              "text": "?撓??10 ??int嚗?憭批潦? ?圾嚗?頛詨敺??梯正嚗?閬?list ?脣?嚗??嗅?????鞈?嚗?憭抒?嚗?
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 蝭? A嚗??10 ??hi\nfor i in range(10):\n    print(\"hi\")\n\n# 蝭? B嚗?憭批墦nnums = []\nfor i in range(10):\n    nums.append(int(input()))\nprint(max(nums))"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "?神??10 ??hi??閰脫?閫??隞暻潘?",
+                  "options": [
+                    "撖思????瑞?摮葡",
+                    "??隞嗡?閬? 10 甈?,
+                    "撱箇? 10 ????
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "?閬摮之?撓?亥???嚗?閰脩隞暻潘?",
+                  "options": [
+                    "敺?????,
+                    "print()",
+                    "list"
+                  ],
+                  "answer": 2
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "FizzBuzz",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/fizz-buzz/",
+                  "description": "蝺渡??圾??嚗?瑟?隞?+ 餈游?頛詨"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mod-03",
+      "title": "Python 隞晶",
+      "titleEn": "Python Introduction",
+      "icon": "??",
+      "lessons": [
+        {
+          "id": "les-03-01",
+          "title": "?渲陌??vs 蝺刻陌??,
+          "titleEn": "Interpreter vs Compiler",
+          "pdfPages": [
+            7
+          ],
+          "content": [
+            {
+              "type": "heading",
+              "text": "?渲陌??vs 蝺刻陌??
+            },
+            {
+              "type": "paragraph",
+              "text": "Python 雿輻?霅臬 (Interpreter)?霅臬敺???剖神嚗?銵?銵?瑁?蝔?蝣潦瘥?銝?蝺刻陌?剁?憒?C 隤?嚗????隞賜?撘Ⅳ銝?????孵??脣暺?憒?main()嚗?憪銵?
+            },
+            {
+              "type": "diagram",
+              "diagramId": "interpreter-vs-compiler",
+              "caption": "?渲陌?剁????瑁? ??vs 蝺刻陌?剁???????敺?main() ?? ??
+            },
+            {
+              "type": "animation",
+              "animationId": "interpreter-exec",
+              "caption": "?渲陌?券??瑁?蝔?蝣潛???",
+              "steps": [
+                "霈?洵銝銵?a = 5",
+                "蝡?瑁?嚗? 5 摮 a",
+                "霈?洵鈭? print(a)",
+                "蝡?瑁?嚗撓??5"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# ?渲陌?函?靘?(Python)\na = 5        # ??蝡?瑁?\nprint(a)     # ??蝡頛詨 5"
+            },
+            {
+              "type": "callout",
+              "label": "??",
+              "text": "C 隤?雿輻蝺刻陌?剁??漲敹恬??芾? 50ms嚗?雿?閬?蝺刻陌?港遢蝔??ython 雿輻?渲陌?剁?撖怨絲靘蝪∪?渲死嚗??漲?詨?頛??
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "Python 雿輻?芰車?孵??瑁?蝔?蝣潘?",
+                  "options": [
+                    "蝺刻陌??,
+                    "?渲陌??,
+                    "蝯陌??
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "?渲陌?函??瑁??孵??荔?",
+                  "options": [
+                    "????典??瑁?",
+                    "銝銵?銵?瑁?",
+                    "?冽??瑁?"
+                  ],
+                  "answer": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-03-02",
+          "title": "Class ??Object",
+          "titleEn": "Class and Object",
+          "pdfPages": [
+            8
+          ],
+          "content": [
+            {
+              "type": "heading",
+              "text": "Class ??Object"
+            },
+            {
+              "type": "paragraph",
+              "text": "??????class嚗??犖憿?嚗??嗆?亥??訾葉嚗府霈撠梁迂??object嚗隞塚????豢頨怠??variable??
+            },
+            {
+              "type": "diagram",
+              "diagramId": "class-object-flow",
+              "caption": "Class嚗?????撖虫?????Object嚗祕擃?"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# ??Python 銝哨?銝??舐隞跚n# s = 5 ?嗅祕撠望 s = int(value=5)\nprint(type(5))       # <class 'int'>\nprint(type(\"hello\")) # <class 'str'>\nprint(type([1,2]))   # <class 'list'>"
+            },
+            {
+              "type": "callout",
+              "label": "閮?",
+              "text": "class = 隢?嚗???嚗bject = 撖虫?嚗祕擃??lass 摰儔鈭身閮?嚗bject ?舀?身閮??靘??梯正??
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "Class ??Object ??靽嚗?,
+                  "options": [
+                    "Class ?臬祕擃?Object ?航???,
+                    "Class ?航???Object ?臬祕擃?,
+                    "?抵??函??
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "??Python 銝哨?type(5) ???喃?暻潘?",
+                  "options": [
+                    "<class 'int'>",
+                    "5",
+                    "number"
+                  ],
+                  "answer": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-03-03",
+          "title": "Property ??Method",
+          "titleEn": "Properties and Methods",
+          "pdfPages": [
+            9
+          ],
+          "content": [
+            {
+              "type": "heading",
+              "text": "Property ??Method"
+            },
+            {
+              "type": "paragraph",
+              "text": "Class ?折?臭誑閮剖? Property嚗惇?改???Method嚗瘜??roperty ?胯隞嗆???鞈???Method ?胯隞嗅隞亙???雿?
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import math\n\n# Property嚗蜓閰???\nprint(math.pi)        # 3.14159...\n\n# Method嚗蜓閰???(??)\nprint(math.gcd(12, 8)) # 4"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "Property",
+                  "definition": "撅祆???隤?嚗蜓閰???嚗? math.pi嚗?
+                },
+                {
+                  "term": "Method",
+                  "definition": "?寞? ??隤?嚗蜓閰???(??)嚗? math.gcd(2,3)嚗?
+                },
+                {
+                  "term": "Event",
+                  "definition": "鈭辣 ???梁摰孛?潭?隞嗅???
+                }
+              ]
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "math.pi ??Property ? Method嚗?,
+                  "options": [
+                    "Property嚗惇?改?",
+                    "Method嚗瘜?",
+                    "Event嚗?隞塚?"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "math.gcd(12, 8) 雿輻??瘜芋撘嚗?,
+                  "options": [
+                    "銝餉?.??",
+                    "銝餉?.??(??)",
+                    "??(銝餉?)"
+                  ],
+                  "answer": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-03-04",
+          "title": "__init__ ??self",
+          "titleEn": "Init and Self",
+          "pdfPages": [
+            10,
+            11
+          ],
+          "content": [
+            {
+              "type": "heading",
+              "text": "__init__ ??self"
+            },
+            {
+              "type": "paragraph",
+              "text": "__init__ ?寞??舐霅臬?典遣蝡隞嗆??芸??瑁??畾瘜??虜?其?閮剖????惇?改?憒?頨恍??????????
+            },
+            {
+              "type": "paragraph",
+              "text": "self 隞?”?隞嗆頨怒誑 class dog() ?箔?嚗遣蝡隞?Lucky = dog() 敺?瘥瘜葉??self 撠梁?嗆 Lucky嚗?甇方身摰?摮?撅祆扼?
+            },
+            {
+              "type": "animation",
+              "animationId": "self-binding",
+              "caption": "self 憒?蝬??啣擃??拐辣撖虫?",
+              "steps": [
+                "摰儔 class Dog ??__init__(self, name)",
+                "?澆 Lucky = Dog(\"Lucky\")",
+                "self ?芸?蝬???Lucky",
+                "self.name 蝑? Lucky.name"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "class Dog:\n    def __init__(self, name):   # ?芸??瑁?銝甈﹏n        self.name = name        # 閮剖?撅祆吭n        self.hp = 100\n    \n    def bark(self):             # self = ?拐辣?祈澈\n        return f\"{self.name} says Woof!\"\n\nLucky = Dog(\"Lucky\")           # self ??Lucky\nprint(Lucky.bark())            # Lucky says Woof!\nprint(Lucky.hp)                # 100"
+            },
+            {
+              "type": "diagram",
+              "diagramId": "class-blueprint",
+              "caption": "Class嚗?????__init__ + methods + properties ??Object嚗祕擃?"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "__init__ ?寞?雿?鋡怠銵?",
+                  "options": [
+                    "???澆??,
+                    "撱箇??拐辣??銵?,
+                    "蝔?蝯???
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "Lucky = Dog('Lucky') 銝哨??寞?鋆∠? self 隞?”隞暻潘?",
+                  "options": [
+                    "Dog class ?祈澈",
+                    "Lucky ?隞?,
+                    "摮葡 'Lucky'"
+                  ],
+                  "answer": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-03-05",
+          "title": "璅∠??臬 (import)",
+          "titleEn": "Module Import",
+          "pdfPages": [
+            12
+          ],
+          "content": [
+            {
+              "type": "heading",
+              "text": "璅∠??臬"
+            },
+            {
+              "type": "paragraph",
+              "text": "Python ??憭折??批遣璅∠?嚗隞亦 import 隤??臬雿輻?停???典鈭箇??????湔雿輻隞犖撌脩?撖怠末???賬?
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import math          # ?臬?游芋蝯nprint(math.pi)       # 雿輻璅∠??惇?吭nprint(math.sqrt(16)) # 雿輻璅∠??瘜???4.0\n\nfrom math import pi  # ?芸?亦摰??娉nprint(pi)            # ?湔雿輻嚗??閬?math. ?韌"
+            },
+            {
+              "type": "callout",
+              "label": "瘥",
+              "text": "import 撠勗????刻????乩犖撌脩?撖怠末鈭?math ??隢?嚗? import 銋?撠梯?湔?刻ㄐ?Ｙ??砍?嚗i嚗??寞?嚗qrt嚗?
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "from math import pi 銋?嚗??獐雿輻 pi嚗?,
+                  "options": [
+                    "math.pi",
+                    "pi",
+                    "import.pi"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "import math 銋?嚗??獐雿輻 sqrt嚗?,
+                  "options": [
+                    "sqrt(16)",
+                    "math.sqrt(16)",
+                    "math(sqrt, 16)"
+                  ],
+                  "answer": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-03-06",
+          "title": "?? ???芰?",
+          "titleEn": "Reflection ??Introspection",
+          "pdfPages": [
+            13,
+            14
+          ],
+          "content": [
+            {
+              "type": "heading",
+              "text": "?? (Reflection) ???芰?"
+            },
+            {
+              "type": "paragraph",
+              "text": "?? = ?芰? (Introspection) + ???????蝔??瑁??炎?乓隞嗥?鞈??惇?扳? function ?瘜?
+            },
+            {
+              "type": "animation",
+              "animationId": "reflection-inspect",
+              "caption": "雿輻 dir()?elp()?ype() 瑼Ｘ?拐辣鞈?",
+              "steps": [
+                "撱箇??拐辣 x = [1, 2, 3]",
+                "type(x) ???亦???嚗?class 'list'>",
+                "dir(x) ?????惇?扯??寞?",
+                "help(x.append) ???亦??寞?隤芣?"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "x = [1, 2, 3]\n\n# ?芰?銝窄\nprint(type(x))    # <class 'list'>\nprint(dir(x))     # ???惇?批??寞?\nhelp(x.append)    # ?亦? append ?瘜牧??
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "type()",
+                  "definition": "?亦??拐辣??????
+                },
+                {
+                  "term": "dir()",
+                  "definition": "??拐辣???惇?批??寞?"
+                },
+                {
+                  "term": "help()",
+                  "definition": "?亦? function ?瘜?閰喟敦?冽?"
+                }
+              ]
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "?單???隞嗆??芯??寞??臭誑?剁??府?剁?",
+                  "options": [
+                    "type()",
+                    "dir()",
+                    "help()"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "type([1,2,3]) ???喃?暻潘?",
+                  "options": [
+                    "<class 'list'>",
+                    "[1,2,3]",
+                    "3"
+                  ],
+                  "answer": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-03-07",
+          "title": "?? ??????",
+          "titleEn": "Reflection ??Dynamic Operations",
+          "pdfPages": [
+            15
+          ],
+          "content": [
+            {
+              "type": "heading",
+              "text": "?? ??????"
+            },
+            {
+              "type": "paragraph",
+              "text": "????霈??函?撘銵????啣?敺身摰??芷?拐辣?惇?改????閬撖怎?撘?撠梁Ⅱ摰???雿?
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "class Player:\n    def __init__(self):\n        self.hp = 100\n        self.name = \"Hero\"\n\np = Player()\n\n# getattr() ????撅祆吭nprint(getattr(p, \"hp\"))          # 100\nprint(getattr(p, \"mp\", \"N/A\"))   # N/A (銝??冽???閮剖?\n\n# setattr() ????閮剖?撅祆吭nsetattr(p, \"mp\", 50)             # ?啣? mp 撅祆吭nprint(p.mp)                      # 50\n\n# delattr() ???芷撅祆吭ndelattr(p, \"mp\")\n# print(p.mp)                    # AttributeError!"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "getattr()",
+                  "definition": "瑼Ｘ撅祆扳?血??其蒂??嚗?舀瘜??賢??
+                },
+                {
+                  "term": "setattr()",
+                  "definition": "瑼Ｘ銝血??憓?靽格撅祆?
+                },
+                {
+                  "term": "delattr()",
+                  "definition": "瑼Ｘ銝血???文惇??
+                }
+              ]
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "?喳??憓??惇?抒策?拐辣嚗?閰脩嚗?,
+                  "options": [
+                    "getattr()",
+                    "setattr()",
+                    "delattr()"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "getattr(p, 'mp', 'N/A') 銝哨?'N/A' ??嚗?,
+                  "options": [
+                    "閮剖??啣惇?批?,
+                    "撅祆找?摮???身??,
+                    "?芷撅祆?
+                  ],
+                  "answer": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mod-04",
+      "title": "Python 隤脩?摮?蝭",
+      "titleEn": "Python Course Sections",
+      "icon": "??",
+      "lessons": [
+        {
+          "id": "les-04-01",
+          "title": "?園?鞈?",
+          "titleEn": "Collecting Data",
+          "pdfPages": [
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ],
+          "content": [
+            {
+              "type": "heading",
+              "text": "Python 隤脩?瘚?"
+            },
+            {
+              "type": "paragraph",
+              "text": "?乩?靘?隤脩?撠??找誑銝?蝔????園?鞈? ???脣?鞈? ????鞈? ???芷瘝??????撖怠???????鈭圾霈????????
+            },
+            {
+              "type": "animation",
+              "animationId": "data-pipeline",
+              "caption": "鈭?畾菔????恣蝺?,
+              "steps": [
+                "?園?鞈? (Collect)",
+                "?脣?鞈? (Store)",
+                "??鞈? (Process)",
+                "?芷瘝????(Clean)",
+                "撖怠?????(Output)"
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "?刻?????????閬?霈?艾??亥??停???喳憿??閬??踹憿銝璅??
+            },
+            {
+              "type": "callout",
+              "label": "瘥",
+              "text": "?喳?雿銝??撣恬???????園?鞈?嚗? ?暸脣蝞梧??脣?鞈?嚗? ??嚗???????銝?撱?嚗?斗??函?嚗? 銝?嚗神?箸??函?嚗?
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "鞈???蝞∠??洵銝甇交嚗?,
+                  "options": [
+                    "??鞈?",
+                    "?園?鞈?",
+                    "頛詨鞈?"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "?箔?暻潸???????閬????亥???",
+                  "options": [
+                    "? CPU ?閬???,
+                    "?餉?閬??踹鞈????",
+                    "?箔?蝭???
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "CPU ??RAM"
+            },
+            {
+              "type": "paragraph",
+              "text": "CPU ??care?AM 鋆⊿???PU ?? RAM 銝剔?鞈?銋??????敺??寞??賣?鞈??曉 RAM 銝准?
+            },
+            {
+              "type": "diagram",
+              "diagramId": "cpu-ram-cycle",
+              "caption": "Programmer ??Code ??RAM ??CPU ??敺芰"
+            },
+            {
+              "type": "callout",
+              "label": "?璁艙",
+              "text": "RAM = 撌乩?獢?CPU = 撌乩犖?極鈭綽?CPU嚗????銝?RAM嚗???????撘Ⅳ鞎痊????唳?銝?
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "CPU ?芷?敹鋆∠?鞈?嚗?,
+                  "options": [
+                    "蝖祉?",
+                    "RAM",
+                    "?Ｗ?"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "隞交??颱?隤迎?RAM ?嚗?,
+                  "options": [
+                    "?澈",
+                    "撌乩?獢?,
+                    "?獢?
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "閮擃恣??C vs Python"
+            },
+            {
+              "type": "paragraph",
+              "text": "??C 隤?銝哨?RAM 蝛粹?? fixed space嚗?閮哨?銝? easy嚗? variable space嚗???hard嚗?撘身閮葦?閬??恣???園???
+            },
+            {
+              "type": "paragraph",
+              "text": "??Python 銝哨?鞈?鋡怠神??class?ython ?????璈 (Garbage Collection)嚗???憭? CPU ????撟思??芸?蝞∠?閮擃?
+            },
+            {
+              "type": "animation",
+              "animationId": "gc-animation",
+              "caption": "Python ??璈嚗???蒂??∠?拐辣",
+              "steps": [
+                "撱箇??拐辣嚗??刻???= 1",
+                "?啣?撘嚗??刻???+1",
+                "?芷撘嚗??刻???-1",
+                "撘閮甇賊 ????嚗?
+              ]
+            },
+            {
+              "type": "callout",
+              "label": "??",
+              "text": "C 隤?嚗??芸楛蝞∟??園?嚗???malloc/free嚗ython嚗?憭??賢 CPU 撟思???Garbage Collection ?芸??嚗靘蹂??漲頛??
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "Python ???園?蝞∠??孵??荔?",
+                  "options": [
+                    "?? malloc/free",
+                    "Garbage Collection ?芸??",
+                    "銝?閬恣??
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "Python ??GC ?箔?暻潭?霈?撘??ｇ?",
+                  "options": [
+                    "??閬? CPU ????,
+                    "? RAM 銝?",
+                    "?蝬脰楝??
+                  ],
+                  "answer": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-04-02",
+          "title": "?脣?鞈?",
+          "titleEn": "Storing Data",
+          "pdfPages": [
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34
+          ],
+          "content": [
+            {
+              "type": "heading",
+              "text": "霈??Pointer"
+            },
+            {
+              "type": "paragraph",
+              "text": "鞈??曉 RAM 敺??閬遣蝡???(Variable)?蒂霈? pointer ?啗??? RAM address?????鋡怎雿??曉??塚?蝔????曆??啣???
+            },
+            {
+              "type": "animation",
+              "animationId": "pointer-animation",
+              "caption": "霈 ??閮擃?? ????????靽?,
+              "steps": [
+                "??RAM 銝剖??征???曉?5",
+                "撱箇?霈 a嚗???RAM 雿?",
+                "?? a ?曉雿?嚗???5",
+                "?寡? a ???????啁?雿?"
+              ]
+            },
+            {
+              "type": "diagram",
+              "diagramId": "variable-memory-map",
+              "caption": "霈?迂 ??閮擃?? ????
+            },
+            {
+              "type": "callout",
+              "label": "?璁艙",
+              "text": "霈撠望銝撘萸???鞎澆閮擃???蝵桐???????鞈??◤ Python ???曉??嗆??嗆??斗???
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "霈摮??臭?暻潘?",
+                  "options": [
+                    "鞈??祈澈",
+                    "RAM ???",
+                    "CPU ??隞?
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "瘝?霈???????見嚗?,
+                  "options": [
+                    "瘞賊?靽?",
+                    "鋡怠??曉???,
+                    "?芸??遢"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "鞈?憒?撖怠 RAM"
+            },
+            {
+              "type": "paragraph",
+              "text": "CPU ? RAM 銝剜蝛粹?嚗??潸???binary嚗? ??1嚗神?乓??詨?? RAM address嚗閬??停閬 RAM ????binary code??
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "a = 5\n# CPU ?極雿?\n# 1. ??RAM ?曆?憛征??憒?0x7f3a01嚗n# 2. ??5 頧? binary: 00000101\n# 3. 撖怠閰脩征?n# 4. 閮? a ??0x7f3a01\n\nprint(id(a))   # ?亦? a ???園?雿?\nprint(bin(a))  # ?亦? 5 ???脖?銵函內 ??0b101"
+            },
+            {
+              "type": "callout",
+              "label": "瘥",
+              "text": "RAM 撠勗?銝????拇?嚗???摮?楊??address嚗PU ?镼選?binary data嚗?脫?摮??嗅??楊???刻??訾???
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "CPU ???神??RAM ??鞈??◤頧?隞暻潭撘?",
+                  "options": [
+                    "??",
+                    "Binary嚗? ??1嚗?,
+                    "??"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "bin(5) ?撓?箔?暻潘?",
+                  "options": [
+                    "5",
+                    "0b101",
+                    "00000101"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "Immutable Object嚗??航??拐辣嚗?
+            },
+            {
+              "type": "paragraph",
+              "text": "Immutable object 鋆⊿?????質◤靽格 (Data const)?????單霈??貊?鞈?嚗?質?霈??銝?振??撠望???虫????object??
+            },
+            {
+              "type": "animation",
+              "animationId": "immutable-swap",
+              "caption": "銝霈隞塚?霈?孵?= ?砍振嚗???拐辣嚗?,
+              "steps": [
+                "a = 5 ??a ??摮 5 ?隞?,
+                "a = 10 ??銝靽格 5嚗撱箇??啁隞?10",
+                "a ?曉???啁隞?10",
+                "?隞?5 ?亦?嗡?撘嚗?鋡怠???
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "a = 5\nprint(id(a))   # 靘?嚗?40234567890\n\na = 10\nprint(id(a))   # 銝????嚗?40234567920\n# 5 瘝?鋡思耨?對?a ?芣?摰嗚????10"
+            },
+            {
+              "type": "callout",
+              "label": "??",
+              "text": "Immutable = 鞈?銝鋡思耨?嫘?孵潘??芾????隞塚?霈??豢?????
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "a = 5 ?嗅? a = 10嚗??隞暻潔?嚗?,
+                  "options": [
+                    "5 鋡思耨?寞? 10",
+                    "a ??鈭???隞?10",
+                    "閮擃??銝?"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "隞乩??芸 Immutable嚗?,
+                  "options": [
+                    "list",
+                    "dict",
+                    "int"
+                  ],
+                  "answer": 2
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "霈雿??(Scope)"
+            },
+            {
+              "type": "paragraph",
+              "text": "?典撘葉?亥?靽格憭霈嚗隞乩蝙??global嚗????nonlocal嚗??砍嚗??萄?嚗? code ?仿?雿撠???詨?鈭?
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "x = 10  # ?典?霈\n\ndef change_x():\n    global x      # ?迄 Python嚗?閬憭??x\n    x = 20\n\nchange_x()\nprint(x)  # 20\n\n# ?????????????????????\ndef outer():\n    y = 5\n    def inner():\n        nonlocal y  # ?迄 Python嚗?閬憭惜??y\n        y = 15\n    inner()\n    print(y)       # 15\n\nouter()"
+            },
+            {
+              "type": "callout",
+              "label": "瘜冽?",
+              "text": "銝? global/nonlocal ?店嚗撘?????豢?鋡怎??????詻?銝?敶梢憭??
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "?典撘葉閬耨?孵???賂??閬隞暻潮??萄?嚗?,
+                  "options": [
+                    "local",
+                    "global",
+                    "extern"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "銝? global ?店嚗撘?????豢??見嚗?,
+                  "options": [
+                    "靽格?典?霈",
+                    "鋡怎???????,
+                    "?梢"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "Mutable Object嚗霈隞塚?"
+            },
+            {
+              "type": "paragraph",
+              "text": "Mutable object ?臭誑?寡?鋆⊿???? object 霈之??撠?閬釣?蝔株??箇?撌桃嚗?
+            },
+            {
+              "type": "animation",
+              "animationId": "mutable-ref",
+              "caption": "Copy嚗?箏雿?vs Reference嚗鋆摮?",
+              "steps": [
+                "撱箇? list a = [1, 2, 3]",
+                "b = a ??b ??a ?????隞塚?Reference嚗?,
+                "靽格 a.append(4) ??b 銋??敶梢嚗?,
+                "c = a.copy() ??c ?舐蝡?穿?Copy嚗?,
+                "靽格 a.append(5) ??c 銝?敶梢"
+              ]
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "?砍?颱? (Copy)",
+                  "definition": "?芸蔣?踵???variable嚗遣蝡?銝?蝡??啁隞?
+                },
+                {
+                  "term": "?寡??踹? (Reference)",
+                  "definition": "?蔣?踵?????object ??variable嚗??箸???隞?
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# Reference嚗鋆摮?\na = [1, 2, 3]\nb = a              # b ??a ??????list\na.append(4)\nprint(b)           # [1, 2, 3, 4] ??b 銋?鈭?\n\n# Copy嚗?箏雿?\nc = a.copy()       # c ?舐蝡??舀\na.append(5)\nprint(c)           # [1, 2, 3, 4] ??c 銝?敶梢\n\n# ??id() 瑼Ｘ\nprint(id(a) == id(b))  # True ?????隞跚nprint(id(a) == id(c))  # False ??銝??拐辣"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "b = a嚗 ??list嚗?敺?靽格 a ?蔣??b ??",
+                  "options": [
+                    "銝?",
+                    "?????Reference",
+                    "???
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "憒?撱箇?銝???? list 敶梢??穿?",
+                  "options": [
+                    "b = a",
+                    "b = a.copy()",
+                    "b = a + 0"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "??id() 瑼Ｘ?拐辣頨思遢"
+            },
+            {
+              "type": "paragraph",
+              "text": "撠 mutable object嚗??航銝Ⅱ摰?雿???copy ? reference?隞亦 id() function 靘炎?亙???豢?行???銝?隞嗚?
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "a = [1, 2, 3]\nb = a           # reference\nc = a[:]        # copy (?典???\nd = list(a)     # copy (?典遣瑽?)\n\nprint(id(a))    # 靘?嚗?40234567890\nprint(id(b))    # 140234567890 ??????\nprint(id(c))    # 140234568000 ??銝?\nprint(id(d))    # 140234568100 ??銝?\n\n# 銋隞亦 is ??摮nprint(a is b)   # True\nprint(a is c)   # False"
+            },
+            {
+              "type": "callout",
+              "label": "閮?",
+              "text": "id() ??拐辣?銝霅蝣潘?閮擃??嚗????id ?詨? = 摰???隞嗚?
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "a = [1,2]; b = a; a is b ???嚗?,
+                  "options": [
+                    "True",
+                    "False",
+                    "Error"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "?其?暻澆隞交炎?亙???豢?行???銝?隞塚?",
+                  "options": [
+                    "==",
+                    "id() ??is",
+                    "type()"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "Immutable vs Mutable ??"
+            },
+            {
+              "type": "paragraph",
+              "text": "Python ?????隞交?蝣箏??箔??航? (Immutable) ?霈?(Mutable) ?拙之憿?閫??憿??澆神?箸迤蝣箇?蝔??喲?????
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "Immutable",
+                  "definition": "int, float, complex, bool, str, tuple, frozenset, bytes ??銝靽格?批捆"
+                },
+                {
+                  "term": "Mutable",
+                  "definition": "list, set, dict ???臭誑靽格?批捆"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# Immutable 憿?\nx = 5              # int\ny = 3.14           # float\nz = True           # bool\ns = \"hello\"        # str\nt = (1, 2, 3)      # tuple\n\n# Mutable 憿?\na = [1, 2, 3]      # list ???臭誑 append, remove\nb = {1, 2, 3}      # set ???臭誑 add, discard\nc = {\"k\": \"v\"}     # dict ???臭誑?啣?/靽格?萄澆?"
+            },
+            {
+              "type": "callout",
+              "label": "閮?",
+              "text": "蝪∪閬?嚗?閬◤靽格?捆?函 list/dict/set嚗??閬◤靽格? tuple/frozenset/str??
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "隞乩??芸 Mutable 憿?嚗?,
+                  "options": [
+                    "str",
+                    "tuple",
+                    "list"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "?閬????◤靽格?????府?剁?",
+                  "options": [
+                    "list",
+                    "tuple",
+                    "dict"
+                  ],
+                  "answer": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-04-03",
+          "title": "??鞈?嚗?撘?瑽?,
+          "titleEn": "Processing Data: Code Structure",
+          "pdfPages": [
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+          ],
+          "content": [
+            {
+              "type": "heading",
+              "text": "C 隤???撘?瑽?
+            },
+            {
+              "type": "paragraph",
+              "text": "C 隤???撘Ⅳ?蝔桃?瑽??株?蝯?嚗?撠曉神銝?;嚗??憛?瑽???園????{ } ?絲靘???
+            },
+            {
+              "type": "code",
+              "language": "c",
+              "code": "// ?株?蝯?嚗 ; 蝯偏\nint x = 5;\nprintf(\"%d\", x);\n\n// ?憛?瑽???{ } ?絲靘nif (x > 3) {\n    printf(\"x is big\");\n    x = x + 1;\n}"
+            },
+            {
+              "type": "callout",
+              "label": "??",
+              "text": "C 隤??具???;??閮?銵?蝯?嚗?之?祈? {}??閮???撘?憛?蝭???
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "C 隤??其?暻潭?閮?銵?蝯?嚗?,
+                  "options": [
+                    "?? :",
+                    "?? ;",
+                    "??"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "C 隤??其?暻澆?雿???撘?憛?",
+                  "options": [
+                    "蝮格?",
+                    "憭扳??{}",
+                    "撠??()"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "蝯??批 vs ??瑽??
+            },
+            {
+              "type": "paragraph",
+              "text": "?憛?瑽隞亙??箏?典?嚗?瑽?嗚?憒?if?or?hile嚗?鞎祆捱摰?隞嗆?瘚?嚗?蝯??批??蝔?蝣澆??航◤?批?鈭???
+            },
+            {
+              "type": "code",
+              "language": "c",
+              "code": "// 蝯??批\nif (score >= 60)       // ?????瑽?嗚n{                      // ??????憛n    printf(\"Pass\");    // ?????蝯??批?n    count++;           // ?????胯?蝯??批?n}                      // ??蝯???憛?
+            },
+            {
+              "type": "callout",
+              "label": "瘥",
+              "text": "蝯??批 = 鈭日?隤?瘙箏?韏唳???嚗?蝯??批 = 頠?嚗????蝷箄?????
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "if (score >= 60) 撅祆嚗?,
+                  "options": [
+                    "蝯??批",
+                    "??瑽??,
+                    "?株?蝯?"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "printf(\"Pass\") ??if ?憛嚗?撅祆嚗?,
+                  "options": [
+                    "蝯??批",
+                    "??瑽??,
+                    "?函?隤"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "Python ??撘?瑽?
+            },
+            {
+              "type": "paragraph",
+              "text": "Python ??瑽? C 隤?銝??銵?瑽?具?銵???銝?閬???嚗?憛?瑽?具葬????銝蝙?典之?祈?嚗?
+            },
+            {
+              "type": "animation",
+              "animationId": "indent-animation",
+              "caption": "C 隤? {} 蝯? vs Python 蝮格?蝯?????,
+              "steps": [
+                "C 隤?嚗f (x > 3) { ... }",
+                "蝘駁憭扳??{ }",
+                "???? :",
+                "?函葬??隞???Python 摰?嚗?
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# Python ?株?蝯?嚗??銵nx = 5\nprint(x)\n\n# Python ?憛?瑽??具葬?nif x > 3:\n    print(\"x is big\")    # 蝮格? = ??跚n    x = x + 1            # 蝮格? = ??跚nprint(\"done\")            # 瘝葬??= 銝??批"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 撠? C 隤?\n# C:  if (x > 3) { print(\"big\"); }\n# Py: if x > 3:\n#         print(\"big\")\n\n# C:  for (int i=0; i<5; i++) { printf(\"%d\", i); }\n# Py: for i in range(5):\n#         print(i)"
+            },
+            {
+              "type": "callout",
+              "label": "閮?",
+              "text": "Python ?具???: + 蝮格???隞?C 隤?? }??閮葬???? IndentationError嚗?
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "Python ?其?暻澆?隞?C 隤??之?祈? {}嚗?,
+                  "options": [
+                    "??",
+                    "?? + 蝮格?",
+                    "撠??
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "Python 敹?蝮格????暻潘?",
+                  "options": [
+                    "甇?虜?瑁?",
+                    "IndentationError",
+                    "?芸?鋆葬??
+                  ],
+                  "answer": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
