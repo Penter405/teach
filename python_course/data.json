@@ -98,19 +98,19 @@
             4
           ],
           "content": [
-            {
-              "type": "heading",
-              "text": "程式的核心概念"
-            },
-            {
-              "type": "paragraph",
-              "text": "程式 = 做很多「有關資料的事情」。無論你寫的是遊戲、網站、還是 AI，本質上都是在收集、儲存、處理、輸出資料。"
-            },
-            {
-              "type": "callout",
-              "label": "記住",
-              "text": "寫程式就是「讓電腦幫你處理資料」。你的工作是告訴它：拿什麼資料、怎麼處理、結果給誰看。"
-            },
+        {
+          "type": "heading",
+          "text": "程式的核心概念"
+        },
+        {
+          "type": "paragraph",
+          "text": "程式 = 對資料做很多事。遊戲、網站、AI 都是在收集 → 儲存 → 處理 → 輸出資料的流程。"
+        },
+        {
+          "type": "callout",
+          "label": "記住",
+          "text": "寫程式就是「讓電腦幫你處理資料」。你的任務：告訴它拿什麼資料、怎麼處理、結果給誰看。"
+        },
             {
               "type": "code",
               "language": "python",
@@ -172,10 +172,10 @@
               "type": "heading",
               "text": "怎麼理解題目"
             },
-            {
-              "type": "paragraph",
-              "text": "面對程式題目時，第一步是「拆解」。將複雜的要求分解成一個個具體、可執行的小動作。"
-            },
+        {
+          "type": "paragraph",
+          "text": "拆題心法：資料為空 → 不斷 Input → 記住 (Remember) → Process → 再記住，最後拿到結果。先分解動作，再決定要記什麼、怎麼處理。"
+        },
             {
               "type": "animation",
               "animationId": "problem-decompose",
@@ -258,10 +258,10 @@
               "type": "heading",
               "text": "直譯器 vs 編譯器"
             },
-            {
-              "type": "paragraph",
-              "text": "Python 使用「直譯器 (Interpreter)」。直譯器從頭看、從頭寫，一行一行地執行程式碼。相比之下，編譯器（如 C 語言）會先看過整份程式碼一遍，再從特定的進入點（如 main()）開始執行。"
-            },
+        {
+          "type": "paragraph",
+          "text": "Python 使用直譯器 (Interpreter)：從頭看、從頭寫，一行一行執行。編譯器（如 C 語言）會先看過一遍，再從 main() 開始跑，速度通常更快（可達 ~50ms）。"
+        },
             {
               "type": "diagram",
               "diagramId": "interpreter-vs-compiler",
