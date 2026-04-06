@@ -550,10 +550,13 @@ const DataFlowAnim = ({ step }: { step: number }) => (
       <div className="mt-1 text-xs text-slate-200/80">程式判斷附近車輛</div>
     </Box>
     <AnimArrow active={step === 1 || step === 2} />
-    <Box active={step === 2} color="purple" className="min-w-[170px]">
-      <div className="text-xs tracking-wide uppercase opacity-70">Output</div>
-      <div className="mt-1 text-3xl">🚶‍♂️➡️🚗</div>
-      <div className="text-xs text-purple-900 dark:text-purple-100/80">螢幕提示「進入車輛」並播放上車動畫</div>
+    <Box active={step === 2} color="purple" className="min-w-[190px]">
+      <div className="text-xs tracking-wide uppercase opacity-70">Output · Secondary Screen</div>
+      <div className="mt-2 w-full rounded-lg border border-purple-300 dark:border-purple-700 bg-white/70 dark:bg-purple-900/30 p-2 shadow-inner">
+        <div className="text-[11px] text-purple-700 dark:text-purple-200 font-semibold mb-1">顯示器</div>
+        <div className="flex items-center justify-center text-2xl">🚶‍♂️➡️🚗</div>
+        <div className="text-[11px] text-purple-900 dark:text-purple-100/80 text-center mt-1">螢幕提示「進入車輛」</div>
+      </div>
     </Box>
   </div>
 );
