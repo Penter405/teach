@@ -6,6 +6,7 @@ import {
   Sun, 
   HelpCircle, 
   ChevronRight, 
+  User,
   Layout,
   BookOpen,
   ArrowRight
@@ -127,6 +128,7 @@ const LearningPathPage = ({ onSelectModule, onSelectLesson }: { onSelectModule: 
           <a href="#" className="font-headline font-bold text-cyan-600 dark:text-white border-b-2 border-cyan-500 dark:border-slate-500 py-1">Curriculum Area</a>
         </nav>
         <div className="flex items-center gap-4">
+          <User className="w-5 h-5 text-slate-500 dark:text-slate-400" />
         </div>
       </header>
 
@@ -253,12 +255,8 @@ const LessonPage = ({ lessonId, onBack, onLessonChange }: { lessonId: string, on
   const module = currentData?.module;
   
   const currentIndex = flatLessons.findIndex(l => l.id === lessonId);
-  const currentFlatLesson = flatLessons[currentIndex];
-  const possiblePrev = currentIndex > 0 ? flatLessons[currentIndex - 1] : null;
-  const possibleNext = currentIndex < flatLessons.length - 1 ? flatLessons[currentIndex + 1] : null;
-
-  const prevLesson = possiblePrev?.moduleId === currentFlatLesson?.moduleId ? possiblePrev : null;
-  const nextLesson = possibleNext?.moduleId === currentFlatLesson?.moduleId ? possibleNext : null;
+  const prevLesson = currentIndex > 0 ? flatLessons[currentIndex - 1] : null;
+  const nextLesson = currentIndex < flatLessons.length - 1 ? flatLessons[currentIndex + 1] : null;
 
   useEffect(() => {
     if (module && !expandedModules.includes(module.id)) {
@@ -348,15 +346,7 @@ const LessonPage = ({ lessonId, onBack, onLessonChange }: { lessonId: string, on
                   <span className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-1 group-hover:text-cyan-600 transition-colors">Previous</span>
                   <span className="font-headline font-semibold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{prevLesson.title}</span>
                 </button>
-              ) : (
-                <button 
-                  onClick={onBack}
-                  className="flex-1 flex flex-col items-start p-4 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-2xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700 text-left group"
-                >
-                  <span className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-1 group-hover:text-cyan-600 transition-colors">Beginning of Module</span>
-                  <span className="font-headline font-semibold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Go Back to Map</span>
-                </button>
-              )}
+              ) : <div className="flex-1"></div>}
               
               {nextLesson ? (
                 <button 
@@ -367,13 +357,9 @@ const LessonPage = ({ lessonId, onBack, onLessonChange }: { lessonId: string, on
                    <span className="font-headline font-semibold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{nextLesson.title}</span>
                  </button>
               ) : (
-                <button 
-                  onClick={onBack}
-                  className="flex-1 flex flex-col items-end p-4 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-2xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700 text-right group"
-                >
-                  <span className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-1 group-hover:text-purple-600 transition-colors">Module Complete</span>
-                  <span className="font-headline font-semibold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Go Back to Map</span>
-                </button>
+                <div className="flex-1 flex flex-col items-end p-4 justify-center">
+                  <span className="font-headline font-bold text-slate-400">Course Complete 🎉</span>
+                </div>
               )}
             </footer>
           </div>

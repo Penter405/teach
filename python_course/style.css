@@ -1240,6 +1240,7 @@ body {
   align-items: flex-end;
   gap: var(--space-sm);
   pointer-events: none;
+  display: none; /* hide floating guide */
 }
 
 .explorer-bubble {
@@ -1396,6 +1397,16 @@ body {
 .nav-btn-prev {
   background: var(--surface-container-highest);
   color: var(--on-surface);
+}
+
+.nav-btn-map {
+  background: var(--surface-container-low);
+  color: var(--on-surface);
+}
+
+.nav-btn-map:hover {
+  background: var(--surface-container-lowest);
+  box-shadow: var(--shadow-ambient);
 }
 
 .nav-btn-prev:hover {

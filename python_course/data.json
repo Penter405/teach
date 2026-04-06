@@ -30,12 +30,12 @@
             },
             {
               "type": "animation",
-              "animationId": "data-flow-keyboard-animation",
-              "caption": "[動畫設計] Input方塊下方為WASD+F鍵盤。Input亮時F鍵亮起；箭頭移至Process時F鍵熄滅並顯示虛擬碼 `if (按下F) then 進入載具`；Output亮起顯示小人進入載具。",
+              "animationId": "data-flow-animation",
+              "caption": "資料封包從 Input 流經 Process 到 Output 的動態流程",
               "steps": [
-                "第一階段：Input 方塊亮起，下方包含 WASD+F 的鍵盤圖示中，F 鍵同步亮起。",
-                "第二階段：箭頭從 Input 指向 Process，F 鍵燈滅，Process 方塊下方亮起虛擬碼：if (按下F) then 進入載具",
-                "第三階段：Output 方塊亮起，下方顯示使用者會在他的「小螢幕 (little monitor)」中看到「小人進入載具」畫面"
+                "使用者輸入資料",
+                "程式接收並處理資料",
+                "產生輸出結果"
               ]
             },
             {
@@ -178,15 +178,13 @@
             },
             {
               "type": "animation",
-              "animationId": "problem-decompose-loop",
-              "caption": "[設計邏輯] 初始(資料為空) → Input → 記憶(Remember) → 處理(Process) → 再次記憶 這個循環的動態呈現。",
+              "animationId": "problem-decompose",
+              "caption": "將複雜問題逐步拆解為可執行的子任務",
               "steps": [
-                "初始狀態：資料為空",
-                "Input 資料",
-                "記憶 (Remember)",
-                "處理 (Process)",
-                "再次記憶 (Remember)，可多次循環",
-                "產出目標結果"
+                "閱讀完整題目要求",
+                "識別關鍵動作詞",
+                "拆分成小步驟",
+                "逐一用程式實現"
               ]
             },
             {
@@ -271,11 +269,13 @@
             },
             {
               "type": "animation",
-              "animationId": "interpreter-vs-compiler-v2",
-              "caption": "[視覺設計修正] 滑鼠停在 Compiler 時顯示底線，但不會有任何跑動的滾動條。無水平 Scroll line干擾。",
+              "animationId": "interpreter-exec",
+              "caption": "直譯器逐行執行程式碼的過程",
               "steps": [
-                "滑鼠移至 Compiler 區域",
-                "顯示簡潔的底線，無干擾元素"
+                "讀取第一行 a = 5",
+                "立即執行：將 5 存入 a",
+                "讀取第二行 print(a)",
+                "立即執行：輸出 5"
               ]
             },
             {
