@@ -195,6 +195,21 @@
       case 'list':
         return `<div class="${cls}">${renderList(block)}</div>`;
 
+      case 'animation':
+        return `<div class="${cls} animation-placeholder" style="padding:20px; background:#e0f2fe; color:#0369a1; border-radius:8px; margin-bottom:20px; font-weight:bold;">
+                  🎬 動畫/互動預留區: <span style="font-weight:normal">${esc(block.caption || block.animationId)}</span>
+                </div>`;
+
+      case 'quiz':
+        return `<div class="${cls} quiz-placeholder" style="padding:20px; background:#fef3c7; color:#b45309; border-radius:8px; margin-bottom:20px; font-weight:bold;">
+                  🏆 小測驗 (Knowledge Check): <span style="font-weight:normal">共 ${block.questions?.length || 0} 題</span>
+                </div>`;
+
+      case 'practice':
+        return `<div class="${cls} practice-placeholder" style="padding:20px; background:#e0e7ff; color:#3730a3; border-radius:8px; margin-bottom:20px; font-weight:bold;">
+                  💻 實作練習: <span style="font-weight:normal">${esc(block.problems?.[0]?.title || '')} (${esc(block.problems?.[0]?.difficulty || '')})</span>
+                </div>`;
+
       default:
         return '';
     }

@@ -14,10 +14,13 @@
       "lessons": [
         {
           "id": "les-01-01",
-          "title": "Input → Process → Output",
-          "titleEn": "Input Process Output",
+          "title": "執行程式的流程",
+          "titleEn": "Input → Process → Output",
           "pdfPages": [
-            3
+            3,
+            17,
+            45,
+            49
           ],
           "content": [
             {
@@ -26,22 +29,22 @@
             },
             {
               "type": "paragraph",
-              "text": "所有程式都遵循同一個核心模式：輸入資料 (Input) → 處理資料 (Process) → 輸出資料 (Output)。不管程式多複雜，本質上都在做這三件事。"
+              "text": "所有程式都遵循同一個核心模式：輸入資料 (Input) → 處理資料 (Process) → 輸出資料 (Output)。"
             },
             {
               "type": "animation",
-              "animationId": "data-flow-animation",
-              "caption": "資料封包從 Input 流經 Process 到 Output 的動態流程",
+              "animationId": "data-flow-keyboard-animation",
+              "caption": "[動畫設計] Input方塊下方為WASD+F鍵盤。Input亮時F鍵亮起；箭頭移至Process時F鍵熄滅並顯示虛擬碼 `if (按下F) then 進入載具`；Output亮起顯示小人進入載具。",
               "steps": [
-                "使用者輸入資料",
-                "程式接收並處理資料",
-                "產生輸出結果"
+                "第一階段：Input 方塊亮起，下方包含 WASD+F 的鍵盤圖示中，F 鍵同步亮起。",
+                "第二階段：箭頭從 Input 指向 Process，F 鍵燈滅，Process 方塊下方亮起虛擬碼：if (按下F) then 進入載具",
+                "第三階段：Output 方塊亮起，下方顯示使用者會在他的「小螢幕 (little monitor)」中看到「小人進入載具」畫面"
               ]
             },
             {
               "type": "callout",
               "label": "範例",
-              "text": "按下 F 進入載具 → Input: 按鍵 F，Process: 判斷角色附近有無載具，Output: 進入載具動畫。輸入名字並印出 → Input: 鍵盤輸入，Process: 儲存字串，Output: print() 顯示到螢幕。"
+              "text": "按下 F 進入載具 → Input: 按鍵 F，Process: 判斷附近載具，Output: 進入載具。輸入名字並印出 → Input: 鍵盤輸入，Process: 儲存，Output: 顯示。"
             },
             {
               "type": "code",
@@ -59,15 +62,6 @@
                     "Output"
                   ],
                   "answer": 0
-                },
-                {
-                  "question": "print() 函式屬於程式流程中的哪個步驟？",
-                  "options": [
-                    "Input",
-                    "Process",
-                    "Output"
-                  ],
-                  "answer": 2
                 }
               ]
             },
@@ -79,12 +73,6 @@
                   "difficulty": "Easy",
                   "url": "https://leetcode.com/problems/two-sum/",
                   "description": "練習 Input → Process → Output 的基本流程"
-                },
-                {
-                  "title": "A + B Problem",
-                  "difficulty": "Easy",
-                  "url": "https://zerojudge.tw/ShowProblem?problemid=a001",
-                  "description": "最經典的 Input → Process → Output 練習"
                 }
               ]
             }
@@ -92,8 +80,8 @@
         },
         {
           "id": "les-01-02",
-          "title": "程式 = 資料處理",
-          "titleEn": "Code is Data Processing",
+          "title": "核心概念",
+          "titleEn": "Core Concepts",
           "pdfPages": [
             4
           ],
@@ -104,51 +92,12 @@
             },
             {
               "type": "paragraph",
-              "text": "程式 = 做很多「有關資料的事情」。無論你寫的是遊戲、網站、還是 AI，本質上都是在收集、儲存、處理、輸出資料。"
-            },
-            {
-              "type": "callout",
-              "label": "記住",
-              "text": "寫程式就是「讓電腦幫你處理資料」。你的工作是告訴它：拿什麼資料、怎麼處理、結果給誰看。"
+              "text": "程式 = 做很多「有關資料的事情」。無論什麼應用，本質上都是在處理資料。"
             },
             {
               "type": "code",
               "language": "python",
-              "code": "# 程式 = 做很多有關資料的事情\nprint(5 + 10)      # 處理數字資料 → 15\nprint(\"Hi\" * 3)    # 處理字串資料 → HiHiHi\nprint(len([1,2,3])) # 處理列表資料 → 3"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "程式的本質是什麼？",
-                  "options": [
-                    "畫圖",
-                    "做很多有關資料的事情",
-                    "播放音樂"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "print(\"Hi\" * 3) 的輸出是什麼？",
-                  "options": [
-                    "Hi3",
-                    "HiHiHi",
-                    "Hi + Hi + Hi"
-                  ],
-                  "answer": 1
-                }
-              ]
-            },
-            {
-              "type": "practice",
-              "problems": [
-                {
-                  "title": "Simple Array Sum",
-                  "difficulty": "Easy",
-                  "url": "https://www.hackerrank.com/challenges/simple-array-sum/",
-                  "description": "練習基本的資料處理：加總一組數字"
-                }
-              ]
+              "code": "print(5 + 10)      # 處理數字\nprint(\"Hi\" * 3)    # 處理字串"
             }
           ]
         }
@@ -162,40 +111,43 @@
       "lessons": [
         {
           "id": "les-02-01",
-          "title": "拆解問題的思維",
+          "title": "拆分步驟",
           "titleEn": "Decomposing Problems",
           "pdfPages": [
-            5
+            5,
+            50
           ],
           "content": [
             {
               "type": "heading",
-              "text": "怎麼理解題目"
+              "text": "拆解問題與循環流程"
             },
             {
               "type": "paragraph",
-              "text": "面對程式題目時，第一步是「拆解」。將複雜的要求分解成一個個具體、可執行的小動作。"
+              "text": "面對題目時第一步是「拆解」。將複雜要求分解成具體、可執行的小動作。"
             },
             {
               "type": "animation",
-              "animationId": "problem-decompose",
-              "caption": "將複雜問題逐步拆解為可執行的子任務",
+              "animationId": "problem-decompose-loop",
+              "caption": "[設計邏輯] 初始(資料為空) → Input → 記憶(Remember) → 處理(Process) → 再次記憶 這個循環的動態呈現。",
               "steps": [
-                "閱讀完整題目要求",
-                "識別關鍵動作詞",
-                "拆分成小步驟",
-                "逐一用程式實現"
+                "初始狀態：資料為空",
+                "Input 資料",
+                "記憶 (Remember)",
+                "處理 (Process)",
+                "再次記憶 (Remember)，可多次循環",
+                "產出目標結果"
               ]
             },
             {
               "type": "callout",
-              "label": "範例 A",
-              "text": "「寫出 10 個 hi」→ 拆解：有一件事要做 10 次，那件事叫做 print(\"hi\")"
+              "label": "範例：寫出 10 個 hi",
+              "text": "有一件事要做 10 次，那件事叫做 `print(\"hi\")`"
             },
             {
               "type": "callout",
-              "label": "範例 B",
-              "text": "「輸入 10 個 int，找最大值」→ 拆解：要輸入很多東西（需要 list 儲存），然後分析這些資料（找最大的）"
+              "label": "範例：找 10 個數字的最大值",
+              "text": "需要 `list` 來存放這 10 個不斷被「記住」的輸入值，最後再處理找出 Max。"
             },
             {
               "type": "code",
@@ -213,15 +165,6 @@
                     "建立 10 個變數"
                   ],
                   "answer": 1
-                },
-                {
-                  "question": "需要儲存大量輸入資料時，應該用什麼？",
-                  "options": [
-                    "很多個變數",
-                    "print()",
-                    "list"
-                  ],
-                  "answer": 2
                 }
               ]
             },
@@ -248,10 +191,11 @@
       "lessons": [
         {
           "id": "les-03-01",
-          "title": "直譯器 vs 編譯器",
+          "title": "用直譯器",
           "titleEn": "Interpreter vs Compiler",
           "pdfPages": [
-            7
+            7,
+            46
           ],
           "content": [
             {
@@ -260,432 +204,92 @@
             },
             {
               "type": "paragraph",
-              "text": "Python 使用「直譯器 (Interpreter)」。直譯器從頭看、從頭寫，一行一行地執行程式碼。相比之下，編譯器（如 C 語言）會先看過整份程式碼一遍，再從特定的進入點（如 main()）開始執行。"
-            },
-            {
-              "type": "diagram",
-              "diagramId": "interpreter-vs-compiler",
-              "caption": "直譯器：逐行執行 ✓ vs 編譯器：先看過一遍再從 main() 開始 ✗"
+              "text": "Python 使用「直譯器 (Interpreter)」：從頭看、從頭寫，一行行執行。\nC 語言用「編譯器 (Compiler)」：先看一遍，再從 main() 開始執行，速度極快。"
             },
             {
               "type": "animation",
-              "animationId": "interpreter-exec",
-              "caption": "直譯器逐行執行程式碼的過程",
+              "animationId": "interpreter-vs-compiler-v2",
+              "caption": "[視覺設計修正] 滑鼠停在 Compiler 時顯示底線，但不會有任何跑動的滾動條。無水平 Scroll line干擾。",
               "steps": [
-                "讀取第一行 a = 5",
-                "立即執行：將 5 存入 a",
-                "讀取第二行 print(a)",
-                "立即執行：輸出 5"
-              ]
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "# 直譯器範例 (Python)\na = 5        # ← 立即執行\nprint(a)     # ← 立即輸出 5"
-            },
-            {
-              "type": "callout",
-              "label": "重要",
-              "text": "C 語言使用編譯器，速度快（只要 50ms），但需要先編譯整份程式。Python 使用直譯器，寫起來更簡單直覺，但速度相對較慢。"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "Python 使用哪種方式執行程式碼？",
-                  "options": [
-                    "編譯器",
-                    "直譯器",
-                    "組譯器"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "直譯器的執行方式是？",
-                  "options": [
-                    "先看過全部再執行",
-                    "一行一行地執行",
-                    "隨機執行"
-                  ],
-                  "answer": 1
-                }
+                "滑鼠移至 Compiler 區域",
+                "顯示簡潔的底線，無干擾元素"
               ]
             }
           ]
         },
         {
           "id": "les-03-02",
-          "title": "Class 與 Object",
-          "titleEn": "Class and Object",
+          "title": "物件導向 (OOP)",
+          "titleEn": "Object Oriented",
           "pdfPages": [
-            8
+            8,
+            9,
+            10,
+            11,
+            12,
+            47,
+            53,
+            54,
+            57
           ],
           "content": [
             {
               "type": "heading",
-              "text": "Class 與 Object"
+              "text": "Class 與 Object、__init__ 與 self"
             },
             {
               "type": "paragraph",
-              "text": "初始化一個 class（如「人類」），將其放入變數中，該變數就稱為 object（物件）。變數本身叫做 variable。"
+              "text": "在 Python 中，萬物皆物件 (Data = Class)，包含 function 本身也是一個 Class。"
             },
             {
-              "type": "diagram",
-              "diagramId": "class-object-flow",
-              "caption": "Class（藍圖）→ 實例化 → Object（實體）"
+              "type": "callout",
+              "label": "核心概念",
+              "text": "Class 與 Object：初始化一個 Class 入變數即為 Object。\nProperty vs Method：屬性=資料，方法=動作。\n__init__：自動執行設定初始屬性。\nself：代表物件本身。"
             },
             {
               "type": "code",
               "language": "python",
-              "code": "# 在 Python 中，一切都是物件\n# s = 5 其實就是 s = int(value=5)\nprint(type(5))       # <class 'int'>\nprint(type(\"hello\")) # <class 'str'>\nprint(type([1,2]))   # <class 'list'>"
-            },
-            {
-              "type": "callout",
-              "label": "記住",
-              "text": "class = 論文（藍圖），object = 實作（實體）。class 定義了設計圖，object 是根據設計圖造出來的東西。"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "Class 和 Object 的關係是？",
-                  "options": [
-                    "Class 是實體，Object 是藍圖",
-                    "Class 是藍圖，Object 是實體",
-                    "兩者完全相同"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "在 Python 中，type(5) 會回傳什麼？",
-                  "options": [
-                    "<class 'int'>",
-                    "5",
-                    "number"
-                  ],
-                  "answer": 0
-                }
-              ]
+              "code": "class Dog:\n    def __init__(self, name):\n        self.name = name\n    \n    def bark(self):\n        return f\"{self.name} says Woof!\"\n\nLucky = Dog(\"Lucky\")\nprint(Lucky.bark())"
             }
           ]
         },
         {
           "id": "les-03-03",
-          "title": "Property 與 Method",
-          "titleEn": "Properties and Methods",
-          "pdfPages": [
-            9
-          ],
-          "content": [
-            {
-              "type": "heading",
-              "text": "Property 與 Method"
-            },
-            {
-              "type": "paragraph",
-              "text": "Class 內部可以設定 Property（屬性）與 Method（方法）。Property 是「物件擁有的資料」，Method 是「物件可以做的動作」。"
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "import math\n\n# Property：主詞.受詞\nprint(math.pi)        # 3.14159...\n\n# Method：主詞.動詞(受詞)\nprint(math.gcd(12, 8)) # 4"
-            },
-            {
-              "type": "list",
-              "style": "definition",
-              "items": [
-                {
-                  "term": "Property",
-                  "definition": "屬性 → 語法：主詞.受詞（如 math.pi）"
-                },
-                {
-                  "term": "Method",
-                  "definition": "方法 → 語法：主詞.動詞(受詞)（如 math.gcd(2,3)）"
-                },
-                {
-                  "term": "Event",
-                  "definition": "事件 → 由特定觸發條件啟動"
-                }
-              ]
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "math.pi 是 Property 還是 Method？",
-                  "options": [
-                    "Property（屬性）",
-                    "Method（方法）",
-                    "Event（事件）"
-                  ],
-                  "answer": 0
-                },
-                {
-                  "question": "math.gcd(12, 8) 使用的語法模式是？",
-                  "options": [
-                    "主詞.受詞",
-                    "主詞.動詞(受詞)",
-                    "動詞(主詞)"
-                  ],
-                  "answer": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "les-03-04",
-          "title": "__init__ 與 self",
-          "titleEn": "Init and Self",
-          "pdfPages": [
-            10,
-            11
-          ],
-          "content": [
-            {
-              "type": "heading",
-              "text": "__init__ 與 self"
-            },
-            {
-              "type": "paragraph",
-              "text": "__init__ 方法是直譯器在建立物件時自動執行的特殊方法，通常用來設定初始的屬性（如：身高、攻擊力、血量）。"
-            },
-            {
-              "type": "paragraph",
-              "text": "self 代表「物件本身」。以 class dog() 為例，建立物件 Lucky = dog() 後，每個方法中的 self 就相當於 Lucky，藉此設定和存取屬性。"
-            },
-            {
-              "type": "animation",
-              "animationId": "self-binding",
-              "caption": "self 如何綁定到具體的物件實例",
-              "steps": [
-                "定義 class Dog 與 __init__(self, name)",
-                "呼叫 Lucky = Dog(\"Lucky\")",
-                "self 自動綁定為 Lucky",
-                "self.name 等同 Lucky.name"
-              ]
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "class Dog:\n    def __init__(self, name):   # 自動執行一次\n        self.name = name        # 設定屬性\n        self.hp = 100\n    \n    def bark(self):             # self = 物件本身\n        return f\"{self.name} says Woof!\"\n\nLucky = Dog(\"Lucky\")           # self → Lucky\nprint(Lucky.bark())            # Lucky says Woof!\nprint(Lucky.hp)                # 100"
-            },
-            {
-              "type": "diagram",
-              "diagramId": "class-blueprint",
-              "caption": "Class（藍圖）→ __init__ + methods + properties → Object（實體）"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "__init__ 方法何時被執行？",
-                  "options": [
-                    "手動呼叫時",
-                    "建立物件時自動執行",
-                    "程式結束時"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "Lucky = Dog('Lucky') 中，方法裡的 self 代表什麼？",
-                  "options": [
-                    "Dog class 本身",
-                    "Lucky 這個物件",
-                    "字串 'Lucky'"
-                  ],
-                  "answer": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "les-03-05",
-          "title": "模組匯入 (import)",
-          "titleEn": "Module Import",
-          "pdfPages": [
-            12
-          ],
-          "content": [
-            {
-              "type": "heading",
-              "text": "模組匯入"
-            },
-            {
-              "type": "paragraph",
-              "text": "Python 提供大量內建模組，可以用 import 語法匯入使用。就像引用別人的「論文」，直接使用他人已經寫好的功能。"
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "import math          # 匯入整個模組\nprint(math.pi)       # 使用模組的屬性\nprint(math.sqrt(16)) # 使用模組的方法 → 4.0\n\nfrom math import pi  # 只匯入特定項目\nprint(pi)            # 直接使用，不需要 math. 前綴"
-            },
-            {
-              "type": "callout",
-              "label": "比喻",
-              "text": "import 就像「引用論文」：別人已經寫好了 math 這篇論文，你 import 之後就能直接用裡面的公式（pi）和方法（sqrt）。"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "from math import pi 之後，要怎麼使用 pi？",
-                  "options": [
-                    "math.pi",
-                    "pi",
-                    "import.pi"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "import math 之後，要怎麼使用 sqrt？",
-                  "options": [
-                    "sqrt(16)",
-                    "math.sqrt(16)",
-                    "math(sqrt, 16)"
-                  ],
-                  "answer": 1
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "les-03-06",
-          "title": "反射 — 自省",
-          "titleEn": "Reflection — Introspection",
+          "title": "反射 (Reflection)",
+          "titleEn": "Reflection",
           "pdfPages": [
             13,
-            14
-          ],
-          "content": [
-            {
-              "type": "heading",
-              "text": "反射 (Reflection) — 自省"
-            },
-            {
-              "type": "paragraph",
-              "text": "反射 = 自省 (Introspection) + 動態操作。自省是指在程式執行時「檢查」物件的資訊、屬性或 function 的用法。"
-            },
-            {
-              "type": "animation",
-              "animationId": "reflection-inspect",
-              "caption": "使用 dir()、help()、type() 檢查物件資訊",
-              "steps": [
-                "建立物件 x = [1, 2, 3]",
-                "type(x) → 查看型態：<class 'list'>",
-                "dir(x) → 列出所有屬性與方法",
-                "help(x.append) → 查看方法說明"
-              ]
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "x = [1, 2, 3]\n\n# 自省三寶\nprint(type(x))    # <class 'list'>\nprint(dir(x))     # 列出所有屬性和方法\nhelp(x.append)    # 查看 append 的用法說明"
-            },
-            {
-              "type": "list",
-              "style": "definition",
-              "items": [
-                {
-                  "term": "type()",
-                  "definition": "查看物件的資料型態"
-                },
-                {
-                  "term": "dir()",
-                  "definition": "列出物件的所有屬性和方法"
-                },
-                {
-                  "term": "help()",
-                  "definition": "查看 function 或方法的詳細用法"
-                }
-              ]
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "想查看一個物件有哪些方法可以用，應該用？",
-                  "options": [
-                    "type()",
-                    "dir()",
-                    "help()"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "type([1,2,3]) 會回傳什麼？",
-                  "options": [
-                    "<class 'list'>",
-                    "[1,2,3]",
-                    "3"
-                  ],
-                  "answer": 0
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "les-03-07",
-          "title": "反射 — 動態操作",
-          "titleEn": "Reflection — Dynamic Operations",
-          "pdfPages": [
+            14,
             15
           ],
           "content": [
             {
               "type": "heading",
-              "text": "反射 — 動態操作"
+              "text": "自省與動態操作"
             },
             {
               "type": "paragraph",
-              "text": "動態操作讓你在程式執行時動態地取得、設定或刪除物件的屬性，而不需要在寫程式時就確定所有操作。"
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "class Player:\n    def __init__(self):\n        self.hp = 100\n        self.name = \"Hero\"\n\np = Player()\n\n# getattr() — 取得屬性\nprint(getattr(p, \"hp\"))          # 100\nprint(getattr(p, \"mp\", \"N/A\"))   # N/A (不存在時的預設值)\n\n# setattr() — 動態設定屬性\nsetattr(p, \"mp\", 50)             # 新增 mp 屬性\nprint(p.mp)                      # 50\n\n# delattr() — 刪除屬性\ndelattr(p, \"mp\")\n# print(p.mp)                    # AttributeError!"
+              "text": "反射 = 自省 (Introspection) + 動態操作。"
             },
             {
               "type": "list",
               "style": "definition",
               "items": [
                 {
+                  "term": "dir(), help(), type()",
+                  "definition": "自省：檢查物件資訊"
+                },
+                {
                   "term": "getattr()",
-                  "definition": "檢查屬性是否存在並取得，若是方法還能呼叫"
+                  "definition": "取得或呼叫屬性"
                 },
                 {
                   "term": "setattr()",
-                  "definition": "檢查並動態新增或修改屬性"
+                  "definition": "動態新增/修改屬性"
                 },
                 {
                   "term": "delattr()",
-                  "definition": "檢查並動態刪除屬性"
-                }
-              ]
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "想動態新增一個屬性給物件，應該用？",
-                  "options": [
-                    "getattr()",
-                    "setattr()",
-                    "delattr()"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "getattr(p, 'mp', 'N/A') 中，'N/A' 的用途是？",
-                  "options": [
-                    "設定新屬性值",
-                    "屬性不存在時的預設值",
-                    "刪除屬性"
-                  ],
-                  "answer": 1
+                  "definition": "動態刪除屬性"
                 }
               ]
             }
@@ -695,7 +299,7 @@
     },
     {
       "id": "mod-04",
-      "title": "Python 課程子章節",
+      "title": "Python 課程",
       "titleEn": "Python Course Sections",
       "icon": "🚀",
       "lessons": [
@@ -704,8 +308,6 @@
           "title": "收集資料",
           "titleEn": "Collecting Data",
           "pdfPages": [
-            16,
-            17,
             18,
             19,
             20,
@@ -714,159 +316,40 @@
           "content": [
             {
               "type": "heading",
-              "text": "Python 課程流程"
-            },
-            {
-              "type": "paragraph",
-              "text": "接下來的課程將依照以下流程展開：收集資料 → 儲存資料 → 處理資料 → 刪除沒用的資料 → 寫出有用的資料 → 了解變數與資料的關係。"
-            },
-            {
-              "type": "animation",
-              "animationId": "data-pipeline",
-              "caption": "五階段資料處理管線",
-              "steps": [
-                "收集資料 (Collect)",
-                "儲存資料 (Store)",
-                "處理資料 (Process)",
-                "刪除沒用的資料 (Clean)",
-                "寫出有用的資料 (Output)"
-              ]
-            },
-            {
-              "type": "paragraph",
-              "text": "在處理資料之前，我們需要先讓電腦「得知資料」。就像你想刷題，需要先拿到題目一樣。"
-            },
-            {
-              "type": "callout",
-              "label": "比喻",
-              "text": "想像你是一個廚師：先收集食材（收集資料）→ 放進冰箱（儲存資料）→ 料理（處理資料）→ 丟掉廚餘（刪除沒用的）→ 上菜（寫出有用的）。"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "資料處理管線的第一步是？",
-                  "options": [
-                    "處理資料",
-                    "收集資料",
-                    "輸出資料"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "為什麼處理資料之前需要先「得知資料」？",
-                  "options": [
-                    "因為 CPU 需要休息",
-                    "電腦需要先拿到資料才能處理",
-                    "為了節省電力"
-                  ],
-                  "answer": 1
-                }
-              ]
-            },
-            {
-              "type": "heading",
               "text": "CPU 與 RAM"
             },
             {
               "type": "paragraph",
-              "text": "CPU 只 care「RAM 裡面的資料」。CPU 看了 RAM 中的資料之後才能處理。有很多方法能把資料放到 RAM 中。"
-            },
-            {
-              "type": "diagram",
-              "diagramId": "cpu-ram-cycle",
-              "caption": "Programmer → Code → RAM ↔ CPU 處理循環"
-            },
-            {
-              "type": "callout",
-              "label": "關鍵概念",
-              "text": "RAM = 工作桌，CPU = 工人。工人（CPU）只會處理桌上（RAM）的材料。你的程式碼負責把材料搬到桌上。"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "CPU 只關心哪裡的資料？",
-                  "options": [
-                    "硬碟",
-                    "RAM",
-                    "螢幕"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "以比喻來說，RAM 像是？",
-                  "options": [
-                    "倉庫",
-                    "工作桌",
-                    "垃圾桶"
-                  ],
-                  "answer": 1
-                }
-              ]
-            },
-            {
-              "type": "heading",
-              "text": "記憶體管理：C vs Python"
-            },
-            {
-              "type": "paragraph",
-              "text": "在 C 語言中，RAM 空間分為 fixed space（預設，上手 easy）與 variable space（上手 hard）。程式設計師需要手動管理記憶體。"
-            },
-            {
-              "type": "paragraph",
-              "text": "在 Python 中，資料被寫成 class。Python 有自動的垃圾回收機制 (Garbage Collection)，會做很多吃 CPU 的分析，幫你自動管理記憶體。"
-            },
-            {
-              "type": "animation",
-              "animationId": "gc-animation",
-              "caption": "Python 垃圾回收機制：自動掃描並回收無用物件",
-              "steps": [
-                "建立物件，引用計數 = 1",
-                "新增引用，引用計數 +1",
-                "刪除引用，引用計數 -1",
-                "引用計數歸零 → 垃圾回收！"
-              ]
-            },
-            {
-              "type": "callout",
-              "label": "重要",
-              "text": "C 語言：你自己管記憶體（手動 malloc/free）。Python：很多事都叫 CPU 幫你做（Garbage Collection 自動回收）。方便但速度較慢。"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "Python 的記憶體管理方式是？",
-                  "options": [
-                    "手動 malloc/free",
-                    "Garbage Collection 自動回收",
-                    "不需要管理"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "Python 的 GC 為什麼會讓程式變慢？",
-                  "options": [
-                    "因為需要吃 CPU 做分析",
-                    "因為 RAM 不夠",
-                    "因為網路慢"
-                  ],
-                  "answer": 0
-                }
-              ]
+              "text": "CPU 只關心 RAM 裡的資料。相比 C 語言需手動管理空間，Python 將資料寫成 Class，由 CPU 自動進行垃圾回收 (Garbage Collection)。"
             }
           ]
         },
         {
           "id": "les-04-02",
-          "title": "儲存資料",
-          "titleEn": "Storing Data",
+          "title": "儲存與刪除資料",
+          "titleEn": "Store and Delete Data",
           "pdfPages": [
             22,
             23,
             24,
-            25,
+            25
+          ],
+          "content": [
+            {
+              "type": "heading",
+              "text": "變數與指標"
+            },
+            {
+              "type": "paragraph",
+              "text": "建立變數指向 RAM 地址。若無變數指向該資料，則資料會被當成垃圾回收（刪除沒用的資料）。"
+            }
+          ]
+        },
+        {
+          "id": "les-04-03",
+          "title": "變數與資料的關係",
+          "titleEn": "Variables and Data",
+          "pdfPages": [
             26,
             27,
             28,
@@ -880,354 +363,32 @@
           "content": [
             {
               "type": "heading",
-              "text": "變數與 Pointer"
-            },
-            {
-              "type": "paragraph",
-              "text": "資料放入 RAM 後，需要建立「變數 (Variable)」並讓它 pointer 到資料的 RAM address。否則資料會被當作垃圾回收，程式再也找不到它。"
-            },
-            {
-              "type": "animation",
-              "animationId": "pointer-animation",
-              "caption": "變數 → 記憶體位址 → 值 的指向關係",
-              "steps": [
-                "在 RAM 中分配空間存放值 5",
-                "建立變數 a，記錄 RAM 位址",
-                "透過 a 找到位址，讀取值 5",
-                "改變 a 的值 → 指向新的位址"
-              ]
-            },
-            {
-              "type": "diagram",
-              "diagramId": "variable-memory-map",
-              "caption": "變數名稱 → 記憶體位址 → 值"
-            },
-            {
-              "type": "callout",
-              "label": "關鍵概念",
-              "text": "變數就是一張「名牌」，貼在記憶體的某個位置上。沒有名牌的資料會被 Python 的垃圾回收機制清除掉。"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "變數存的是什麼？",
-                  "options": [
-                    "資料本身",
-                    "RAM 的位址",
-                    "CPU 的指令"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "沒有變數指向的資料會怎樣？",
-                  "options": [
-                    "永遠保留",
-                    "被垃圾回收",
-                    "自動備份"
-                  ],
-                  "answer": 1
-                }
-              ]
-            },
-            {
-              "type": "heading",
-              "text": "資料如何寫入 RAM"
-            },
-            {
-              "type": "paragraph",
-              "text": "CPU 會在 RAM 中找空間，把值轉成 binary（0 和 1）寫入。變數存的是 RAM address，想要資料就要去 RAM 看一堆 binary code。"
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "a = 5\n# CPU 的工作：\n# 1. 在 RAM 找一塊空間（如 0x7f3a01）\n# 2. 把 5 轉成 binary: 00000101\n# 3. 寫入該空間\n# 4. 記住 a → 0x7f3a01\n\nprint(id(a))   # 查看 a 的記憶體位址\nprint(bin(a))  # 查看 5 的二進位表示 → 0b101"
-            },
-            {
-              "type": "callout",
-              "label": "比喻",
-              "text": "RAM 就像一排排的儲物櫃，每個櫃子都有編號（address）。CPU 把東西（binary data）放進櫃子，然後把編號記在變數上。"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "CPU 把資料寫入 RAM 時，資料會被轉成什麼格式？",
-                  "options": [
-                    "文字",
-                    "Binary（0 和 1）",
-                    "圖片"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "bin(5) 會輸出什麼？",
-                  "options": [
-                    "5",
-                    "0b101",
-                    "00000101"
-                  ],
-                  "answer": 1
-                }
-              ]
-            },
-            {
-              "type": "heading",
-              "text": "Immutable Object（不可變物件）"
-            },
-            {
-              "type": "paragraph",
-              "text": "Immutable object 裡面的資料不能被修改 (Data const)。如果你想改變變數的資料，只能讓變數「換一個家」——也就是指向另一個新的 object。"
-            },
-            {
-              "type": "animation",
-              "animationId": "immutable-swap",
-              "caption": "不可變物件：變數改值 = 搬家（指向新物件）",
-              "steps": [
-                "a = 5 → a 指向存放 5 的物件",
-                "a = 10 → 不是修改 5，而是建立新物件 10",
-                "a 現在指向新物件 10",
-                "舊物件 5 若無其他引用，會被回收"
-              ]
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "a = 5\nprint(id(a))   # 例如：140234567890\n\na = 10\nprint(id(a))   # 不同的位址！140234567920\n# 5 沒有被修改，a 只是「搬家」指向新的 10"
-            },
-            {
-              "type": "callout",
-              "label": "重要",
-              "text": "Immutable = 資料不能被修改。想改值？只能換一個新的物件，讓變數指向它。"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "a = 5 然後 a = 10，發生了什麼事？",
-                  "options": [
-                    "5 被修改成 10",
-                    "a 指向了一個新的物件 10",
-                    "記憶體位址不變"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "以下哪個是 Immutable？",
-                  "options": [
-                    "list",
-                    "dict",
-                    "int"
-                  ],
-                  "answer": 2
-                }
-              ]
-            },
-            {
-              "type": "heading",
-              "text": "變數作用域 (Scope)"
-            },
-            {
-              "type": "paragraph",
-              "text": "在函式中若要修改外部變數，可以使用 global（全域）或 nonlocal（非本地）關鍵字，讓 code 知道你想對哪個變數做事。"
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "x = 10  # 全域變數\n\ndef change_x():\n    global x      # 告訴 Python：我要用外面的 x\n    x = 20\n\nchange_x()\nprint(x)  # 20\n\n# ─────────────────────\ndef outer():\n    y = 5\n    def inner():\n        nonlocal y  # 告訴 Python：我要用外層的 y\n        y = 15\n    inner()\n    print(y)       # 15\n\nouter()"
-            },
-            {
-              "type": "callout",
-              "label": "注意",
-              "text": "不加 global/nonlocal 的話，函式內的同名變數會被當成「新的區域變數」，不會影響外部。"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "在函式中要修改全域變數，需要用什麼關鍵字？",
-                  "options": [
-                    "local",
-                    "global",
-                    "extern"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "不加 global 的話，函式內的同名變數會怎樣？",
-                  "options": [
-                    "修改全域變數",
-                    "被當成新的區域變數",
-                    "報錯"
-                  ],
-                  "answer": 1
-                }
-              ]
-            },
-            {
-              "type": "heading",
-              "text": "Mutable Object（可變物件）"
-            },
-            {
-              "type": "paragraph",
-              "text": "Mutable object 可以改變裡面的資料、把 object 變大或變小。但要注意兩種行為的差異："
-            },
-            {
-              "type": "animation",
-              "animationId": "mutable-ref",
-              "caption": "Copy（搬出去住）vs Reference（改裝房子）",
-              "steps": [
-                "建立 list a = [1, 2, 3]",
-                "b = a → b 和 a 指向同一個物件（Reference）",
-                "修改 a.append(4) → b 也會受到影響！",
-                "c = a.copy() → c 是獨立副本（Copy）",
-                "修改 a.append(5) → c 不受影響"
-              ]
+              "text": "Immutable vs Mutable"
             },
             {
               "type": "list",
               "style": "definition",
               "items": [
                 {
-                  "term": "搬出去住 (Copy)",
-                  "definition": "只影響某個 variable，建立了一個獨立的新物件"
+                  "term": "Immutable (不可變)",
+                  "definition": "資料不可改，換值等於換地址。如 int, str, tuple"
                 },
                 {
-                  "term": "改裝房子 (Reference)",
-                  "definition": "會影響所有指向這個 object 的 variable，因為是同一個物件"
+                  "term": "Mutable (可變)",
+                  "definition": "可在原地址修改資料。如 list, set, dict"
                 }
               ]
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "# Reference（改裝房子）\na = [1, 2, 3]\nb = a              # b 和 a 指向同一個 list\na.append(4)\nprint(b)           # [1, 2, 3, 4] — b 也變了！\n\n# Copy（搬出去住）\nc = a.copy()       # c 是獨立的副本\na.append(5)\nprint(c)           # [1, 2, 3, 4] — c 不受影響\n\n# 用 id() 檢查\nprint(id(a) == id(b))  # True — 同一個物件\nprint(id(a) == id(c))  # False — 不同物件"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "b = a（a 是 list）之後，修改 a 會影響 b 嗎？",
-                  "options": [
-                    "不會",
-                    "會，因為是 Reference",
-                    "會報錯"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "如何建立一個不受原 list 影響的副本？",
-                  "options": [
-                    "b = a",
-                    "b = a.copy()",
-                    "b = a + 0"
-                  ],
-                  "answer": 1
-                }
-              ]
-            },
-            {
-              "type": "heading",
-              "text": "用 id() 檢查物件身份"
             },
             {
               "type": "paragraph",
-              "text": "對於 mutable object，你可能不確定操作後是 copy 還是 reference。可以用 id() function 來檢查兩個變數是否指向同一個物件。"
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "a = [1, 2, 3]\nb = a           # reference\nc = a[:]        # copy (用切片)\nd = list(a)     # copy (用建構子)\n\nprint(id(a))    # 例如：140234567890\nprint(id(b))    # 140234567890 ← 同一個！\nprint(id(c))    # 140234568000 ← 不同\nprint(id(d))    # 140234568100 ← 不同\n\n# 也可以用 is 運算子\nprint(a is b)   # True\nprint(a is c)   # False"
-            },
-            {
-              "type": "callout",
-              "label": "記住",
-              "text": "id() 回傳物件的唯一識別碼（記憶體位址）。兩個變數 id 相同 = 它們是同一個物件。"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "a = [1,2]; b = a; a is b 的結果是？",
-                  "options": [
-                    "True",
-                    "False",
-                    "Error"
-                  ],
-                  "answer": 0
-                },
-                {
-                  "question": "用什麼可以檢查兩個變數是否指向同一個物件？",
-                  "options": [
-                    "==",
-                    "id() 或 is",
-                    "type()"
-                  ],
-                  "answer": 1
-                }
-              ]
-            },
-            {
-              "type": "heading",
-              "text": "Immutable vs Mutable 分類"
-            },
-            {
-              "type": "paragraph",
-              "text": "Python 的資料型態可以明確分為不可變 (Immutable) 和可變 (Mutable) 兩大類。理解這個分類對於寫出正確的程式至關重要。"
-            },
-            {
-              "type": "list",
-              "style": "definition",
-              "items": [
-                {
-                  "term": "Immutable",
-                  "definition": "int, float, complex, bool, str, tuple, frozenset, bytes — 不能修改內容"
-                },
-                {
-                  "term": "Mutable",
-                  "definition": "list, set, dict — 可以修改內容"
-                }
-              ]
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "# Immutable 類型\nx = 5              # int\ny = 3.14           # float\nz = True           # bool\ns = \"hello\"        # str\nt = (1, 2, 3)      # tuple\n\n# Mutable 類型\na = [1, 2, 3]      # list — 可以 append, remove\nb = {1, 2, 3}      # set — 可以 add, discard\nc = {\"k\": \"v\"}     # dict — 可以新增/修改鍵值對"
-            },
-            {
-              "type": "callout",
-              "label": "記住",
-              "text": "簡單規則：需要被修改的容器用 list/dict/set，不需要被修改的用 tuple/frozenset/str。"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "以下哪個是 Mutable 類型？",
-                  "options": [
-                    "str",
-                    "tuple",
-                    "list"
-                  ],
-                  "answer": 2
-                },
-                {
-                  "question": "需要一個不會被修改的序列，應該用？",
-                  "options": [
-                    "list",
-                    "tuple",
-                    "dict"
-                  ],
-                  "answer": 1
-                }
-              ]
+              "text": "由於 mutable 可在原地址修改，會有「搬出去住 (Coped)」與「改裝房子 (Reference / In-place)」的差異，可以透過 `id()` 檢查。"
             }
           ]
         },
         {
-          "id": "les-04-03",
+          "id": "les-04-04",
           "title": "處理資料：程式結構",
-          "titleEn": "Processing Data: Code Structure",
+          "titleEn": "Program Structure",
           "pdfPages": [
             35,
             36,
@@ -1235,147 +396,42 @@
             38,
             39,
             40,
-            41
+            41,
+            51
           ],
           "content": [
             {
               "type": "heading",
-              "text": "C 語言的程式結構"
+              "text": "單行與區塊結構"
             },
             {
               "type": "paragraph",
-              "text": "C 語言的程式碼有兩種結構：單行結構（結尾寫下 ;）和區塊結構（受控制部分會用 { } 包起來）。"
-            },
-            {
-              "type": "code",
-              "language": "c",
-              "code": "// 單行結構：用 ; 結尾\nint x = 5;\nprintf(\"%d\", x);\n\n// 區塊結構：用 { } 包起來\nif (x > 3) {\n    printf(\"x is big\");\n    x = x + 1;\n}"
+              "text": "C 語言使用 `;` 結尾，`{ }` 包裹區塊。Python 則使用換行代表單行，縮排代表區塊。"
             },
             {
               "type": "callout",
-              "label": "重要",
-              "text": "C 語言用「分號 ;」標記一行的結束，用「大括號 {}」標記一個程式區塊的範圍。"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "C 語言用什麼標記一行的結束？",
-                  "options": [
-                    "冒號 :",
-                    "分號 ;",
-                    "換行"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "C 語言用什麼包住一個程式區塊？",
-                  "options": [
-                    "縮排",
-                    "大括號 {}",
-                    "小括號 ()"
-                  ],
-                  "answer": 1
-                }
-              ]
-            },
+              "label": "特別的 Code",
+              "text": "控制結構包含：if, else, for, while。"
+            }
+          ]
+        },
+        {
+          "id": "les-04-05",
+          "title": "寫出有用的資料：Return",
+          "titleEn": "Return Values",
+          "pdfPages": [
+            59,
+            60,
+            61
+          ],
+          "content": [
             {
               "type": "heading",
-              "text": "結構控制 vs 受結構控制"
+              "text": "Return 的本質"
             },
             {
               "type": "paragraph",
-              "text": "區塊結構可以分為兩部分：「結構控制」（如 if、for、while）負責決定條件或流程，「受結構控制」的程式碼則是被控制的那些行。"
-            },
-            {
-              "type": "code",
-              "language": "c",
-              "code": "// 結構控制\nif (score >= 60)       // ← 這是「結構控制」\n{                      // ← 開始受控區塊\n    printf(\"Pass\");    // ← 這是「受結構控制」\n    count++;           // ← 這也是「受結構控制」\n}                      // ← 結束受控區塊"
-            },
-            {
-              "type": "callout",
-              "label": "比喻",
-              "text": "結構控制 = 交通號誌（決定走或停），受結構控制 = 車輛（聽號誌的指示行動）。"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "if (score >= 60) 屬於？",
-                  "options": [
-                    "結構控制",
-                    "受結構控制",
-                    "單行結構"
-                  ],
-                  "answer": 0
-                },
-                {
-                  "question": "printf(\"Pass\") 在 if 區塊內，它屬於？",
-                  "options": [
-                    "結構控制",
-                    "受結構控制",
-                    "獨立語句"
-                  ],
-                  "answer": 1
-                }
-              ]
-            },
-            {
-              "type": "heading",
-              "text": "Python 的程式結構"
-            },
-            {
-              "type": "paragraph",
-              "text": "Python 的結構和 C 語言不同。單行結構利用「換行」達成（不需要分號），區塊結構利用「縮排」達成（不使用大括號）。"
-            },
-            {
-              "type": "animation",
-              "animationId": "indent-animation",
-              "caption": "C 語言 {} 結構 vs Python 縮排結構的對照",
-              "steps": [
-                "C 語言：if (x > 3) { ... }",
-                "移除大括號 { }",
-                "加上冒號 :",
-                "用縮排取代 → Python 完成！"
-              ]
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "# Python 單行結構：用「換行」\nx = 5\nprint(x)\n\n# Python 區塊結構：用「縮排」\nif x > 3:\n    print(\"x is big\")    # 縮排 = 受控制\n    x = x + 1            # 縮排 = 受控制\nprint(\"done\")            # 沒縮排 = 不受控制"
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "# 對比 C 語言\n# C:  if (x > 3) { print(\"big\"); }\n# Py: if x > 3:\n#         print(\"big\")\n\n# C:  for (int i=0; i<5; i++) { printf(\"%d\", i); }\n# Py: for i in range(5):\n#         print(i)"
-            },
-            {
-              "type": "callout",
-              "label": "記住",
-              "text": "Python 用「冒號 : + 縮排」取代 C 語言的「{ }」。忘記縮排會造成 IndentationError！"
-            },
-            {
-              "type": "quiz",
-              "questions": [
-                {
-                  "question": "Python 用什麼取代 C 語言的大括號 {}？",
-                  "options": [
-                    "分號",
-                    "冒號 + 縮排",
-                    "小括號"
-                  ],
-                  "answer": 1
-                },
-                {
-                  "question": "Python 忘記縮排會發生什麼？",
-                  "options": [
-                    "正常執行",
-                    "IndentationError",
-                    "自動補縮排"
-                  ],
-                  "answer": 1
-                }
-              ]
+              "text": "Return 的本質是「把 A 換成 B」。如同數學算式 3(5+8) -> 3(13)，函式執行完後會被其 Return 值取代，這是寫出有用資料的最後一步。"
             }
           ]
         }
