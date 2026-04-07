@@ -1,3 +1,4 @@
+# [WEB_URL](https://penter405.github.io/teach/)
 # Cipher Slate: Python Course 
 
 An interactive Python curriculum application built using React, Vite, and Tailwind CSS. The application translates a detailed Python programming PDF into an engaging "Guided Synthesist" interface with progressive learning modules, rich interactive lesson rendering, and code syntax highlighting.

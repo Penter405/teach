@@ -284,7 +284,7 @@ const IVCDiagram = () => (
       <span className="text-3xl mb-3 block opacity-50 grayscale">❌</span>
       <h3 className="font-headline text-xl font-bold text-slate-800 dark:text-white mb-1">編譯器 Compiler</h3>
       <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-4 uppercase tracking-wider">C# 使用</p>
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-3 text-left w-full h-20 flex flex-col justify-center mb-4 font-mono text-xs text-slate-500 opacity-80">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-3 text-left w-full h-20 flex flex-col justify-center mb-4 font-mono text-xs text-slate-500 dark:text-slate-300 opacity-90">
         <div>main()</div>
         <div>print(a)</div>
         <div>a = 5</div>
@@ -356,7 +356,7 @@ const VMMDiagram = () => {
           
           <div className="text-slate-400 text-xl font-bold px-2">→</div>
           
-          <div className="font-mono text-xs md:text-sm font-semibold text-slate-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-md shadow-inner text-center mx-2 w-[110px]">
+          <div className="font-mono text-xs md:text-sm font-semibold text-slate-500 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-md shadow-inner text-center mx-2 w-[110px]">
             {r.addr}
           </div>
           
@@ -601,15 +601,15 @@ const InterpreterExecAnim = ({ step }: { step: number }) => {
           return (
             <motion.div key={i} animate={{ backgroundColor: step === lineStep || step === lineStep + 1 ? 'rgba(8,145,178,0.15)' : 'transparent' }} transition={{ duration: 0.3 }}
               className="flex items-center gap-3 py-1 px-2 rounded">
-              <span className="text-slate-500 text-xs w-4">{i + 1}</span>
-              <span className={step >= lineStep ? 'text-slate-200' : 'text-slate-600'}>{line}</span>
+              <span className="text-slate-400 text-xs w-4">{i + 1}</span>
+              <span className={step >= lineStep ? 'text-slate-200' : 'text-slate-500'}>{line}</span>
               {(step === lineStep || step === lineStep + 1) && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-2 h-2 rounded-full bg-cyan-400 ml-auto" />}
             </motion.div>
           );
         })}
       </div>
       <div className="w-32 bg-slate-100 dark:bg-slate-800 rounded-xl p-4 flex flex-col justify-end">
-        <span className="text-xs text-slate-500 mb-2 font-medium uppercase tracking-wider">Output</span>
+        <span className="text-xs text-slate-500 dark:text-slate-400 mb-2 font-medium uppercase tracking-wider">Output</span>
         <motion.div animate={{ opacity: step >= 3 ? 1 : 0 }} className="font-mono text-sm text-green-600 dark:text-green-400">{outputs[step] || ''}</motion.div>
       </div>
     </div>
@@ -621,7 +621,7 @@ const SelfBindingAnim = ({ step }: { step: number }) => {
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-md">
       <Box active={step === 0} color="cyan" className="w-full">class Dog: __init__(self, name)</Box>
-      {step >= 1 && <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="font-mono text-sm text-slate-500">Lucky = Dog("Lucky")</motion.div>}
+      {step >= 1 && <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="font-mono text-sm text-slate-600 dark:text-slate-300">Lucky = Dog("Lucky")</motion.div>}
       {step >= 2 && (
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}
           className="flex items-center gap-4 p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl w-full justify-center">
@@ -783,7 +783,7 @@ const GCAnimationAnim = ({ step }: { step: number }) => {
   ];
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-sm">
-      <div className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Reference Count</div>
+      <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Reference Count</div>
       {nodes.map((n, i) => (
         <motion.div key={i} animate={{ opacity: n.refs === 0 && step >= 3 ? 0.2 : 1, scale: n.refs === 0 && step >= 3 ? 0.9 : 1 }}
           transition={{ duration: 0.5 }} className={`flex items-center justify-between w-full p-4 rounded-xl border ${n.refs === 0 && step >= 3 ? 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-800 line-through' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700'}`}>
@@ -809,7 +809,7 @@ const PointerAnim = ({ step }: { step: number }) => {
         <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
           className={`flex items-center justify-between p-3 rounded-lg border text-sm font-mono ${r.highlight ? 'bg-cyan-50 dark:bg-cyan-900/20 border-cyan-300 dark:border-cyan-700' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700'}`}>
           <span className="font-bold text-purple-600 dark:text-purple-400 w-20">{r.name}</span>
-          {r.addr && <span className="text-slate-500 text-xs">{r.addr}</span>}
+          {r.addr && <span className="text-slate-500 dark:text-slate-400 text-xs">{r.addr}</span>}
           <span className="font-bold text-cyan-700 dark:text-cyan-300">{r.val}</span>
         </motion.div>
       ))}
@@ -833,7 +833,7 @@ const ImmutableSwapAnim = ({ step }: { step: number }) => (
     </div>
     <motion.div animate={{ x: step >= 2 ? 60 : 0 }} transition={{ duration: 0.5, ease: 'easeInOut' }}
       className="px-6 py-2 bg-slate-800 text-white rounded-full font-mono font-bold text-sm shadow-lg">a ↓</motion.div>
-    {step >= 3 && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-slate-500 italic">舊物件 5 無引用 → 垃圾回收</motion.div>}
+    {step >= 3 && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-slate-500 dark:text-slate-400 italic">舊物件 5 無引用 → 垃圾回收</motion.div>}
   </div>
 );
 
@@ -844,14 +844,14 @@ const MutableRefAnim = ({ step }: { step: number }) => {
     <div className="flex flex-col gap-4 w-full max-w-md">
       <div className="flex items-center gap-4">
         <Box active={step <= 2} color="cyan" className="flex-1"><span className="text-xs block mb-1">a</span>{listContent}</Box>
-        {step >= 1 && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-slate-500 font-mono">b = a</motion.div>}
+        {step >= 1 && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-slate-500 dark:text-slate-400 font-mono">b = a</motion.div>}
         {step >= 1 && <Box active={step === 2} color="cyan" className="flex-1"><span className="text-xs block mb-1">b (ref)</span>{listContent}</Box>}
       </div>
       {step >= 2 && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-sm text-amber-600 dark:text-amber-400 font-medium">⚠️ a.append(4) → b 也受影響！</motion.div>}
       {step >= 3 && (
         <div className="flex items-center gap-4 mt-2">
           <Box active={step === 4} color="green" className="flex-1"><span className="text-xs block mb-1">c (copy)</span>{copyContent}</Box>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-slate-500">獨立副本</motion.div>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-slate-500 dark:text-slate-400">獨立副本</motion.div>
         </div>
       )}
       {step >= 4 && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-sm text-green-600 dark:text-green-400 font-medium">✅ a 改變 → c 不受影響</motion.div>}
@@ -872,7 +872,7 @@ const IndentAnim = ({ step }: { step: number }) => {
       <div className="bg-slate-900 rounded-xl p-4 font-mono text-sm">
         {lines.map((line, i) => (
           <motion.div key={`${step}-${i}`} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: i * 0.1 }}
-            className="text-slate-200 py-0.5">{line || <span className="text-slate-700">// removed</span>}</motion.div>
+            className="text-slate-200 py-0.5">{line || <span className="text-slate-500">// removed</span>}</motion.div>
         ))}
       </div>
       {step === 1 && <p className="text-xs text-amber-500 mt-2 text-center">移除 {'{ }'} ...</p>}
