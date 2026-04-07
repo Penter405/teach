@@ -16,6 +16,16 @@ function runMiddleware(req, res, fn) {
 
 // Ensure the client ID matches your Vercel env variable names
 const client = new OAuth2Client(process.env.Client_ID);
+const allowedGoogleDomain = 'gmail.com';
+
+function isAllowedGoogleEmail(email) {
+  if (typeof email !== 'string') {
+    return false;
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  return normalizedEmail.endsWith(`@${allowedGoogleDomain}`);
+}
 
 module.exports = async (req, res) => {
   await runMiddleware(req, res, cors);
@@ -36,6 +46,14 @@ module.exports = async (req, res) => {
     });
     const payload = ticket.getPayload();
     const { sub: googleId, email, name } = payload;
+
+    // Only allow verified personal Gmail accounts to sign in.
+    if (!payload.email_verified || !isAllowedGoogleEmail(email)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Only verified @gmail.com accounts are allowed.',
+      });
+    }
 
     await connectToDatabase();
 
