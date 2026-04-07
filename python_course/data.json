@@ -17,7 +17,8 @@
           "title": "Input → Process → Output",
           "titleEn": "Input Process Output",
           "pdfPages": [
-            3
+            3,
+            45
           ],
           "content": [
             {
@@ -32,6 +33,11 @@
             {
               "type": "paragraph",
               "text": "所有程式都遵循同一個核心模式：輸入資料 (Input) → 處理資料 (Process) → 輸出資料 (Output)。不管程式多複雜，本質上都在做這三件事。"
+            },
+            {
+              "type": "diagram",
+              "diagramId": "input-process-output",
+              "caption": "輸入資料進入程式，經過 code 處理後，再把結果交還給你。"
             },
             {
               "type": "animation",
@@ -100,7 +106,8 @@
           "title": "程式 = 資料處理",
           "titleEn": "Code is Data Processing",
           "pdfPages": [
-            4
+            4,
+            49
           ],
           "content": [
             {
@@ -115,6 +122,10 @@
             {
               "type": "paragraph",
               "text": "程式 = 對資料做很多事。遊戲、網站、AI 都是在收集 → 儲存 → 處理 → 輸出資料的流程。"
+            },
+            {
+              "type": "paragraph",
+              "text": "Python 也是程序導向語言。你寫下的每個步驟都要有一定的邏輯順序，電腦才知道該先拿資料、再處理、最後輸出。"
             },
             {
               "type": "callout",
@@ -175,7 +186,8 @@
           "title": "拆解問題的思維",
           "titleEn": "Decomposing Problems",
           "pdfPages": [
-            5
+            5,
+            50
           ],
           "content": [
             {
@@ -266,7 +278,9 @@
           "title": "直譯器 vs 編譯器",
           "titleEn": "Interpreter vs Compiler",
           "pdfPages": [
-            7
+            6,
+            7,
+            46
           ],
           "content": [
             {
@@ -277,6 +291,10 @@
             {
               "type": "heading",
               "text": "直譯器 vs 編譯器"
+            },
+            {
+              "type": "paragraph",
+              "text": "Python 介紹可以先拆成三塊：用直譯器、物件導向、反射。第一步先理解程式到底是怎麼被執行起來的。"
             },
             {
               "type": "paragraph",
@@ -335,19 +353,26 @@
         },
         {
           "id": "les-03-02",
-          "title": "Class 與 Object",
-          "titleEn": "Class and Object",
+          "title": "Class、Object 與萬物皆物件",
+          "titleEn": "Classes, Objects, and Everything as Objects",
           "pdfPages": [
-            8
+            8,
+            47,
+            56,
+            57
           ],
           "content": [
             {
               "type": "heading",
-              "text": "Class 與 Object"
+              "text": "Class、Object 與萬物皆物件"
             },
             {
               "type": "paragraph",
               "text": "初始化一個 class（如「人類」），將其放入變數中，該變數就稱為 object（物件）。變數本身叫做 variable。"
+            },
+            {
+              "type": "paragraph",
+              "text": "現在的 Python 很強調物件導向：很多 data 都被包成 class 來看待，連 function 也可以被當成一種 class 成員來理解。這也是你常常看到 `type(...)` 回傳 `<class '...'>` 的原因。"
             },
             {
               "type": "diagram",
@@ -355,14 +380,25 @@
               "caption": "Class（藍圖）→ 實例化 → Object（實體）"
             },
             {
+              "type": "animation",
+              "animationId": "class-world",
+              "caption": "從 class 到 object，再到 data / function 一起進入物件世界",
+              "steps": [
+                "先理解 class 是藍圖，object 是實際做出來的東西",
+                "s = 5 其實就是拿 int 這個 class 做出 object",
+                "字串等 data 也都可以用 type() 看見 class 身份",
+                "連 function 都能被納入 Python 的 class 世界觀"
+              ]
+            },
+            {
               "type": "code",
               "language": "python",
-              "code": "# 在 Python 中，一切都是物件\n# s = 5 其實就是 s = int(value=5)\nprint(type(5))       # <class 'int'>\nprint(type(\"hello\")) # <class 'str'>\nprint(type([1,2]))   # <class 'list'>"
+              "code": "# 在 Python 中，很多東西都能用 class / object 理解\ns = 5\nprint(type(s))        # <class 'int'>\nprint(type(\"hello\"))  # <class 'str'>\n\ndef greet():\n    return \"hi\"\n\nprint(type(greet))    # <class 'function'>"
             },
             {
               "type": "callout",
               "label": "記住",
-              "text": "class = 論文（藍圖），object = 實作（實體）。class 定義了設計圖，object 是根據設計圖造出來的東西。"
+              "text": "class = 論文（藍圖），object = 實作（實體）。在 Python 的世界裡，data 幾乎都能被放進這套思維裡，所以你越早習慣 `type()` 的輸出，就越容易掌握後面的課。"
             },
             {
               "type": "quiz",
@@ -377,11 +413,11 @@
                   "answer": 1
                 },
                 {
-                  "question": "在 Python 中，type(5) 會回傳什麼？",
+                  "question": "在 Python 中，type(greet) 最可能回傳什麼？",
                   "options": [
-                    "<class 'int'>",
-                    "5",
-                    "number"
+                    "<class 'function'>",
+                    "greet() 的結果",
+                    "<class 'method'>"
                   ],
                   "answer": 0
                 }
@@ -391,24 +427,42 @@
         },
         {
           "id": "les-03-03",
-          "title": "Property 與 Method",
-          "titleEn": "Properties and Methods",
+          "title": "Property、Method 與內建 Class",
+          "titleEn": "Properties, Methods, and Built-in Classes",
           "pdfPages": [
-            9
+            9,
+            52,
+            53,
+            54
           ],
           "content": [
             {
               "type": "heading",
-              "text": "Property 與 Method"
+              "text": "Property、Method 與內建 Class"
             },
             {
               "type": "paragraph",
               "text": "Class 內部可以設定 Property（屬性）與 Method（方法）。Property 是「物件擁有的資料」，Method 是「物件可以做的動作」。"
             },
             {
+              "type": "paragraph",
+              "text": "普通 Python code 常常就是 function + class 的組合。除了你自己寫的 class，Python 也已經內建很多 class，例如 `int`、`str`，所以 `s = 8`、`text = \"hi\"` 背後其實都有對應的物件結構。"
+            },
+            {
+              "type": "animation",
+              "animationId": "builtin-class",
+              "caption": "內建 class：`int` 與 `str` 不是魔法，而是已經寫好的 class",
+              "steps": [
+                "`s = 8` 可以看成 `s = int(value=8)`",
+                "`int` class 造出 object，再被變數接住",
+                "`text = \"hi there\"` 代表 text 是 `str` 物件",
+                "`str` 內建 method，例如 `split()`，可以把資料拆開再用"
+              ]
+            },
+            {
               "type": "code",
               "language": "python",
-              "code": "import math\n\n# Property：主詞.受詞\nprint(math.pi)        # 3.14159...\n\n# Method：主詞.動詞(受詞)\nprint(math.gcd(12, 8)) # 4"
+              "code": "import math\n\n# Property：主詞.受詞\nprint(math.pi)           # 3.14159...\n\n# Method：主詞.動詞(受詞)\nprint(math.gcd(12, 8))   # 4\n\ns = 8\nprint(type(s))           # <class 'int'>\ntext = \"hi there\"\nprint(text.split(\" \"))  # ['hi', 'there']"
             },
             {
               "type": "list",
@@ -425,6 +479,10 @@
                 {
                   "term": "Event",
                   "definition": "事件 → 由特定觸發條件啟動"
+                },
+                {
+                  "term": "Built-in Class",
+                  "definition": "像 int、str 這些 Python 已經寫好的 class，可以直接建立 object 並呼叫 method"
                 }
               ]
             },
@@ -441,13 +499,13 @@
                   "answer": 0
                 },
                 {
-                  "question": "math.gcd(12, 8) 使用的語法模式是？",
+                  "question": "`text = \"hi there\"` 之後呼叫 `text.split(\" \")`，代表什麼？",
                   "options": [
-                    "主詞.受詞",
-                    "主詞.動詞(受詞)",
-                    "動詞(主詞)"
+                    "`text` 是 `str` 物件，而且 `split()` 是它的 method",
+                    "`text` 只是單純文字，不能呼叫 method",
+                    "`split()` 是全域函式，與 `str` 無關"
                   ],
-                  "answer": 1
+                  "answer": 0
                 }
               ]
             }
@@ -729,7 +787,8 @@
             18,
             19,
             20,
-            21
+            21,
+            58
           ],
           "content": [
             {
@@ -744,6 +803,11 @@
             {
               "type": "paragraph",
               "text": "接下來的課程將依照以下流程展開：收集資料 → 儲存資料 → 處理資料 → 刪除沒用的資料 → 寫出有用的資料 → 了解變數與資料的關係。"
+            },
+            {
+              "type": "callout",
+              "label": "總覽",
+              "text": "從 data 的角度看，前半段是「初始化」：把單一資料或複合資料放進 variable；後半段則是「應用」：更改 type、delete、以及把資料拿去做真正有用的事。"
             },
             {
               "type": "animation",
@@ -891,22 +955,13 @@
             22,
             23,
             24,
-            25,
-            26,
-            27,
-            28,
-            29,
-            30,
-            31,
-            32,
-            33,
-            34
+            25
           ],
           "content": [
             {
               "type": "callout",
               "label": "結構對應（whats_in_canva2）",
-              "text": "Page 26-34；Immutable vs Mutable：換值=換地址；Mutable 原址修改；Copy vs Reference 用 id() 分辨。"
+              "text": "Page 22-25；建立 variable 指向 RAM address，若沒有變數指向，資料就可能被回收。"
             },
             {
               "type": "heading",
@@ -1256,6 +1311,280 @@
         },
         {
           "id": "les-04-03",
+          "title": "變數與資料的關係",
+          "titleEn": "Variables and Data Relationships",
+          "pdfPages": [
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34
+          ],
+          "content": [
+            {
+              "type": "callout",
+              "label": "結構對應（whats_in_canva2）",
+              "text": "Page 26-34；Immutable vs Mutable：換值 = 換地址，Mutable 可原址修改；Copy vs Reference 用 id() 分辨。"
+            },
+            {
+              "type": "heading",
+              "text": "Immutable Object（不可變物件）"
+            },
+            {
+              "type": "paragraph",
+              "text": "Immutable object 裡面的資料不能被修改 (Data const)。如果你想改變變數的資料，只能讓變數「換一個家」——也就是指向另一個新的 object。"
+            },
+            {
+              "type": "animation",
+              "animationId": "immutable-swap",
+              "caption": "不可變物件：變數改值 = 搬家（指向新物件）",
+              "steps": [
+                "a = 5 → a 指向存放 5 的物件",
+                "a = 10 → 不是修改 5，而是建立新物件 10",
+                "a 現在指向新物件 10",
+                "舊物件 5 若無其他引用，會被回收"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "a = 5\nprint(id(a))   # 例如：140234567890\n\na = 10\nprint(id(a))   # 不同的位址！140234567920\n# 5 沒有被修改，a 只是「搬家」指向新的 10"
+            },
+            {
+              "type": "callout",
+              "label": "重要",
+              "text": "Immutable = 資料不能被修改。想改值？只能換一個新的物件，讓變數指向它。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "a = 5 然後 a = 10，發生了什麼事？",
+                  "options": [
+                    "5 被修改成 10",
+                    "a 指向了一個新的物件 10",
+                    "記憶體位址不變"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "以下哪個是 Immutable？",
+                  "options": [
+                    "list",
+                    "dict",
+                    "int"
+                  ],
+                  "answer": 2
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "變數作用域 (Scope)"
+            },
+            {
+              "type": "paragraph",
+              "text": "在函式中若要修改外部變數，可以使用 global（全域）或 nonlocal（非本地）關鍵字，讓 code 知道你想對哪個變數做事。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "x = 10  # 全域變數\n\ndef change_x():\n    global x      # 告訴 Python：我要用外面的 x\n    x = 20\n\nchange_x()\nprint(x)  # 20\n\n# ─────────────────────\ndef outer():\n    y = 5\n    def inner():\n        nonlocal y  # 告訴 Python：我要用外層的 y\n        y = 15\n    inner()\n    print(y)       # 15\n\nouter()"
+            },
+            {
+              "type": "callout",
+              "label": "注意",
+              "text": "不加 global/nonlocal 的話，函式內的同名變數會被當成「新的區域變數」，不會影響外部。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "在函式中要修改全域變數，需要用什麼關鍵字？",
+                  "options": [
+                    "local",
+                    "global",
+                    "extern"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "不加 global 的話，函式內的同名變數會怎樣？",
+                  "options": [
+                    "修改全域變數",
+                    "被當成新的區域變數",
+                    "報錯"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "Mutable Object（可變物件）"
+            },
+            {
+              "type": "paragraph",
+              "text": "Mutable object 可以改變裡面的資料、把 object 變大或變小。但要注意兩種行為的差異："
+            },
+            {
+              "type": "animation",
+              "animationId": "mutable-ref",
+              "caption": "Copy（搬出去住）vs Reference（改裝房子）",
+              "steps": [
+                "建立 list a = [1, 2, 3]",
+                "b = a → b 和 a 指向同一個物件（Reference）",
+                "修改 a.append(4) → b 也會受到影響！",
+                "c = a.copy() → c 是獨立副本（Copy）",
+                "修改 a.append(5) → c 不受影響"
+              ]
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "搬出去住 (Copy)",
+                  "definition": "只影響某個 variable，建立了一個獨立的新物件"
+                },
+                {
+                  "term": "改裝房子 (Reference)",
+                  "definition": "會影響所有指向這個 object 的 variable，因為是同一個物件"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# Reference（改裝房子）\na = [1, 2, 3]\nb = a              # b 和 a 指向同一個 list\na.append(4)\nprint(b)           # [1, 2, 3, 4] — b 也變了！\n\n# Copy（搬出去住）\nc = a.copy()       # c 是獨立的副本\na.append(5)\nprint(c)           # [1, 2, 3, 4] — c 不受影響\n\n# 用 id() 檢查\nprint(id(a) == id(b))  # True — 同一個物件\nprint(id(a) == id(c))  # False — 不同物件"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "b = a（a 是 list）之後，修改 a 會影響 b 嗎？",
+                  "options": [
+                    "不會",
+                    "會，因為是 Reference",
+                    "會報錯"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "如何建立一個不受原 list 影響的副本？",
+                  "options": [
+                    "b = a",
+                    "b = a.copy()",
+                    "b = a + 0"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "用 id() 檢查物件身份"
+            },
+            {
+              "type": "paragraph",
+              "text": "對於 mutable object，你可能不確定操作後是 copy 還是 reference。可以用 id() function 來檢查兩個變數是否指向同一個物件。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "a = [1, 2, 3]\nb = a           # reference\nc = a[:]        # copy (用切片)\nd = list(a)     # copy (用建構子)\n\nprint(id(a))    # 例如：140234567890\nprint(id(b))    # 140234567890 ← 同一個！\nprint(id(c))    # 140234568000 ← 不同\nprint(id(d))    # 140234568100 ← 不同\n\n# 也可以用 is 運算子\nprint(a is b)   # True\nprint(a is c)   # False"
+            },
+            {
+              "type": "callout",
+              "label": "記住",
+              "text": "id() 回傳物件的唯一識別碼（記憶體位址）。兩個變數 id 相同 = 它們是同一個物件。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "a = [1,2]; b = a; a is b 的結果是？",
+                  "options": [
+                    "True",
+                    "False",
+                    "Error"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "用什麼可以檢查兩個變數是否指向同一個物件？",
+                  "options": [
+                    "==",
+                    "id() 或 is",
+                    "type()"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "Immutable vs Mutable 分類"
+            },
+            {
+              "type": "paragraph",
+              "text": "Python 的資料型態可以明確分為不可變 (Immutable) 和可變 (Mutable) 兩大類。理解這個分類對於寫出正確的程式至關重要。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "Immutable",
+                  "definition": "int, float, complex, bool, str, tuple, frozenset, bytes — 不能修改內容"
+                },
+                {
+                  "term": "Mutable",
+                  "definition": "list, set, dict — 可以修改內容"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# Immutable 類型\nx = 5              # int\ny = 3.14           # float\nz = True           # bool\ns = \"hello\"        # str\nt = (1, 2, 3)      # tuple\n\n# Mutable 類型\na = [1, 2, 3]      # list — 可以 append, remove\nb = {1, 2, 3}      # set — 可以 add, discard\nc = {\"k\": \"v\"}     # dict — 可以新增/修改鍵值對"
+            },
+            {
+              "type": "callout",
+              "label": "記住",
+              "text": "簡單規則：需要被修改的容器用 list/dict/set，不需要被修改的用 tuple/frozenset/str。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "以下哪個是 Mutable 類型？",
+                  "options": [
+                    "str",
+                    "tuple",
+                    "list"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "需要一個不會被修改的序列，應該用？",
+                  "options": [
+                    "list",
+                    "tuple",
+                    "dict"
+                  ],
+                  "answer": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-04-04",
           "title": "處理資料：程式結構",
           "titleEn": "Processing Data: Code Structure",
           "pdfPages": [
@@ -1265,7 +1594,8 @@
             38,
             39,
             40,
-            41
+            41,
+            51
           ],
           "content": [
             {
@@ -1276,6 +1606,11 @@
             {
               "type": "heading",
               "text": "C 語言的程式結構"
+            },
+            {
+              "type": "diagram",
+              "diagramId": "python-code-types",
+              "caption": "Python code 可先分成普通 code 與特別 code；特別 code 常見就是 if / else / for / while。"
             },
             {
               "type": "paragraph",
@@ -1415,7 +1750,7 @@
           ]
         },
         {
-          "id": "les-04-04",
+          "id": "les-04-05",
           "title": "Return：寫出有用的資料",
           "titleEn": "Return: Produce Useful Data",
           "pdfPages": [

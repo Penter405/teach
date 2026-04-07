@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Bolt, Zap, CheckCircle2, ChevronRight, Play, Pause, SkipBack, SkipForward, ArrowRight, ExternalLink, XCircle, Trophy, Code2 } from 'lucide-react';
+import { Bolt, Zap, CheckCircle2, ChevronRight, Play, SkipBack, ArrowRight, ExternalLink, XCircle, Trophy, Code2 } from 'lucide-react';
 import { ContentBlock, QuizQuestion, PracticeProblem } from './courseData';
 
 interface LessonContentProps {
@@ -442,55 +442,11 @@ const CBPDiagram = () => (
 // ═══════════════════════════════════════════════
 // ── ANIMATIONS ──
 // ═══════════════════════════════════════════════
-// Respect OS-level reduced-motion preference to avoid unexpected motion
-function usePrefersReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return;
-
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const update = (event: MediaQueryList | MediaQueryListEvent) => {
-      setPrefersReducedMotion('matches' in event ? event.matches : (event as MediaQueryList).matches);
-    };
-
-    update(mediaQuery);
-    mediaQuery.addEventListener?.('change', update);
-    mediaQuery.addListener?.(update);
-
-    return () => {
-      mediaQuery.removeEventListener?.('change', update);
-      mediaQuery.removeListener?.(update);
-    };
-  }, []);
-
-  return prefersReducedMotion;
-}
-
 function AnimationStepper({ steps, children }: { steps: string[]; children: (step: number) => React.ReactNode }) {
   const safeSteps = steps?.length ? steps : [''];
   const total = safeSteps.length;
   const [step, setStep] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const prefersReducedMotion = usePrefersReducedMotion();
 
-  useEffect(() => {
-    setStep(0);
-  }, [total]);
-
-  useEffect(() => {
-    if (prefersReducedMotion) setIsPlaying(false);
-  }, [prefersReducedMotion]);
-
-  useEffect(() => {
-    if (!isPlaying || prefersReducedMotion || total <= 1) return;
-    const id = window.setInterval(() => {
-      setStep((prev) => (prev + 1) % total);
-    }, 1800);
-    return () => window.clearInterval(id);
-  }, [isPlaying, prefersReducedMotion, total]);
-
-  const goTo = (idx: number) => setStep(Math.min(total - 1, Math.max(0, idx)));
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800 mb-8 w-full overflow-hidden">
       <div className="flex justify-center w-full min-h-[200px] items-center py-4">
@@ -499,58 +455,16 @@ function AnimationStepper({ steps, children }: { steps: string[]; children: (ste
       <div className="mt-4 px-2">
         <div className="flex items-center gap-1 mb-3">
           {safeSteps.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => {
-                setIsPlaying(false);
-                goTo(i);
-              }}
-              className={`h-2 flex-1 rounded-full transition-colors duration-300 ${i <= step ? 'bg-cyan-500' : 'bg-slate-200 dark:bg-slate-700'}`}
-              aria-label={`Go to step ${i + 1}`}
-            />
+            <div key={i} className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${i <= step ? 'bg-cyan-500' : 'bg-slate-200 dark:bg-slate-700'}`} />
           ))}
         </div>
         <p className="text-sm text-slate-600 dark:text-slate-400 font-medium text-center mb-4 min-h-[40px]">
-          Step {step + 1} of {total}: {safeSteps[step]}
+          Step {step + 1}: {safeSteps[step]}
         </p>
-        <div className="flex justify-center gap-3 flex-wrap">
-          <button
-            onClick={() => {
-              setIsPlaying(false);
-              setStep(0);
-            }}
-            className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-            aria-label="Reset"
-          >
-            <SkipBack size={16} />
-          </button>
-          <button
-            onClick={() => {
-              setIsPlaying(false);
-              setStep(Math.max(0, step - 1));
-            }}
-            className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-            aria-label="Previous"
-          >
-            <ChevronRight size={16} className="rotate-180" />
-          </button>
-          <button
-            onClick={() => setIsPlaying((p) => !p)}
-            className="p-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 transition-colors font-medium text-sm flex items-center gap-1"
-            aria-label={isPlaying ? 'Pause auto-play' : 'Play animation'}
-          >
-            {isPlaying ? <Pause size={16} /> : <Play size={16} />} {isPlaying ? 'Pause' : 'Play'}
-          </button>
-          <button
-            onClick={() => {
-              setIsPlaying(false);
-              setStep(Math.min(total - 1, step + 1));
-            }}
-            className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-            aria-label="Next"
-          >
-            <SkipForward size={16} />
-          </button>
+        <div className="flex justify-center gap-3">
+          <button onClick={() => setStep(0)} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Reset"><SkipBack size={16} /></button>
+          <button onClick={() => setStep(Math.max(0, step - 1))} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Previous"><ChevronRight size={16} className="rotate-180" /></button>
+          <button onClick={() => setStep(Math.min(total - 1, step + 1))} className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 transition-colors font-medium text-sm flex items-center gap-1"><Play size={14} /> Next</button>
         </div>
       </div>
     </div>
@@ -565,6 +479,8 @@ function RenderAnimation({ block }: { block: ContentBlock }) {
     'data-flow-animation': (s) => <DataFlowAnim step={s} />,
     'problem-decompose': (s) => <ProblemDecomposeAnim step={s} />,
     'interpreter-exec': (s) => <InterpreterExecAnim step={s} />,
+    'class-world': (s) => <ClassWorldAnim step={s} />,
+    'builtin-class': (s) => <BuiltinClassAnim step={s} />,
     'self-binding': (s) => <SelfBindingAnim step={s} />,
     'reflection-inspect': (s) => <ReflectionInspectAnim step={s} />,
     'data-pipeline': (s) => <DataPipelineAnim step={s} />,
@@ -621,19 +537,27 @@ const DataFlowAnim = ({ step }: { step: number }) => (
         <span className="px-2 py-1 rounded-md bg-white/70 dark:bg-white/10 border border-cyan-300 dark:border-cyan-700 shadow-sm">
           WASD
         </span>
-        <span className={`px-2 py-1 rounded-md border font-bold ${step === 0 ? 'bg-amber-200 border-amber-500 text-amber-900 shadow' : 'bg-white/70 dark:bg-white/10 border-cyan-200 dark:border-cyan-700 text-cyan-900 dark:text-cyan-100'}`}>
+        <motion.span
+          animate={step === 0 ? { scale: [1, 1.14, 1], boxShadow: ['0 0 0 rgba(251,191,36,0)', '0 0 18px rgba(251,191,36,0.6)', '0 0 0 rgba(251,191,36,0)'] } : { scale: 1, boxShadow: '0 0 0 rgba(251,191,36,0)' }}
+          transition={{ duration: 0.9, repeat: step === 0 ? Infinity : 0 }}
+          className={`px-2 py-1 rounded-md border font-bold ${step === 0 ? 'bg-amber-200 border-amber-500 text-amber-900 shadow' : 'bg-white/70 dark:bg-white/10 border-cyan-200 dark:border-cyan-700 text-cyan-900 dark:text-cyan-100'}`}
+        >
           F
-        </span>
+        </motion.span>
       </div>
       <div className="mt-1 text-xs text-cyan-900 dark:text-cyan-100/80">按下 F</div>
     </Box>
     <AnimArrow active={step === 0 || step === 1} />
     <Box active={step === 1} color="slate" className="min-w-[180px]">
       <div className="text-xs tracking-wide uppercase opacity-70">Process</div>
-      <div className="mt-1 font-mono text-sm bg-black/30 rounded-md px-3 py-2 border border-slate-700 text-white text-left">
+      <motion.div
+        animate={step === 1 ? { opacity: [0.72, 1, 0.72] } : { opacity: 1 }}
+        transition={{ duration: 1.2, repeat: step === 1 ? Infinity : 0 }}
+        className="mt-1 font-mono text-sm bg-black/30 rounded-md px-3 py-2 border border-slate-700 text-white text-left"
+      >
         if (press F):<br />
         &nbsp;&nbsp;enter_car()
-      </div>
+      </motion.div>
       <div className="mt-1 text-xs text-slate-200/80">程式判斷附近車輛</div>
     </Box>
     <AnimArrow active={step === 1 || step === 2} />
@@ -641,7 +565,11 @@ const DataFlowAnim = ({ step }: { step: number }) => (
       <div className="text-xs tracking-wide uppercase opacity-70">Output · Secondary Screen</div>
       <div className="mt-2 w-full rounded-lg border border-purple-300 dark:border-purple-700 bg-white/70 dark:bg-purple-900/30 p-2 shadow-inner">
         <div className="text-[11px] text-purple-700 dark:text-purple-200 font-semibold mb-1">顯示器</div>
-        <div className="flex items-center justify-center text-2xl">🚶‍♂️➡️🚗</div>
+        <div className="flex items-center justify-center text-2xl gap-2 overflow-hidden">
+          <motion.span animate={step === 2 ? { x: [0, 14, 26], opacity: [1, 1, 0.95] } : { x: 0, opacity: 1 }} transition={{ duration: 1.4, repeat: step === 2 ? Infinity : 0, repeatDelay: 0.2 }}>🚶‍♂️</motion.span>
+          <motion.span animate={step === 2 ? { opacity: [0.2, 1, 0.2], x: [0, 4, 0] } : { opacity: 0.5, x: 0 }} transition={{ duration: 1, repeat: step === 2 ? Infinity : 0 }}>→</motion.span>
+          <span>🚗</span>
+        </div>
         <div className="text-[11px] text-purple-900 dark:text-purple-100/80 text-center mt-1">螢幕提示「進入車輛」</div>
       </div>
     </Box>
@@ -707,6 +635,109 @@ const SelfBindingAnim = ({ step }: { step: number }) => {
           self.name = Lucky.name = "Lucky" ✓
         </motion.div>
       )}
+    </div>
+  );
+};
+
+const ClassWorldAnim = ({ step }: { step: number }) => {
+  const examples = [
+    { title: 's = 5', detail: "type(s) → <class 'int'>", color: 'amber', showAt: 1 },
+    { title: 'text = "hi"', detail: "type(text) → <class 'str'>", color: 'green', showAt: 2 },
+    { title: 'function greet()', detail: "type(greet) → <class 'function'>", color: 'slate', showAt: 3 },
+  ];
+
+  return (
+    <div className="w-full max-w-xl flex flex-col gap-4">
+      <div className="flex items-center justify-center gap-3 flex-wrap">
+        <Box active={step <= 1} color="cyan" className="min-w-[140px]">class</Box>
+        <motion.div animate={{ opacity: step >= 1 ? 1 : 0.25, x: step >= 1 ? [0, 6, 0] : 0 }} transition={{ duration: 0.8, repeat: step >= 1 ? Infinity : 0 }} className="text-slate-400 text-2xl font-bold">
+          →
+        </motion.div>
+        <Box active={step >= 1} color="purple" className="min-w-[140px]">object</Box>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-3">
+        {examples.map((example, index) => (
+          <motion.div
+            key={example.title}
+            animate={{ opacity: step >= example.showAt ? 1 : 0.18, y: step >= example.showAt ? [0, -4, 0] : 8, scale: step === example.showAt ? [1, 1.04, 1] : 1 }}
+            transition={{ duration: 0.9, repeat: step === example.showAt ? Infinity : 0, delay: index * 0.08 }}
+            className={`rounded-2xl border p-4 text-left shadow-sm ${
+              example.color === 'amber'
+                ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                : example.color === 'green'
+                  ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                  : 'bg-slate-900 border-slate-700 text-white'
+            }`}
+          >
+            <div className="font-mono text-sm font-bold">{example.title}</div>
+            <div className={`mt-2 text-xs ${example.color === 'slate' ? 'text-slate-300' : 'text-slate-600 dark:text-slate-300'}`}>{example.detail}</div>
+          </motion.div>
+        ))}
+      </div>
+
+      <motion.div
+        animate={{ opacity: step >= 3 ? 1 : 0.28, y: step >= 3 ? [0, -3, 0] : 0 }}
+        transition={{ duration: 1.1, repeat: step >= 3 ? Infinity : 0 }}
+        className="rounded-2xl border border-cyan-200 bg-cyan-50 px-4 py-3 text-center text-sm font-medium text-cyan-900 dark:border-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-100"
+      >
+        Python 會把很多 data 與 function 都放進 class / object 的世界觀裡。
+      </motion.div>
+    </div>
+  );
+};
+
+const BuiltinClassAnim = ({ step }: { step: number }) => {
+  const splitPieces = step >= 3 ? ['hi', 'there'] : ['hi there'];
+
+  return (
+    <div className="w-full max-w-xl flex flex-col gap-4">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <motion.div
+          animate={{ scale: step <= 1 ? [1, 1.03, 1] : 1, opacity: 1 }}
+          transition={{ duration: 1, repeat: step <= 1 ? Infinity : 0 }}
+          className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-left dark:border-amber-800 dark:bg-amber-900/20"
+        >
+          <div className="font-mono text-sm font-bold text-amber-900 dark:text-amber-100">s = 8</div>
+          <div className="mt-2 text-xs text-amber-800 dark:text-amber-200">其實可以想成 `s = int(value=8)`</div>
+          <motion.div
+            animate={{ opacity: step >= 1 ? 1 : 0.15, x: step >= 1 ? [0, 8, 0] : 0 }}
+            transition={{ duration: 0.9, repeat: step >= 1 ? Infinity : 0 }}
+            className="mt-3 rounded-xl border border-amber-300 bg-white/80 px-3 py-2 font-mono text-xs text-amber-900 shadow-sm dark:border-amber-700 dark:bg-black/20 dark:text-amber-100"
+          >
+            int(value=8) → object
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          animate={{ scale: step >= 2 ? [1, 1.03, 1] : 1, opacity: step >= 2 ? 1 : 0.32 }}
+          transition={{ duration: 1, repeat: step >= 2 ? Infinity : 0 }}
+          className="rounded-2xl border border-green-200 bg-green-50 p-4 text-left dark:border-green-800 dark:bg-green-900/20"
+        >
+          <div className="font-mono text-sm font-bold text-green-900 dark:text-green-100">text = "hi there"</div>
+          <div className="mt-2 text-xs text-green-800 dark:text-green-200">str 物件內建 method，例如 `split()`</div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {splitPieces.map((piece, index) => (
+              <motion.span
+                key={`${piece}-${index}`}
+                initial={{ opacity: 0.2, y: 6 }}
+                animate={{ opacity: 1, y: 0, x: step >= 3 ? [0, index === 0 ? -6 : 6, 0] : 0 }}
+                transition={{ duration: 0.7, repeat: step >= 3 ? Infinity : 0 }}
+                className="rounded-full border border-green-300 bg-white/90 px-3 py-1 font-mono text-xs text-green-900 dark:border-green-700 dark:bg-black/20 dark:text-green-100"
+              >
+                {piece}
+              </motion.span>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      <motion.div
+        animate={{ opacity: step >= 2 ? 1 : 0.22 }}
+        className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-center font-mono text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-200"
+      >
+        `int`、`str` 都是內建 class，所以它們有自己的 type、property 和 method。
+      </motion.div>
     </div>
   );
 };
