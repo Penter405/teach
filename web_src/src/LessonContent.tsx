@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Bolt, Zap, CheckCircle2, ChevronRight, Play, SkipBack, SkipForward, ArrowRight, ExternalLink, XCircle, Trophy, Code2 } from 'lucide-react';
+import { Bolt, Zap, CheckCircle2, ChevronRight, Play, Pause, SkipBack, SkipForward, ArrowRight, ExternalLink, XCircle, Trophy, Code2 } from 'lucide-react';
 import { ContentBlock, QuizQuestion, PracticeProblem } from './courseData';
 
 interface LessonContentProps {
@@ -442,10 +442,55 @@ const CBPDiagram = () => (
 // ═══════════════════════════════════════════════
 // ── ANIMATIONS ──
 // ═══════════════════════════════════════════════
+// Respect OS-level reduced-motion preference to avoid unexpected motion
+function usePrefersReducedMotion() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = (event: MediaQueryList | MediaQueryListEvent) => {
+      setPrefersReducedMotion('matches' in event ? event.matches : (event as MediaQueryList).matches);
+    };
+
+    update(mediaQuery);
+    mediaQuery.addEventListener?.('change', update);
+    mediaQuery.addListener?.(update);
+
+    return () => {
+      mediaQuery.removeEventListener?.('change', update);
+      mediaQuery.removeListener?.(update);
+    };
+  }, []);
+
+  return prefersReducedMotion;
+}
 
 function AnimationStepper({ steps, children }: { steps: string[]; children: (step: number) => React.ReactNode }) {
+  const safeSteps = steps?.length ? steps : [''];
+  const total = safeSteps.length;
   const [step, setStep] = useState(0);
-  const total = steps.length;
+  const [isPlaying, setIsPlaying] = useState(true);
+  const prefersReducedMotion = usePrefersReducedMotion();
+
+  useEffect(() => {
+    setStep(0);
+  }, [total]);
+
+  useEffect(() => {
+    if (prefersReducedMotion) setIsPlaying(false);
+  }, [prefersReducedMotion]);
+
+  useEffect(() => {
+    if (!isPlaying || prefersReducedMotion || total <= 1) return;
+    const id = window.setInterval(() => {
+      setStep((prev) => (prev + 1) % total);
+    }, 1800);
+    return () => window.clearInterval(id);
+  }, [isPlaying, prefersReducedMotion, total]);
+
+  const goTo = (idx: number) => setStep(Math.min(total - 1, Math.max(0, idx)));
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800 mb-8 w-full overflow-hidden">
       <div className="flex justify-center w-full min-h-[200px] items-center py-4">
@@ -453,17 +498,59 @@ function AnimationStepper({ steps, children }: { steps: string[]; children: (ste
       </div>
       <div className="mt-4 px-2">
         <div className="flex items-center gap-1 mb-3">
-          {steps.map((_, i) => (
-            <div key={i} className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${i <= step ? 'bg-cyan-500' : 'bg-slate-200 dark:bg-slate-700'}`} />
+          {safeSteps.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                setIsPlaying(false);
+                goTo(i);
+              }}
+              className={`h-2 flex-1 rounded-full transition-colors duration-300 ${i <= step ? 'bg-cyan-500' : 'bg-slate-200 dark:bg-slate-700'}`}
+              aria-label={`Go to step ${i + 1}`}
+            />
           ))}
         </div>
         <p className="text-sm text-slate-600 dark:text-slate-400 font-medium text-center mb-4 min-h-[40px]">
-          Step {step + 1}: {steps[step]}
+          Step {step + 1} of {total}: {safeSteps[step]}
         </p>
-        <div className="flex justify-center gap-3">
-          <button onClick={() => setStep(0)} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Reset"><SkipBack size={16} /></button>
-          <button onClick={() => setStep(Math.max(0, step - 1))} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Previous"><ChevronRight size={16} className="rotate-180" /></button>
-          <button onClick={() => setStep(Math.min(total - 1, step + 1))} className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 transition-colors font-medium text-sm flex items-center gap-1"><Play size={14} /> Next</button>
+        <div className="flex justify-center gap-3 flex-wrap">
+          <button
+            onClick={() => {
+              setIsPlaying(false);
+              setStep(0);
+            }}
+            className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            aria-label="Reset"
+          >
+            <SkipBack size={16} />
+          </button>
+          <button
+            onClick={() => {
+              setIsPlaying(false);
+              setStep(Math.max(0, step - 1));
+            }}
+            className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            aria-label="Previous"
+          >
+            <ChevronRight size={16} className="rotate-180" />
+          </button>
+          <button
+            onClick={() => setIsPlaying((p) => !p)}
+            className="p-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 transition-colors font-medium text-sm flex items-center gap-1"
+            aria-label={isPlaying ? 'Pause auto-play' : 'Play animation'}
+          >
+            {isPlaying ? <Pause size={16} /> : <Play size={16} />} {isPlaying ? 'Pause' : 'Play'}
+          </button>
+          <button
+            onClick={() => {
+              setIsPlaying(false);
+              setStep(Math.min(total - 1, step + 1));
+            }}
+            className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            aria-label="Next"
+          >
+            <SkipForward size={16} />
+          </button>
         </div>
       </div>
     </div>
