@@ -318,7 +318,7 @@ body {
 }
 
 .nav-module.expanded .nav-lessons {
-  max-height: 600px;
+  max-height: 900px;
 }
 
 .nav-lesson {
@@ -1604,4 +1604,115 @@ body {
 .sidebar-overlay.visible {
   opacity: 1;
   pointer-events: auto;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Interactive Quiz
+   ═══════════════════════════════════════════════════════ */
+.quiz-container {
+  background: var(--surface-container-lowest);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-ambient);
+}
+
+.quiz-header {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin-bottom: var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.quiz-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--tertiary-container);
+  color: var(--on-tertiary-container);
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+}
+
+.quiz-question {
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--surface-container-high);
+}
+
+.quiz-question:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.quiz-q-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--on-surface);
+  margin-bottom: var(--space-md);
+  line-height: 1.5;
+}
+
+.quiz-options {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.quiz-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--surface-container-low);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  color: var(--on-surface);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-smooth);
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.quiz-option:hover {
+  background: var(--surface-container);
+  border-color: var(--primary-container);
+  transform: translateX(4px);
+}
+
+.quiz-question.answered .quiz-option {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.quiz-question.answered .quiz-option:hover {
+  transform: none;
+  border-color: transparent;
+}
+
+.quiz-option.correct {
+  background: #d1fae5 !important;
+  border-color: #10b981 !important;
+  color: #065f46 !important;
+  opacity: 1 !important;
+  font-weight: 600;
+}
+
+.quiz-option.correct::after {
+  content: ' ✅';
+}
+
+.quiz-option.wrong {
+  background: #fee2e2 !important;
+  border-color: #ef4444 !important;
+  color: #991b1b !important;
+  opacity: 1 !important;
+  font-weight: 600;
+}
+
+.quiz-option.wrong::after {
+  content: ' ❌';
 }

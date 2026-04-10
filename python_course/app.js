@@ -1,4 +1,4 @@
-﻿/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    PythonClassPenter — Application Logic
    ═══════════════════════════════════════════════════════ */
 
@@ -138,7 +138,7 @@
         </div>
         <h1>${lesson.title}</h1>
         <p class="hero-subtitle">${lesson.titleEn}</p>
-        <span class="hero-tag">📄 Pages ${lesson.pdfPages.join('–')}</span>
+        ${lesson.pdfPages && lesson.pdfPages.length > 0 ? `<span class="hero-tag">📄 Pages ${lesson.pdfPages.join('–')}</span>` : `<span class="hero-tag">📝 Hand Notes</span>`}
       </section>
       <div class="lesson-body">
         ${bodyHtml}
@@ -200,15 +200,8 @@
       case 'list':
         return `<div class="${cls}">${renderList(block)}</div>`;
 
-      case 'animation':
-        return `<div class="${cls} animation-placeholder" style="padding:20px; background:#e0f2fe; color:#0369a1; border-radius:8px; margin-bottom:20px; font-weight:bold;">
-                  🎬 動畫/互動預留區: <span style="font-weight:normal">${esc(block.caption || block.animationId)}</span>
-                </div>`;
-
       case 'quiz':
-        return `<div class="${cls} quiz-placeholder" style="padding:20px; background:#fef3c7; color:#b45309; border-radius:8px; margin-bottom:20px; font-weight:bold;">
-                  🏆 小測驗 (Knowledge Check): <span style="font-weight:normal">共 ${block.questions?.length || 0} 題</span>
-                </div>`;
+        return `<div class="${cls}">${renderQuiz(block)}</div>`;
 
       case 'practice':
         return `<div class="${cls} practice-placeholder" style="padding:20px; background:#e0e7ff; color:#3730a3; border-radius:8px; margin-bottom:20px; font-weight:bold;">
@@ -234,6 +227,38 @@
           `).join('')}
         </div>
         ${block.caption ? `<div class="animation-caption">${esc(block.caption)}</div>` : ''}
+      </div>`;
+  }
+
+  // ── Quiz (Interactive) ──
+  function renderQuiz(block) {
+    const questions = block.questions || [];
+    const quizId = 'quiz-' + Math.random().toString(36).substr(2, 9);
+    return `
+      <div class="quiz-container" id="${quizId}">
+        <div class="quiz-header">🏆 Knowledge Check <span class="quiz-count">${questions.length} 題</span></div>
+        ${questions.map((q, qi) => `
+          <div class="quiz-question" data-answer="${q.answer}" data-qindex="${qi}">
+            <div class="quiz-q-text">${qi + 1}. ${esc(q.question)}</div>
+            <div class="quiz-options">
+              ${q.options.map((opt, oi) => `
+                <button class="quiz-option" data-option="${oi}" onclick="(function(btn){
+                  var qEl = btn.closest('.quiz-question');
+                  if (qEl.classList.contains('answered')) return;
+                  qEl.classList.add('answered');
+                  var correct = parseInt(qEl.dataset.answer);
+                  var chosen = parseInt(btn.dataset.option);
+                  if (chosen === correct) {
+                    btn.classList.add('correct');
+                  } else {
+                    btn.classList.add('wrong');
+                    qEl.querySelectorAll('.quiz-option')[correct].classList.add('correct');
+                  }
+                })(this)">${esc(opt)}</button>
+              `).join('')}
+            </div>
+          </div>
+        `).join('')}
       </div>`;
   }
 
