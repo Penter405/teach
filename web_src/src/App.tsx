@@ -20,11 +20,6 @@ import { Sidebar } from './Sidebar';
 type Page = 'login' | 'path' | 'lesson';
 
 // --- Constants ---
-const IMAGES = {
-  explorerLogin: "https://lh3.googleusercontent.com/aida-public/AB6AXuACcSj7i9fMM7i1ZctzGn1EWkZSVpiCkd5-wO3zU_xQZRL0ZZmWp8lZF4Z0_NFA1zXkrOnBYakfpuxedzESaWLGLht6jXHch91F-U2t9sw19FjTTPcvF4a_B66oWO-YolHkCGJnhH9AXj7lY-g2SsMrKKsZ5RYryaNtoNKcm-S0r2cr7L_MNsBl0otjxGnxlkAcHppQB0E_uJxLRZdsFcDlkQ4azfphOLi46RPx9U_75WUh33ubs7kNQI4i132kDSMQqtFwP49WXHnj",
-  explorerPath: "https://lh3.googleusercontent.com/aida-public/AB6AXuA_BpYUtQmzuiXe7RCk0RG_hkuOweCv-qcDXEfGlBZkqyaUa0XHcUcp5YxhOSR2SdWcDgA08otmOBAJDHxbaZJ8mcq_E5Zs8mJoEp2IiUL563mpettY115BIOSIV1w2m4-qiSmAuDYxx-x3k7x3ML72t2v27TvPhvG2iLONH9mZSrVpVXgMN8beEHYmGJlnNXZc_s40tRq48_Cz8nz5LeDBbFn2pM4JB2sYw5C1DWqBKPBoCh4oy6QdZrI2dkvbdKYYcei-s7NmmRwi",
-  explorerLesson: "https://lh3.googleusercontent.com/aida-public/AB6AXuCiUK-Xq9eqixMs_LhSsKB7uiD-tEC4NY93W5JYmrbAIhI6rHc-nW4c1qPV2gqbYmgjIddwV5BtGsRl41hYiG8LBtMJJ9n9JAWrh308PSok3Gy6Rzra2XRStRuPodOOcBzpuiBuCDtStKbfGncfXGAo4T6lpMjE_TqxKOnLPZr7WpLL0PjWQC8gAHIyUVXTYwCVaFW5CbjRgJR3rrIQIU7B0-earQu8THstKkHHxKNJgnu7EQNw9cVYwO0B7K0btPb3LyWmkiI9K35B"
-};
 
 // --- Components ---
 
@@ -175,16 +170,7 @@ const LearningPathPage = ({ onSelectModule, onSelectLesson }: { onSelectModule: 
                   <div className={`md:w-1/2 ${isEven ? 'md:pr-16 md:text-right' : 'md:pl-16 text-left'} w-full relative z-10`}>
                     <div className="bg-white/80 dark:bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-xl transition-all hover:shadow-2xl hover:border-cyan-200 dark:hover:border-slate-700">
                       
-                      {/* Explorer Image for Module 2 */}
-                      {index === 1 && (
-                        <motion.div 
-                          animate={{ y: [0, -10, 0] }}
-                          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                          className={`absolute -top-20 ${isEven ? 'right-10' : 'left-10'} w-24 h-24 z-30 hidden md:block`}
-                        >
-                          <img src={IMAGES.explorerPath} alt="Explorer" className="w-full h-full object-contain drop-shadow-2xl" referrerPolicy="no-referrer" />
-                        </motion.div>
-                      )}
+                      {/* Explorer Image Removed */}
 
                       <div className={`flex items-center gap-3 mb-4 ${isEven ? 'md:justify-end' : ''}`}>
                         <span className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xl shadow-inner">{mod.icon}</span>
@@ -364,14 +350,7 @@ const LessonPage = ({ lessonId, onBack, onLessonChange }: { lessonId: string, on
             </footer>
           </div>
           
-          <motion.img 
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 5, repeat: Infinity }}
-            src={IMAGES.explorerLesson} 
-            alt="Explorer" 
-            className="fixed bottom-10 right-10 w-24 h-24 hidden xl:block drop-shadow-2xl opacity-80 hover:opacity-100 transition-opacity" 
-            referrerPolicy="no-referrer" 
-          />
+          {/* Explorer Image Removed */}
         </main>
       </div>
     </div>
