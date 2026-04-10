@@ -7,6 +7,661 @@
   },
   "modules": [
     {
+      "id": "mod-00",
+      "title": "課程先修概念",
+      "titleEn": "Course Prerequisites",
+      "icon": "📖",
+      "lessons": [
+        {
+          "id": "les-00-01",
+          "title": "為什麼要學寫程式",
+          "titleEn": "Why Learn to Code",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "callout",
+              "label": "來源",
+              "text": "Hand Note 1 — 給初學者的入門概念。"
+            },
+            {
+              "type": "heading",
+              "text": "從數學到程式"
+            },
+            {
+              "type": "paragraph",
+              "text": "This was made for programming beginner. 在二戰時期 (WWII)，德國人造出了一台用來加密與解密的機器 (machine to encode and decode)。隨著時代演進，如果我們向更久遠看，甚至到了 1000 個世紀之後，人們想要用更簡單的方式跟電腦溝通。"
+            },
+            {
+              "type": "paragraph",
+              "text": "但電腦沒有腦袋，它只認得 machine code（機器碼）。所以人們創造了 high-level programming language（高階程式語言），讓我們可以用接近人類語言的方式，告訴電腦該做什麼事。"
+            },
+            {
+              "type": "callout",
+              "label": "重點",
+              "text": "人們不想用 machine code 跟電腦溝通，所以發明了 programming language，讓你可以用它來 tell computer what to do。"
+            },
+            {
+              "type": "heading",
+              "text": "寫程式在做什麼？"
+            },
+            {
+              "type": "paragraph",
+              "text": "All coding 要做的事情可以拆成三個部分 (three parts)：Input 資料 → Process 處理 → Output 輸出。我們可以把 coding 想成「告訴電腦要做的事」，而這些事基本上都是在對資料做操作。"
+            },
+            {
+              "type": "paragraph",
+              "text": "我們 all lazy，因為 people don't want to do things by hand。所以我們寫程式讓電腦幫我們處理。What to do, because people don't want to do things by hand, you can only use machine code, which is programming language, to tell computer what to do by hand."
+            },
+            {
+              "type": "diagram",
+              "diagramId": "basic-coding-flow",
+              "caption": "Input 資料 → Process 處理 → Output 輸出：所有程式的核心流程"
+            },
+            {
+              "type": "heading",
+              "text": "資料需要儲存在 RAM"
+            },
+            {
+              "type": "paragraph",
+              "text": "我們需要把資料存起來 (store the data)，通常會放到 RAM 裡面。在 Python 中，data 會被寫成 class，然後由一個 helper（也就是 address）幫你記住資料的位置。如果沒有人指向它，資料就會被 log out — 這就是 Garbage Collection (GC)。"
+            },
+            {
+              "type": "paragraph",
+              "text": "在 coding 裡面，當我們 input a data 並且 store 它，我們會用一個 nickname（別名），也就是 variable。例如 x=5，在 math 裡面 x 就是一個 variable 搭配 operator 和一個 constant value。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 在 Python 中，x=5 代表：\n# 定義一個 variable x，value 是 integer 5\nx = 5\n\n# 想像一下：\n# x → variable（nickname / 別名）\n# = → operator\n# 5 → value（integer）\n\n# input() 讓使用者輸入資料\ny = input()  # y=input() 就像 define a function with ()\n# 就像 f(x) → 它會 define a function，\n# data inside the ()，然後 change itself and return"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "人們為什麼發明高階程式語言？",
+                  "options": [
+                    "為了讓電腦跑更快",
+                    "因為不想用 machine code，想用更簡單的方式跟電腦溝通",
+                    "為了玩遊戲"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "所有程式的三個核心步驟是？",
+                  "options": [
+                    "Write → Compile → Run",
+                    "Input → Process → Output",
+                    "Start → Stop → Restart"
+                  ],
+                  "answer": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-00-02",
+          "title": "初學者要知道的兩件事 — Variable 與 Function",
+          "titleEn": "Two Things Beginners Need: Variable & Function",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "callout",
+              "label": "來源",
+              "text": "Hand Note 2 — 什麼是 Code：beginner head to know two things: variable and function。"
+            },
+            {
+              "type": "heading",
+              "text": "從數學看 Variable 和 Function"
+            },
+            {
+              "type": "paragraph",
+              "text": "Beginner 需要掌握兩個東西：variable（變數）和 function（函式）。在數學裡你已經見過它們了，例如：x=5 和 f(x)=4x²+3x-1。"
+            },
+            {
+              "type": "heading",
+              "text": "什麼是 Variable？"
+            },
+            {
+              "type": "paragraph",
+              "text": "x=5 means: we have a data, which is integer 5. But we don't use 5 directly, because sometimes the data we are interested in may be too hard to write, so you don't want to write it again. That's why we use a variable x to storage. We write x, computer will help us write the data."
+            },
+            {
+              "type": "callout",
+              "label": "比喻",
+              "text": "Variable 就像一個「名牌」。有時候資料太長或太複雜，不想每次都重寫，所以用一個簡短的名字（variable）代替它，電腦會幫你記住實際的值。"
+            },
+            {
+              "type": "heading",
+              "text": "什麼是 Function？"
+            },
+            {
+              "type": "paragraph",
+              "text": "f() means: there are some logic. Logic will do something to the data inside the ( ). The f(x) means: you give f() function a data. The data is saved at your computer, the name of data is x, so you write x and computer write the data stored at x."
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 數學類比\n# x = 5          → variable：存一個值\n# f(x) = 4x²+3x-1 → function：對值做運算\n\nx = 5\n\ndef f(x):\n    return 4*x**2 + 3*x - 1\n\nprint(f(x))   # f(5) = 4*25 + 15 - 1 = 114"
+            },
+            {
+              "type": "heading",
+              "text": "Function 的三種用途：Input、Process、Output"
+            },
+            {
+              "type": "paragraph",
+              "text": "Let's try to learn function about input data, process data, and output data."
+            },
+            {
+              "type": "paragraph",
+              "text": "input() → this can let user input a data to computer. If you just write \"input()\", the data will not save to any variable, but \"x = input()\" can."
+            },
+            {
+              "type": "paragraph",
+              "text": "process → 幾乎等於 Python function，可以視為 all step 裡面的 step2。我們在 step2 裡面仍然需要 function 來處理。coding step1, step2, step3 其實全都需要 function 來幫忙。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# Input：讓使用者輸入資料\nname = input(\"What is your name? \")\n\n# Process：處理資料\ngreeting = \"Hello, \" + name + \"!\"\n\n# Output：輸出資料\nprint(greeting)"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "為什麼我們需要 variable？",
+                  "options": [
+                    "讓程式看起來更長",
+                    "因為資料有時太複雜，不想每次重寫",
+                    "電腦規定一定要用"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "f(x) 中的 () 代表什麼？",
+                  "options": [
+                    "裝飾用的",
+                    "放進去要被處理的 data",
+                    "function 的名字"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "x = input() 和 input() 的差別是？",
+                  "options": [
+                    "沒有差別",
+                    "x = input() 會把輸入存到 variable，input() 不會",
+                    "input() 比較快"
+                  ],
+                  "answer": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-00-03",
+          "title": "認識資料型態 (Data Types)",
+          "titleEn": "Understanding Data Types",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "callout",
+              "label": "來源",
+              "text": "Hand Note 3 上半 — Variable 命名方式與 data type 分類。"
+            },
+            {
+              "type": "heading",
+              "text": "Variable 命名"
+            },
+            {
+              "type": "paragraph",
+              "text": "Variable 是由 naming（取一個 unique name）、operator（=）和 value 組成的。但有時候一個 variable 只能存一筆資料。That's why developer created multiple value data, which contain many data, and you can get data by index。所以我們知道有 single data 和 multiple data。"
+            },
+            {
+              "type": "heading",
+              "text": "Single Data vs Multiple Data"
+            },
+            {
+              "type": "paragraph",
+              "text": "We said by variable, after we put something into your computer with variable, you may not just save integer. Too many want save a lot of data, but you don't want initial so many variable."
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "Single Data（單一資料）",
+                  "definition": "int（整數）、float（浮點數）、string（字串，其實 string 本質上是 multiple in fact）"
+                },
+                {
+                  "term": "Multiple Data（多重資料）",
+                  "definition": "list（列表）、set（集合）、tuple（元組）、dict（字典）"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# Single data\nage = 25           # int（整數）\nheight = 175.5     # float（浮點數）\nname = \"Alice\"     # string（字串）\n\n# Multiple data\nscores = [90, 85, 78]          # list\nunique_ids = {1, 2, 3}         # set\ncoordinates = (10, 20)         # tuple\nstudent = {\"name\": \"Alice\", \"age\": 25}  # dict"
+            },
+            {
+              "type": "callout",
+              "label": "注意",
+              "text": "String 雖然看起來是一筆資料，但其實它本質上是 multiple characters in fact（多個字元組成）。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "以下哪個屬於 multiple data？",
+                  "options": [
+                    "int",
+                    "float",
+                    "list"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "string 的本質是？",
+                  "options": [
+                    "single data",
+                    "multiple characters in fact",
+                    "跟 int 一樣"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "Variable 由哪三個部分組成？",
+                  "options": [
+                    "name, operator, value",
+                    "type, name, function",
+                    "input, process, output"
+                  ],
+                  "answer": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-00-04",
+          "title": "RAM 裡發生了什麼 — House Analogy",
+          "titleEn": "What Happens in RAM — House Analogy",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "callout",
+              "label": "來源",
+              "text": "Hand Note 3 下半 + 鍵盤內容 — House diagram 與 object 概念。"
+            },
+            {
+              "type": "heading",
+              "text": "不用 Variable 的時候"
+            },
+            {
+              "type": "paragraph",
+              "text": "What's happen in your RAM when you save data with variable? If you don't use variable, and just write a data, data just shown at most in the line. It often used when you want put a argument into a function."
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 不用 variable：資料只出現在那一行\nprint(42)          # 42 用完就沒了\nprint(len(\"hello\")) # \"hello\" 用完就沒了\n\n# 用 variable：資料被存起來，可以重複使用\nx = 42\nprint(x)\nprint(x + 8)"
+            },
+            {
+              "type": "heading",
+              "text": "用 Variable 的時候：RAM 的兩種處理方式"
+            },
+            {
+              "type": "paragraph",
+              "text": "If you use variable, there are two different type of the data that RAM use different way to process: mutable and immutable。Variable 會 point to the address 並且 see data（指向地址，看到資料）——這整個東西就是 object。"
+            },
+            {
+              "type": "heading",
+              "text": "🏠 House Analogy — 理解 Variable、Value 和 Address"
+            },
+            {
+              "type": "paragraph",
+              "text": "In this photo, you can see a house with a name, which is x; a guy with a value, which is integer 12329; a sign telling us the location of the house, which is address. So, you can imagine x=12329 — to a house x, save a person 12329, in a place of RAM."
+            },
+            {
+              "type": "animation",
+              "animationId": "house-analogy",
+              "caption": "🏠 House = Variable Name, 🧍 Guy = Value, 📍 Address Sign = RAM Address",
+              "steps": [
+                "看到一棟 house，門牌寫著 x（這就是 variable name）",
+                "house 裡面住著一個 guy，他的 value 是 integer 12329",
+                "house 外面有個 sign，告訴我們位置（這就是 RAM address）",
+                "整個 house + guy + address 合起來就是一個 object"
+              ]
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "🏠 House（房子）",
+                  "definition": "Variable name — 變數的名字，例如 x"
+                },
+                {
+                  "term": "🧍 Guy inside（裡面的人）",
+                  "definition": "Value — 存放的值，例如 integer 12329"
+                },
+                {
+                  "term": "📍 Address sign（地址牌）",
+                  "definition": "RAM address — 資料在 RAM 中的實際位置"
+                },
+                {
+                  "term": "🏠 整棟合起來",
+                  "definition": "Object — variable + value + address = 一個完整的物件"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "x = 12329\n\n# House analogy:\n# 🏠 House name = x (variable)\n# 🧍 Guy inside = 12329 (value)\n# 📍 Address sign = id(x) (RAM address)\n\nprint(x)       # 看 house 裡面的 guy → 12329\nprint(id(x))   # 看 house 的 address sign → 某個記憶體位址"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "在 House Analogy 中，house 的名字代表什麼？",
+                  "options": [
+                    "Value",
+                    "Variable name",
+                    "RAM address"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "house 裡面的 guy 代表什麼？",
+                  "options": [
+                    "Variable name",
+                    "Function",
+                    "Value（存放的值）"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "Variable + Value + Address 合起來叫什麼？",
+                  "options": [
+                    "Function",
+                    "Object",
+                    "Module"
+                  ],
+                  "answer": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-00-05",
+          "title": "Immutable vs Mutable（用 House Analogy 解釋）",
+          "titleEn": "Immutable vs Mutable (House Analogy)",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "callout",
+              "label": "來源",
+              "text": "鍵盤內容 — 用 house analogy 解釋 immutable 和 mutable 的差別。"
+            },
+            {
+              "type": "heading",
+              "text": "Immutable — 不能改 guy，只能換 house"
+            },
+            {
+              "type": "paragraph",
+              "text": "Immutable means you can not change the guy value inside the house. In immutable value, if the guy want to be different — which means you want to change the value of variable x — but I told you can not change value of guy. So, we can only change a house, which means use another object to save the data we want."
+            },
+            {
+              "type": "animation",
+              "animationId": "immutable-house",
+              "caption": "Immutable：guy 不能變 → 只好搬到新 house",
+              "steps": [
+                "🏠 House x 裡面住著 guy 5",
+                "你想讓 guy 變成 10，但 immutable = 不能改 guy",
+                "所以只能蓋一棟新 house，裡面住 guy 10",
+                "變數 x 搬到新 house → x 現在指向 10 的 object"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# Immutable 範例：int\nx = 5\nprint(id(x))   # 🏠 House A 的 address\n\nx = 10         # 不是改 guy，而是搬到新 house\nprint(id(x))   # 🏠 House B 的 address（不一樣了！）\n\n# Guy 5 沒有被改變，而是 x 換了一棟 house\n# 舊的 House A（裝著 5）如果沒人住，就會被 GC 回收"
+            },
+            {
+              "type": "heading",
+              "text": "Mutable — 可以直接改 guy，不用換 house"
+            },
+            {
+              "type": "paragraph",
+              "text": "Mutable means you can change the guy value inside the house. If you want change value of a mutable object, it's okay. No need to change house."
+            },
+            {
+              "type": "animation",
+              "animationId": "mutable-house",
+              "caption": "Mutable：可以直接改 guy，house 不用換",
+              "steps": [
+                "🏠 House my_list 裡面住著 guys [1, 2, 3]",
+                "你想加一個 guy → append(4)",
+                "guys 變成 [1, 2, 3, 4]，但 house 沒有變",
+                "id(my_list) 還是同一個 address！"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# Mutable 範例：list\nmy_list = [1, 2, 3]\nprint(id(my_list))   # 🏠 House A 的 address\n\nmy_list.append(4)    # 直接改 guy！\nprint(my_list)       # [1, 2, 3, 4]\nprint(id(my_list))   # 🏠 還是 House A！沒有換 house"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "Immutable（不可變）",
+                  "definition": "不能改 guy → 要換 house（新 object）。包含：int, float, str, tuple"
+                },
+                {
+                  "term": "Mutable（可變）",
+                  "definition": "可以直接改 guy → 不用換 house（同一個 object）。包含：list, set, dict"
+                }
+              ]
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "Immutable 的變數想要新值時，會發生什麼？",
+                  "options": [
+                    "直接修改 house 裡的 guy",
+                    "換一棟新 house（新 object）",
+                    "什麼都不會發生"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "Mutable 的變數修改值時，address 會變嗎？",
+                  "options": [
+                    "會，每次都換新 address",
+                    "不會，還是同一個 house",
+                    "有時會有時不會"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "list 是 mutable 還是 immutable？",
+                  "options": [
+                    "Immutable",
+                    "Mutable",
+                    "都不是"
+                  ],
+                  "answer": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-00-06",
+          "title": "什麼是 Class — Property 與 Method",
+          "titleEn": "What is Class — Property & Method",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "callout",
+              "label": "來源",
+              "text": "鍵盤內容 — What is class: property and method after '.'。"
+            },
+            {
+              "type": "heading",
+              "text": "Class 後面的「.」"
+            },
+            {
+              "type": "paragraph",
+              "text": "There are two type of things can be after a class between '.', which is property and method. If you are very beginner and never code, you can just imagine property is a variable owned by the class, and the method is a function owned by the class. And don't use it until you get better."
+            },
+            {
+              "type": "paragraph",
+              "text": "But if you are pro, let me explain... opps, maybe I'll do this later. 😄"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "Property（屬性）",
+                  "definition": "A variable owned by the class — class 擁有的變數。用法：class.property（沒有括號）"
+                },
+                {
+                  "term": "Method（方法）",
+                  "definition": "A function owned by the class — class 擁有的函式。用法：class.method()（有括號）"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import math\n\n# Property：class 擁有的 variable（沒有括號）\nprint(math.pi)        # 3.14159... → math 的 property\n\n# Method：class 擁有的 function（有括號）\nprint(math.sqrt(16))  # 4.0 → math 的 method\n\n# 另一個例子\ntext = \"hello world\"\nprint(text.upper())   # \"HELLO WORLD\" → str 的 method"
+            },
+            {
+              "type": "callout",
+              "label": "簡單記法",
+              "text": "看到 something.xxx → xxx 是 property 或 method。沒有 () 的是 property（像 math.pi），有 () 的是 method（像 math.sqrt()）。初學者先知道這個就夠了！"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "math.pi 是 property 還是 method？",
+                  "options": [
+                    "Property（沒有括號）",
+                    "Method（有括號）",
+                    "都不是"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "text.upper() 是 property 還是 method？",
+                  "options": [
+                    "Property",
+                    "Method（有括號，是 function）",
+                    "Variable"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "Property 簡單來說是什麼？",
+                  "options": [
+                    "A function owned by the class",
+                    "A variable owned by the class",
+                    "A class owned by the function"
+                  ],
+                  "answer": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-00-07",
+          "title": "這門課要做什麼 (Course Overview)",
+          "titleEn": "What This Course Is About",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "callout",
+              "label": "來源",
+              "text": "鍵盤內容 — The course overview。"
+            },
+            {
+              "type": "heading",
+              "text": "The Course"
+            },
+            {
+              "type": "paragraph",
+              "text": "We gonna solving problems with explanation, and now is for beginner. Basically include syntax explain without class using, and some thinking way in algorithm."
+            },
+            {
+              "type": "paragraph",
+              "text": "這門課的目標是透過「解題」的方式來學習 Python。每道題都會附帶詳細解釋。目前的內容適合初學者，主要涵蓋基礎語法（不深入 class 的使用），以及一些演算法的思維方式。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "教學方式",
+                  "definition": "Solving problems with explanation — 解題 + 詳細解說"
+                },
+                {
+                  "term": "適合對象",
+                  "definition": "Beginner — 初學者"
+                },
+                {
+                  "term": "內容範圍",
+                  "definition": "Syntax explain without class using — 基礎語法，不含 class 深入使用"
+                },
+                {
+                  "term": "附加技能",
+                  "definition": "Some thinking way in algorithm — 演算法思維入門"
+                }
+              ]
+            },
+            {
+              "type": "callout",
+              "label": "接下來",
+              "text": "後面的章節會從 'What is code' 開始，帶你認識 Input/Process/Output、拆解問題的方法、Python 語法的基礎，最後進入實際的程式練習。Let's go! 🚀"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "這門課的教學方式是？",
+                  "options": [
+                    "純理論講解",
+                    "解題 + 詳細解說 (solving problems with explanation)",
+                    "只看影片"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "這門課目前適合什麼程度的學生？",
+                  "options": [
+                    "進階開發者",
+                    "Beginner（初學者）",
+                    "只適合數學系"
+                  ],
+                  "answer": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "mod-01",
       "title": "What is code",
       "titleEn": "What is Code",
