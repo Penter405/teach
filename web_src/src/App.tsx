@@ -160,8 +160,8 @@ const LearningPathPage = ({ onSelectModule, onSelectLesson, onOpenCodeTree }: { 
           <span className="text-xl">🐍</span>
           <span>{courseData.course.title}</span>
         </div>
-        <nav className="hidden md:flex items-center gap-8">
-          <a href="#" className="font-headline font-bold text-cyan-600 dark:text-white border-b-2 border-cyan-500 dark:border-slate-500 py-1">Curriculum Area</a>
+        <nav className="flex items-center gap-4 md:gap-8 text-sm md:text-base">
+          <a href="#" className="font-headline font-bold text-cyan-600 dark:text-white border-b-2 border-cyan-500 dark:border-slate-500 py-1 hidden sm:inline-block">Curriculum Area</a>
           <CodeTreeNavLink onClick={onOpenCodeTree} />
         </nav>
         <div className="flex items-center gap-4">
