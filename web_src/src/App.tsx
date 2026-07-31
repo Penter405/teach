@@ -9,15 +9,19 @@ import {
   User,
   Layout,
   BookOpen,
-  ArrowRight
+  ArrowRight,
+  GitBranch
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { courseData, getFlatLessons, findLesson } from './courseData';
 import { LessonContent } from './LessonContent';
 import { Sidebar } from './Sidebar';
+import { CodeSyntaxTreePage } from './CodeSyntaxTree';
+import { NodeExplainPage } from './NodeExplainPage';
+import { codeTree } from './codeTreeData';
 
 // --- Types ---
-type Page = 'login' | 'path' | 'lesson';
+type Page = 'login' | 'path' | 'lesson' | 'tree' | 'tree-node';
 
 // --- Constants ---
 
@@ -111,7 +115,44 @@ const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
   );
 };
 
-const LearningPathPage = ({ onSelectModule, onSelectLesson }: { onSelectModule: () => void, onSelectLesson: (id: string) => void }) => {
+const CodeTreeNavLink = ({ onClick }: { onClick: () => void }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  return (
+    <div className="relative">
+      <button
+        onClick={onClick}
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+        className="font-headline font-bold text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 py-1 flex items-center gap-1.5 transition-colors border-b-2 border-transparent hover:border-blue-400 dark:hover:border-blue-500"
+      >
+        <GitBranch className="w-4 h-4" />
+        Code Tree
+      </button>
+      <AnimatePresence>
+        {showTooltip && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-[100] pointer-events-none"
+          >
+            <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-lg rounded-xl px-4 py-3 shadow-xl border border-slate-200 dark:border-slate-700 w-[240px]">
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                程式碼的語法樹：把 Code 拆解成結構、動詞、名詞，一目了然。
+              </p>
+              <div className="mt-1.5 text-[10px] text-blue-500 dark:text-blue-400 font-bold uppercase tracking-widest">
+                Click to explore →
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const LearningPathPage = ({ onSelectModule, onSelectLesson, onOpenCodeTree }: { onSelectModule: () => void, onSelectLesson: (id: string) => void, onOpenCodeTree: () => void }) => {
   return (
     <div className="min-h-screen bg-surface dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col relative overflow-hidden transition-colors duration-500">
       <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 py-4 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/50">
@@ -121,6 +162,7 @@ const LearningPathPage = ({ onSelectModule, onSelectLesson }: { onSelectModule: 
         </div>
         <nav className="hidden md:flex items-center gap-8">
           <a href="#" className="font-headline font-bold text-cyan-600 dark:text-white border-b-2 border-cyan-500 dark:border-slate-500 py-1">Curriculum Area</a>
+          <CodeTreeNavLink onClick={onOpenCodeTree} />
         </nav>
         <div className="flex items-center gap-4">
           <User className="w-5 h-5 text-slate-500 dark:text-slate-400" />
@@ -231,7 +273,7 @@ const LearningPathPage = ({ onSelectModule, onSelectLesson }: { onSelectModule: 
   );
 };
 
-const LessonPage = ({ lessonId, onBack, onLessonChange }: { lessonId: string, onBack: () => void, onLessonChange: (id: string) => void }) => {
+const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { lessonId: string, onBack: () => void, onLessonChange: (id: string) => void, onOpenCodeTree: () => void }) => {
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
   const flatLessons = getFlatLessons();
   const mainRef = useRef<HTMLElement>(null);
@@ -273,6 +315,7 @@ const LessonPage = ({ lessonId, onBack, onLessonChange }: { lessonId: string, on
           >
             <ChevronRight className="w-5 h-5 rotate-180" /> Back to Map
           </button>
+          <CodeTreeNavLink onClick={onOpenCodeTree} />
         </div>
         <div className="font-mono text-xs text-slate-400 hidden sm:block">
           {currentIndex + 1} / {flatLessons.length}
@@ -359,7 +402,9 @@ const LessonPage = ({ lessonId, onBack, onLessonChange }: { lessonId: string, on
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('login');
+  const [previousPage, setPreviousPage] = useState<Page>('path');
   const [currentLessonId, setCurrentLessonId] = useState<string>('les-01-01');
+  const [currentNodeId, setCurrentNodeId] = useState<string>('code');
   const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
@@ -369,6 +414,16 @@ export default function App() {
       document.documentElement.classList.remove('dark');
     }
   }, [isDark]);
+
+  const navigateToTree = () => {
+    setPreviousPage(currentPage);
+    setCurrentPage('tree');
+  };
+
+  const navigateToNodeExplain = (nodeId: string) => {
+    setCurrentNodeId(nodeId);
+    setCurrentPage('tree-node');
+  };
 
   return (
     <div className="min-h-screen font-sans selection:bg-cyan-200 selection:text-cyan-900 dark:selection:bg-cyan-900 dark:selection:text-cyan-100">
@@ -399,6 +454,7 @@ export default function App() {
                 setCurrentLessonId(lessonId);
                 setCurrentPage('lesson');
               }}
+              onOpenCodeTree={navigateToTree}
             />
           </motion.div>
         )}
@@ -414,7 +470,39 @@ export default function App() {
             <LessonPage 
               lessonId={currentLessonId}
               onLessonChange={setCurrentLessonId}
-              onBack={() => setCurrentPage('path')} 
+              onBack={() => setCurrentPage('path')}
+              onOpenCodeTree={navigateToTree}
+            />
+          </motion.div>
+        )}
+
+        {currentPage === 'tree' && (
+          <motion.div
+            key="tree"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <CodeSyntaxTreePage
+              onBack={() => setCurrentPage(previousPage)}
+              onNodeClick={navigateToNodeExplain}
+            />
+          </motion.div>
+        )}
+
+        {currentPage === 'tree-node' && (
+          <motion.div
+            key="tree-node"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <NodeExplainPage
+              nodeId={currentNodeId}
+              onBack={() => setCurrentPage('tree')}
+              onNodeClick={navigateToNodeExplain}
             />
           </motion.div>
         )}

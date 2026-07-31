@@ -1,0 +1,12 @@
+root=code
+code.left=structure
+structure.child=loop_structure
+loop_structure.child=if_structure
+code.left=singo(not structure)
+singo.left=verb
+singo.right=noun
+verb.child=operator
+verb.child=function
+verb.child=method
+noun.child=all_data_type
+noun.child=variable
