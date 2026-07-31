@@ -1,0 +1,168 @@
+程式架構：輸入 處理 輸出
+程式碼的結構：名詞 動詞
+程式的目的，讓使用者輸入資料(名詞), (用動詞)處理它，一直處理，直到處理出一個滿意的資訊(名詞). 最後用一個叫做print的動詞印出來
+動詞有這些：operator functuon method
+operator:長得很像數學課本裡面的符號  又可以分成以下幾種功能:
+1.變數相關
+=  
+這個東西呢將某個名詞存入記憶體，需要的時候用他的名字請程式找出資料
+2.真數學計算
++-*÷ 之類的
+通常他們的左右兩邊會配上數學有關的資料   所以配上後會變這樣 3.14 + 3.14 *3 ÷2  按照數學的規則先成除後加減（我們介紹的operator都有先後順序的，可以去查）
+3 很難的數學計算
+例如機率 排列組合的數學有個東西叫做集合
+有些符號是給他們用的
+function:
+function 是個 一團字的右邊配上()  ,例如說： 說你好()  ,  吃飯()  
+代表一個動作,()內可以放入這個動作會處理的“名詞” (只要你確定放進來的最後會變成名詞,就可以放進來，例如3+5最後會變成8,是個名詞，可以放3+5進去）
+
+要確定function會做什麼事情，可以看他的名字，例如你看到 print(), 這串英文因為右邊有(),所以他代表動作，print在英文叫做印東西，所以代表程式裡面有print()的話，就會做print(印出來)的動作
+如果你用help()這個function檢查print，你會看到大概像這樣
+def print(*x):
+     """let x shown on your screen"""
+具體的意思等你會自創funtion後就很知道
+接下來講 method, 
+method其實就是 名詞的右邊寫一個.  然後再寫一個屬於那個名詞的動作
+他是個動作，只不過跟.左邊的名詞有關係
+介紹名詞的話
+在 Python 裡，data type（資料型態） 指的是：
+
+一個資料在電腦中被分類的種類，決定它可以做什麼操作。
+
+例如：
+
+x = 10
+
+Python 會知道 10 是一個 整數（int），所以可以：
+
+x + 5   # 15
+
+但是：
+
+x = "10"
+
+這時 "10" 是 字串（str），不是數字：
+
+"10" + "5"   # "105"
+
+Python 常見 data type：
+
+Data type	名稱	例子	用途
+int	整數	10, -3	沒有小數的數字
+float	浮點數	3.14, 0.5	小數
+str	字串	"hello"	文字
+bool	布林值	True, False	是/否判斷
+list	列表	[1,2,3]	可以改變的一組資料
+tuple	元組	(1,2,3)	不可改變的一組資料
+set	集合	{1,2,3}	不重複資料
+dict	字典	{"a":1}	key-value 資料
+NoneType	空值	None	表示沒有資料
+1. int
+age = 18
+
+型態：
+
+type(age)
+# <class 'int'>
+2. float
+pi = 3.14159
+3. str
+name = "Tom"
+
+字串可以：
+
+name + "!"
+# "Tom!"
+4. bool
+
+只有兩個值：
+
+True
+False
+
+常用在判斷：
+
+5 > 3
+# True
+5. list
+
+像一個可變的盒子：
+
+numbers = [1,2,3]
+
+numbers.append(4)
+
+# [1,2,3,4]
+
+可以修改：
+
+numbers[0] = 99
+6. tuple
+
+跟 list 很像，但是不能改：
+
+point = (3,5)
+
+不能：
+
+point[0] = 10
+# error
+7. set
+
+不允許重複：
+
+s = {1,2,2,3}
+
+print(s)
+# {1,2,3}
+8. dict
+
+像查字典：
+
+student = {
+    "name": "Tom",
+    "age": 18
+}
+
+print(student["name"])
+# Tom
+9. None
+
+代表「沒有值」：
+
+x = None
+
+例如函式沒有回傳：
+
+def hello():
+    print("hi")
+
+result = hello()
+
+print(result)
+# None
+
+你可以把 data type 想成：
+
+資料
+ |
+ |-- int      → 數字
+ |-- float    → 小數
+ |-- str      → 文字
+ |-- bool     → 真/假
+ |-- list     → 可修改集合
+ |-- tuple    → 不可修改集合
+ |-- set      → 不重複集合
+ |-- dict     → 對應表
+
+Python 的特色是 不用先宣告型態：
+
+C/C++：
+
+int x = 10;
+
+Python：
+
+x = 10
+
+Python 會在執行時（runtime）自己判斷 x 是 int。
