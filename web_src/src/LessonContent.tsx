@@ -577,63 +577,197 @@ const DataFlowAnim = ({ step }: { step: number }) => (
 );
 
 const ProblemDecomposeAnim = ({ step }: { step: number }) => {
-  const items = ['📋 閱讀題目', '🔑 識別關鍵詞', '✂️ 拆分步驟', '💻 逐一實現'];
   return (
-    <div className="flex flex-col gap-3 w-full max-w-sm">
-      {items.map((item, i) => (
-        <motion.div key={i} animate={{ opacity: i <= step ? 1 : 0.2, x: i <= step ? 0 : 20 }} transition={{ duration: 0.4, delay: 0.05 }}
-          className={`p-3 rounded-lg text-sm font-medium flex items-center gap-3 ${i <= step ? 'bg-cyan-50 dark:bg-cyan-900/20 text-cyan-900 dark:text-cyan-100 border border-cyan-200 dark:border-cyan-800' : 'bg-slate-50 dark:bg-slate-800/50 text-slate-400 border border-slate-100 dark:border-slate-700'}`}>
-          <span className="text-lg">{item.split(' ')[0]}</span><span>{item.split(' ').slice(1).join(' ')}</span>
-        </motion.div>
-      ))}
+    <div className="flex flex-col items-center justify-center h-40 w-full relative">
+      {/* Base Problem Block */}
+      <motion.div
+        animate={{ 
+          scale: step === 0 ? 1 : 0.8,
+          opacity: step === 0 ? 1 : 0,
+          y: step === 0 ? 0 : -20 
+        }}
+        className="absolute w-32 h-32 bg-slate-800 rounded-2xl flex items-center justify-center border-4 border-slate-700 shadow-xl z-10"
+      >
+        <span className="text-4xl">🧩</span>
+      </motion.div>
+
+      {/* Decomposed Pieces */}
+      <div className="flex gap-4 sm:gap-8 items-center justify-center relative z-20">
+        {[
+          { icon: '🔍', delay: 0 },
+          { icon: '✂️', delay: 0.1 },
+          { icon: '🛠️', delay: 0.2 }
+        ].map((item, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, scale: 0.5, x: 0 }}
+            animate={{ 
+              opacity: step >= 1 ? 1 : 0,
+              scale: step >= 1 ? 1 : 0.5,
+              y: step >= 2 ? 0 : (i === 1 ? -10 : 10),
+              x: step >= 2 ? 0 : (i === 0 ? 40 : i === 2 ? -40 : 0)
+            }}
+            transition={{ duration: 0.5, delay: step >= 2 ? item.delay : 0, type: 'spring' }}
+            className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-3xl shadow-lg border-2 relative
+              ${step >= 3 ? 'bg-cyan-50 dark:bg-cyan-900/40 border-cyan-300 dark:border-cyan-600' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
+          >
+            {item.icon}
+            
+            {/* Checkmarks in final step */}
+            <AnimatePresence>
+              {step >= 3 && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: item.delay + 0.2, type: 'spring' }}
+                  className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center text-white"
+                >
+                  <CheckCircle2 size={14} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        ))}
+      </div>
+      
+      {/* Connecting Path */}
+      {step >= 2 && (
+        <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" style={{ top: '50%', transform: 'translateY(-50%)' }}>
+          <motion.line
+            x1="30%" y1="50%" x2="70%" y2="50%"
+            stroke="currentColor" strokeWidth="2" strokeDasharray="4 4"
+            className="text-slate-300 dark:text-slate-700"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.6 }}
+          />
+        </svg>
+      )}
     </div>
   );
 };
 
 const InterpreterExecAnim = ({ step }: { step: number }) => {
-  const lines = ['a = 5', 'print(a)'];
-  const outputs = ['', '', '', '>>> 5'];
   return (
-    <div className="flex gap-6 w-full max-w-lg">
-      <div className="flex-1 bg-slate-900 rounded-xl p-4 font-mono text-sm">
-        {lines.map((line, i) => {
-          const lineStep = i * 2;
-          return (
-            <motion.div key={i} animate={{ backgroundColor: step === lineStep || step === lineStep + 1 ? 'rgba(8,145,178,0.15)' : 'transparent' }} transition={{ duration: 0.3 }}
-              className="flex items-center gap-3 py-1 px-2 rounded">
-              <span className="text-slate-400 text-xs w-4">{i + 1}</span>
-              <span className={step >= lineStep ? 'text-slate-200' : 'text-slate-500'}>{line}</span>
-              {(step === lineStep || step === lineStep + 1) && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-2 h-2 rounded-full bg-cyan-400 ml-auto" />}
-            </motion.div>
-          );
-        })}
-      </div>
-      <div className="w-32 bg-slate-100 dark:bg-slate-800 rounded-xl p-4 flex flex-col justify-end">
-        <span className="text-xs text-slate-500 dark:text-slate-400 mb-2 font-medium uppercase tracking-wider">Output</span>
-        <motion.div animate={{ opacity: step >= 3 ? 1 : 0 }} className="font-mono text-sm text-green-600 dark:text-green-400">{outputs[step] || ''}</motion.div>
-      </div>
+    <div className="flex items-center justify-center gap-4 sm:gap-12 w-full max-w-2xl h-48 relative">
+      {/* Source Code Document */}
+      <motion.div 
+        animate={{ scale: step === 0 ? 1.05 : 1, opacity: step >= 0 ? 1 : 0 }}
+        className="w-24 sm:w-32 h-36 bg-slate-50 dark:bg-slate-800 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 flex flex-col p-3 relative z-10"
+      >
+        <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full mb-3" />
+        <div className="w-3/4 h-2 bg-cyan-200 dark:bg-cyan-900 rounded-full mb-2" />
+        <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full mb-2" />
+        <div className="w-1/2 h-2 bg-slate-200 dark:bg-slate-700 rounded-full" />
+        
+        {/* Glow effect when active */}
+        <motion.div animate={{ opacity: step === 0 ? 1 : 0 }} className="absolute inset-0 border-2 border-cyan-400 rounded-xl shadow-[0_0_15px_rgba(34,211,238,0.4)]" />
+      </motion.div>
+
+      {/* Traveling Data Packet */}
+      <motion.div
+        initial={{ x: -60, opacity: 0 }}
+        animate={{ 
+          x: step === 1 ? 0 : step > 1 ? 60 : -60,
+          opacity: step === 1 ? 1 : 0,
+          scale: step === 1 ? [1, 1.2, 1] : 1
+        }}
+        transition={{ duration: 0.6, repeat: step === 1 ? Infinity : 0 }}
+        className="absolute z-20 w-4 h-4 bg-purple-500 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.8)]"
+      />
+
+      {/* Interpreter Machine */}
+      <motion.div
+        animate={{ 
+          scale: step === 2 ? 1.1 : 1,
+          boxShadow: step === 2 ? '0 0 30px rgba(168,85,247,0.4)' : '0 4px 6px -1px rgba(0,0,0,0.1)'
+        }}
+        className="w-32 sm:w-40 h-40 bg-[#1e293b] rounded-2xl flex flex-col items-center justify-center border-2 border-slate-700 relative z-10 overflow-hidden"
+      >
+        <Bolt className={`w-10 h-10 ${step === 2 ? 'text-purple-400 animate-spin-slow' : 'text-slate-500'}`} />
+        <div className={`mt-2 font-mono text-xs font-bold tracking-widest ${step === 2 ? 'text-purple-300' : 'text-slate-500'}`}>INTERPRETER</div>
+        
+        {/* Processing scanline */}
+        <motion.div
+          animate={{ top: step === 2 ? ['0%', '100%'] : '0%', opacity: step === 2 ? [0, 1, 0] : 0 }}
+          transition={{ duration: 1, repeat: Infinity }}
+          className="absolute left-0 w-full h-1 bg-purple-400/50 shadow-[0_0_10px_rgba(168,85,247,0.8)]"
+        />
+      </motion.div>
+
+      {/* Output Console */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: step >= 3 ? 1 : 0, x: step >= 3 ? 0 : -20 }}
+        className="absolute -right-4 sm:-right-8 top-1/2 -translate-y-1/2 w-28 h-20 bg-black/80 backdrop-blur-md rounded-lg border border-slate-700 flex items-center justify-center shadow-2xl z-30"
+      >
+        <span className="font-mono text-green-400 text-xl font-bold">5</span>
+      </motion.div>
     </div>
   );
 };
 
 const SelfBindingAnim = ({ step }: { step: number }) => {
-  const highlights = ['定義 class', '呼叫建構子', 'self 綁定', '屬性存取'];
   return (
-    <div className="flex flex-col items-center gap-4 w-full max-w-md">
-      <Box active={step === 0} color="cyan" className="w-full">class Dog: __init__(self, name)</Box>
-      {step >= 1 && <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="font-mono text-sm text-slate-600 dark:text-slate-300">Lucky = Dog("Lucky")</motion.div>}
+    <div className="flex items-center justify-center gap-8 sm:gap-20 w-full h-48 relative">
+      {/* Blueprint (Class) */}
+      <motion.div
+        animate={{ scale: step === 0 ? 1.05 : 1 }}
+        className="w-32 h-40 bg-cyan-50/50 dark:bg-cyan-900/20 border-2 border-dashed border-cyan-400 rounded-xl flex flex-col items-center justify-center relative z-10"
+      >
+        <div className="font-mono text-cyan-700 dark:text-cyan-300 font-bold mb-4">Dog</div>
+        {/* The 'self' parameter socket */}
+        <motion.div 
+          animate={{ 
+            backgroundColor: step >= 2 ? 'rgba(168,85,247,0.2)' : 'rgba(6,182,212,0.1)',
+            borderColor: step >= 2 ? 'rgba(168,85,247,1)' : 'rgba(6,182,212,0.5)'
+          }}
+          className="px-3 py-1 rounded-full border-2 font-mono text-xs font-bold text-cyan-800 dark:text-cyan-200 transition-colors"
+        >
+          self
+        </motion.div>
+      </motion.div>
+
+      {/* Object (Instance) */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.5, x: -40 }}
+        animate={{ opacity: step >= 1 ? 1 : 0, scale: step >= 1 ? 1 : 0.5, x: step >= 1 ? 0 : -40 }}
+        className="w-24 h-24 bg-purple-100 dark:bg-purple-900/40 rounded-2xl shadow-xl flex items-center justify-center relative z-10 backdrop-blur-md"
+      >
+        {/* Glow behind object */}
+        <motion.div animate={{ opacity: step >= 3 ? 1 : 0 }} className="absolute inset-0 bg-purple-400 blur-xl opacity-30 -z-10 rounded-full" />
+        <span className="text-3xl">🐕</span>
+        
+        {/* Success badge */}
+        <AnimatePresence>
+          {step >= 3 && (
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-1 text-white shadow-lg">
+              <CheckCircle2 size={16} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Connecting Laser/String */}
       {step >= 2 && (
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}
-          className="flex items-center gap-4 p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl w-full justify-center">
-          <span className="font-mono text-purple-700 dark:text-purple-300 font-bold">self</span>
-          <span className="text-purple-400 animate-pulse">→</span>
-          <span className="font-mono text-purple-700 dark:text-purple-300 font-bold">Lucky</span>
-        </motion.div>
-      )}
-      {step >= 3 && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-mono text-sm text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-4 py-2 rounded-lg">
-          self.name = Lucky.name = "Lucky" ✓
-        </motion.div>
+        <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" style={{ top: '50%', transform: 'translateY(-50%)' }}>
+          <motion.path
+            d="M 120 96 Q 200 150 280 96"
+            fill="none"
+            stroke="url(#purpleGlow)"
+            strokeWidth="4"
+            strokeLinecap="round"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          />
+          <defs>
+            <linearGradient id="purpleGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#a855f7" stopOpacity="0.2" />
+              <stop offset="100%" stopColor="#a855f7" stopOpacity="1" />
+            </linearGradient>
+          </defs>
+        </svg>
       )}
     </div>
   );
@@ -743,15 +877,64 @@ const BuiltinClassAnim = ({ step }: { step: number }) => {
 };
 
 const ReflectionInspectAnim = ({ step }: { step: number }) => {
-  const results = ['x = [1, 2, 3]', "type(x) → <class 'list'>", "dir(x) → ['append', 'clear', ...]", "help(x.append) → 用法說明"];
   return (
-    <div className="flex flex-col gap-3 w-full max-w-md font-mono text-sm">
-      {results.map((r, i) => (
-        <motion.div key={i} animate={{ opacity: i <= step ? 1 : 0.15, x: i <= step ? 0 : 12 }} transition={{ duration: 0.35 }}
-          className={`p-3 rounded-lg border ${i <= step ? 'bg-slate-900 text-slate-200 border-slate-700' : 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 border-slate-200 dark:border-slate-700'}`}>
-          <span className="text-cyan-400 mr-2">{'>>>'}</span>{r}
-        </motion.div>
-      ))}
+    <div className="flex items-center justify-center w-full h-56 relative perspective-1000">
+      {/* Center Object */}
+      <motion.div 
+        animate={{ rotateY: step > 0 ? 15 : 0, scale: step > 0 ? 0.9 : 1 }}
+        className="w-32 h-32 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl shadow-2xl flex items-center justify-center relative z-10 transform-style-3d"
+      >
+        <span className="text-4xl text-white font-mono font-bold">x</span>
+        
+        {/* X-Ray Scanning Line */}
+        <AnimatePresence>
+          {step === 1 && (
+            <motion.div
+              initial={{ top: '-10%', opacity: 0 }}
+              animate={{ top: '110%', opacity: [0, 1, 1, 0] }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.5, ease: "linear", repeat: Infinity }}
+              className="absolute left-0 w-full h-2 bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,1)] z-20"
+            />
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Extracted Metadata Floating Chips */}
+      <AnimatePresence>
+        {step >= 2 && (
+          <>
+            <motion.div initial={{ opacity: 0, x: 0, y: 0 }} animate={{ opacity: 1, x: -80, y: -60 }} className="absolute z-20 px-3 py-1.5 rounded-lg bg-white/80 dark:bg-slate-800/80 backdrop-blur border border-slate-200 dark:border-slate-700 shadow-lg flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-cyan-500" />
+              <span className="font-mono text-xs font-bold text-slate-700 dark:text-slate-200">class 'list'</span>
+            </motion.div>
+            
+            <motion.div initial={{ opacity: 0, x: 0, y: 0 }} animate={{ opacity: 1, x: 90, y: -20 }} className="absolute z-20 px-3 py-1.5 rounded-lg bg-white/80 dark:bg-slate-800/80 backdrop-blur border border-slate-200 dark:border-slate-700 shadow-lg flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-amber-500" />
+              <span className="font-mono text-xs font-bold text-slate-700 dark:text-slate-200">append()</span>
+            </motion.div>
+            
+            <motion.div initial={{ opacity: 0, x: 0, y: 0 }} animate={{ opacity: 1, x: -70, y: 60 }} className="absolute z-20 px-3 py-1.5 rounded-lg bg-white/80 dark:bg-slate-800/80 backdrop-blur border border-slate-200 dark:border-slate-700 shadow-lg flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-pink-500" />
+              <span className="font-mono text-xs font-bold text-slate-700 dark:text-slate-200">clear()</span>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Deep Inspection Tooltip */}
+      <AnimatePresence>
+        {step >= 3 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, x: 90, y: -20 }}
+            animate={{ opacity: 1, scale: 1, x: 120, y: -50 }}
+            className="absolute z-30 p-3 w-40 rounded-xl bg-slate-900 border border-slate-700 shadow-2xl"
+          >
+            <div className="font-mono text-[10px] text-cyan-400 mb-1">help(append)</div>
+            <div className="text-[10px] text-slate-300 leading-tight">Append object to the end of the list.</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
@@ -797,22 +980,80 @@ const GCAnimationAnim = ({ step }: { step: number }) => {
 };
 
 const PointerAnim = ({ step }: { step: number }) => {
-  const rows = [
-    { show: step >= 0, name: 'RAM', addr: '0x7f01', val: '5', highlight: step === 0 },
-    { show: step >= 1, name: 'a', addr: '0x7f01', val: '→', highlight: step === 1 },
-    { show: step >= 2, name: 'a → val', addr: '', val: '5', highlight: step === 2 },
-    { show: step >= 3, name: 'a', addr: '0x7f09', val: '10 (新)', highlight: step === 3 },
-  ];
+  // Arrow path calculations
+  const getPath = (stepLevel: number) => {
+    if (stepLevel < 1) return "M 60 120 C 60 120, 60 120, 60 120"; // Hidden
+    if (stepLevel < 3) return "M 80 120 C 140 120, 140 60, 200 60"; // Points to 5
+    return "M 80 120 C 140 120, 140 180, 200 180"; // Points to 10
+  };
+
   return (
-    <div className="flex flex-col gap-3 w-full max-w-sm">
-      {rows.filter(r => r.show).map((r, i) => (
-        <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
-          className={`flex items-center justify-between p-3 rounded-lg border text-sm font-mono ${r.highlight ? 'bg-cyan-50 dark:bg-cyan-900/20 border-cyan-300 dark:border-cyan-700' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700'}`}>
-          <span className="font-bold text-purple-600 dark:text-purple-400 w-20">{r.name}</span>
-          {r.addr && <span className="text-slate-500 dark:text-slate-400 text-xs">{r.addr}</span>}
-          <span className="font-bold text-cyan-700 dark:text-cyan-300">{r.val}</span>
+    <div className="flex items-center justify-between w-full max-w-sm h-60 relative px-4">
+      {/* Variables Column */}
+      <div className="flex flex-col justify-center h-full z-10">
+        <motion.div 
+          animate={{ opacity: step >= 1 ? 1 : 0, scale: step >= 1 ? 1 : 0.8 }}
+          className="w-12 h-12 bg-white dark:bg-slate-800 rounded-full border-2 border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center relative"
+        >
+          <span className="font-mono font-bold text-slate-700 dark:text-slate-200">a</span>
+          {/* Pulsing origin dot */}
+          {step >= 1 && <div className="absolute -right-1 w-3 h-3 bg-cyan-500 rounded-full" />}
         </motion.div>
-      ))}
+      </div>
+
+      {/* Visual Curved Pointer */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#06b6d4" />
+          </marker>
+        </defs>
+        <motion.path
+          d={getPath(step)}
+          fill="none"
+          stroke="#06b6d4"
+          strokeWidth="3"
+          markerEnd={step >= 1 ? "url(#arrowhead)" : ""}
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: step >= 1 ? 1 : 0 }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
+        />
+        {/* Animated pulse traveling along the line */}
+        {step === 2 && (
+          <motion.circle r="4" fill="#67e8f9" filter="drop-shadow(0 0 4px #06b6d4)">
+            <animateMotion dur="1.5s" repeatCount="indefinite" path={getPath(2)} />
+          </motion.circle>
+        )}
+      </svg>
+
+      {/* Memory Blocks Column */}
+      <div className="flex flex-col justify-between h-full py-8 gap-8 z-10">
+        {/* Memory cell: 5 */}
+        <motion.div 
+          animate={{ 
+            opacity: step >= 0 ? 1 : 0,
+            y: step >= 0 ? 0 : 20,
+            borderColor: step >= 1 && step < 3 ? 'rgba(6,182,212,1)' : 'rgba(226,232,240,0.5)' // Highlight if pointed
+          }}
+          className="w-24 h-16 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl border-2 flex flex-col items-center justify-center shadow-lg relative"
+        >
+          <span className="font-mono text-2xl font-bold text-cyan-600 dark:text-cyan-400">5</span>
+          <span className="absolute -top-5 font-mono text-[10px] text-slate-400">0x7f01</span>
+        </motion.div>
+
+        {/* Memory cell: 10 */}
+        <motion.div 
+          animate={{ 
+            opacity: step >= 3 ? 1 : 0,
+            y: step >= 3 ? 0 : -20,
+            borderColor: step >= 3 ? 'rgba(6,182,212,1)' : 'rgba(226,232,240,0.5)' // Highlight if pointed
+          }}
+          className="w-24 h-16 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl border-2 flex flex-col items-center justify-center shadow-lg relative"
+        >
+          <span className="font-mono text-2xl font-bold text-purple-600 dark:text-purple-400">10</span>
+          <span className="absolute -bottom-5 font-mono text-[10px] text-slate-400">0x7f09</span>
+        </motion.div>
+      </div>
     </div>
   );
 };
@@ -860,24 +1101,83 @@ const MutableRefAnim = ({ step }: { step: number }) => {
 };
 
 const IndentAnim = ({ step }: { step: number }) => {
-  const cLines = ['if (x > 3) {', '    printf("big");', '}'];
-  const pyLines = ['if x > 3:', '    print("big")', ''];
-  const lines = step <= 1 ? cLines : pyLines;
   return (
-    <div className="w-full max-w-sm">
-      <div className="flex items-center justify-between mb-3">
-        <motion.span animate={{ opacity: step <= 1 ? 1 : 0.4 }} className="text-xs font-bold text-slate-500 uppercase tracking-widest">C Language</motion.span>
-        <motion.span animate={{ opacity: step >= 2 ? 1 : 0.4 }} className="text-xs font-bold text-cyan-500 uppercase tracking-widest">Python</motion.span>
+    <div className="flex items-center justify-center w-full max-w-md h-40 relative perspective-1000">
+      {/* Structural Container */}
+      <div className="w-64 bg-slate-900 rounded-xl p-6 flex flex-col items-start justify-center shadow-2xl border border-slate-800 relative overflow-hidden">
+        
+        {/* Glowing Indentation Block (Appears in Python step) */}
+        <motion.div
+          initial={{ width: 0, opacity: 0 }}
+          animate={{ 
+            width: step >= 2 ? '24px' : '0px',
+            opacity: step >= 2 ? 1 : 0 
+          }}
+          transition={{ duration: 0.5, ease: "backOut" }}
+          className="absolute left-0 top-0 bottom-0 bg-cyan-500/20 border-r border-cyan-400/50"
+        />
+
+        {/* Outer Scope */}
+        <div className="w-16 h-4 bg-slate-700 rounded-full mb-3" />
+        
+        {/* Inner Scope Container */}
+        <motion.div 
+          animate={{ x: step >= 2 ? 24 : 0 }}
+          transition={{ duration: 0.5, ease: "backOut" }}
+          className="flex items-center w-full relative"
+        >
+          {/* Left Brace (C-style) */}
+          <motion.span
+            animate={{ 
+              opacity: step >= 1 ? 0 : 1,
+              y: step >= 1 ? 20 : 0,
+              rotate: step >= 1 ? -45 : 0
+            }}
+            className="absolute -left-4 font-mono text-2xl text-amber-500 font-bold"
+          >
+            {'{'}
+          </motion.span>
+          
+          <div className="w-24 h-4 bg-purple-500/80 rounded-full my-2 ml-4" />
+
+          {/* Right Brace (C-style) */}
+          <motion.span
+            animate={{ 
+              opacity: step >= 1 ? 0 : 1,
+              y: step >= 1 ? 20 : 0,
+              rotate: step >= 1 ? 45 : 0
+            }}
+            className="absolute right-12 font-mono text-2xl text-amber-500 font-bold"
+          >
+            {'}'}
+          </motion.span>
+        </motion.div>
+
+        {/* Outer Scope Close */}
+        <div className="w-12 h-4 bg-slate-700 rounded-full mt-3" />
+
+        {/* Colon (Python style) */}
+        <motion.span
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: step >= 2 ? 1 : 0, scale: step >= 2 ? 1 : 0 }}
+          className="absolute right-4 top-5 font-mono text-xl text-cyan-400 font-bold"
+        >
+          :
+        </motion.span>
       </div>
-      <div className="bg-slate-900 rounded-xl p-4 font-mono text-sm">
-        {lines.map((line, i) => (
-          <motion.div key={`${step}-${i}`} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: i * 0.1 }}
-            className="text-slate-200 py-0.5">{line || <span className="text-slate-500">// removed</span>}</motion.div>
-        ))}
-      </div>
-      {step === 1 && <p className="text-xs text-amber-500 mt-2 text-center">移除 {'{ }'} ...</p>}
-      {step === 2 && <p className="text-xs text-cyan-500 mt-2 text-center">加上冒號 : ...</p>}
-      {step === 3 && <p className="text-xs text-green-500 mt-2 text-center font-medium">✅ 用縮排取代大括號！</p>}
+      
+      {/* Success Tick */}
+      <AnimatePresence>
+        {step >= 3 && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="absolute -right-2 -bottom-2 w-10 h-10 bg-green-500 rounded-full border-4 border-surface dark:border-slate-950 flex items-center justify-center text-white shadow-xl z-20"
+          >
+            <CheckCircle2 size={20} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
