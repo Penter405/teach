@@ -190,6 +190,7 @@ function RenderDiagram({ block }: { block: ContentBlock }) {
       <div className="flex justify-center w-full overflow-hidden pb-4 flex-wrap gap-4">
         {id === 'course-structure-timeline' && <TimelineDiagram />}
         {id === 'input-process-output' && <IPODiagram />}
+        {id === 'basic-coding-flow' && <IPODiagram />}
         {id === 'interpreter-vs-compiler' && <IVCDiagram />}
         {id === 'class-object-flow' && <COFDiagram />}
         {id === 'cpu-ram-cycle' && <CRCDiagram />}
@@ -199,7 +200,7 @@ function RenderDiagram({ block }: { block: ContentBlock }) {
         
         {/* Fallback if diagram component not mapped */}
         {![
-          'course-structure-timeline', 'input-process-output', 'interpreter-vs-compiler',
+          'course-structure-timeline', 'input-process-output', 'basic-coding-flow', 'interpreter-vs-compiler',
           'class-object-flow', 'cpu-ram-cycle', 'variable-memory-map', 'python-code-types', 'class-blueprint'
         ].includes(id || '') && (
           <div className="py-12 px-6 flex items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl w-full">
@@ -489,6 +490,9 @@ function RenderAnimation({ block }: { block: ContentBlock }) {
     'immutable-swap': (s) => <ImmutableSwapAnim step={s} />,
     'mutable-ref': (s) => <MutableRefAnim step={s} />,
     'indent-animation': (s) => <IndentAnim step={s} />,
+    'house-analogy': (s) => <HouseAnalogyAnim step={s} />,
+    'immutable-house': (s) => <ImmutableHouseAnim step={s} />,
+    'mutable-house': (s) => <MutableHouseAnim step={s} />,
   };
 
   const renderer = animationMap[id || ''];
@@ -1178,6 +1182,202 @@ const IndentAnim = ({ step }: { step: number }) => {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+};
+
+const HouseAnalogyAnim = ({ step }: { step: number }) => {
+  return (
+    <div className="relative w-full max-w-sm h-64 flex items-center justify-center">
+      <AnimatePresence>
+        {step >= 3 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="absolute inset-0 border-4 border-dashed border-cyan-400/50 rounded-3xl bg-cyan-50/20 dark:bg-cyan-900/10 z-0 flex flex-col justify-end items-center pb-4"
+          >
+            <span className="font-headline font-bold text-cyan-600 dark:text-cyan-400 tracking-widest uppercase text-sm bg-white dark:bg-slate-900 px-3 py-1 rounded-full border border-cyan-200 dark:border-cyan-800">Object</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="relative z-10 flex flex-col items-center mt-6">
+        {/* House Sign / Variable Name */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: step >= 0 ? 1 : 0, y: step >= 0 ? 0 : -20 }}
+          className="bg-sky-500 text-white font-mono font-bold text-xl px-4 py-1 rounded-md shadow-lg border-2 border-white dark:border-slate-800 mb-2 z-20 h-10 flex items-center justify-center"
+        >
+          x
+        </motion.div>
+
+        {/* House */}
+        <motion.div 
+          animate={{ scale: step >= 0 ? 1 : 0.8 }}
+          className="relative w-40 h-40 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-end pb-4 mt-2"
+        >
+          {/* Roof */}
+          <div className="absolute -top-12 w-0 h-0 border-l-[80px] border-l-transparent border-r-[80px] border-r-transparent border-b-[60px] border-b-rose-500" />
+          
+          {/* Guy inside */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: step >= 1 ? 1 : 0 }}
+            className="flex flex-col items-center h-full justify-end"
+          >
+            <span className="text-4xl mb-1">🧍</span>
+            <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 font-mono font-bold px-3 py-1 rounded-full text-sm border border-amber-300 dark:border-amber-700">
+              12329
+            </div>
+          </motion.div>
+        </motion.div>
+
+        {/* Address Sign */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: step >= 2 ? 1 : 0, x: step >= 2 ? 0 : 20 }}
+          className="absolute -right-8 bottom-4 flex flex-col items-center"
+        >
+          <div className="w-1 h-12 bg-slate-400" />
+          <div className="bg-slate-700 text-white font-mono text-[10px] px-2 py-1 rounded border-2 border-slate-500 -mt-2">
+            0x7A9B
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+const ImmutableHouseAnim = ({ step }: { step: number }) => {
+  return (
+    <div className="w-full max-w-lg h-64 flex items-center justify-center gap-4 sm:gap-8 relative mt-6">
+      {/* Old House */}
+      <motion.div 
+        animate={{ 
+          opacity: step >= 3 ? 0.3 : 1,
+          scale: step === 1 ? [1, 1.05, 0.95, 1.05, 0.95, 1] : 1
+        }}
+        transition={{ duration: 0.5 }}
+        className="relative flex flex-col items-center"
+      >
+        <motion.div 
+          animate={{ opacity: step < 3 ? 1 : 0, y: step < 3 ? 0 : -20 }}
+          className="bg-sky-500 text-white font-mono font-bold text-xl px-4 py-1 rounded-md shadow-lg border-2 border-white dark:border-slate-800 mb-2 z-20 h-10 flex items-center justify-center"
+        >
+          x
+        </motion.div>
+        
+        <div className="relative w-32 h-32 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-end pb-4 mt-2">
+          <div className="absolute -top-10 w-0 h-0 border-l-[64px] border-l-transparent border-r-[64px] border-r-transparent border-b-[48px] border-b-rose-500" />
+          
+          <div className="flex flex-col items-center relative w-full h-full justify-end">
+            <span className="text-3xl mb-1">🧍</span>
+            <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 font-mono font-bold px-3 py-1 rounded-full text-sm border border-amber-300 dark:border-amber-700">
+              5
+            </div>
+            {/* Shake effect X */}
+            <AnimatePresence>
+              {step === 1 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <XCircle className="w-12 h-12 text-red-500 bg-white rounded-full drop-shadow-md" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* New House */}
+      <AnimatePresence>
+        {step >= 2 && (
+          <motion.div 
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="relative flex flex-col items-center"
+          >
+            <motion.div 
+              initial={{ opacity: 0, y: -40 }}
+              animate={{ opacity: step >= 3 ? 1 : 0, y: step >= 3 ? 0 : -20 }}
+              className="bg-sky-500 text-white font-mono font-bold text-xl px-4 py-1 rounded-md shadow-lg border-2 border-white dark:border-slate-800 mb-2 z-20 h-10 flex items-center justify-center"
+            >
+              x
+            </motion.div>
+            
+            <div className="relative w-32 h-32 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-end pb-4 mt-2">
+              <div className="absolute -top-10 w-0 h-0 border-l-[64px] border-l-transparent border-r-[64px] border-r-transparent border-b-[48px] border-b-purple-500" />
+              
+              <div className="flex flex-col items-center h-full justify-end">
+                <span className="text-3xl mb-1">🧍</span>
+                <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 font-mono font-bold px-3 py-1 rounded-full text-sm border border-amber-300 dark:border-amber-700">
+                  10
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const MutableHouseAnim = ({ step }: { step: number }) => {
+  return (
+    <div className="w-full max-w-sm h-64 flex flex-col items-center justify-center relative mt-6">
+      <div className="bg-sky-500 text-white font-mono font-bold text-lg px-4 py-1 rounded-md shadow-lg border-2 border-white dark:border-slate-800 mb-2 z-20 h-10 flex items-center justify-center">
+        my_list
+      </div>
+      
+      <div className="relative w-64 h-40 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-end pb-6 mt-2">
+        <div className="absolute -top-12 w-0 h-0 border-l-[128px] border-l-transparent border-r-[128px] border-r-transparent border-b-[60px] border-b-green-500" />
+        
+        <div className="flex items-end justify-center gap-2 relative h-16 w-full">
+          <div className="flex flex-col items-center">
+            <span className="text-3xl mb-1">🧍</span>
+            <span className="bg-slate-100 dark:bg-slate-700 font-mono text-xs px-2 py-0.5 rounded border border-slate-200 dark:border-slate-600">1</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-3xl mb-1">🧍</span>
+            <span className="bg-slate-100 dark:bg-slate-700 font-mono text-xs px-2 py-0.5 rounded border border-slate-200 dark:border-slate-600">2</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-3xl mb-1">🧍</span>
+            <span className="bg-slate-100 dark:bg-slate-700 font-mono text-xs px-2 py-0.5 rounded border border-slate-200 dark:border-slate-600">3</span>
+          </div>
+          
+          <AnimatePresence>
+            {step >= 1 && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="flex flex-col items-center ml-1"
+              >
+                <span className="text-3xl mb-1">🧍‍♂️</span>
+                <span className="bg-amber-200 dark:bg-amber-700/50 text-amber-900 dark:text-amber-100 font-mono font-bold text-xs px-2 py-0.5 rounded border border-amber-300 dark:border-amber-600 shadow-sm">4</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Address Sign */}
+      <motion.div
+        animate={{ 
+          scale: step >= 3 ? [1, 1.2, 1] : 1,
+          boxShadow: step >= 3 ? ['0 0 0 rgba(16,185,129,0)', '0 0 20px rgba(16,185,129,0.5)', '0 0 0 rgba(16,185,129,0)'] : '0 0 0 rgba(16,185,129,0)'
+        }}
+        transition={{ duration: 0.6, repeat: step >= 3 ? 3 : 0 }}
+        className="absolute bottom-4 right-8 flex flex-col items-center rounded-lg"
+      >
+        <div className="w-1 h-8 bg-slate-400" />
+        <div className="bg-slate-700 text-white font-mono text-[10px] px-2 py-1 rounded border-2 border-slate-500 -mt-1">
+          0x9F2C
+        </div>
+      </motion.div>
     </div>
   );
 };
