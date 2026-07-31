@@ -16,35 +16,49 @@ interface NodePosition {
 // ── Constants ──
 const NODE_WIDTH = 150;
 const NODE_HEIGHT = 68;
+const NODE_WIDTH_MOBILE = 110;
+const NODE_HEIGHT_MOBILE = 54;
 const V_GAP_X = 40;
 const V_GAP_Y = 90;
 const H_GAP_X = 90;
 const H_GAP_Y = 40;
+const V_GAP_X_MOBILE = 16;
+const V_GAP_Y_MOBILE = 60;
+const H_GAP_X_MOBILE = 50;
+const H_GAP_Y_MOBILE = 24;
 
 // ── Tree Layout Calculator ──
 function calculateLayout(
   node: TreeNode,
   layout: LayoutMode,
+  isMobile: boolean = false,
   depth: number = 0,
   siblingIndex: number = 0,
   positions: Map<string, NodePosition> = new Map(),
   nextSlot: { value: number } = { value: 0 }
 ): Map<string, NodePosition> {
+  const nw = isMobile ? NODE_WIDTH_MOBILE : NODE_WIDTH;
+  const nh = isMobile ? NODE_HEIGHT_MOBILE : NODE_HEIGHT;
+  const vgx = isMobile ? V_GAP_X_MOBILE : V_GAP_X;
+  const vgy = isMobile ? V_GAP_Y_MOBILE : V_GAP_Y;
+  const hgx = isMobile ? H_GAP_X_MOBILE : H_GAP_X;
+  const hgy = isMobile ? H_GAP_Y_MOBILE : H_GAP_Y;
+
   if (node.children.length === 0) {
     // Leaf node
     if (layout === 'vertical') {
       positions.set(node.id, {
-        x: nextSlot.value * (NODE_WIDTH + V_GAP_X),
-        y: depth * (NODE_HEIGHT + V_GAP_Y),
-        width: NODE_WIDTH,
-        height: NODE_HEIGHT,
+        x: nextSlot.value * (nw + vgx),
+        y: depth * (nh + vgy),
+        width: nw,
+        height: nh,
       });
     } else {
       positions.set(node.id, {
-        x: depth * (NODE_WIDTH + H_GAP_X),
-        y: nextSlot.value * (NODE_HEIGHT + H_GAP_Y),
-        width: NODE_WIDTH,
-        height: NODE_HEIGHT,
+        x: depth * (nw + hgx),
+        y: nextSlot.value * (nh + hgy),
+        width: nw,
+        height: nh,
       });
     }
     nextSlot.value++;
@@ -52,7 +66,7 @@ function calculateLayout(
     // Parent node — recurse children first
     const childPositions: NodePosition[] = [];
     node.children.forEach((child, i) => {
-      calculateLayout(child, layout, depth + 1, i, positions, nextSlot);
+      calculateLayout(child, layout, isMobile, depth + 1, i, positions, nextSlot);
       const childPos = positions.get(child.id);
       if (childPos) childPositions.push(childPos);
     });
@@ -65,17 +79,17 @@ function calculateLayout(
       const centerX = (firstChild.x + lastChild.x) / 2;
       positions.set(node.id, {
         x: centerX,
-        y: depth * (NODE_HEIGHT + V_GAP_Y),
-        width: NODE_WIDTH,
-        height: NODE_HEIGHT,
+        y: depth * (nh + vgy),
+        width: nw,
+        height: nh,
       });
     } else {
       const centerY = (firstChild.y + lastChild.y) / 2;
       positions.set(node.id, {
-        x: depth * (NODE_WIDTH + H_GAP_X),
+        x: depth * (nw + hgx),
         y: centerY,
-        width: NODE_WIDTH,
-        height: NODE_HEIGHT,
+        width: nw,
+        height: nh,
       });
     }
   }
@@ -129,6 +143,7 @@ function TreeNodeComponent({
   isHovered,
   onHover,
   onLeave,
+  isMobile,
 }: {
   key?: string | number;
   node: TreeNode;
@@ -137,6 +152,7 @@ function TreeNodeComponent({
   isHovered: boolean;
   onHover: (id: string) => void;
   onLeave: () => void;
+  isMobile?: boolean;
 }) {
   const colors = getCategoryColor(node.category);
   const isRoot = node.category === 'root';
@@ -156,7 +172,7 @@ function TreeNodeComponent({
         <div
           className={`
             w-full h-full rounded-2xl cursor-pointer
-            flex flex-col items-center justify-center gap-1
+            flex flex-col items-center justify-center gap-0.5
             transition-all duration-200
             border-2
             ${isRoot ? colors.bg : `${colors.bg} ${colors.bgDark}`}
@@ -171,10 +187,10 @@ function TreeNodeComponent({
           onMouseEnter={() => onHover(node.id)}
           onMouseLeave={onLeave}
         >
-          <span className={`font-headline text-sm font-bold tracking-tight ${isRoot ? colors.text : `${colors.text} ${colors.textDark}`}`}>
+          <span className={`font-headline ${isMobile ? 'text-xs' : 'text-sm'} font-bold tracking-tight ${isRoot ? colors.text : `${colors.text} ${colors.textDark}`}`}>
             {node.label}
           </span>
-          <span className={`text-[11px] font-medium opacity-70 ${isRoot ? 'text-white/80' : `${colors.text} ${colors.textDark}`}`}>
+          <span className={`${isMobile ? 'text-[9px]' : 'text-[11px]'} font-medium opacity-70 ${isRoot ? 'text-white/80' : `${colors.text} ${colors.textDark}`}`}>
             {node.labelZh}
           </span>
         </div>
@@ -224,6 +240,7 @@ function renderTree(
   hoveredId: string | null,
   onHover: (id: string) => void,
   onLeave: () => void,
+  isMobile: boolean = false,
 ): { edges: React.ReactNode[]; nodes: React.ReactNode[] } {
   const result = { edges: [] as React.ReactNode[], nodes: [] as React.ReactNode[] };
   const pos = positions.get(node.id);
@@ -238,7 +255,7 @@ function renderTree(
       );
     }
     // Recurse
-    const childResult = renderTree(child, positions, layout, onNodeClick, hoveredId, onHover, onLeave);
+    const childResult = renderTree(child, positions, layout, onNodeClick, hoveredId, onHover, onLeave, isMobile);
     result.edges.push(...childResult.edges);
     result.nodes.push(...childResult.nodes);
   }
@@ -253,6 +270,7 @@ function renderTree(
       isHovered={hoveredId === node.id}
       onHover={onHover}
       onLeave={onLeave}
+      isMobile={isMobile}
     />
   );
 
@@ -270,10 +288,18 @@ export function CodeSyntaxTreePage({
   const [layout, setLayout] = useState<LayoutMode>('vertical');
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   const positions = useMemo(
-    () => calculateLayout(codeTree, layout),
-    [layout]
+    () => calculateLayout(codeTree, layout, isMobile),
+    [layout, isMobile]
   );
 
   // Calculate SVG bounds
@@ -287,8 +313,8 @@ export function CodeSyntaxTreePage({
   }, [positions]);
 
   const { edges, nodes } = useMemo(
-    () => renderTree(codeTree, positions, layout, onNodeClick, hoveredId, (id) => setHoveredId(id), () => setHoveredId(null)),
-    [positions, layout, onNodeClick, hoveredId]
+    () => renderTree(codeTree, positions, layout, onNodeClick, hoveredId, (id) => setHoveredId(id), () => setHoveredId(null), isMobile),
+    [positions, layout, onNodeClick, hoveredId, isMobile]
   );
 
   const hoveredNode = hoveredId ? findNode(codeTree, hoveredId) : null;
@@ -297,34 +323,35 @@ export function CodeSyntaxTreePage({
   return (
     <div className="h-screen bg-surface dark:bg-slate-950 flex flex-col transition-colors duration-500 overflow-hidden">
       {/* Header */}
-      <nav className="w-full flex-shrink-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center px-4 md:px-6 py-3">
-        <div className="flex items-center gap-4 md:gap-8">
+      <nav className="w-full flex-shrink-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center px-3 sm:px-4 md:px-6 py-2 sm:py-3">
+        <div className="flex items-center gap-2 sm:gap-4 md:gap-8">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors text-sm font-semibold uppercase tracking-wider"
+            className="flex items-center gap-1 sm:gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors text-xs sm:text-sm font-semibold uppercase tracking-wider"
           >
-            <ChevronRight className="w-5 h-5 rotate-180" /> Back
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 rotate-180" />
+            <span className="hidden sm:inline">Back</span>
           </button>
 
-          <div className="flex items-center gap-2 text-cyan-600 dark:text-cyan-400">
-            <GitBranch className="w-5 h-5" />
-            <span className="font-headline font-bold text-base tracking-tight">Code Syntax Tree</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 text-cyan-600 dark:text-cyan-400">
+            <GitBranch className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-headline font-bold text-xs sm:text-base tracking-tight">Code Syntax Tree</span>
           </div>
         </div>
 
         {/* Layout Toggle */}
         <button
           onClick={() => setLayout(l => l === 'vertical' ? 'horizontal' : 'vertical')}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
+          className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
         >
           {layout === 'vertical' ? (
             <>
-              <AlignVerticalSpaceAround className="w-4 h-4" />
+              <AlignVerticalSpaceAround className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden sm:inline">Top → Down</span>
             </>
           ) : (
             <>
-              <AlignHorizontalSpaceAround className="w-4 h-4" />
+              <AlignHorizontalSpaceAround className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden sm:inline">Left → Right</span>
             </>
           )}
@@ -334,7 +361,7 @@ export function CodeSyntaxTreePage({
       {/* Tree Container */}
       <div 
         ref={containerRef}
-        className="flex-1 overflow-auto flex items-center justify-center relative"
+        className="flex-1 overflow-auto flex items-start sm:items-center justify-start sm:justify-center relative"
       >
         {/* Background decoration */}
         <div className="absolute inset-0 pointer-events-none">
@@ -342,28 +369,30 @@ export function CodeSyntaxTreePage({
           <div className="absolute bottom-10 right-10 w-80 h-80 bg-purple-500/5 dark:bg-purple-500/5 rounded-full blur-[100px]"></div>
         </div>
 
-        <div className="relative p-8" style={{ minWidth: bounds.width, minHeight: bounds.height }}>
+        <div className="relative p-4 sm:p-8" style={{ minWidth: bounds.width, minHeight: bounds.height }}>
           <svg
             width={bounds.width}
             height={bounds.height}
-            className="absolute top-8 left-8"
+            className="absolute top-4 left-4 sm:top-8 sm:left-8"
             style={{ overflow: 'visible' }}
           >
             {edges}
             {nodes}
           </svg>
 
-          {/* Tooltip overlay */}
-          <AnimatePresence>
-            {hoveredNode && hoveredPos && (
-              <NodeTooltip key={hoveredId} node={hoveredNode} position={hoveredPos} />
-            )}
-          </AnimatePresence>
+          {/* Tooltip overlay - hidden on mobile to avoid clutter */}
+          {!isMobile && (
+            <AnimatePresence>
+              {hoveredNode && hoveredPos && (
+                <NodeTooltip key={hoveredId} node={hoveredNode} position={hoveredPos} />
+              )}
+            </AnimatePresence>
+          )}
         </div>
       </div>
 
       {/* Legend */}
-      <div className="flex-shrink-0 px-6 py-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex items-center justify-center gap-6 flex-wrap">
+      <div className="flex-shrink-0 px-3 sm:px-6 py-2 sm:py-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex items-center justify-center gap-3 sm:gap-6 flex-wrap">
         {[
           { label: 'Root', cls: 'bg-gradient-to-r from-cyan-500 to-purple-500' },
           { label: 'Structure', cls: 'bg-cyan-200 dark:bg-cyan-800' },
@@ -372,9 +401,9 @@ export function CodeSyntaxTreePage({
           { label: 'Noun', cls: 'bg-emerald-200 dark:bg-emerald-800' },
           { label: 'Leaf', cls: 'bg-slate-200 dark:bg-slate-700' },
         ].map(item => (
-          <div key={item.label} className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${item.cls}`} />
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{item.label}</span>
+          <div key={item.label} className="flex items-center gap-1.5 sm:gap-2">
+            <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ${item.cls}`} />
+            <span className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400">{item.label}</span>
           </div>
         ))}
       </div>
