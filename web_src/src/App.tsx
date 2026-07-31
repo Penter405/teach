@@ -41,6 +41,16 @@ const ThemeToggle = ({ isDark, onToggle }: { isDark: boolean; onToggle: () => vo
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
+  const [clientId, setClientId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const apiBase = import.meta.env.VITE_API_URL || '';
+    fetch(`${apiBase}/api/config`)
+      .then(r => r.json())
+      .then(data => setClientId(data.clientId || ''))
+      .catch(() => setClientId(''));
+  }, []);
+
   const handleGoogleSuccess = async (response: any) => {
     try {
       const apiBase = import.meta.env.VITE_API_URL || '';
@@ -61,8 +71,16 @@ const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
     }
   };
 
+  if (clientId === null) {
+    return (
+      <div className="min-h-screen bg-surface dark:bg-slate-950 flex items-center justify-center">
+        <div className="animate-pulse text-slate-400 font-headline text-lg">Loading...</div>
+      </div>
+    );
+  }
+
   return (
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''}>
+    <GoogleOAuthProvider clientId={clientId}>
       <div className="min-h-screen bg-surface dark:bg-slate-950 flex flex-col relative overflow-hidden transition-colors duration-500">
         <header className="w-full top-0 sticky bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex justify-center items-center h-16 px-6 z-50 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center justify-between w-full max-w-7xl">
