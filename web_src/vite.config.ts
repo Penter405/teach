@@ -7,10 +7,10 @@ export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
     base: './',
+    envPrefix: ['VITE_', 'Client_ID'],
     plugins: [react(), tailwindcss()],
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      'import.meta.env.VITE_GOOGLE_CLIENT_ID': JSON.stringify(process.env.Client_ID || env.Client_ID || ''),
     },
     resolve: {
       alias: {
