@@ -1,0 +1,10 @@
+The following animations in `LessonContent.tsx` currently feel too much like simple PowerPoint bullet points or are heavily text-based without rich visual metaphors:
+
+1. `ProblemDecomposeAnim`: Just a vertical list of text items with emojis fading in one by one. Very much like a PPT slide.
+2. `ReflectionInspectAnim`: Simulates a shell by fading in text lines sequentially (`>>> type(x)` etc). Lacks visual engagement.
+3. `SelfBindingAnim`: Very text-heavy. The animation is mostly just lines of code appearing and a simple text arrow (`self → Lucky`) pulsing.
+4. `PointerAnim`: Essentially just a grid/table of text rows (RAM addresses and values) fading in.
+5. `IndentAnim`: Just blocks of text showing C vs Python code with lines disappearing/appearing.
+6. `InterpreterExecAnim`: Simulates an editor executing lines. While functional, it's mostly just text highlighting and text output appearing.
+
+These components could benefit from more dynamic layouts, SVG graphics, micro-animations, or stronger visual metaphors instead of just text fading in.
