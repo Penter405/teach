@@ -1,7 +1,7 @@
 root=code
 code.left=structure
 structure.child=loop_structure
-loop_structure.child=if_structure
+structure.child=choosing_structure
 code.left=singo(not structure)
 singo.left=verb
 singo.right=noun
