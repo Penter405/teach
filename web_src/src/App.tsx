@@ -401,7 +401,7 @@ const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { less
 };
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<Page>('login');
+  const [currentPage, setCurrentPage] = useState<Page>('path');
   const [previousPage, setPreviousPage] = useState<Page>('path');
   const [currentLessonId, setCurrentLessonId] = useState<string>('les-01-01');
   const [currentNodeId, setCurrentNodeId] = useState<string>('code');
