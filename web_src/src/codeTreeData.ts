@@ -39,16 +39,15 @@ export const codeTree: TreeNode = {
           labelZh: '迴圈結構',
           brief: '重複執行某段程式碼（for, while）',
           category: 'leaf',
-          children: [
-            {
-              id: 'if_structure',
-              label: 'If Structure',
-              labelZh: '判斷結構',
-              brief: '根據條件決定執行哪段程式碼（if, elif, else）',
-              category: 'leaf',
-              children: [],
-            },
-          ],
+          children: [],
+        },
+        {
+          id: 'choosing_structure',
+          label: 'Choosing Structure',
+          labelZh: '判斷結構',
+          brief: '根據條件決定執行哪段程式碼（if, elif, else）',
+          category: 'leaf',
+          children: [],
         },
       ],
     },
@@ -163,9 +162,9 @@ Python 的迴圈：
 for i in range(10):
     print("hi")`,
   },
-  if_structure: {
-    id: 'if_structure',
-    title: 'If Structure',
+  choosing_structure: {
+    id: 'choosing_structure',
+    title: 'Choosing Structure',
     titleZh: '判斷結構',
     brief: '根據條件決定執行哪段程式碼（if, elif, else）',
     fullExplanation: `判斷結構讓程式根據條件選擇不同的路徑執行。
