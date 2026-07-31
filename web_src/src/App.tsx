@@ -10,7 +10,9 @@ import {
   Layout,
   BookOpen,
   ArrowRight,
-  GitBranch
+  GitBranch,
+  Menu,
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { courseData, getFlatLessons, findLesson } from './courseData';
@@ -155,36 +157,36 @@ const CodeTreeNavLink = ({ onClick }: { onClick: () => void }) => {
 const LearningPathPage = ({ onSelectModule, onSelectLesson, onOpenCodeTree }: { onSelectModule: () => void, onSelectLesson: (id: string) => void, onOpenCodeTree: () => void }) => {
   return (
     <div className="min-h-screen bg-surface dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col relative overflow-hidden transition-colors duration-500">
-      <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 py-4 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/50">
-        <div className="text-2xl font-bold font-headline flex items-center gap-3">
-          <span className="text-xl">🐍</span>
-          <span>{courseData.course.title}</span>
+      <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/50">
+        <div className="text-lg sm:text-2xl font-bold font-headline flex items-center gap-2 sm:gap-3 min-w-0">
+          <span className="text-lg sm:text-xl shrink-0">🐍</span>
+          <span className="truncate">{courseData.course.title}</span>
         </div>
-        <nav className="flex items-center gap-4 md:gap-8 text-sm md:text-base">
+        <nav className="flex items-center gap-3 sm:gap-4 md:gap-8 text-sm md:text-base shrink-0">
           <a href="#" className="font-headline font-bold text-cyan-600 dark:text-white border-b-2 border-cyan-500 dark:border-slate-500 py-1 hidden sm:inline-block">Curriculum Area</a>
           <CodeTreeNavLink onClick={onOpenCodeTree} />
         </nav>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 shrink-0">
           <User className="w-5 h-5 text-slate-500 dark:text-slate-400" />
         </div>
       </header>
 
-      <main className="relative min-h-screen pt-32 pb-24 px-6 md:px-12">
+      <main className="relative min-h-screen pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-6 md:px-12">
         <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-b from-cyan-50 dark:from-cyan-900/10 to-transparent -z-10"></div>
         
-        <div className="max-w-4xl mx-auto text-center mb-24 relative">
+        <div className="max-w-4xl mx-auto text-center mb-16 sm:mb-24 relative">
           <motion.div
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
           >
-            <span className="inline-block px-4 py-1.5 rounded-full bg-cyan-100 dark:bg-cyan-900/30 text-cyan-800 dark:text-cyan-300 text-xs font-bold uppercase tracking-widest mb-6">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-cyan-100 dark:bg-cyan-900/30 text-cyan-800 dark:text-cyan-300 text-xs font-bold uppercase tracking-widest mb-4 sm:mb-6">
               V {courseData.course.version}
             </span>
-            <h1 className="font-headline text-5xl md:text-7xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight mb-6">
+            <h1 className="font-headline text-3xl sm:text-5xl md:text-7xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight mb-4 sm:mb-6">
               Mastering <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-purple-600 dark:from-cyan-400 dark:to-purple-400">Python</span>
             </h1>
-            <p className="text-slate-600 dark:text-slate-400 text-lg max-w-2xl mx-auto font-medium leading-relaxed">
+            <p className="text-slate-600 dark:text-slate-400 text-base sm:text-lg max-w-2xl mx-auto font-medium leading-relaxed px-2">
               {courseData.course.subtitle} A systemic journey from basic concepts to deep object-oriented paradigms.
             </p>
           </motion.div>
@@ -275,6 +277,7 @@ const LearningPathPage = ({ onSelectModule, onSelectLesson, onOpenCodeTree }: { 
 
 const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { lessonId: string, onBack: () => void, onLessonChange: (id: string) => void, onOpenCodeTree: () => void }) => {
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const flatLessons = getFlatLessons();
   const mainRef = useRef<HTMLElement>(null);
   
@@ -292,6 +295,11 @@ const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { less
     }
   }, [module]);
 
+  // Close mobile sidebar on lesson change
+  useEffect(() => {
+    setMobileSidebarOpen(false);
+  }, [lessonId]);
+
   const toggleModule = (id: string) => {
     setExpandedModules(prev => 
       prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]
@@ -300,6 +308,7 @@ const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { less
   
   const handleLessonChange = (id: string) => {
     onLessonChange(id);
+    setMobileSidebarOpen(false);
     mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -307,13 +316,23 @@ const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { less
 
   return (
     <div className="h-screen bg-surface dark:bg-slate-950 flex flex-col transition-colors duration-500">
-      <nav className="w-full flex-shrink-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center px-4 md:px-6 py-3">
-        <div className="flex items-center gap-4 md:gap-8">
+      <nav className="w-full flex-shrink-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center px-3 sm:px-4 md:px-6 py-3">
+        <div className="flex items-center gap-2 sm:gap-4 md:gap-8">
+          {/* Mobile sidebar toggle */}
+          <button
+            onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+            className="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300"
+            aria-label="Toggle sidebar"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
           <button 
             onClick={onBack}
-            className="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors text-sm font-semibold uppercase tracking-wider"
+            className="flex items-center gap-1 sm:gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors text-xs sm:text-sm font-semibold uppercase tracking-wider"
           >
-            <ChevronRight className="w-5 h-5 rotate-180" /> Back to Map
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 rotate-180" />
+            <span className="hidden sm:inline">Back to Map</span>
+            <span className="sm:hidden">Back</span>
           </button>
           <CodeTreeNavLink onClick={onOpenCodeTree} />
         </div>
@@ -323,6 +342,48 @@ const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { less
       </nav>
 
       <div className="flex flex-1 overflow-hidden relative">
+        {/* Mobile sidebar overlay */}
+        <AnimatePresence>
+          {mobileSidebarOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
+                onClick={() => setMobileSidebarOpen(false)}
+              />
+              <motion.aside
+                initial={{ x: '-100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '-100%' }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+                className="lg:hidden fixed top-0 left-0 bottom-0 w-[280px] sm:w-72 z-[70] bg-white dark:bg-slate-900 shadow-2xl"
+              >
+                <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800">
+                  <span className="font-headline font-bold text-sm text-slate-700 dark:text-slate-200">Navigation</span>
+                  <button
+                    onClick={() => setMobileSidebarOpen(false)}
+                    className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <X className="w-5 h-5 text-slate-500" />
+                  </button>
+                </div>
+                <div className="h-[calc(100%-57px)]">
+                  <Sidebar 
+                    currentLessonId={lessonId}
+                    expandedModules={expandedModules}
+                    onToggleModule={toggleModule}
+                    onSelectLesson={handleLessonChange}
+                  />
+                </div>
+              </motion.aside>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Desktop sidebar */}
         <aside className="hidden lg:block w-72 flex-shrink-0 z-40 bg-transparent relative border-r border-slate-200/50 dark:border-slate-800/50">
            <Sidebar 
              currentLessonId={lessonId}
@@ -333,25 +394,25 @@ const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { less
         </aside>
 
         <main ref={mainRef} className="flex-1 overflow-y-auto bg-surface dark:bg-[#0B1015]">
-          <div className="max-w-4xl mx-auto px-6 py-12 md:py-20 lg:px-16 min-h-full flex flex-col relative">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-20 lg:px-16 min-h-full flex flex-col relative">
             
             <motion.header 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-16 pb-8 border-b border-slate-200 dark:border-slate-800/60"
+              className="mb-10 sm:mb-16 pb-6 sm:pb-8 border-b border-slate-200 dark:border-slate-800/60"
             >
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-6 font-mono">
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-4 sm:mb-6 font-mono">
                 <span className="text-cyan-600 dark:text-cyan-400">{module.icon} Module 0{courseData.modules.findIndex(m=>m.id===module.id)+1}</span>
                 <span className="opacity-50">/</span>
-                <span>{module.title}</span>
+                <span className="truncate">{module.title}</span>
               </div>
               
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-headline font-bold text-slate-900 dark:text-white mb-4 leading-[1.1] tracking-tight">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-headline font-bold text-slate-900 dark:text-white mb-3 sm:mb-4 leading-[1.1] tracking-tight">
                 {lesson.title}
               </h1>
               
-              <div className="flex flex-wrap items-center gap-4 mt-6">
-                 <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 font-medium">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-4 sm:mt-6">
+                 <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 font-medium">
                   {lesson.titleEn}
                  </p>
                  <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold font-mono border border-slate-200 dark:border-slate-700">
@@ -366,24 +427,24 @@ const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { less
               ))}
             </div>
 
-            <footer className="mt-24 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between gap-4 pb-20">
+            <footer className="mt-16 sm:mt-24 pt-6 sm:pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 pb-16 sm:pb-20">
               {prevLesson ? (
                 <button 
                   onClick={() => handleLessonChange(prevLesson.id)}
-                  className="flex-1 flex flex-col items-start p-4 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-2xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700 text-left group"
+                  className="flex-1 flex flex-col items-start p-3 sm:p-4 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-2xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700 text-left group"
                 >
                   <span className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-1 group-hover:text-cyan-600 transition-colors">Previous</span>
-                  <span className="font-headline font-semibold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{prevLesson.title}</span>
+                  <span className="font-headline font-semibold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-sm sm:text-base">{prevLesson.title}</span>
                 </button>
               ) : <div className="flex-1"></div>}
               
               {nextLesson ? (
                 <button 
                    onClick={() => handleLessonChange(nextLesson.id)}
-                   className="flex-1 flex flex-col items-end p-4 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-2xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700 text-right group"
+                   className="flex-1 flex flex-col items-end p-3 sm:p-4 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-2xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700 text-right group"
                  >
                    <span className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-1 group-hover:text-purple-600 transition-colors">Next</span>
-                   <span className="font-headline font-semibold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{nextLesson.title}</span>
+                   <span className="font-headline font-semibold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-sm sm:text-base">{nextLesson.title}</span>
                  </button>
               ) : (
                 <div className="flex-1 flex flex-col items-end p-4 justify-center">

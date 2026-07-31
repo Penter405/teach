@@ -219,7 +219,7 @@ function RenderDiagram({ block }: { block: ContentBlock }) {
 
 // Diagram sub-components
 const TimelineDiagram = () => (
-  <div className="flex items-center gap-0 w-full min-w-[400px]">
+  <div className="flex items-center gap-0 w-full min-w-[280px] sm:min-w-[400px]">
     <div className="flex flex-col items-center flex-1 z-10 px-4">
       <div className="font-headline text-sm font-semibold mb-3 text-slate-800 dark:text-white whitespace-nowrap">總則</div>
       <div className="w-4 h-4 rounded-full bg-cyan-600 dark:bg-cyan-500 shadow-[0_0_10px_rgba(8,145,178,0.5)]"></div>

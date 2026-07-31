@@ -61,30 +61,32 @@ export function NodeExplainPage({
   return (
     <div className="h-screen bg-surface dark:bg-slate-950 flex flex-col transition-colors duration-500 overflow-hidden">
       {/* Header */}
-      <nav className="w-full flex-shrink-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center px-4 md:px-6 py-3">
-        <div className="flex items-center gap-4 md:gap-8">
+      <nav className="w-full flex-shrink-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center px-3 sm:px-4 md:px-6 py-2 sm:py-3">
+        <div className="flex items-center gap-2 sm:gap-4 md:gap-8">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors text-sm font-semibold uppercase tracking-wider"
+            className="flex items-center gap-1 sm:gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors text-xs sm:text-sm font-semibold uppercase tracking-wider"
           >
-            <ChevronRight className="w-5 h-5 rotate-180" /> Back to Tree
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 rotate-180" />
+            <span className="hidden sm:inline">Back to Tree</span>
+            <span className="sm:hidden">Back</span>
           </button>
         </div>
-        <div className="flex items-center gap-2 text-cyan-600 dark:text-cyan-400">
-          <BookOpen className="w-5 h-5" />
-          <span className="font-headline font-bold text-sm tracking-tight">Node Detail</span>
+        <div className="flex items-center gap-1.5 sm:gap-2 text-cyan-600 dark:text-cyan-400">
+          <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="font-headline font-bold text-xs sm:text-sm tracking-tight">Node Detail</span>
         </div>
       </nav>
 
       {/* Content */}
       <main className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl mx-auto px-6 py-12 md:py-16 lg:px-12">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 lg:px-12">
           
           {/* Breadcrumb */}
           <motion.div 
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-1.5 text-sm text-slate-400 dark:text-slate-500 mb-8 flex-wrap"
+            className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-slate-400 dark:text-slate-500 mb-6 sm:mb-8 flex-wrap"
           >
             {breadcrumb.map((crumb, i) => (
               <span key={crumb.id} className="flex items-center gap-1.5">
@@ -108,7 +110,7 @@ export function NodeExplainPage({
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className={`rounded-[2rem] p-8 md:p-10 mb-10 border-2 ${colors.border} ${colors.borderDark} ${colors.bg} ${colors.bgDark} relative overflow-hidden`}
+            className={`rounded-2xl sm:rounded-[2rem] p-5 sm:p-8 md:p-10 mb-8 sm:mb-10 border-2 ${colors.border} ${colors.borderDark} ${colors.bg} ${colors.bgDark} relative overflow-hidden`}
           >
             {node.category === 'root' && (
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-purple-500 opacity-90" />
@@ -120,10 +122,10 @@ export function NodeExplainPage({
                   {node.category}
                 </span>
               </div>
-              <h1 className={`font-headline text-4xl md:text-5xl font-bold mb-2 tracking-tight ${node.category === 'root' ? 'text-white' : `${colors.text} ${colors.textDark}`}`}>
+              <h1 className={`font-headline text-2xl sm:text-4xl md:text-5xl font-bold mb-2 tracking-tight ${node.category === 'root' ? 'text-white' : `${colors.text} ${colors.textDark}`}`}>
                 {explanation.title}
               </h1>
-              <p className={`text-xl font-medium ${node.category === 'root' ? 'text-white/80' : `${colors.text} ${colors.textDark} opacity-70`}`}>
+              <p className={`text-base sm:text-xl font-medium ${node.category === 'root' ? 'text-white/80' : `${colors.text} ${colors.textDark} opacity-70`}`}>
                 {explanation.titleZh}
               </p>
             </div>
@@ -151,7 +153,7 @@ export function NodeExplainPage({
             <h2 className="font-headline text-2xl font-bold text-slate-800 dark:text-white mb-6 tracking-tight">
               詳細說明
             </h2>
-            <div className="bg-white dark:bg-slate-900/60 rounded-2xl p-6 md:p-8 border border-slate-200 dark:border-slate-800">
+            <div className="bg-white dark:bg-slate-900/60 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-slate-200 dark:border-slate-800">
               {explanation.fullExplanation.split('\n\n').map((paragraph, i) => {
                 // Check if it looks like code
                 const isCode = paragraph.includes('def ') || paragraph.includes('import ') || 
