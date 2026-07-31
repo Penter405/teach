@@ -44,7 +44,7 @@ const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
   const [clientId, setClientId] = useState<string | null>(null);
 
   useEffect(() => {
-    const apiBase = import.meta.env.VITE_API_URL || '';
+    const apiBase = import.meta.env.VITE_API_URL || 'https://teach-beige.vercel.app';
     fetch(`${apiBase}/api/config`)
       .then(r => r.json())
       .then(data => setClientId(data.clientId || ''))
@@ -53,7 +53,7 @@ const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
 
   const handleGoogleSuccess = async (response: any) => {
     try {
-      const apiBase = import.meta.env.VITE_API_URL || '';
+      const apiBase = import.meta.env.VITE_API_URL || 'https://teach-beige.vercel.app';
       const res = await fetch(`${apiBase}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
