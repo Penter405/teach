@@ -1921,7 +1921,7 @@ const AssignX2Anim = ({ step }: { step: number }) => {
         <div className="flex items-center justify-between">
           <div className="font-mono font-bold text-lg text-cyan-600 dark:text-cyan-400">x</div>
           <div className="w-16 h-0.5 bg-slate-400 relative">
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 border-[5px] border-transparent border-l-slate-400" />
+            <div className="absolute -right-[6px] top-1/2 -translate-y-1/2 border-y-[4px] border-transparent border-l-[6px] border-l-slate-400 border-r-0" />
           </div>
           <div className="w-10 h-10 bg-white dark:bg-slate-900 border-2 border-green-500 rounded flex items-center justify-center font-mono font-bold text-lg text-green-600 dark:text-green-400 shadow-[0_0_10px_rgba(34,197,94,0.3)]">
             2
@@ -2084,7 +2084,7 @@ const ComboAssignAddAnim = ({ step }: { step: number }) => {
         <div className="flex items-center justify-between">
           <div className="font-mono font-bold text-lg text-cyan-600 dark:text-cyan-400">x</div>
           <div className="w-16 h-0.5 bg-slate-400 relative">
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 border-[5px] border-transparent border-l-slate-400" />
+            <div className="absolute -right-[6px] top-1/2 -translate-y-1/2 border-y-[4px] border-transparent border-l-[6px] border-l-slate-400 border-r-0" />
           </div>
           <div className="w-10 h-10 bg-white dark:bg-slate-900 border-2 border-green-500 rounded flex items-center justify-center font-mono font-bold text-lg text-green-600 dark:text-green-400 shadow-[0_0_10px_rgba(34,197,94,0.3)]">
             8
