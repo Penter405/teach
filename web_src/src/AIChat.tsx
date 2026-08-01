@@ -68,10 +68,14 @@ export function AIChat({ coursePrompt, model = 'gemini-3.5-flash-lite', title }:
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = chatContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -174,7 +178,7 @@ export function AIChat({ coursePrompt, model = 'gemini-3.5-flash-lite', title }:
       </div>
 
       {/* Messages Area */}
-      <div className="h-[360px] overflow-y-auto px-4 py-4 space-y-4 scroll-smooth" style={{ scrollbarWidth: 'thin' }}>
+      <div ref={chatContainerRef} className="h-[360px] overflow-y-auto px-4 py-4 space-y-4 scroll-smooth" style={{ scrollbarWidth: 'thin' }}>
         {messages.length === 0 && !loading && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
