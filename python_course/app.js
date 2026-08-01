@@ -203,6 +203,12 @@
       case 'quiz':
         return `<div class="${cls}">${renderQuiz(block)}</div>`;
 
+      case 'ai-chat':
+        return `<div class="${cls}">${renderAiChat(block, index)}</div>`;
+
+      case 'matching':
+        return `<div class="${cls}">${renderMatching(block, index)}</div>`;
+
       case 'practice':
         return `<div class="${cls} practice-placeholder" style="padding:20px; background:#e0e7ff; color:#3730a3; border-radius:8px; margin-bottom:20px; font-weight:bold;">
                   💻 實作練習: <span style="font-weight:normal">${esc(block.problems?.[0]?.title || '')} (${esc(block.problems?.[0]?.difficulty || '')})</span>
@@ -563,6 +569,262 @@
   }
 
   // ═══════════════════════════════════════════════════════
+  //  AI Chat Widget (申論題)
+  // ═══════════════════════════════════════════════════════
+  function renderAiChat(block, index) {
+    const chatId = 'ai-chat-' + Math.random().toString(36).substr(2, 9);
+    const diffBadge = block.difficulty
+      ? `<span class="ai-chat-diff ai-chat-diff-${(block.difficulty || '').toLowerCase()}">${esc(block.difficulty)}</span>`
+      : '';
+
+    return `
+      <div class="ai-chat-container" id="${chatId}" data-course-prompt="${escAttr(block.coursePrompt || '')}">
+        <div class="ai-chat-header">
+          <div class="ai-chat-header-left">
+            ${diffBadge}
+            <div>
+              <div class="ai-chat-title">${esc(block.title)}</div>
+              ${block.subtitle ? `<div class="ai-chat-subtitle">${esc(block.subtitle)}</div>` : ''}
+            </div>
+          </div>
+          <svg class="ai-chat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="28" height="28">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+          </svg>
+        </div>
+        <div class="ai-chat-messages" id="${chatId}-messages">
+          <div class="ai-chat-welcome">
+            <span class="ai-chat-welcome-icon">🤖</span>
+            <span>在下方輸入你的答案，AI 助教會幫你批改！</span>
+          </div>
+        </div>
+        <div class="ai-chat-input-area">
+          <textarea class="ai-chat-input" id="${chatId}-input" placeholder="輸入你的答案..." rows="2"></textarea>
+          <button class="ai-chat-send" id="${chatId}-send" onclick="(function(btn){
+            var container = document.getElementById('${chatId}');
+            var input = document.getElementById('${chatId}-input');
+            var messagesEl = document.getElementById('${chatId}-messages');
+            var prompt = input.value.trim();
+            if (!prompt) return;
+
+            // Remove welcome message
+            var welcome = messagesEl.querySelector('.ai-chat-welcome');
+            if (welcome) welcome.remove();
+
+            // Add user message
+            var userMsg = document.createElement('div');
+            userMsg.className = 'ai-chat-msg ai-chat-msg-user';
+            userMsg.innerHTML = '<div class=\\'ai-chat-msg-bubble\\'>' + prompt.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\\n/g,'<br>') + '</div>';
+            messagesEl.appendChild(userMsg);
+
+            input.value = '';
+            btn.disabled = true;
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+
+            // Add loading indicator
+            var loadingMsg = document.createElement('div');
+            loadingMsg.className = 'ai-chat-msg ai-chat-msg-ai';
+            loadingMsg.innerHTML = '<div class=\\'ai-chat-msg-bubble ai-chat-loading\\'><span class=\\'dot-typing\\'></span></div>';
+            messagesEl.appendChild(loadingMsg);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+
+            // Call API
+            var coursePrompt = container.dataset.coursePrompt || '';
+            fetch('/api/chat', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prompt: prompt, coursePrompt: coursePrompt })
+            })
+            .then(function(r){ return r.json(); })
+            .then(function(data){
+              loadingMsg.remove();
+              var aiMsg = document.createElement('div');
+              aiMsg.className = 'ai-chat-msg ai-chat-msg-ai';
+              var text = (data.text || data.message || '抱歉，目前無法取得回覆。').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+              // Simple markdown: **bold**, \\n, backtick code
+              text = text.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');
+              text = text.replace(/\`([^\`]+)\`/g, '<code>$1</code>');
+              text = text.replace(/\\n/g, '<br>');
+              aiMsg.innerHTML = '<div class=\\'ai-chat-msg-avatar\\'>🤖</div><div class=\\'ai-chat-msg-bubble\\'>' + text + '</div>';
+              messagesEl.appendChild(aiMsg);
+              messagesEl.scrollTop = messagesEl.scrollHeight;
+            })
+            .catch(function(err){
+              loadingMsg.remove();
+              var errMsg = document.createElement('div');
+              errMsg.className = 'ai-chat-msg ai-chat-msg-ai';
+              errMsg.innerHTML = '<div class=\\'ai-chat-msg-avatar\\'>⚠️</div><div class=\\'ai-chat-msg-bubble\\'>連線失敗，請稍後再試。</div>';
+              messagesEl.appendChild(errMsg);
+            })
+            .finally(function(){ btn.disabled = false; });
+          })(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20">
+              <path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2"/>
+            </svg>
+          </button>
+        </div>
+      </div>`;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  //  Matching Exercise (連連看)
+  // ═══════════════════════════════════════════════════════
+  function renderMatching(block, index) {
+    const matchId = 'match-' + Math.random().toString(36).substr(2, 9);
+    const items = block.items || [];
+    const categories = block.categories || [];
+    const diffBadge = block.difficulty
+      ? `<span class="matching-diff matching-diff-${(block.difficulty || '').toLowerCase()}">${esc(block.difficulty)}</span>`
+      : '';
+
+    // Shuffle items for display (Fisher-Yates)
+    const shuffled = items.slice();
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    return `
+      <div class="matching-container" id="${matchId}"
+           data-answers='${JSON.stringify(items.map(it => ({id: it.id, category: it.category})))}'
+           data-state='{}'>
+        <div class="matching-header">
+          <div class="matching-header-left">
+            ${diffBadge}
+            <div>
+              <div class="matching-title">${esc(block.title)}</div>
+              ${block.subtitle ? `<div class="matching-subtitle">${esc(block.subtitle)}</div>` : ''}
+            </div>
+          </div>
+          <span class="matching-tag">🔗 連連看</span>
+        </div>
+        <div class="matching-board">
+          <div class="matching-items">
+            ${shuffled.map(item => `
+              <button class="matching-item" data-item-id="${item.id}" onclick="(function(btn){
+                var container = btn.closest('.matching-container');
+                var allItems = container.querySelectorAll('.matching-item');
+                // toggle selection
+                if (btn.classList.contains('selected')) {
+                  btn.classList.remove('selected');
+                  return;
+                }
+                allItems.forEach(function(b){ b.classList.remove('selected'); });
+                btn.classList.add('selected');
+              })(this)">
+                <code>${esc(item.text)}</code>
+              </button>
+            `).join('')}
+          </div>
+          <div class="matching-arrows" id="${matchId}-arrows">
+            <!-- Connection indicators rendered dynamically -->
+          </div>
+          <div class="matching-categories">
+            ${categories.map(cat => `
+              <button class="matching-category" data-category="${cat}" onclick="(function(catBtn){
+                var container = catBtn.closest('.matching-container');
+                var selectedItem = container.querySelector('.matching-item.selected');
+                if (!selectedItem) return;
+
+                var itemId = selectedItem.dataset.itemId;
+                var cat = catBtn.dataset.category;
+                var state = JSON.parse(container.dataset.state || '{}');
+
+                // Remove previous assignment of this item
+                state[itemId] = cat;
+                container.dataset.state = JSON.stringify(state);
+
+                // Update visual
+                selectedItem.classList.remove('selected');
+                selectedItem.classList.add('connected');
+                selectedItem.dataset.assignedCategory = cat;
+
+                // Show connection tag on item
+                var tag = selectedItem.querySelector('.matching-conn-tag');
+                if (!tag) {
+                  tag = document.createElement('span');
+                  tag.className = 'matching-conn-tag';
+                  selectedItem.appendChild(tag);
+                }
+                tag.textContent = cat;
+
+                // Update category badge count
+                var allAssigned = Object.values(state).filter(function(v){ return v === cat; }).length;
+                var badge = catBtn.querySelector('.matching-cat-count');
+                if (badge) badge.textContent = allAssigned;
+
+                // Update arrows area
+                var arrowsEl = document.getElementById('${matchId}-arrows');
+                var total = container.querySelectorAll('.matching-item').length;
+                var connected = Object.keys(state).length;
+                arrowsEl.innerHTML = '<div class=\"matching-progress\">' + connected + ' / ' + total + '</div>';
+              })(this)">
+                <span class="matching-cat-icon">${cat === 'Function' ? '⚡' : cat === 'Method' ? '🔧' : '➕'}</span>
+                <span class="matching-cat-label">${esc(cat)}</span>
+                <span class="matching-cat-count">0</span>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+        <div class="matching-actions">
+          <button class="matching-check-btn" onclick="(function(btn){
+            var container = btn.closest('.matching-container');
+            var state = JSON.parse(container.dataset.state || '{}');
+            var answers = JSON.parse(container.dataset.answers || '[]');
+            var correct = 0;
+            var total = answers.length;
+
+            answers.forEach(function(ans){
+              var itemEl = container.querySelector('.matching-item[data-item-id=\\'' + ans.id + '\\']');
+              if (!itemEl) return;
+              if (state[ans.id] === ans.category) {
+                correct++;
+                itemEl.classList.remove('wrong');
+                itemEl.classList.add('correct');
+              } else if (state[ans.id]) {
+                itemEl.classList.remove('correct');
+                itemEl.classList.add('wrong');
+              }
+            });
+
+            var resultEl = container.querySelector('.matching-result');
+            if (!resultEl) {
+              resultEl = document.createElement('div');
+              resultEl.className = 'matching-result';
+              container.querySelector('.matching-actions').appendChild(resultEl);
+            }
+
+            if (correct === total) {
+              resultEl.className = 'matching-result matching-result-pass';
+              resultEl.innerHTML = '🎉 全部正確！太厲害了！ (' + correct + '/' + total + ')';
+            } else {
+              resultEl.className = 'matching-result matching-result-fail';
+              resultEl.innerHTML = '💪 答對 ' + correct + '/' + total + ' 題，紅色的再想想看！';
+            }
+          })(this)">
+            ✓ 檢查答案
+          </button>
+          <button class="matching-reset-btn" onclick="(function(btn){
+            var container = btn.closest('.matching-container');
+            container.dataset.state = '{}';
+            container.querySelectorAll('.matching-item').forEach(function(el){
+              el.classList.remove('connected','selected','correct','wrong');
+              el.removeAttribute('data-assigned-category');
+              var tag = el.querySelector('.matching-conn-tag');
+              if (tag) tag.remove();
+            });
+            container.querySelectorAll('.matching-cat-count').forEach(function(el){ el.textContent = '0'; });
+            var arrowsEl = container.querySelector('.matching-arrows');
+            if (arrowsEl) arrowsEl.innerHTML = '';
+            var result = container.querySelector('.matching-result');
+            if (result) result.remove();
+          })(this)">
+            ↺ 重新作答
+          </button>
+        </div>
+      </div>`;
+  }
+
+  // ═══════════════════════════════════════════════════════
   //  Explorer Tips
   // ═══════════════════════════════════════════════════════
   function showExplorerTip(text) {
@@ -664,6 +926,11 @@
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  }
+
+  // Escape for use inside HTML attribute values (also escapes quotes)
+  function escAttr(str) {
+    return esc(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
   // ── Go ──

@@ -2874,21 +2874,26 @@
               "text": "看到 `動詞(受詞)` → 這是 Function（屬於 Python）。看到 `主詞.動詞(受詞)` → 這是 Method（屬於某個物件）。看到符號夾在兩個東西中間 `A + B` → 這是 Operator。三種長相，同一件事：對資料做動作。"
             },
             {
-              "type": "practice",
-              "problems": [
-                {
-                  "title": "印出數字",
-                  "description": "請寫出一行 code，在螢幕印出 5",
-                  "difficulty": "Easy",
-                  "url": "#"
-                },
-                {
-                  "title": "動詞分類",
-                  "description": "以下哪些是 function、哪些是 method、哪些是 operator？ len(), .sort(), +, print(), .upper(), ==",
-                  "difficulty": "Easy",
-                  "url": "#"
-                }
-              ]
+              "type": "ai-chat",
+              "title": "印出數字",
+              "subtitle": "請寫出一行 code，在螢幕印出 5",
+              "difficulty": "Easy",
+              "coursePrompt": "學生正在練習寫出一行 Python code 來在螢幕上印出數字 5。正確答案是 print(5)。請擔任批改助教，檢查學生的回答是否正確。如果學生寫了 print(5) 或 print(\"5\") 等合理變體，請給予鼓勵並解釋 print() 是一個 function，5 是受詞。如果不正確，請給予友善的提示引導他們寫出正確答案。回覆請簡短友善。"
+            },
+            {
+              "type": "matching",
+              "title": "動詞分類",
+              "subtitle": "以下哪些是 function、哪些是 method、哪些是 operator？",
+              "difficulty": "Easy",
+              "items": [
+                { "id": "len", "text": "len()", "category": "Function" },
+                { "id": "sort", "text": ".sort()", "category": "Method" },
+                { "id": "plus", "text": "+", "category": "Operator" },
+                { "id": "print", "text": "print()", "category": "Function" },
+                { "id": "upper", "text": ".upper()", "category": "Method" },
+                { "id": "eq", "text": "==", "category": "Operator" }
+              ],
+              "categories": ["Function", "Method", "Operator"]
             }
           ]
         },
