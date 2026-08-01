@@ -14,6 +14,8 @@ interface AIChatProps {
   model?: string;
   /** Optional title shown above the chat */
   title?: string;
+  /** Optional subtitle shown in the welcome area */
+  subtitle?: string;
 }
 
 const API_BASE = import.meta.env.VITE_API_URL || 'https://teach-beige.vercel.app';
@@ -62,7 +64,7 @@ function renderMarkdown(text: string): string {
   return html;
 }
 
-export function AIChat({ coursePrompt, model = 'gemini-3.5-flash-lite', title }: AIChatProps) {
+export function AIChat({ coursePrompt, model = 'gemini-3.5-flash-lite', title, subtitle }: AIChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -189,8 +191,17 @@ export function AIChat({ coursePrompt, model = 'gemini-3.5-flash-lite', title }:
               <Bot className="w-7 h-7 text-cyan-600 dark:text-cyan-400" />
             </div>
             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-[280px]">
-              嗨！我是你的 AI 助教 ✨<br />
-              有任何關於這個章節的問題都可以問我喔！
+              {subtitle ? (
+                <>
+                  <strong className="text-slate-700 dark:text-slate-300 mb-2 block">{subtitle}</strong>
+                  有任何問題也可以隨時問我喔！
+                </>
+              ) : (
+                <>
+                  嗨！我是你的 AI 助教 ✨<br />
+                  有任何關於這個章節的問題都可以問我喔！
+                </>
+              )}
             </p>
           </motion.div>
         )}

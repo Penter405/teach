@@ -15,10 +15,12 @@ export interface PracticeProblem {
 }
 
 export interface ContentBlock {
-  type: 'heading' | 'paragraph' | 'code' | 'callout' | 'diagram' | 'list' | 'animation' | 'quiz' | 'practice' | 'ai-chat';
+  type: 'heading' | 'paragraph' | 'code' | 'callout' | 'diagram' | 'list' | 'animation' | 'quiz' | 'practice' | 'ai-chat' | 'matching';
   text?: string;
   title?: string;
+  subtitle?: string;
   coursePrompt?: string;
+  difficulty?: string;
   code?: string;
   language?: string;
   label?: string;
@@ -27,6 +29,7 @@ export interface ContentBlock {
   caption?: string;
   style?: string;
   items?: any[];
+  categories?: string[];
   steps?: string[];
   // Quiz
   questions?: QuizQuestion[];
