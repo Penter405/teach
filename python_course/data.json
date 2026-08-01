@@ -2756,15 +2756,135 @@
               ]
             },
             {
+              "type": "heading",
+              "text": "Process：動詞的三種面貌"
+            },
+            {
               "type": "paragraph",
-              "text": "接下來講到 coding 大架構中的第二個：Process。處理資料其實是用很多動詞，在動詞結束後，動詞會把自己回傳成一個資料（也就是名詞）。動詞可以分為三個部分：operator, function, method。"
+              "text": "我們已經認識了 Input 和 Output 這兩位動詞，接下來要進入程式三大架構中最豐富的部分——Process。在處理資料的過程中，我們會用到大量的動詞，而每個動詞執行完之後，都會把自己變回一個名詞（也就是 Return 一筆資料）。這些動詞總共有三種長相：Operator（運算子）、Function（函式）和 Method（方法）。"
+            },
+            {
+              "type": "heading",
+              "text": "第一種動詞：Operator（運算子）"
+            },
+            {
+              "type": "paragraph",
+              "text": "Operator 是最精簡的動詞——只用一兩個符號就能表達一個動作。你在數學課上早就見過它們了，只是那時候不叫它 operator。它的語法是：名詞 operator 名詞，例如 `3 + 5`。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "算術 Operator",
+                  "definition": "`+` 加、`-` 減、`*` 乘、`/` 除、`//` 整除、`%` 取餘數、`**` 次方"
+                },
+                {
+                  "term": "比較 Operator",
+                  "definition": "`==` 等於、`!=` 不等於、`>` 大於、`<` 小於、`>=` 大於等於、`<=` 小於等於"
+                },
+                {
+                  "term": "賦值 Operator",
+                  "definition": "`=` 把右邊的值裝進左邊的變數。這個很特別，其他 operator 都是『算東西』，只有它是『裝東西』"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 算術 operator\nprint(10 + 3)    # 13\nprint(10 % 3)    # 1（餘數）\nprint(2 ** 5)    # 32（2 的 5 次方）\n\n# 比較 operator（回傳 True 或 False）\nprint(5 > 3)     # True\nprint(5 == 3)    # False\n\n# 賦值 operator\nx = 42           # 把 42 裝進 x"
+            },
+            {
+              "type": "heading",
+              "text": "第二種動詞：Function（函式）"
+            },
+            {
+              "type": "paragraph",
+              "text": "Function 是『屬於 Python 本身』的動詞。語法是 `動詞(受詞)`，也就是 function 名稱加上括號。括號裡面放的是你要處理的資料。之前學的 `print()` 和 `input()` 就是 function——它們不屬於任何特定物件，而是 Python 內建提供的工具。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "print()",
+                  "definition": "把資料顯示到螢幕上"
+                },
+                {
+                  "term": "input()",
+                  "definition": "等使用者輸入資料，按 Enter 後回傳字串"
+                },
+                {
+                  "term": "len()",
+                  "definition": "計算資料的長度，例如 `len([1,2,3])` 回傳 3"
+                },
+                {
+                  "term": "type()",
+                  "definition": "告訴你這筆資料是什麼型態，例如 `type(5)` 回傳 `<class 'int'>`"
+                },
+                {
+                  "term": "int() / str() / float()",
+                  "definition": "轉換資料型態，例如 `int(\"5\")` 把字串 \"5\" 變成整數 5"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# Function 的語法：動詞(受詞)\nprint(\"hello\")       # 動詞=print，受詞=\"hello\"\nlen([1, 2, 3])      # 動詞=len，受詞=[1,2,3]，回傳 3\ntype(3.14)          # 動詞=type，受詞=3.14，回傳 <class 'float'>\n\n# 轉型也是 function\nage_str = input(\"你幾歲？\")\nage_int = int(age_str)  # 把字串變整數"
+            },
+            {
+              "type": "heading",
+              "text": "第三種動詞：Method（方法）"
+            },
+            {
+              "type": "paragraph",
+              "text": "Method 是『屬於某個物件』的動詞。語法是 `主詞.動詞(受詞)`——主詞和動詞之間多了一個點 `.`。就像之前在 5.1 學到的：如果動作的主詞是某個東西（不是 Python 本身），那就用 method 的形式。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": ".upper() / .lower()",
+                  "definition": "字串的 method，把文字全部變大寫或小寫"
+                },
+                {
+                  "term": ".append()",
+                  "definition": "list 的 method，在尾巴加一筆資料"
+                },
+                {
+                  "term": ".sort()",
+                  "definition": "list 的 method，把裡面的資料排序"
+                },
+                {
+                  "term": ".split()",
+                  "definition": "字串的 method，把一句話拆成好幾個詞放進 list"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# Method 的語法：主詞.動詞(受詞)\ntext = \"hello world\"\nprint(text.upper())         # 主詞=text，動詞=upper\n# → \"HELLO WORLD\"\n\nwords = text.split(\" \")     # 主詞=text，動詞=split，受詞=\" \"\nprint(words)                # → ['hello', 'world']\n\nmy_list = [3, 1, 2]\nmy_list.append(4)           # 主詞=my_list，動詞=append，受詞=4\nmy_list.sort()              # 主詞=my_list，動詞=sort\nprint(my_list)              # → [1, 2, 3, 4]"
+            },
+            {
+              "type": "callout",
+              "label": "快速分辨",
+              "text": "看到 `動詞(受詞)` → 這是 Function（屬於 Python）。看到 `主詞.動詞(受詞)` → 這是 Method（屬於某個物件）。看到符號夾在兩個東西中間 `A + B` → 這是 Operator。三種長相，同一件事：對資料做動作。"
             },
             {
               "type": "practice",
               "problems": [
                 {
                   "title": "印出數字",
-                  "description": "請寫出一行 code, 在螢幕印出 5",
+                  "description": "請寫出一行 code，在螢幕印出 5",
+                  "difficulty": "Easy",
+                  "url": "#"
+                },
+                {
+                  "title": "動詞分類",
+                  "description": "以下哪些是 function、哪些是 method、哪些是 operator？ len(), .sort(), +, print(), .upper(), ==",
                   "difficulty": "Easy",
                   "url": "#"
                 }
@@ -2779,38 +2899,86 @@
           "pdfPages": [],
           "content": [
             {
+              "type": "heading",
+              "text": "第一招：x = 2"
+            },
+            {
+              "type": "paragraph",
+              "text": "先從最簡單的一行程式開始。`x = 2` 看起來跟數學一模一樣，但在 Python 裡，`=` 並不是「等於」——它是一個動詞，叫做 assignment operator（賦值運算子）。它做的事情是：把右邊的資料，放進左邊的變數裡。這個動詞很特別，在所有 operator 裡面，只有它專門負責「幫變數裝東西」。"
+            },
+            {
+              "type": "animation",
+              "animationId": "assign-x-2",
+              "caption": "x = 2 的語法解析與記憶體變化",
+              "steps": [
+                "把 x、=、2 三個元素拆開來，保持間距",
+                "在每個元素下方標記詞性：x → 名詞 (variable)、= → 動詞 (operator)、2 → 名詞 (integer)",
+                "動詞 = 向左右兩個名詞各伸出一條箭頭，表示它負責將右邊的 2 放進左邊的 x",
+                "右側同步顯示記憶體變化：RAM 中建立 value=2 的物件，變數 x 指向它的位址"
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "第二招：3 + 5"
+            },
+            {
+              "type": "paragraph",
+              "text": "換一個動詞試試。`3 + 5` 裡的 `+` 也是 operator，但跟 `=` 不一樣——它不是「裝東西進變數」，而是「把兩個數字算在一起」。而且更重要的是：`+` 算完之後，會把自己跟兩邊的名詞一起消失，然後留下一個 Return 值。也就是說，`3 + 5` 整段動詞表演結束後，舞台上只會剩下一個 `8`。"
+            },
+            {
+              "type": "animation",
+              "animationId": "add-3-5",
+              "caption": "3 + 5 的執行與 Return",
+              "steps": [
+                "把 3、+、5 拆開，標記詞性：3 → 名詞 (integer)、+ → 動詞 (operator)、5 → 名詞 (integer)",
+                "動詞 + 從上方伸出箭頭連接左右兩個名詞，表示它要處理它們",
+                "3、+、5 全部被劃上刪除線，取而代之的是 Return 值 8 浮現在旁邊"
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "高級組合技：x = 3 + 5"
+            },
+            {
+              "type": "paragraph",
+              "text": "現在把第一招和第二招接在一起：`x = 3 + 5`。Python 會先跑第二招（`3 + 5` → Return `8`），然後整行變成 `x = 8`，接著跑第一招（把 `8` 裝進 `x`）。兩個動詞輪流上場，組成一套完整的連續技。"
+            },
+            {
+              "type": "animation",
+              "animationId": "combo-assign-add",
+              "caption": "x = 3 + 5 的完整執行過程",
+              "steps": [
+                "顯示完整程式碼 x = 3 + 5，拆開標記詞性：x(名詞) =(動詞) 3(名詞) +(動詞) 5(名詞)",
+                "先執行第二招：+ 動詞連接 3 和 5，三者劃上刪除線，Return 值 8 浮現",
+                "整行變成 x = 8，接續第一招：= 動詞連接 x 和 8",
+                "右側記憶體同步更新：RAM 建立 value=8 的物件，變數 x 指向它"
+              ]
+            },
+            {
               "type": "callout",
-              "label": "結構對應（whats_in_canva2）",
-              "text": "Section 5.4；動詞組合與執行優先級。"
+              "label": "重要",
+              "text": "Python 是直譯器語言，它逐行執行你的程式碼。在每一行裡，它會從左到右讀過去（read），但真正執行的順序取決於 operator 的優先級（precedence）——就跟數學一樣，先乘除後加減、括號最優先。"
+            },
+            {
+              "type": "paragraph",
+              "text": "但 Python 怎麼知道要先算 `+` 再算 `=`？因為 operator 有優先級。遇到更複雜的式子像 `x=(3**3+5)//10*1-2**3`，Python 就得反覆來回確認誰先誰後。如果你覺得這段話很難消化，可以截圖丟給 AI 幫你解釋每一步——這是很正常的學習方式。"
             },
             {
               "type": "heading",
-              "text": "執行順序與優先級"
+              "text": "Function 與 Method 讓 Python 更輕鬆"
             },
             {
               "type": "paragraph",
-              "text": "Python 是直譯器語言，所以它會在每一行從左往右看 (read)，但是執行的先後順序，取決於語法。"
-            },
-            {
-              "type": "paragraph",
-              "text": "像數學算式 x=(3**3+5)//10*1-2**3，這個從直譯角度說很累，大概就是一直讀這一行，然後發現計算的先後順序（例如它知道 = 的話是右邊算好，再執行變數賦值任務），接著計算。用簡單角度來說就是數學優先級（operator 優先級）。"
-            },
-            {
-              "type": "heading",
-              "text": "Function 與 Method 的標記"
-            },
-            {
-              "type": "paragraph",
-              "text": "Function 和 Method，簡單來說 Method 就是屬於某些東西的 function。所以兩個大致上對 Python 來講差不多，一樣都是先從左邊看到右邊。當它讀著讀著發現有貓膩——這是 function 或 method 的語法（任何字() 或 任何字.任何字()）——那麼就可以標記下來準備執行。"
+              "text": "相比之下，Function 和 Method 就讓 Python 輕鬆很多。Python 從左到右讀一行程式時，一旦看到括號 `()` 的語法特徵——像 `print(3)` 或 `my_list.sort()`——就能直接標記「這裡有一個動作要執行」，不需要像數學運算子那樣來回比較優先級。"
             },
             {
               "type": "code",
               "language": "python",
-              "code": "# 數學 Operator：Python 需要一直來回看，確認先乘除後加減\nx = 3 + 5 * 2\n\n# Function 形式：Python 只要照著括號標記就好，不需要來回看\nassign(x, add(3, multiply(5, 2)))"
+              "code": "# 用 Operator 寫：Python 需要來回看，確認先乘除後加減\nx = 3 + 5 * 2    # 先算 5*2=10，再算 3+10=13，最後 x=13\n\n# 如果改成全 Function 寫法，括號就明確告訴 Python 執行順序：\n# assign(x, add(3, multiply(5, 2)))\n# 從最內層開始：multiply(5,2) → add(3,10) → assign(x,13)"
             },
             {
               "type": "paragraph",
-              "text": "如果把程式寫成上面下面那樣（全部用 function），Python 就只需要標記，不需要重複看。大概只有數學 operator 才會讓 Python 這樣一直看來看去，深怕沒有先乘除後加減。"
+              "text": "看出差別了嗎？用 function 寫的時候，括號本身就標明了先後順序——最裡面的先做。但用數學 operator 寫，Python 就得靠「記住優先級規則」來決定誰先算，這也是為什麼複雜的數學式容易搞混。好消息是：日常寫 Python 時，你可以隨時加上 `()` 來明確告訴 Python（和讀你 code 的人）你想要的運算順序。"
             }
           ]
         }
