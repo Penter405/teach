@@ -1773,8 +1773,15 @@ const DynamicArrows = ({
 
   useLayoutEffect(() => { measure(); }, [measure]);
   useEffect(() => {
+    measure();
+    const t1 = setTimeout(measure, 50);
+    const t2 = setTimeout(measure, 200);
     window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      window.removeEventListener('resize', measure);
+    };
   }, [measure]);
 
   if (!coords) return null;
