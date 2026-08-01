@@ -470,7 +470,7 @@ function AnimationStepper({ steps, children }: { steps: string[]; children: (ste
   const [step, setStep] = useState(0);
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800 mb-8 w-full overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800 mb-8 w-full">
       <div className="flex justify-center w-full min-h-[200px] items-center py-4">
         {children(step)}
       </div>
