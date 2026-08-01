@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useLayoutEffect, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Bolt, Zap, CheckCircle2, ChevronRight, Play, SkipBack, ArrowRight, ExternalLink, XCircle, Trophy, Code2 } from 'lucide-react';
 import { ContentBlock, QuizQuestion, PracticeProblem } from './courseData';
@@ -1727,37 +1727,181 @@ const SubjectVerbObjectAnim = ({ step }: { step: number }) => {
   );
 };
 
+/* ─── Dynamic Arrows Helper ─── */
+const DynamicArrows = ({
+  containerRef,
+  verbRef,
+  leftRef,
+  rightRef,
+  color,
+  show,
+  animateIn = false,
+}: {
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  verbRef: React.RefObject<HTMLDivElement | null>;
+  leftRef: React.RefObject<HTMLDivElement | null>;
+  rightRef: React.RefObject<HTMLDivElement | null>;
+  color: string;
+  show: boolean;
+  animateIn?: boolean;
+}) => {
+  const [coords, setCoords] = useState<{
+    vx: number; vy: number;
+    lx: number; ly: number;
+    rx: number; ry: number;
+  } | null>(null);
+
+  const measure = useCallback(() => {
+    const c = containerRef.current;
+    const v = verbRef.current;
+    const l = leftRef.current;
+    const r = rightRef.current;
+    if (!c || !v || !l || !r) return;
+    const cr = c.getBoundingClientRect();
+    const vr = v.getBoundingClientRect();
+    const lr = l.getBoundingClientRect();
+    const rr = r.getBoundingClientRect();
+    setCoords({
+      vx: vr.left + vr.width / 2 - cr.left,
+      vy: vr.top - cr.top,
+      lx: lr.left + lr.width / 2 - cr.left,
+      ly: lr.top - cr.top,
+      rx: rr.left + rr.width / 2 - cr.left,
+      ry: rr.top - cr.top,
+    });
+  }, [containerRef, verbRef, leftRef, rightRef]);
+
+  useLayoutEffect(() => { measure(); }, [measure]);
+  useEffect(() => {
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [measure]);
+
+  if (!coords) return null;
+
+  const offset = 10; // how far above the top of the element
+  const arcHeight = 30; // how high the curve arcs
+  const armLen = 7; // arrowhead arm length
+
+  // Start point: above verb center
+  const sx = coords.vx;
+  const sy = coords.vy - offset;
+
+  // Left endpoint: above left noun center
+  const lx = coords.lx;
+  const ly = coords.ly - offset;
+  // Right endpoint: above right noun center
+  const rx = coords.rx;
+  const ry = coords.ry - offset;
+
+  // Control points (arc upward)
+  const lcx = (sx + lx) / 2;
+  const lcy = Math.min(sy, ly) - arcHeight;
+  const rcx = (sx + rx) / 2;
+  const rcy = Math.min(sy, ry) - arcHeight;
+
+  // Shorten paths: compute point at t=0.88 on the quadratic bezier
+  const qAt = (t: number, p0: number, p1: number, p2: number) =>
+    (1 - t) * (1 - t) * p0 + 2 * (1 - t) * t * p1 + t * t * p2;
+  const tEnd = 0.88;
+  const lEndX = qAt(tEnd, sx, lcx, lx);
+  const lEndY = qAt(tEnd, sy, lcy, ly);
+  const rEndX = qAt(tEnd, sx, rcx, rx);
+  const rEndY = qAt(tEnd, sy, rcy, ry);
+
+  // Split bezier control point for shortened curve
+  const splitCtrl = (t: number, p0: number, p1: number) =>
+    (1 - t) * p0 + t * p1;
+  const lCtrlX = splitCtrl(tEnd, sx, lcx);
+  const lCtrlY = splitCtrl(tEnd, sy, lcy);
+  const rCtrlX = splitCtrl(tEnd, sx, rcx);
+  const rCtrlY = splitCtrl(tEnd, sy, rcy);
+
+  // Tangent at t=1 of original bezier: direction = P2 - P1
+  const lTanX = lx - lcx;
+  const lTanY = ly - lcy;
+  const rTanX = rx - rcx;
+  const rTanY = ry - rcy;
+
+  // Normalize and compute V-arrowhead arms
+  const vArrow = (tipX: number, tipY: number, tanX: number, tanY: number) => {
+    const len = Math.sqrt(tanX * tanX + tanY * tanY);
+    const dx = tanX / len;
+    const dy = tanY / len;
+    // backward direction
+    const bx = -dx;
+    const by = -dy;
+    // perpendicular
+    const px = -dy;
+    const py = dx;
+    // two arms at ~30deg spread
+    const spread = 0.5;
+    const a1x = tipX + (bx + px * spread) * armLen;
+    const a1y = tipY + (by + py * spread) * armLen;
+    const a2x = tipX + (bx - px * spread) * armLen;
+    const a2y = tipY + (by - py * spread) * armLen;
+    return `${a1x.toFixed(1)},${a1y.toFixed(1)} ${tipX.toFixed(1)},${tipY.toFixed(1)} ${a2x.toFixed(1)},${a2y.toFixed(1)}`;
+  };
+
+  const leftArrowhead = vArrow(lx, ly, lTanX, lTanY);
+  const rightArrowhead = vArrow(rx, ry, rTanX, rTanY);
+
+  const leftPath = `M ${sx},${sy} Q ${lCtrlX.toFixed(1)},${lCtrlY.toFixed(1)} ${lEndX.toFixed(1)},${lEndY.toFixed(1)}`;
+  const rightPath = `M ${sx},${sy} Q ${rCtrlX.toFixed(1)},${rCtrlY.toFixed(1)} ${rEndX.toFixed(1)},${rEndY.toFixed(1)}`;
+
+  return (
+    <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ overflow: 'visible', opacity: show ? 1 : 0, transition: 'opacity 0.3s' }}>
+      {animateIn ? (
+        <>
+          <motion.path d={leftPath} fill="none" stroke={color} strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: show ? 1 : 0 }} transition={{ duration: 0.5 }} />
+          <motion.path d={rightPath} fill="none" stroke={color} strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: show ? 1 : 0 }} transition={{ duration: 0.5 }} />
+          <motion.polyline points={leftArrowhead} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" initial={{ opacity: 0 }} animate={{ opacity: show ? 1 : 0 }} transition={{ delay: 0.3 }} />
+          <motion.polyline points={rightArrowhead} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" initial={{ opacity: 0 }} animate={{ opacity: show ? 1 : 0 }} transition={{ delay: 0.3 }} />
+        </>
+      ) : (
+        <>
+          <path d={leftPath} fill="none" stroke={color} strokeWidth="3" strokeDasharray="5,5" />
+          <path d={rightPath} fill="none" stroke={color} strokeWidth="3" strokeDasharray="5,5" />
+          <polyline points={leftArrowhead} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          <polyline points={rightArrowhead} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        </>
+      )}
+    </svg>
+  );
+};
+
 const AssignX2Anim = ({ step }: { step: number }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const leftRef = useRef<HTMLDivElement>(null);
+  const verbRef = useRef<HTMLDivElement>(null);
+  const rightRef = useRef<HTMLDivElement>(null);
+
   return (
     <div className="flex flex-col md:flex-row items-center justify-center gap-12 w-full min-h-[200px] relative">
       {/* Code Area */}
-      <div className="flex items-start justify-center gap-6 relative">
+      <div ref={containerRef} className="flex items-start justify-center gap-6 relative">
         {/* x */}
-        <div className="flex flex-col items-center">
+        <div ref={leftRef} className="flex flex-col items-center">
           <motion.div animate={{ scale: step >= 2 ? 1.1 : 1 }} className="font-mono text-4xl font-bold text-slate-800 dark:text-white">x</motion.div>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: step >= 1 ? 1 : 0 }} className="mt-2 text-xs font-semibold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30 px-2 py-1 rounded">名詞 (variable)</motion.div>
         </div>
 
         {/* = */}
         <div className="flex flex-col items-center relative z-10">
-          <motion.div animate={{ scale: step >= 2 ? 1.4 : 1, color: step >= 2 ? '#ec4899' : '' }} className="font-mono text-4xl font-bold text-slate-800 dark:text-white transition-colors">=</motion.div>
+          <div ref={verbRef}>
+            <motion.div animate={{ scale: step >= 2 ? 1.4 : 1, color: step >= 2 ? '#ec4899' : '' }} className="font-mono text-4xl font-bold text-slate-800 dark:text-white transition-colors">=</motion.div>
+          </div>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: step >= 1 ? 1 : 0 }} className="mt-2 text-xs font-semibold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-900/30 px-2 py-1 rounded">動詞 (operator)</motion.div>
-          
-          {/* Arrows */}
-          <svg className="absolute inset-0 w-[200px] h-20 -left-[80px] -top-6 pointer-events-none" style={{ overflow: 'visible' }}>
-            <motion.path d="M 90,10 Q 57,-18 28,-1" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 2 ? 1 : 0 }} />
-            <motion.path d="M 110,10 Q 143,-18 172,-1" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 2 ? 1 : 0 }} />
-            {/* Arrowheads - V tips at noun centers, arms along tangent */}
-            <motion.polyline points="24,-5 20,2 27,4" fill="none" stroke="#ec4899" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" initial={{ opacity: 0 }} animate={{ opacity: step >= 2 ? 1 : 0 }} transition={{ delay: 0.3 }} />
-            <motion.polyline points="173,4 180,2 176,-5" fill="none" stroke="#ec4899" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" initial={{ opacity: 0 }} animate={{ opacity: step >= 2 ? 1 : 0 }} transition={{ delay: 0.3 }} />
-          </svg>
         </div>
 
         {/* 2 */}
-        <div className="flex flex-col items-center">
+        <div ref={rightRef} className="flex flex-col items-center">
           <motion.div animate={{ scale: step >= 2 ? 1.1 : 1 }} className="font-mono text-4xl font-bold text-slate-800 dark:text-white">2</motion.div>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: step >= 1 ? 1 : 0 }} className="mt-2 text-xs font-semibold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30 px-2 py-1 rounded">名詞 (integer)</motion.div>
         </div>
+
+        {/* Dynamic Arrows */}
+        <DynamicArrows containerRef={containerRef} verbRef={verbRef} leftRef={leftRef} rightRef={rightRef} color="#ec4899" show={step >= 2} animateIn={true} />
       </div>
 
       {/* RAM Area */}
@@ -1782,11 +1926,16 @@ const AssignX2Anim = ({ step }: { step: number }) => {
 };
 
 const Add35Anim = ({ step }: { step: number }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const leftRef = useRef<HTMLDivElement>(null);
+  const verbRef = useRef<HTMLDivElement>(null);
+  const rightRef = useRef<HTMLDivElement>(null);
+
   return (
     <div className="flex flex-col items-center justify-center h-48 w-full relative">
-      <div className="flex items-start justify-center gap-6 relative">
+      <div ref={containerRef} className="flex items-start justify-center gap-6 relative">
         {/* 3 */}
-        <div className="flex flex-col items-center relative">
+        <div ref={leftRef} className="flex flex-col items-center relative">
           <motion.div animate={{ opacity: step >= 2 ? 0.3 : 1 }} className="font-mono text-4xl font-bold text-slate-800 dark:text-white relative">
             3
             {step >= 2 && <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 -rotate-12 transform -translate-y-1/2"></div>}
@@ -1796,29 +1945,26 @@ const Add35Anim = ({ step }: { step: number }) => {
 
         {/* + */}
         <div className="flex flex-col items-center relative z-10">
-          <motion.div animate={{ scale: step === 1 ? 1.4 : 1, color: step === 1 ? '#8b5cf6' : '', opacity: step >= 2 ? 0.3 : 1 }} className="font-mono text-4xl font-bold text-slate-800 dark:text-white transition-colors relative">
-            +
-            {step >= 2 && <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 -rotate-12 transform -translate-y-1/2"></div>}
-          </motion.div>
+          <div ref={verbRef}>
+            <motion.div animate={{ scale: step === 1 ? 1.4 : 1, color: step === 1 ? '#8b5cf6' : '', opacity: step >= 2 ? 0.3 : 1 }} className="font-mono text-4xl font-bold text-slate-800 dark:text-white transition-colors relative">
+              +
+              {step >= 2 && <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 -rotate-12 transform -translate-y-1/2"></div>}
+            </motion.div>
+          </div>
           <motion.div animate={{ opacity: step >= 2 ? 0 : 1 }} className="mt-2 text-xs font-semibold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-2 py-1 rounded">動詞 (operator)</motion.div>
-          
-          {/* Arrows */}
-          <svg className="absolute inset-0 w-[200px] h-20 -left-[80px] -top-6 pointer-events-none" style={{ overflow: 'visible', opacity: step >= 2 ? 0 : 1 }}>
-            <motion.path d="M 90,10 Q 57,-18 28,-1" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 1 ? 1 : 0 }} />
-            <motion.path d="M 110,10 Q 143,-18 172,-1" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 1 ? 1 : 0 }} />
-            <motion.polyline points="24,-5 20,2 27,4" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" initial={{ opacity: 0 }} animate={{ opacity: step >= 1 ? 1 : 0 }} transition={{ delay: 0.3 }} />
-            <motion.polyline points="173,4 180,2 176,-5" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" initial={{ opacity: 0 }} animate={{ opacity: step >= 1 ? 1 : 0 }} transition={{ delay: 0.3 }} />
-          </svg>
         </div>
 
         {/* 5 */}
-        <div className="flex flex-col items-center relative">
+        <div ref={rightRef} className="flex flex-col items-center relative">
           <motion.div animate={{ opacity: step >= 2 ? 0.3 : 1 }} className="font-mono text-4xl font-bold text-slate-800 dark:text-white relative">
             5
             {step >= 2 && <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 -rotate-12 transform -translate-y-1/2"></div>}
           </motion.div>
           <motion.div animate={{ opacity: step >= 2 ? 0 : 1 }} className="mt-2 text-xs font-semibold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30 px-2 py-1 rounded">名詞 (integer)</motion.div>
         </div>
+
+        {/* Dynamic Arrows */}
+        <DynamicArrows containerRef={containerRef} verbRef={verbRef} leftRef={leftRef} rightRef={rightRef} color="#8b5cf6" show={step >= 1 && step < 2} animateIn={true} />
       </div>
       
       {/* Return Value */}
@@ -1839,65 +1985,66 @@ const Add35Anim = ({ step }: { step: number }) => {
 };
 
 const ComboAssignAddAnim = ({ step }: { step: number }) => {
+  const assignContainerRef = useRef<HTMLDivElement>(null);
+  const assignLeftRef = useRef<HTMLDivElement>(null);
+  const assignVerbRef = useRef<HTMLDivElement>(null);
+  const assignRightRef = useRef<HTMLDivElement>(null);
+
+  const addContainerRef = useRef<HTMLDivElement>(null);
+  const addLeftRef = useRef<HTMLDivElement>(null);
+  const addVerbRef = useRef<HTMLDivElement>(null);
+  const addRightRef = useRef<HTMLDivElement>(null);
+
   return (
     <div className="flex flex-col md:flex-row items-center justify-center gap-12 w-full min-h-[200px] relative">
       {/* Code Area */}
-      <div className="flex items-start justify-center gap-4 relative">
+      <div ref={assignContainerRef} className="flex items-start justify-center gap-4 relative">
         {/* x */}
-        <div className="flex flex-col items-center">
+        <div ref={assignLeftRef} className="flex flex-col items-center">
           <motion.div animate={{ scale: step >= 2 ? 1.1 : 1 }} className="font-mono text-4xl font-bold text-slate-800 dark:text-white">x</motion.div>
           <motion.div className="mt-2 text-[10px] font-semibold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30 px-1.5 py-0.5 rounded">名詞</motion.div>
         </div>
 
         {/* = */}
         <div className="flex flex-col items-center relative z-10">
-          <motion.div animate={{ scale: step >= 2 ? 1.4 : 1, color: step >= 2 ? '#ec4899' : '' }} className="font-mono text-4xl font-bold text-slate-800 dark:text-white transition-colors">=</motion.div>
+          <div ref={assignVerbRef}>
+            <motion.div animate={{ scale: step >= 2 ? 1.4 : 1, color: step >= 2 ? '#ec4899' : '' }} className="font-mono text-4xl font-bold text-slate-800 dark:text-white transition-colors">=</motion.div>
+          </div>
           <motion.div className="mt-2 text-[10px] font-semibold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-900/30 px-1.5 py-0.5 rounded">動詞 (assign)</motion.div>
-          
-          {/* Assign Arrows */}
-          <svg className="absolute inset-0 w-[240px] h-20 -left-[100px] -top-6 pointer-events-none" style={{ overflow: 'visible', opacity: step >= 2 ? 1 : 0 }}>
-            <motion.path d="M 110,10 Q 73,-18 38,-1" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" />
-            <motion.polyline points="34,-5 30,2 37,4" fill="none" stroke="#ec4899" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-            
-            <motion.path d="M 130,10 Q 167,-18 202,-1" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" />
-            <motion.polyline points="203,4 210,2 206,-5" fill="none" stroke="#ec4899" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
         </div>
 
-        {/* The 3 + 5 part */}
-        <div className="flex gap-4 relative">
+        {/* The 3 + 5 part → becomes 8 */}
+        <div ref={assignRightRef} className="flex gap-4 relative">
           <motion.div animate={{ opacity: step >= 1 ? 0 : 1 }} className="flex gap-4">
-            <div className="flex flex-col items-center">
-              <div className="font-mono text-4xl font-bold text-slate-800 dark:text-white relative">
-                3
-                {step === 1 && <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 -rotate-12 transform -translate-y-1/2"></div>}
+            <div ref={addContainerRef} className="flex gap-4 relative">
+              <div ref={addLeftRef} className="flex flex-col items-center">
+                <div className="font-mono text-4xl font-bold text-slate-800 dark:text-white relative">
+                  3
+                  {step === 1 && <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 -rotate-12 transform -translate-y-1/2"></div>}
+                </div>
+                <div className="mt-2 text-[10px] font-semibold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30 px-1.5 py-0.5 rounded">名詞</div>
               </div>
-              <div className="mt-2 text-[10px] font-semibold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30 px-1.5 py-0.5 rounded">名詞</div>
-            </div>
-            
-            <div className="flex flex-col items-center relative z-10">
-              <div className="font-mono text-4xl font-bold text-purple-500 relative">
-                +
-                {step === 1 && <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 -rotate-12 transform -translate-y-1/2"></div>}
-              </div>
-              <div className="mt-2 text-[10px] font-semibold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-1.5 py-0.5 rounded">動詞 (add)</div>
               
-              {/* Add Arrows */}
-              <svg className="absolute inset-0 w-[200px] h-20 -left-[80px] -top-6 pointer-events-none" style={{ overflow: 'visible', opacity: step === 1 ? 1 : 0 }}>
-                <motion.path d="M 90,10 Q 57,-18 28,-1" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeDasharray="5,5" />
-                <motion.polyline points="24,-5 20,2 27,4" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                
-                <motion.path d="M 110,10 Q 143,-18 172,-1" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeDasharray="5,5" />
-                <motion.polyline points="173,4 180,2 176,-5" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-
-            <div className="flex flex-col items-center">
-              <div className="font-mono text-4xl font-bold text-slate-800 dark:text-white relative">
-                5
-                {step === 1 && <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 -rotate-12 transform -translate-y-1/2"></div>}
+              <div className="flex flex-col items-center relative z-10">
+                <div ref={addVerbRef}>
+                  <div className="font-mono text-4xl font-bold text-purple-500 relative">
+                    +
+                    {step === 1 && <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 -rotate-12 transform -translate-y-1/2"></div>}
+                  </div>
+                </div>
+                <div className="mt-2 text-[10px] font-semibold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-1.5 py-0.5 rounded">動詞 (add)</div>
               </div>
-              <div className="mt-2 text-[10px] font-semibold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30 px-1.5 py-0.5 rounded">名詞</div>
+
+              <div ref={addRightRef} className="flex flex-col items-center">
+                <div className="font-mono text-4xl font-bold text-slate-800 dark:text-white relative">
+                  5
+                  {step === 1 && <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 -rotate-12 transform -translate-y-1/2"></div>}
+                </div>
+                <div className="mt-2 text-[10px] font-semibold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30 px-1.5 py-0.5 rounded">名詞</div>
+              </div>
+
+              {/* Dynamic Add Arrows */}
+              <DynamicArrows containerRef={addContainerRef} verbRef={addVerbRef} leftRef={addLeftRef} rightRef={addRightRef} color="#8b5cf6" show={step === 1} />
             </div>
           </motion.div>
           
@@ -1915,6 +2062,9 @@ const ComboAssignAddAnim = ({ step }: { step: number }) => {
             )}
           </AnimatePresence>
         </div>
+
+        {/* Dynamic Assign Arrows */}
+        <DynamicArrows containerRef={assignContainerRef} verbRef={assignVerbRef} leftRef={assignLeftRef} rightRef={assignRightRef} color="#ec4899" show={step >= 2} />
       </div>
 
       {/* RAM Area */}
