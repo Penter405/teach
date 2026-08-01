@@ -77,3 +77,11 @@ Traditional drop shadows are largely replaced by **Tonal Layering**.
 *   **Don't** use 1px solid dividers to separate list items. Use a `4px` gap and a subtle background hover state using `surface-container-high`.
 *   **Don't** use pure black (#000000). Always use `on-surface` (#2d3337) for text to maintain the slate-blue tonal harmony.
 *   **Don't** use standard "Material" shadows. Keep elevations soft, tinted, and wide.
+
+---
+
+## 7. AI & Backend Integrations
+
+### ChatGPT / Gemini API Integration
+*   **Requirement:** For essay-style coding questions (e.g. breaking down the steps of waking up in the morning into Subject.verb(object)), the system should grade and provide feedback via AI.
+*   **Implementation:** We will utilize the existing backend API endpoint (`api/chat.js` for Gemini/OpenAI) to handle these essay grading features. This is more secure and robust than embedding external widgets/iframes, allowing the app to smoothly integrate AI responses into our bespoke UI (like rendering specific interactive animations based on AI scoring).
