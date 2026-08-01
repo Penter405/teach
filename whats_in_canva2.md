@@ -116,3 +116,21 @@
 ### 5.3 常見的動詞
 #### 前面我們有講過程式的大架構是 input , process , output。 在process 裡面我們會寫很多程式碼，而這些程式碼大多數都是動詞。however 關於 input 跟 output, 在python 中 ，其實是兩個 function: input() 跟 print()
 #### input(), 這個function 會讓user在鍵盤輸入東西， 他會將輸入的記起來，當使用者按下鍵盤的enter，這個function 就會回傳剛剛記住的鍵盤輸入，用字串的形式回傳
+#### print()  (this is finished, so i skip)
+#### 接下來講道coding大架構中的第二個: process , 處理資料其實是用很多動詞，在動詞結束後，動詞會把自己回傳成一個資料(也就是名詞) ，動詞可以分為三個部分 operator, function , method
+#### (分別按照它們三個，先把 syntax tree 的詳細介紹寫進來，接著再下面寫些常用的， 所以會是 operator ........  function ..... method ....)
+
+#### 底下練習可以增加這些:請寫出一行code, 在螢幕印出 5
+### 5.4 動詞組合技
+#### 看看這個經典的數學style 的code
+#### animation  photo 1: x=2 ，把x  =  2 分得開開的 。photo 2 :這3個node的下面用中文標記是名詞還是動詞，然後()在中文的右邊 ，標記屬於syntax tree 屬於名詞或動詞的某個leaf ，像是 x 下面標 名詞(variable) photo 3: 把動詞變顯眼  .photo 4: 把這個operator verb 從上面畫兩個箭頭，連接到x 跟 2 兩個noun . photo 5: 在動畫的右邊標好記憶體的動畫展示x=2對記憶體的影響 ，還有synbol table的影響 (synbol table可能只是function 的概念，可以改成python 的概念)
+#### 這個經典的code 用了一個很特別的operator ，僅負責變數
+#### 接著我們繼續用組合技
+#### animation 3+5 (跟row 126 行一樣的概念，但是動詞指向兩個名詞後，要"return" ,也就是把 動詞跟兩個名詞畫一條移除線，然後在附近寫上return 的值)
+#### 接著把兩個組合技合在一起，高級組合技
+#### 重要:python 是直譯器語言，所以他會在每一行都這樣做，從左往右看(read), 但是執行(準確來說是編譯語言的編譯階段) , it is really depended
+#### 先簡單說，聰明人可以把這段"重要"截下來丟ai:
+#### 數學  x=(3**3+5)//10*1-2**3 這個用compile 角度說很累，大概就是一直讀這一行，然後似乎發現計算的先後順序(他知道= 的話是右邊算好，再執行變數任務)，接著計算；用簡單角度來說就是數學優先級(operator 優先級，可以另外上網查)
+#### function and method ,method 簡單來說就是 屬於某些東西的funtion  ,所以兩個大致上對python 來講差不多，一樣都是先從左邊看到右邊，但是當他讀著讀著發現有貓膩 這是function 或 method 的語法 ( 任何字() 或 任何字.任何字() ) 那麼就可以標記
+#### x = 3 + 5 * 2 如果改成 assign(x, add(3, multiply(5, 2))) ，那麼python 就只需要標記 標記 ，不需要重複看 (應該是這樣，大概只有數學operator 會這樣一直看來看去，深怕沒有先乘除後加減，然後又沒有強迫用括號)
+#### animation (x=3+5) (也許你知道怎麼做了: 3+5 aniation(row 129) 跑完就會變成 x=8的動畫 ，爽抄  row 126)

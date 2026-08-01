@@ -2754,6 +2754,63 @@
                   "answer": 2
                 }
               ]
+            },
+            {
+              "type": "paragraph",
+              "text": "接下來講到 coding 大架構中的第二個：Process。處理資料其實是用很多動詞，在動詞結束後，動詞會把自己回傳成一個資料（也就是名詞）。動詞可以分為三個部分：operator, function, method。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "印出數字",
+                  "description": "請寫出一行 code, 在螢幕印出 5",
+                  "difficulty": "Easy",
+                  "url": "#"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-05-04",
+          "title": "動詞組合技",
+          "titleEn": "Verb Combinations",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "callout",
+              "label": "結構對應（whats_in_canva2）",
+              "text": "Section 5.4；動詞組合與執行優先級。"
+            },
+            {
+              "type": "heading",
+              "text": "執行順序與優先級"
+            },
+            {
+              "type": "paragraph",
+              "text": "Python 是直譯器語言，所以它會在每一行從左往右看 (read)，但是執行的先後順序，取決於語法。"
+            },
+            {
+              "type": "paragraph",
+              "text": "像數學算式 x=(3**3+5)//10*1-2**3，這個從直譯角度說很累，大概就是一直讀這一行，然後發現計算的先後順序（例如它知道 = 的話是右邊算好，再執行變數賦值任務），接著計算。用簡單角度來說就是數學優先級（operator 優先級）。"
+            },
+            {
+              "type": "heading",
+              "text": "Function 與 Method 的標記"
+            },
+            {
+              "type": "paragraph",
+              "text": "Function 和 Method，簡單來說 Method 就是屬於某些東西的 function。所以兩個大致上對 Python 來講差不多，一樣都是先從左邊看到右邊。當它讀著讀著發現有貓膩——這是 function 或 method 的語法（任何字() 或 任何字.任何字()）——那麼就可以標記下來準備執行。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 數學 Operator：Python 需要一直來回看，確認先乘除後加減\nx = 3 + 5 * 2\n\n# Function 形式：Python 只要照著括號標記就好，不需要來回看\nassign(x, add(3, multiply(5, 2)))"
+            },
+            {
+              "type": "paragraph",
+              "text": "如果把程式寫成上面下面那樣（全部用 function），Python 就只需要標記，不需要重複看。大概只有數學 operator 才會讓 Python 這樣一直看來看去，深怕沒有先乘除後加減。"
             }
           ]
         }
