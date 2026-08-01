@@ -15,8 +15,10 @@ export interface PracticeProblem {
 }
 
 export interface ContentBlock {
-  type: 'heading' | 'paragraph' | 'code' | 'callout' | 'diagram' | 'list' | 'animation' | 'quiz' | 'practice';
+  type: 'heading' | 'paragraph' | 'code' | 'callout' | 'diagram' | 'list' | 'animation' | 'quiz' | 'practice' | 'ai-chat';
   text?: string;
+  title?: string;
+  coursePrompt?: string;
   code?: string;
   language?: string;
   label?: string;
