@@ -248,14 +248,6 @@ export function NodeExplainPage({
               )}
             </motion.div>
           )}
-
-          {/* AI Chat */}
-          <div className="mb-12">
-            <AIChat 
-              title={`AI 助教 - ${node.label}`}
-              coursePrompt={`當前探討 Python 語法樹的節點：\n名稱：${node.label} (${node.labelZh})\n類型：${node.category}\n簡介：${explanation.brief}\n請針對此節點內容協助學生，回答問題時請保持友善並引導學生思考。`}
-            />
-          </div>
         </div>
       </main>
     </div>
