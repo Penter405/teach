@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y7m31d",
+    "version": "2026y8m1d",
     "language": "zh-TW"
   },
   "modules": [
@@ -1428,8 +1428,8 @@
     },
     {
       "id": "mod-04",
-      "title": "Python 課程（子章節與資料生命週期）",
-      "titleEn": "Python Course (Data Lifecycle)",
+      "title": "Computer Science in Coding Steps",
+      "titleEn": "Computer Science in Coding Steps",
       "icon": "🚀",
       "lessons": [
         {
@@ -2454,6 +2454,292 @@
                     "add(5,8)",
                     "3 * 5 + 8",
                     "3 * 13"
+                  ],
+                  "answer": 2
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mod-05",
+      "title": "實際寫寫看",
+      "titleEn": "Hands-On Coding",
+      "icon": "✍️",
+      "lessons": [
+        {
+          "id": "les-05-01",
+          "title": "從生活中發現 Code",
+          "titleEn": "Discover Code in Daily Life",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "callout",
+              "label": "結構對應（whats_in_canva2）",
+              "text": "Section 5.1；從生活中的動作理解 function 和 method 的差別，並學習如何拆解問題。"
+            },
+            {
+              "type": "heading",
+              "text": "從生活中發現 Code"
+            },
+            {
+              "type": "paragraph",
+              "text": "在寫程式之前，我們先從日常生活中找出 code 的影子。其實你每天做的事情，都可以用程式的方式來描述。"
+            },
+            {
+              "type": "heading",
+              "text": "練習題 1：早上起床到出門"
+            },
+            {
+              "type": "paragraph",
+              "text": "請寫出早上起床到出門上班中的十件事情。其中要寫出用身體的哪個部分，對什麼物體做了什麼動作，物體可以是自己本身。並按照先後順序寫出來。"
+            },
+            {
+              "type": "callout",
+              "label": "範例",
+              "text": "用手搓搓眼睛。拿起手機看新聞。"
+            },
+            {
+              "type": "heading",
+              "text": "練習題 2：主詞、動詞、受詞"
+            },
+            {
+              "type": "paragraph",
+              "text": "在英文中，一個句子會有主詞、動詞、受詞。程式碼其實也有類似的結構。"
+            },
+            {
+              "type": "animation",
+              "animationId": "subject-verb-object",
+              "caption": "從自然語言到程式語法的對應",
+              "steps": [
+                "主詞 動詞 受詞（自然語言結構）",
+                "python(虛線框框) print 3 → 這是 function 的形式",
+                "加上括號 → print(3)，python 是隱含的主詞（不用寫）",
+                "當主詞是某個物件時 → 主詞.動詞(受詞)，這就是 method"
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "現在把你寫的十件事情轉換成 主詞.動詞(受詞) 的格式。如果主詞不是人（例如你的鬧鐘），那麼請用 動詞(受詞) 的形式表達（也就是 function）。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# Method 形式（主詞是物件）：\n# 你的手.搓(眼睛)\n# 你的手.拿起(手機)\n\n# Function 形式（主詞是 Python 本身）：\n# 鬧鐘叫(\"06:00\")  → 鬧鐘不是人，用 function\n# print(3)          → python.print(3) 的簡寫\n\n# 實際 Python 範例：\nmy_list = [3, 1, 2]\nmy_list.sort()      # method：my_list 是主詞\nprint(my_list)      # function：python 是隱含主詞"
+            },
+            {
+              "type": "heading",
+              "text": "解題說明"
+            },
+            {
+              "type": "paragraph",
+              "text": "在解本題的過程中，我們可以學到如何把一件題目說的事情拆解成小步驟。如果題目要你寫一段 code 關於成功起床並且狀態滿滿的出門，那麼我們就會把問題拆成很多小步驟，例如我們寫的 10 個早上的事情。"
+            },
+            {
+              "type": "paragraph",
+              "text": "並且這些小問題有順序性（當然實際寫 code 的時候，順序可能會變換，例如早起直接刷牙跟先吃早餐，如果兩個都能達成狀態滿滿的出門，那他們的順序就沒什麼差別，it's up to you）。"
+            },
+            {
+              "type": "callout",
+              "label": "重點",
+              "text": "Function 是屬於 Python 的，所以如果今天 Python 強制所有 code 都要寫成 method 的形式（也就是 主詞.動詞(受詞)），那麼原本是 function 的前面就會多一個主詞，像是 python.print(3)。翻譯成本題就會變成 你的手機.鬧鐘叫(\"06:00\")，下一行可能是 你的手.關鬧鐘(\"手機\")。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "print(3) 是 function 還是 method？",
+                  "options": [
+                    "Function（Python 是隱含的主詞）",
+                    "Method（有明確的主詞）",
+                    "都不是"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "my_list.sort() 是 function 還是 method？",
+                  "options": [
+                    "Function",
+                    "Method（my_list 是主詞）",
+                    "都不是"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "把問題拆成小步驟的好處是？",
+                  "options": [
+                    "讓程式變慢",
+                    "讓問題更好理解，可以逐步實作",
+                    "讓程式碼更長"
+                  ],
+                  "answer": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-05-02",
+          "title": "常見的名詞",
+          "titleEn": "Common Nouns in Programming",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "callout",
+              "label": "結構對應（whats_in_canva2）",
+              "text": "Section 5.2；程式中常見的名詞（資料型態）整理。"
+            },
+            {
+              "type": "heading",
+              "text": "程式中常見的名詞"
+            },
+            {
+              "type": "paragraph",
+              "text": "在程式中，名詞就是資料。前面我們學到了 variable 是用來儲存資料的，而這些資料有不同的型態。以下是常見的名詞（資料型態）："
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "int（整數）",
+                  "definition": "沒有小數點的數字，例如：5, -3, 100"
+                },
+                {
+                  "term": "float（浮點數）",
+                  "definition": "有小數點的數字，例如：3.14, -0.5"
+                },
+                {
+                  "term": "str（字串）",
+                  "definition": "用引號包起來的文字，例如：\"hello\", \"你好\""
+                },
+                {
+                  "term": "bool（布林值）",
+                  "definition": "只有 True 或 False 兩個值"
+                },
+                {
+                  "term": "list（列表）",
+                  "definition": "有順序的多筆資料，例如：[1, 2, 3]"
+                },
+                {
+                  "term": "dict（字典）",
+                  "definition": "用 key 對應 value 的資料，例如：{\"name\": \"Alice\"}"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 常見的名詞 = 資料型態\nage = 25              # int\nheight = 175.5        # float\nname = \"Alice\"        # str\nis_student = True     # bool\nscores = [90, 85, 78] # list\ninfo = {\"name\": \"Alice\", \"age\": 25}  # dict"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "\"hello\" 是什麼型態？",
+                  "options": [
+                    "int",
+                    "str",
+                    "list"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "True 是什麼型態？",
+                  "options": [
+                    "str",
+                    "int",
+                    "bool"
+                  ],
+                  "answer": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "les-05-03",
+          "title": "常見的動詞",
+          "titleEn": "Common Verbs in Programming",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "callout",
+              "label": "結構對應（whats_in_canva2）",
+              "text": "Section 5.3；程式中的動詞就是 function / method，重點介紹 input() 與 print()。"
+            },
+            {
+              "type": "heading",
+              "text": "程式中常見的動詞"
+            },
+            {
+              "type": "paragraph",
+              "text": "前面我們有講過程式的大架構是 Input → Process → Output。在 Process 裡面我們會寫很多程式碼，而這些程式碼大多數都是動詞（function / method）。"
+            },
+            {
+              "type": "paragraph",
+              "text": "然而關於 Input 跟 Output，在 Python 中其實是兩個 function：input() 跟 print()。"
+            },
+            {
+              "type": "heading",
+              "text": "input() — 接收使用者輸入"
+            },
+            {
+              "type": "paragraph",
+              "text": "input() 這個 function 會讓使用者在鍵盤輸入東西。它會將輸入的記起來，當使用者按下鍵盤的 Enter，這個 function 就會回傳剛剛記住的鍵盤輸入，用字串的形式回傳。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# input() — 接收使用者的鍵盤輸入\nname = input(\"你叫什麼名字？\")\n# 使用者打字 → 按 Enter → input() 回傳字串\nprint(\"你好, \" + name)\n\n# 注意：input() 回傳的永遠是 str\nage = input(\"你幾歲？\")\nprint(type(age))  # <class 'str'>\n\n# 如果要當數字用，需要轉型\nage_int = int(age)\nprint(age_int + 1)"
+            },
+            {
+              "type": "heading",
+              "text": "print() — 輸出到螢幕"
+            },
+            {
+              "type": "paragraph",
+              "text": "print() 是 Python 中最常用的輸出 function。它把括號內的資料顯示到螢幕上，讓使用者看到程式的結果。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# print() — 輸出到螢幕\nprint(\"Hello World\")     # 輸出文字\nprint(42)                # 輸出數字\nprint(3 + 5)             # 先計算再輸出 → 8\n\n# 完整的 Input → Process → Output\nnum = input(\"輸入一個數字：\")  # Input\nresult = int(num) * 2          # Process\nprint(result)                  # Output"
+            },
+            {
+              "type": "callout",
+              "label": "記住",
+              "text": "input() 負責 Input（輸入），print() 負責 Output（輸出），中間的程式碼負責 Process（處理）。這就是程式的三大架構！"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "input() 回傳的資料型態是什麼？",
+                  "options": [
+                    "int",
+                    "str（字串）",
+                    "取決於使用者輸入的內容"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "input() 在什麼時候會回傳資料？",
+                  "options": [
+                    "馬上回傳",
+                    "當使用者按下 Enter 時",
+                    "程式結束時"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "print() 對應程式三大架構中的哪一個？",
+                  "options": [
+                    "Input",
+                    "Process",
+                    "Output"
                   ],
                   "answer": 2
                 }
