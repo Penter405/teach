@@ -1744,12 +1744,12 @@ const AssignX2Anim = ({ step }: { step: number }) => {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: step >= 1 ? 1 : 0 }} className="mt-2 text-xs font-semibold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-900/30 px-2 py-1 rounded">動詞 (operator)</motion.div>
           
           {/* Arrows */}
-          <svg className="absolute inset-0 w-[200px] h-20 -left-[80px] top-6 pointer-events-none" style={{ overflow: 'visible' }}>
-            <motion.path d="M 80,0 Q 40,-20 0,-10" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 2 ? 1 : 0 }} />
-            <motion.path d="M 120,0 Q 160,-20 200,-10" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 2 ? 1 : 0 }} />
+          <svg className="absolute inset-0 w-[200px] h-20 -left-[80px] -top-6 pointer-events-none" style={{ overflow: 'visible' }}>
+            <motion.path d="M 90,10 Q 55,-20 20,10" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 2 ? 1 : 0 }} />
+            <motion.path d="M 110,10 Q 145,-20 180,10" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 2 ? 1 : 0 }} />
             {/* Arrowheads */}
-            <motion.polygon points="-5,-15 0,-10 5,-15" fill="#ec4899" initial={{ opacity: 0 }} animate={{ opacity: step >= 2 ? 1 : 0 }} transition={{ delay: 0.3 }} />
-            <motion.polygon points="205,-15 200,-10 195,-15" fill="#ec4899" initial={{ opacity: 0 }} animate={{ opacity: step >= 2 ? 1 : 0 }} transition={{ delay: 0.3 }} />
+            <motion.polygon points="15,0 20,10 25,0" fill="#ec4899" initial={{ opacity: 0 }} animate={{ opacity: step >= 2 ? 1 : 0 }} transition={{ delay: 0.3 }} />
+            <motion.polygon points="175,0 180,10 185,0" fill="#ec4899" initial={{ opacity: 0 }} animate={{ opacity: step >= 2 ? 1 : 0 }} transition={{ delay: 0.3 }} />
           </svg>
         </div>
 
@@ -1804,8 +1804,10 @@ const Add35Anim = ({ step }: { step: number }) => {
           
           {/* Arrows */}
           <svg className="absolute inset-0 w-[200px] h-20 -left-[80px] -top-6 pointer-events-none" style={{ overflow: 'visible', opacity: step >= 2 ? 0 : 1 }}>
-            <motion.path d="M 80,0 Q 40,-20 0,10" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 1 ? 1 : 0 }} />
-            <motion.path d="M 120,0 Q 160,-20 200,10" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 1 ? 1 : 0 }} />
+            <motion.path d="M 90,10 Q 55,-20 20,10" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 1 ? 1 : 0 }} />
+            <motion.path d="M 110,10 Q 145,-20 180,10" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 1 ? 1 : 0 }} />
+            <motion.polygon points="15,0 20,10 25,0" fill="#8b5cf6" initial={{ opacity: 0 }} animate={{ opacity: step >= 1 ? 1 : 0 }} transition={{ delay: 0.3 }} />
+            <motion.polygon points="175,0 180,10 185,0" fill="#8b5cf6" initial={{ opacity: 0 }} animate={{ opacity: step >= 1 ? 1 : 0 }} transition={{ delay: 0.3 }} />
           </svg>
         </div>
 
@@ -1853,9 +1855,12 @@ const ComboAssignAddAnim = ({ step }: { step: number }) => {
           <motion.div className="mt-2 text-[10px] font-semibold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-900/30 px-1.5 py-0.5 rounded">動詞 (assign)</motion.div>
           
           {/* Assign Arrows */}
-          <svg className="absolute inset-0 w-[240px] h-20 -left-[100px] top-6 pointer-events-none" style={{ overflow: 'visible', opacity: step >= 2 ? 1 : 0 }}>
-            <motion.path d="M 100,0 Q 50,-20 0,-10" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" />
-            <motion.path d="M 140,0 Q 190,-20 240,-10" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" />
+          <svg className="absolute inset-0 w-[240px] h-20 -left-[100px] -top-6 pointer-events-none" style={{ overflow: 'visible', opacity: step >= 2 ? 1 : 0 }}>
+            <motion.path d="M 110,10 Q 70,-20 30,10" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" />
+            <motion.polygon points="25,0 30,10 35,0" fill="#ec4899" />
+            
+            <motion.path d="M 130,10 Q 170,-20 210,10" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" />
+            <motion.polygon points="205,0 210,10 215,0" fill="#ec4899" />
           </svg>
         </div>
 
@@ -1876,6 +1881,15 @@ const ComboAssignAddAnim = ({ step }: { step: number }) => {
                 {step === 1 && <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 -rotate-12 transform -translate-y-1/2"></div>}
               </div>
               <div className="mt-2 text-[10px] font-semibold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-1.5 py-0.5 rounded">動詞 (add)</div>
+              
+              {/* Add Arrows */}
+              <svg className="absolute inset-0 w-[200px] h-20 -left-[80px] -top-6 pointer-events-none" style={{ overflow: 'visible', opacity: step === 1 ? 1 : 0 }}>
+                <motion.path d="M 90,10 Q 55,-20 20,10" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeDasharray="5,5" />
+                <motion.polygon points="15,0 20,10 25,0" fill="#8b5cf6" />
+                
+                <motion.path d="M 110,10 Q 145,-20 180,10" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeDasharray="5,5" />
+                <motion.polygon points="175,0 180,10 185,0" fill="#8b5cf6" />
+              </svg>
             </div>
 
             <div className="flex flex-col items-center">
