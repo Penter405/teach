@@ -757,6 +757,9 @@
                 var total = container.querySelectorAll('.matching-item').length;
                 var connected = Object.keys(state).length;
                 arrowsEl.innerHTML = '<div class=\"matching-progress\">' + connected + ' / ' + total + '</div>';
+                
+                // Draw connecting lines
+                if (window.drawMatchingLines) window.drawMatchingLines(container);
               })(this)">
                 <span class="matching-cat-icon">${cat === 'Function' ? '⚡' : cat === 'Method' ? '🔧' : '➕'}</span>
                 <span class="matching-cat-label">${esc(cat)}</span>
@@ -817,6 +820,9 @@
             if (arrowsEl) arrowsEl.innerHTML = '';
             var result = container.querySelector('.matching-result');
             if (result) result.remove();
+            
+            // Clear lines
+            if (window.drawMatchingLines) window.drawMatchingLines(container);
           })(this)">
             ↺ 重新作答
           </button>
@@ -932,6 +938,64 @@
   function escAttr(str) {
     return esc(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
+
+  // Global helper for matching exercise SVG lines
+  window.drawMatchingLines = function(container) {
+    var board = container.querySelector('.matching-board');
+    if (!board) return;
+    
+    var svg = board.querySelector('.matching-lines');
+    if (!svg) {
+      svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('class', 'matching-lines');
+      svg.style.position = 'absolute';
+      svg.style.top = '0';
+      svg.style.left = '0';
+      svg.style.width = '100%';
+      svg.style.height = '100%';
+      svg.style.pointerEvents = 'none';
+      svg.style.zIndex = '0';
+      board.style.position = 'relative';
+      board.insertBefore(svg, board.firstChild);
+    }
+    
+    svg.innerHTML = '';
+    var state = JSON.parse(container.dataset.state || '{}');
+    var boardRect = board.getBoundingClientRect();
+    
+    for (var itemId in state) {
+      var catId = state[itemId];
+      var itemBtn = container.querySelector('.matching-item[data-item-id="' + itemId + '"]');
+      var catBtn = container.querySelector('.matching-category[data-category="' + catId + '"]');
+      
+      if (itemBtn && catBtn) {
+        var itemRect = itemBtn.getBoundingClientRect();
+        var catRect = catBtn.getBoundingClientRect();
+        
+        var startX = itemRect.right - boardRect.left;
+        var startY = itemRect.top + itemRect.height/2 - boardRect.top;
+        var endX = catRect.left - boardRect.left;
+        var endY = catRect.top + catRect.height/2 - boardRect.top;
+        
+        var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', startX);
+        line.setAttribute('y1', startY);
+        line.setAttribute('x2', endX);
+        line.setAttribute('y2', endY);
+        line.setAttribute('stroke', '#00687b');
+        line.setAttribute('stroke-width', '2');
+        line.setAttribute('stroke-dasharray', '4 4');
+        svg.appendChild(line);
+      }
+    }
+  };
+
+  // Redraw matching lines on resize
+  window.addEventListener('resize', function() {
+    document.querySelectorAll('.matching-container').forEach(function(c) {
+      if (window.drawMatchingLines) window.drawMatchingLines(c);
+    });
+  });
 
   // ── Go ──
   document.addEventListener('DOMContentLoaded', init);
