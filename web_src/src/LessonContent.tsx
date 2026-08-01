@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Bolt, Zap, CheckCircle2, ChevronRight, Play, SkipBack, ArrowRight, ExternalLink, XCircle, Trophy, Code2 } from 'lucide-react';
 import { ContentBlock, QuizQuestion, PracticeProblem } from './courseData';
 import { AIChat } from './AIChat';
+import { MatchingExercise } from './MatchingExercise';
 
 interface LessonContentProps {
   key?: React.Key;
@@ -57,6 +58,9 @@ function renderBlock(block: ContentBlock) {
     case 'ai-chat':
       return <RenderAIChat block={block} />;
 
+    case 'matching':
+      return <MatchingExercise block={block} />;
+
     default:
       return null;
   }
@@ -68,6 +72,7 @@ function RenderAIChat({ block }: { block: ContentBlock }) {
     <div className="mb-8 mt-4">
       <AIChat 
         title={block.title || 'AI 助教'} 
+        subtitle={block.subtitle}
         coursePrompt={block.coursePrompt || ''}
       />
     </div>
