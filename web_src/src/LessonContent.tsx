@@ -1748,8 +1748,8 @@ const AssignX2Anim = ({ step }: { step: number }) => {
             <motion.path d="M 90,10 Q 55,-20 20,2" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 2 ? 1 : 0 }} />
             <motion.path d="M 110,10 Q 145,-20 180,2" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 2 ? 1 : 0 }} />
             {/* Arrowheads */}
-            <motion.polygon points="15,0 20,10 25,0" fill="#ec4899" initial={{ opacity: 0 }} animate={{ opacity: step >= 2 ? 1 : 0 }} transition={{ delay: 0.3 }} />
-            <motion.polygon points="175,0 180,10 185,0" fill="#ec4899" initial={{ opacity: 0 }} animate={{ opacity: step >= 2 ? 1 : 0 }} transition={{ delay: 0.3 }} />
+            <motion.polyline points="13,-6 20,2 27,-6" fill="none" stroke="#ec4899" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" transform="rotate(58 20 2)" initial={{ opacity: 0 }} animate={{ opacity: step >= 2 ? 1 : 0 }} transition={{ delay: 0.3 }} />
+            <motion.polyline points="173,-6 180,2 187,-6" fill="none" stroke="#ec4899" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" transform="rotate(-58 180 2)" initial={{ opacity: 0 }} animate={{ opacity: step >= 2 ? 1 : 0 }} transition={{ delay: 0.3 }} />
           </svg>
         </div>
 
@@ -1806,8 +1806,8 @@ const Add35Anim = ({ step }: { step: number }) => {
           <svg className="absolute inset-0 w-[200px] h-20 -left-[80px] -top-6 pointer-events-none" style={{ overflow: 'visible', opacity: step >= 2 ? 0 : 1 }}>
             <motion.path d="M 90,10 Q 55,-20 20,2" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 1 ? 1 : 0 }} />
             <motion.path d="M 110,10 Q 145,-20 180,2" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeDasharray="5,5" initial={{ pathLength: 0 }} animate={{ pathLength: step >= 1 ? 1 : 0 }} />
-            <motion.polygon points="15,0 20,10 25,0" fill="#8b5cf6" initial={{ opacity: 0 }} animate={{ opacity: step >= 1 ? 1 : 0 }} transition={{ delay: 0.3 }} />
-            <motion.polygon points="175,0 180,10 185,0" fill="#8b5cf6" initial={{ opacity: 0 }} animate={{ opacity: step >= 1 ? 1 : 0 }} transition={{ delay: 0.3 }} />
+            <motion.polyline points="13,-6 20,2 27,-6" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" transform="rotate(58 20 2)" initial={{ opacity: 0 }} animate={{ opacity: step >= 1 ? 1 : 0 }} transition={{ delay: 0.3 }} />
+            <motion.polyline points="173,-6 180,2 187,-6" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" transform="rotate(-58 180 2)" initial={{ opacity: 0 }} animate={{ opacity: step >= 1 ? 1 : 0 }} transition={{ delay: 0.3 }} />
           </svg>
         </div>
 
@@ -1857,10 +1857,10 @@ const ComboAssignAddAnim = ({ step }: { step: number }) => {
           {/* Assign Arrows */}
           <svg className="absolute inset-0 w-[240px] h-20 -left-[100px] -top-6 pointer-events-none" style={{ overflow: 'visible', opacity: step >= 2 ? 1 : 0 }}>
             <motion.path d="M 110,10 Q 70,-20 30,2" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" />
-            <motion.polygon points="25,0 30,10 35,0" fill="#ec4899" />
+            <motion.polyline points="23,-6 30,2 37,-6" fill="none" stroke="#ec4899" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" transform="rotate(61 30 2)" />
             
             <motion.path d="M 130,10 Q 170,-20 210,2" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" />
-            <motion.polygon points="205,0 210,10 215,0" fill="#ec4899" />
+            <motion.polyline points="203,-6 210,2 217,-6" fill="none" stroke="#ec4899" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" transform="rotate(-61 210 2)" />
           </svg>
         </div>
 
@@ -1885,10 +1885,10 @@ const ComboAssignAddAnim = ({ step }: { step: number }) => {
               {/* Add Arrows */}
               <svg className="absolute inset-0 w-[200px] h-20 -left-[80px] -top-6 pointer-events-none" style={{ overflow: 'visible', opacity: step === 1 ? 1 : 0 }}>
                 <motion.path d="M 90,10 Q 55,-20 20,2" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeDasharray="5,5" />
-                <motion.polygon points="15,0 20,10 25,0" fill="#8b5cf6" />
+                <motion.polyline points="13,-6 20,2 27,-6" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" transform="rotate(58 20 2)" />
                 
                 <motion.path d="M 110,10 Q 145,-20 180,2" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeDasharray="5,5" />
-                <motion.polygon points="175,0 180,10 185,0" fill="#8b5cf6" />
+                <motion.polyline points="173,-6 180,2 187,-6" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" transform="rotate(-58 180 2)" />
               </svg>
             </div>
 
