@@ -21,6 +21,7 @@ import { Sidebar } from './Sidebar';
 import { CodeSyntaxTreePage } from './CodeSyntaxTree';
 import { NodeExplainPage } from './NodeExplainPage';
 import { codeTree } from './codeTreeData';
+import { AIChat } from './AIChat';
 
 // --- Types ---
 type Page = 'login' | 'path' | 'lesson' | 'tree' | 'tree-node';
@@ -443,6 +444,13 @@ const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { less
               {lesson.content.map((block, index) => (
                 <LessonContent key={`${lesson.id}-${index}`} block={block} index={index} />
               ))}
+            </div>
+
+            <div className="mt-12">
+              <AIChat 
+                title={`AI 助教 - ${lesson.title}`}
+                coursePrompt={`當前章節：${module.title} - ${lesson.title}\n英文標題：${lesson.titleEn}\n請針對此章節內容協助學生，回答問題時請保持友善並引導學生思考。`}
+              />
             </div>
 
             <footer className="mt-16 sm:mt-24 pt-6 sm:pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 pb-16 sm:pb-20">

@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/Penter405/teach#readme",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "cors": "^2.8.6",
     "google-auth-library": "^10.6.2",
     "mongoose": "^9.4.1"
