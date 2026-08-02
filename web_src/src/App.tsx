@@ -21,10 +21,16 @@ import { Sidebar } from './Sidebar';
 import { CodeSyntaxTreePage } from './CodeSyntaxTree';
 import { NodeExplainPage } from './NodeExplainPage';
 import { codeTree } from './codeTreeData';
-import { AIChat } from './AIChat';
+import { TeacherQuestionPanel } from './TeacherQuestionPanel';
 
 // --- Types ---
 type Page = 'login' | 'path' | 'lesson' | 'tree' | 'tree-node';
+
+interface StudentUser {
+  name?: string;
+  email?: string;
+  googleId?: string;
+}
 
 // --- Constants ---
 
@@ -41,7 +47,7 @@ const ThemeToggle = ({ isDark, onToggle }: { isDark: boolean; onToggle: () => vo
 
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
-const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
+const LoginPage = ({ onLogin }: { onLogin: (user: StudentUser) => void }) => {
   const [clientId, setClientId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -62,7 +68,7 @@ const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
       });
       const data = await res.json();
       if (data.success) {
-        onLogin();
+        onLogin(data.user || {});
       } else {
         alert("Login failed! Reason: " + (data.errorDetials || data.message));
       }
@@ -112,7 +118,7 @@ const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={() => console.log('Login Failed')}
-                  useOneTap
+                  useOneTap={false}
                   theme="filled_black"
                   shape="pill"
                 />
@@ -294,7 +300,7 @@ const LearningPathPage = ({ onSelectModule, onSelectLesson, onOpenCodeTree }: { 
   );
 };
 
-const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { lessonId: string, onBack: () => void, onLessonChange: (id: string) => void, onOpenCodeTree: () => void }) => {
+const LessonPage = ({ lessonId, student, onBack, onLessonChange, onOpenCodeTree }: { lessonId: string, student: StudentUser | null, onBack: () => void, onLessonChange: (id: string) => void, onOpenCodeTree: () => void }) => {
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [teacherChatOpen, setTeacherChatOpen] = useState(false);
@@ -308,13 +314,6 @@ const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { less
   const currentIndex = flatLessons.findIndex(l => l.id === lessonId);
   const prevLesson = currentIndex > 0 ? flatLessons[currentIndex - 1] : null;
   const nextLesson = currentIndex < flatLessons.length - 1 ? flatLessons[currentIndex + 1] : null;
-  const teacherContext = lesson && module ? [
-    `Course: ${courseData.course.title}`,
-    `Module: ${module.title} / ${module.titleEn}`,
-    `Lesson: ${lesson.title} / ${lesson.titleEn}`,
-    `PDF pages: ${lesson.pdfPages.join(', ')}`,
-  ].join('\n') : '';
-
   useEffect(() => {
     if (module && !expandedModules.includes(module.id)) {
       setExpandedModules(prev => [...prev, module.id]);
@@ -526,10 +525,12 @@ const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { less
                 </button>
               </div>
               <div className="min-h-0 flex-1">
-                <AIChat
-                  coursePrompt={teacherContext}
-                  title="Talk to teacher"
-                  subtitle={`Ask about ${lesson.title}`}
+                <TeacherQuestionPanel
+                  lessonId={lesson.id}
+                  lessonTitle={lesson.title}
+                  moduleId={module.id}
+                  moduleTitle={module.title}
+                  student={student}
                 />
               </div>
             </motion.aside>
@@ -546,6 +547,7 @@ export default function App() {
   const [currentLessonId, setCurrentLessonId] = useState<string>('les-01-01');
   const [currentNodeId, setCurrentNodeId] = useState<string>('code');
   const [isDark, setIsDark] = useState(true);
+  const [student, setStudent] = useState<StudentUser | null>(null);
 
   useEffect(() => {
     if (isDark) {
@@ -576,7 +578,12 @@ export default function App() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <LoginPage onLogin={() => setCurrentPage('path')} />
+            <LoginPage
+              onLogin={(user) => {
+                setStudent(user);
+                setCurrentPage('path');
+              }}
+            />
           </motion.div>
         )}
 
@@ -609,6 +616,7 @@ export default function App() {
           >
             <LessonPage 
               lessonId={currentLessonId}
+              student={student}
               onLessonChange={setCurrentLessonId}
               onBack={() => setCurrentPage('path')}
               onOpenCodeTree={navigateToTree}

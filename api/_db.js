@@ -27,4 +27,19 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.models.User || mongoose.model('User', UserSchema);
 
-module.exports = { connectToDatabase, User };
+const QuestionSchema = new mongoose.Schema({
+    lessonId: { type: String, required: true, index: true },
+    lessonTitle: { type: String, required: true },
+    moduleId: { type: String, required: true, index: true },
+    moduleTitle: { type: String, required: true },
+    studentEmail: { type: String, required: true, index: true },
+    studentName: { type: String, required: true },
+    question: { type: String, required: true },
+    reply: { type: String, default: '' },
+    status: { type: String, enum: ['open', 'answered'], default: 'open', index: true },
+    answeredAt: { type: Date, default: null },
+}, { timestamps: true });
+
+const Question = mongoose.models.Question || mongoose.model('Question', QuestionSchema);
+
+module.exports = { connectToDatabase, User, Question };
