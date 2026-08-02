@@ -27,6 +27,33 @@ function buildQuestionQuery(req) {
   return query;
 }
 
+function withMessages(question) {
+  if (!question) return question;
+
+  const messages = Array.isArray(question.messages) ? [...question.messages] : [];
+
+  if (messages.length === 0 && question.question) {
+    messages.push({
+      role: 'student',
+      text: question.question,
+      createdAt: question.createdAt,
+    });
+  }
+
+  if (messages.length === 1 && question.reply) {
+    messages.push({
+      role: 'teacher',
+      text: question.reply,
+      createdAt: question.answeredAt || question.updatedAt,
+    });
+  }
+
+  return {
+    ...question,
+    messages,
+  };
+}
+
 module.exports = async (req, res) => {
   await runMiddleware(req, res, cors);
 
@@ -37,8 +64,8 @@ module.exports = async (req, res) => {
       const query = buildQuestionQuery(req);
       const limit = Math.min(Number(req.query.limit) || 100, 200);
 
-      const questions = await Question.find(query).sort({ createdAt: -1 }).limit(limit).lean();
-      return res.status(200).json({ success: true, questions });
+      const questions = await Question.find(query).sort({ updatedAt: -1 }).limit(limit).lean();
+      return res.status(200).json({ success: true, questions: questions.map(withMessages) });
     }
 
     if (req.method === 'POST') {
@@ -62,34 +89,52 @@ module.exports = async (req, res) => {
         studentEmail,
         studentName,
         question,
+        messages: [{ role: 'student', text: question }],
       });
 
-      return res.status(201).json({ success: true, question: savedQuestion });
+      return res.status(201).json({ success: true, question: withMessages(savedQuestion.toObject()) });
     }
 
     if (req.method === 'PATCH') {
       const questionId = cleanString(req.query.id || req.body.id || req.body.questionId);
-      const reply = cleanString(req.body.reply);
+      const action = cleanString(req.body.action);
+      const role = cleanString(req.body.role) === 'student' ? 'student' : 'teacher';
+      const text = cleanString(req.body.message || req.body.text || req.body.reply);
 
-      if (!questionId || !reply) {
-        return res.status(400).json({ message: 'Missing questionId or reply' });
+      if (!questionId) {
+        return res.status(400).json({ message: 'Missing questionId' });
       }
 
-      const updatedQuestion = await Question.findByIdAndUpdate(
-        questionId,
-        {
-          reply,
-          status: 'answered',
-          answeredAt: new Date(),
-        },
-        { new: true, runValidators: true },
-      ).lean();
-
-      if (!updatedQuestion) {
+      const currentQuestion = await Question.findById(questionId);
+      if (!currentQuestion) {
         return res.status(404).json({ message: 'Question not found' });
       }
 
-      return res.status(200).json({ success: true, question: updatedQuestion });
+      if (action === 'close') {
+        const closedBy = cleanString(req.body.closedBy) === 'student' ? 'student' : 'teacher';
+        currentQuestion.status = 'closed';
+        currentQuestion.closedBy = closedBy;
+        currentQuestion.closedAt = new Date();
+        await currentQuestion.save();
+        return res.status(200).json({ success: true, question: withMessages(currentQuestion.toObject()) });
+      }
+
+      if (currentQuestion.status === 'closed') {
+        return res.status(409).json({ message: 'This chat is closed. Please reask to start a new chat.' });
+      }
+
+      if (!text) {
+        return res.status(400).json({ message: 'Missing message text' });
+      }
+
+      currentQuestion.messages.push({ role, text });
+      if (role === 'teacher') {
+        currentQuestion.reply = text;
+        currentQuestion.answeredAt = new Date();
+      }
+      await currentQuestion.save();
+
+      return res.status(200).json({ success: true, question: withMessages(currentQuestion.toObject()) });
     }
 
     return res.status(405).json({ message: 'Method Not Allowed' });
