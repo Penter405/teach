@@ -297,6 +297,7 @@ const LearningPathPage = ({ onSelectModule, onSelectLesson, onOpenCodeTree }: { 
 const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { lessonId: string, onBack: () => void, onLessonChange: (id: string) => void, onOpenCodeTree: () => void }) => {
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [teacherChatOpen, setTeacherChatOpen] = useState(false);
   const flatLessons = getFlatLessons();
   const mainRef = useRef<HTMLElement>(null);
   
@@ -307,6 +308,12 @@ const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { less
   const currentIndex = flatLessons.findIndex(l => l.id === lessonId);
   const prevLesson = currentIndex > 0 ? flatLessons[currentIndex - 1] : null;
   const nextLesson = currentIndex < flatLessons.length - 1 ? flatLessons[currentIndex + 1] : null;
+  const teacherContext = lesson && module ? [
+    `Course: ${courseData.course.title}`,
+    `Module: ${module.title} / ${module.titleEn}`,
+    `Lesson: ${lesson.title} / ${lesson.titleEn}`,
+    `PDF pages: ${lesson.pdfPages.join(', ')}`,
+  ].join('\n') : '';
 
   useEffect(() => {
     if (module && !expandedModules.includes(module.id)) {
@@ -355,8 +362,18 @@ const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { less
           </button>
           <CodeTreeNavLink onClick={onOpenCodeTree} />
         </div>
-        <div className="font-mono text-xs text-slate-400 hidden sm:block">
-          {currentIndex + 1} / {flatLessons.length}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <button
+            onClick={() => setTeacherChatOpen(true)}
+            className="flex items-center gap-2 rounded-full bg-cyan-600 px-3 py-2 text-xs sm:text-sm font-bold text-white shadow-lg shadow-cyan-600/20 transition-all hover:bg-cyan-700 hover:scale-105 active:scale-95"
+          >
+            <HelpCircle className="w-4 h-4" />
+            <span className="hidden sm:inline">Talk to teacher</span>
+            <span className="sm:hidden">Ask</span>
+          </button>
+          <div className="font-mono text-xs text-slate-400 hidden sm:block">
+            {currentIndex + 1} / {flatLessons.length}
+          </div>
         </div>
       </nav>
 
@@ -435,7 +452,7 @@ const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { less
                   {lesson.titleEn}
                  </p>
                  <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold font-mono border border-slate-200 dark:border-slate-700">
-                   Pages {lesson.pdfPages.join('–')}
+                   Pages {lesson.pdfPages.join(' - ')}
                  </span>
               </div>
             </motion.header>
@@ -476,6 +493,49 @@ const LessonPage = ({ lessonId, onBack, onLessonChange, onOpenCodeTree }: { less
           {/* Explorer Image Removed */}
         </main>
       </div>
+
+      <AnimatePresence>
+        {teacherChatOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[90] bg-slate-950/50 backdrop-blur-sm"
+              onClick={() => setTeacherChatOpen(false)}
+            />
+            <motion.aside
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="fixed right-0 top-0 bottom-0 z-[100] w-full max-w-md bg-white dark:bg-slate-950 shadow-2xl border-l border-slate-200 dark:border-slate-800 p-4 sm:p-5 flex flex-col"
+            >
+              <div className="flex items-center justify-between mb-4 shrink-0">
+                <div className="min-w-0">
+                  <p className="text-xs font-mono uppercase tracking-widest text-cyan-600 dark:text-cyan-400">Current lesson</p>
+                  <h2 className="font-headline font-bold text-slate-900 dark:text-white truncate max-w-[18rem]">{lesson.title}</h2>
+                </div>
+                <button
+                  onClick={() => setTeacherChatOpen(false)}
+                  className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+                  aria-label="Close teacher chat"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="min-h-0 flex-1">
+                <AIChat
+                  coursePrompt={teacherContext}
+                  title="Talk to teacher"
+                  subtitle={`Ask about ${lesson.title}`}
+                />
+              </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
