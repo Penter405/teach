@@ -27,6 +27,12 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.models.User || mongoose.model('User', UserSchema);
 
+const QuestionMessageSchema = new mongoose.Schema({
+    role: { type: String, enum: ['student', 'teacher'], required: true },
+    text: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
+}, { _id: false });
+
 const QuestionSchema = new mongoose.Schema({
     lessonId: { type: String, required: true, index: true },
     lessonTitle: { type: String, required: true },
@@ -36,8 +42,11 @@ const QuestionSchema = new mongoose.Schema({
     studentName: { type: String, required: true },
     question: { type: String, required: true },
     reply: { type: String, default: '' },
-    status: { type: String, enum: ['open', 'answered'], default: 'open', index: true },
+    messages: { type: [QuestionMessageSchema], default: [] },
+    status: { type: String, enum: ['open', 'answered', 'closed'], default: 'open', index: true },
     answeredAt: { type: Date, default: null },
+    closedAt: { type: Date, default: null },
+    closedBy: { type: String, enum: ['student', 'teacher', null], default: null },
 }, { timestamps: true });
 
 const Question = mongoose.models.Question || mongoose.model('Question', QuestionSchema);
