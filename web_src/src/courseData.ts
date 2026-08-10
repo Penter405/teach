@@ -25,7 +25,7 @@ export interface ContentBlock {
   language?: string;
   label?: string;
   diagramId?: string;
-  animationId?: string;
+  animationId?: string | number;
   caption?: string;
   style?: string;
   items?: any[];
