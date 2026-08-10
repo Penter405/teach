@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y8m9d(try)",
+    "version": "2026y8m10d(try)",
     "language": "zh-TW"
   },
   "modules": [
@@ -326,7 +326,7 @@
             },
             {
               "type": "animation",
-              "animationId": "house-analogy",
+              "animationId": 14,
               "caption": "🏠 House = Variable Name, 🧍 Guy = Value, 📍 Address Sign = RAM Address",
               "steps": [
                 "看到一棟 house，門牌寫著 x（這就是 variable name）",
@@ -417,7 +417,7 @@
             },
             {
               "type": "animation",
-              "animationId": "immutable-house",
+              "animationId": 15,
               "caption": "Immutable：guy 不能變 → 只好搬到新 house",
               "steps": [
                 "🏠 House x 裡面住著 guy 5",
@@ -441,7 +441,7 @@
             },
             {
               "type": "animation",
-              "animationId": "mutable-house",
+              "animationId": 16,
               "caption": "Mutable：可以直接改 guy，house 不用換",
               "steps": [
                 "🏠 House my_list 裡面住著 guys [1, 2, 3]",
@@ -696,7 +696,7 @@
             },
             {
               "type": "animation",
-              "animationId": "data-flow-animation",
+              "animationId": 1,
               "caption": "鍵盤 F → 程式判斷 → 螢幕顯示「進入車輛」",
               "steps": [
                 "Input：玩家按下鍵盤 F",
@@ -860,7 +860,7 @@
             },
             {
               "type": "animation",
-              "animationId": "problem-decompose",
+              "animationId": 2,
               "caption": "將複雜問題逐步拆解為可執行的子任務",
               "steps": [
                 "閱讀完整題目要求",
@@ -962,7 +962,7 @@
             },
             {
               "type": "animation",
-              "animationId": "interpreter-exec",
+              "animationId": 3,
               "caption": "直譯器逐行執行程式碼的過程",
               "steps": [
                 "讀取第一行 a = 5",
@@ -1036,7 +1036,7 @@
             },
             {
               "type": "animation",
-              "animationId": "class-world",
+              "animationId": 4,
               "caption": "從 class 到 object，再到 data / function 一起進入物件世界",
               "steps": [
                 "先理解 class 是藍圖，object 是實際做出來的東西",
@@ -1105,7 +1105,7 @@
             },
             {
               "type": "animation",
-              "animationId": "builtin-class",
+              "animationId": 5,
               "caption": "內建 class：`int` 與 `str` 不是魔法，而是已經寫好的 class",
               "steps": [
                 "`s = 8` 可以看成 `s = int(value=8)`",
@@ -1189,7 +1189,7 @@
             },
             {
               "type": "animation",
-              "animationId": "self-binding",
+              "animationId": 6,
               "caption": "self 如何綁定到具體的物件實例",
               "steps": [
                 "定義 class Dog 與 __init__(self, name)",
@@ -1303,7 +1303,7 @@
             },
             {
               "type": "animation",
-              "animationId": "reflection-inspect",
+              "animationId": 7,
               "caption": "使用 dir()、help()、type() 檢查物件資訊",
               "steps": [
                 "建立物件 x = [1, 2, 3]",
@@ -1466,7 +1466,7 @@
             },
             {
               "type": "animation",
-              "animationId": "data-pipeline",
+              "animationId": 8,
               "caption": "五階段資料處理管線",
               "steps": [
                 "收集資料 (Collect)",
@@ -1563,7 +1563,7 @@
             },
             {
               "type": "animation",
-              "animationId": "gc-animation",
+              "animationId": 9,
               "caption": "Python 垃圾回收機制：自動掃描並回收無用物件",
               "steps": [
                 "建立物件，引用計數 = 1",
@@ -1628,7 +1628,7 @@
             },
             {
               "type": "animation",
-              "animationId": "pointer-animation",
+              "animationId": 10,
               "caption": "變數 → 記憶體位址 → 值 的指向關係",
               "steps": [
                 "在 RAM 中分配空間存放值 5",
@@ -1721,7 +1721,7 @@
             },
             {
               "type": "animation",
-              "animationId": "immutable-swap",
+              "animationId": 11,
               "caption": "不可變物件：變數改值 = 搬家（指向新物件）",
               "steps": [
                 "a = 5 → a 指向存放 5 的物件",
@@ -1814,7 +1814,7 @@
             },
             {
               "type": "animation",
-              "animationId": "mutable-ref",
+              "animationId": 12,
               "caption": "Copy（搬出去住）vs Reference（改裝房子）",
               "steps": [
                 "建立 list a = [1, 2, 3]",
@@ -1995,7 +1995,7 @@
             },
             {
               "type": "animation",
-              "animationId": "immutable-swap",
+              "animationId": 11,
               "caption": "不可變物件：變數改值 = 搬家（指向新物件）",
               "steps": [
                 "a = 5 → a 指向存放 5 的物件",
@@ -2088,7 +2088,7 @@
             },
             {
               "type": "animation",
-              "animationId": "mutable-ref",
+              "animationId": 12,
               "caption": "Copy（搬出去住）vs Reference（改裝房子）",
               "steps": [
                 "建立 list a = [1, 2, 3]",
@@ -2355,7 +2355,7 @@
             },
             {
               "type": "animation",
-              "animationId": "indent-animation",
+              "animationId": 13,
               "caption": "C 語言 {} 結構 vs Python 縮排結構的對照",
               "steps": [
                 "C 語言：if (x > 3) { ... }",
@@ -2516,7 +2516,7 @@
             },
             {
               "type": "animation",
-              "animationId": "subject-verb-object",
+              "animationId": 17,
               "caption": "從自然語言到程式語法的對應",
               "steps": [
                 "主詞 動詞 受詞（自然語言結構）",
@@ -2941,7 +2941,7 @@
             },
             {
               "type": "animation",
-              "animationId": "assign-x-2",
+              "animationId": 18,
               "caption": "x = 2 的語法解析與記憶體變化",
               "steps": [
                 "把 x、=、2 三個元素拆開來，保持間距",
@@ -2960,7 +2960,7 @@
             },
             {
               "type": "animation",
-              "animationId": "add-3-5",
+              "animationId": 19,
               "caption": "3 + 5 的執行與 Return",
               "steps": [
                 "把 3、+、5 拆開，標記詞性：3 → 名詞 (integer)、+ → 動詞 (operator)、5 → 名詞 (integer)",
@@ -2978,7 +2978,7 @@
             },
             {
               "type": "animation",
-              "animationId": "combo-assign-add",
+              "animationId": 20,
               "caption": "x = 3 + 5 的完整執行過程",
               "steps": [
                 "顯示完整程式碼 x = 3 + 5，拆開標記詞性：x(名詞) =(動詞) 3(名詞) +(動詞) 5(名詞)",
