@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y8m1d",
+    "version": "2026y8m9d(try)",
     "language": "zh-TW"
   },
   "modules": [
@@ -2886,14 +2886,42 @@
               "subtitle": "以下哪些是 function、哪些是 method、哪些是 operator？",
               "difficulty": "Easy",
               "items": [
-                { "id": "len", "text": "len()", "category": "Function" },
-                { "id": "sort", "text": ".sort()", "category": "Method" },
-                { "id": "plus", "text": "+", "category": "Operator" },
-                { "id": "print", "text": "print()", "category": "Function" },
-                { "id": "upper", "text": ".upper()", "category": "Method" },
-                { "id": "eq", "text": "==", "category": "Operator" }
+                {
+                  "id": "len",
+                  "text": "len()",
+                  "category": "Function"
+                },
+                {
+                  "id": "sort",
+                  "text": ".sort()",
+                  "category": "Method"
+                },
+                {
+                  "id": "plus",
+                  "text": "+",
+                  "category": "Operator"
+                },
+                {
+                  "id": "print",
+                  "text": "print()",
+                  "category": "Function"
+                },
+                {
+                  "id": "upper",
+                  "text": ".upper()",
+                  "category": "Method"
+                },
+                {
+                  "id": "eq",
+                  "text": "==",
+                  "category": "Operator"
+                }
               ],
-              "categories": ["Function", "Method", "Operator"]
+              "categories": [
+                "Function",
+                "Method",
+                "Operator"
+              ]
             }
           ]
         },

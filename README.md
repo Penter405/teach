@@ -46,7 +46,7 @@ teach/
 │   ├── package.json      # Frontend dependencies
 │   └── vite.config.ts    # Vite configuration
 ├── README.md             # This file
-├── update_course.bat     # auther update his course command
+├── update_course.bat     # auther update his course command(force open root of repo only, other wise path problem)
 ├── vercel.json           # Vercel deployment configuration
 └── *.md                  # Design notes and content drafts
 ```
