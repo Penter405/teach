@@ -2941,14 +2941,14 @@
             },
             {
               "type": "animation",
-              "animationId": 18,
               "caption": "x = 2 的語法解析與記憶體變化",
               "steps": [
                 "把 x、=、2 三個元素拆開來，保持間距",
                 "在每個元素下方標記詞性：x → 名詞 (variable)、= → 動詞 (operator)、2 → 名詞 (integer)",
                 "動詞 = 向左右兩個名詞各伸出一條箭頭，表示它負責將右邊的 2 放進左邊的 x",
                 "右側同步顯示記憶體變化：RAM 中建立 value=2 的物件，變數 x 指向它的位址"
-              ]
+              ],
+              "animationId": 18
             },
             {
               "type": "heading",
@@ -2960,13 +2960,13 @@
             },
             {
               "type": "animation",
-              "animationId": 19,
               "caption": "3 + 5 的執行與 Return",
               "steps": [
                 "把 3、+、5 拆開，標記詞性：3 → 名詞 (integer)、+ → 動詞 (operator)、5 → 名詞 (integer)",
                 "動詞 + 從上方伸出箭頭連接左右兩個名詞，表示它要處理它們",
                 "3、+、5 全部被劃上刪除線，取而代之的是 Return 值 8 浮現在旁邊"
-              ]
+              ],
+              "animationId": 19
             },
             {
               "type": "heading",
@@ -2978,14 +2978,14 @@
             },
             {
               "type": "animation",
-              "animationId": 20,
               "caption": "x = 3 + 5 的完整執行過程",
               "steps": [
                 "顯示完整程式碼 x = 3 + 5，拆開標記詞性：x(名詞) =(動詞) 3(名詞) +(動詞) 5(名詞)",
                 "先執行第二招：+ 動詞連接 3 和 5，三者劃上刪除線，Return 值 8 浮現",
                 "整行變成 x = 8，接續第一招：= 動詞連接 x 和 8",
                 "右側記憶體同步更新：RAM 建立 value=8 的物件，變數 x 指向它"
-              ]
+              ],
+              "animationId": 20
             },
             {
               "type": "callout",
@@ -3011,7 +3011,59 @@
             },
             {
               "type": "paragraph",
-              "text": "看出差別了嗎？用 function 寫的時候，括號本身就標明了先後順序——最裡面的先做。但用數學 operator 寫，Python 就得靠「記住優先級規則」來決定誰先算，這也是為什麼複雜的數學式容易搞混。好消息是：日常寫 Python 時，你可以隨時加上 `()` 來明確告訴 Python（和讀你 code 的人）你想要的運算順序。"
+              "text": "看出差別了嗎？用 function 寫的時候，括號本身就標明了先後順序——最裡面的先做。但用數學 operator 寫，Python 就得靠「記住優先級規則」來決定誰先算。好消息是：日常寫 Python 時，你可以隨時加上 `()` 來明確告訴 Python（和讀你 code 的人）你想要的運算順序。"
+            },
+            {
+              "type": "heading",
+              "text": "Function (函式)：明確的動作指令"
+            },
+            {
+              "type": "paragraph",
+              "text": "現在我們正式把 Function 當成動詞來看。它的語法結構是 `a(b)`，其中 `a()` 是動詞，而裡面的 `b` 就是這個動作的受詞（Object noun，名詞，或是執行後會變成名詞的東西）。"
+            },
+            {
+              "type": "animation",
+              "caption": "len(\"ABC\") 的語法與 Return",
+              "steps": [
+                "顯示 len(\"ABC\")，將 len() 標記為 Function（動詞），\"ABC\" 標記為受詞（名詞）",
+                "畫一條箭頭從 Function 指向目標物件 \"ABC\"",
+                "執行完畢，整個 len(\"ABC\") 消失，原地浮現 Return 值 3"
+              ],
+              "animationId": 21
+            },
+            {
+              "type": "paragraph",
+              "text": "另一個每天都會用到的動詞是 `print()`。它的任務很單純：把括號裡的東西，顯示在螢幕 (Console) 上。"
+            },
+            {
+              "type": "animation",
+              "caption": "print(3) 的執行過程",
+              "steps": [
+                "畫面顯示 print(3)",
+                "將 print() 標記為 Function（動詞），3 標記為名詞",
+                "動詞 print() 抓住 3 執行輸出動作",
+                "在下方的虛擬 Console 螢幕中，浮現出數字 3"
+              ],
+              "animationId": 22
+            },
+            {
+              "type": "heading",
+              "text": "Function 組合技"
+            },
+            {
+              "type": "paragraph",
+              "text": "那如果我們把兩個 Function 組合在一起呢？例如 `print(len(\"ABC\"))`。記得我們說過的規則：有括號的地方，最內層的先執行。Python 會像剝洋蔥一樣，從最裡面的動詞開始處理，處理完變成名詞後，再交給外層的動詞。"
+            },
+            {
+              "type": "animation",
+              "caption": "print(len(\"ABC\")) 的由內而外執行",
+              "steps": [
+                "顯示 print(len(\"ABC\"))，清楚標示外層動詞、內層動詞與名詞",
+                "第一步聚焦內層：len() 對 \"ABC\" 執行動作，化為 Return 值 3",
+                "整段程式碼更新為 print(3)",
+                "第二步執行外層：print() 對 3 執行動作，Console 中印出 3"
+              ],
+              "animationId": 23
             }
           ]
         }
