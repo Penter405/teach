@@ -47,9 +47,13 @@ teach/
 │   └── vite.config.ts    # Vite configuration
 ├── README.md             # This file
 ├── update_course.bat     # auther update his course command(force open root of repo only, other wise path problem)
+├── update_course.sh      # auther update his course command(Linux version see command below)
 ├── vercel.json           # Vercel deployment configuration
 └── *.md                  # Design notes and content drafts
 ```
-
+```
+chmod +x update_course.sh
+./update_course.sh
+```
 ## Usage
 Simply navigate into the `web_src` folder, start the local dev server using `npm run dev` and navigate to `http://localhost:5173`. You can view the curriculum progression map, open individual lessons, and view real-time Python diagrams and callouts.
