@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y8m10d(try)",
+    "version": "2026y8m13d",
     "language": "zh-TW"
   },
   "modules": [
@@ -2993,33 +2993,20 @@
               "text": "Python 是直譯器語言，它逐行執行你的程式碼。在每一行裡，它會從左到右讀過去（read），但真正執行的順序取決於 operator 的優先級（precedence）——就跟數學一樣，先乘除後加減、括號最優先。"
             },
             {
-              "type": "paragraph",
-              "text": "但 Python 怎麼知道要先算 `+` 再算 `=`？因為 operator 有優先級。遇到更複雜的式子像 `x=(3**3+5)//10*1-2**3`，Python 就得反覆來回確認誰先誰後。如果你覺得這段話很難消化，可以截圖丟給 AI 幫你解釋每一步——這是很正常的學習方式。"
-            },
-            {
               "type": "heading",
               "text": "Function 與 Method 讓 Python 更輕鬆"
             },
             {
               "type": "paragraph",
-              "text": "相比之下，Function 和 Method 就讓 Python 輕鬆很多。Python 從左到右讀一行程式時，一旦看到括號 `()` 的語法特徵——像 `print(3)` 或 `my_list.sort()`——就能直接標記「這裡有一個動作要執行」，不需要像數學運算子那樣來回比較優先級。"
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "# 用 Operator 寫：Python 需要來回看，確認先乘除後加減\nx = 3 + 5 * 2    # 先算 5*2=10，再算 3+10=13，最後 x=13\n\n# 如果改成全 Function 寫法，括號就明確告訴 Python 執行順序：\n# assign(x, add(3, multiply(5, 2)))\n# 從最內層開始：multiply(5,2) → add(3,10) → assign(x,13)"
-            },
-            {
-              "type": "paragraph",
-              "text": "看出差別了嗎？用 function 寫的時候，括號本身就標明了先後順序——最裡面的先做。但用數學 operator 寫，Python 就得靠「記住優先級規則」來決定誰先算。好消息是：日常寫 Python 時，你可以隨時加上 `()` 來明確告訴 Python（和讀你 code 的人）你想要的運算順序。"
+              "text": "相比之下，Function 和 Method 就讓 Python 輕鬆很多。一旦看到括號 `()` 的語法特徵——像 `print(3)` 或 `my_list.sort()`——就能直接標記「這裡有一個動作要執行」，不需要像數學運算子那樣來回比較優先級。括號本身就標明了先後順序——最裡面的先做。"
             },
             {
               "type": "heading",
-              "text": "Function (函式)：明確的動作指令"
+              "text": "Function (函式) 第一招：len()"
             },
             {
               "type": "paragraph",
-              "text": "現在我們正式把 Function 當成動詞來看。它的語法結構是 `a(b)`，其中 `a()` 是動詞，而裡面的 `b` 就是這個動作的受詞（Object noun，名詞，或是執行後會變成名詞的東西）。"
+              "text": "現在我們正式把 Function 當成動詞來看。它的語法結構是 `a(b)`，其中 `a()` 是動詞，而裡面的 `b` 就是這個動作的受詞（Object noun）。"
             },
             {
               "type": "animation",
@@ -3030,6 +3017,10 @@
                 "執行完畢，整個 len(\"ABC\") 消失，原地浮現 Return 值 3"
               ],
               "animationId": 21
+            },
+            {
+              "type": "heading",
+              "text": "Function 第二招：print()"
             },
             {
               "type": "paragraph",
@@ -3052,7 +3043,7 @@
             },
             {
               "type": "paragraph",
-              "text": "那如果我們把兩個 Function 組合在一起呢？例如 `print(len(\"ABC\"))`。記得我們說過的規則：有括號的地方，最內層的先執行。Python 會像剝洋蔥一樣，從最裡面的動詞開始處理，處理完變成名詞後，再交給外層的動詞。"
+              "text": "如果我們把兩個 Function 組合在一起：`print(len(\"ABC\"))`。Python 會像剝洋蔥一樣，從最裡面的動詞開始處理，處理完變成名詞後，再交給外層的動詞。"
             },
             {
               "type": "animation",
@@ -3064,6 +3055,90 @@
                 "第二步執行外層：print() 對 3 執行動作，Console 中印出 3"
               ],
               "animationId": 23
+            },
+            {
+              "type": "heading",
+              "text": "專屬技能：Method (方法)"
+            },
+            {
+              "type": "paragraph",
+              "text": "在學習了 Operator 和 Function 之後，我們要來認識 Python 中的第三種動詞——**Method（方法）**。如果說 Function 像是共用的工具箱、誰都可以呼叫的通用動作，那麼 Method 就是「綁定在特定名詞（資料）身上的專屬技能」。不同的資料型態（例如字串、列表）都會有自己獨有的 Method 技能包。"
+            },
+            {
+              "type": "heading",
+              "text": "Method (方法) 第一招：str.upper()"
+            },
+            {
+              "type": "paragraph",
+              "text": "Method 的語法特徵非常明顯，中間必定會有一個點（dot），寫成 `名詞.動詞()`，代表這個動作必須由前面的名詞來發動。例如字串 (String) 的專屬動詞 `.upper()`，只要一發動，就可以把該字串裡的所有字母全部變成大寫。"
+            },
+            {
+              "type": "animation",
+              "caption": "'abc'.upper() 的語法與 Return",
+              "steps": [
+                "顯示 'abc'.upper()，將 'abc' 標記為主詞（名詞），.upper() 標記為 Method（動詞）",
+                "動詞 .upper() 往回對它的擁有者 'abc' 發動技能",
+                "執行完畢，整段程式碼消失，原地浮現 Return 值 'ABC' (大寫)"
+              ],
+              "animationId": 24
+            },
+            {
+              "type": "heading",
+              "text": "Method 第二招：str.join(list)"
+            },
+            {
+              "type": "paragraph",
+              "text": "Method 也可以帶有受詞！字串有一個超好用的技能 `.join()`。當我們寫 `'-'.join(['a', 'b'])` 時，主詞是 `'-'`，動詞是 `.join()`，而受詞是一個 List `['a', 'b']`。它的意思是：用這個字串當作膠水，把受詞 List 裡的東西全部黏起來。"
+            },
+            {
+              "type": "animation",
+              "caption": "'-'.join(['a', 'b']) 的語法與 Return",
+              "steps": [
+                "顯示 '-'.join(['a', 'b'])。主詞是 '-'，動詞是 .join()，受詞是 ['a', 'b']",
+                "動詞 .join() 同時向左抓取主詞 '-'，向右抓取受詞 ['a', 'b'] 進行結合",
+                "整段程式碼消失，原地浮現 Return 值 'a-b'"
+              ],
+              "animationId": 25
+            },
+            {
+              "type": "heading",
+              "text": "Method 組合技 (Chaining)"
+            },
+            {
+              "type": "paragraph",
+              "text": "最酷的是，因為 Method 執行完通常會 Return 另一個名詞，你可以直接在後面接續發動下一個 Method 技能！這叫做 Method Chaining（方法串接）。為了讓順序更明確，我們可以加上括號：`('-'.join(['a', 'b'])).upper()`。Python 一樣會從最內層的括號開始，依序向外發動這些技能。"
+            },
+            {
+              "type": "animation",
+              "caption": "('-'.join(['a', 'b'])).upper() 的連續技能發動",
+              "steps": [
+                "顯示完整程式碼 ('-'.join(['a', 'b'])).upper()，括號標明了先執行內部",
+                "先發動括號內的 .join() 技能，將內部化為 Return 值 'a-b'，程式碼變成 ('a-b').upper()",
+                "接著發動外層的 .upper() 技能，將 'a-b' 化為最終 Return 值 'A-B'"
+              ],
+              "animationId": 26
+            },
+            {
+              "type": "heading",
+              "text": "學習目標"
+            },
+            {
+              "type": "paragraph",
+              "text": "學習目標能夠運用everything will return to data(noun) ,將任何最後會變成名詞的東西交給另一個動詞處理，另一個動詞自己本身也會變成名詞在最後。區別在於你是否將動詞的return 加以用另另一個動詞利用\n(動詞有3個)"
+            },
+            {
+              "type": "heading",
+              "text": "練習題: 能夠流暢運用動詞處理資料(動詞組合不超過2)"
+            },
+            {
+              "type": "callout",
+              "label": "提示",
+              "text": "以下題目練習皆可以用本提示完成:\nverb:\n    operator:    =    +    -    *    /    //    %    []\n\n    function:    print    input\n\n    method:    str.upper    str.lowwer    list.sort\nnoun:\n    int    str    list\n    (by knowing method of these data type object, use help() function and put noun data type as object(受詞) of function)"
+            },
+            {
+              "type": "ai-chat",
+              "text": "流暢運用動詞處理資料",
+              "coursePrompt": "學生正在利用將動詞(operator function method)組合的方式練習如何完成一個隨機問題。請你利用以下的限制，生成出一個組合不超過2的題目：動詞(動詞(名詞))。此組合為2。 \n \n (接下來為學生收到的題目限制) \n 以下題目練習皆可以用本提示完成： \n \n verb: \n     operator: = + - * / // % [] \n \n     function: print input \n \n     method: str.upper str.lower list.sort \n \n noun: \n     int str list \n \n (by knowing method of these data type object, use help() function and put noun data type as object(受詞) of function)"
             }
           ]
         }
