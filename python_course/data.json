@@ -3139,6 +3139,101 @@
               "type": "ai-chat",
               "text": "流暢運用動詞處理資料",
               "coursePrompt": "學生正在利用將動詞(operator function method)組合的方式練習如何完成一個隨機問題。請你利用以下的限制，生成出一個組合不超過2的題目：動詞(動詞(名詞))。此組合為2。 \n \n (接下來為學生收到的題目限制) \n 以下題目練習皆可以用本提示完成： \n \n verb: \n     operator: = + - * / // % [] \n \n     function: print input \n \n     method: str.upper str.lower list.sort \n \n noun: \n     int str list \n \n (by knowing method of these data type object, use help() function and put noun data type as object(受詞) of function)"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "method 這個動詞是誰擁有的？",
+                  "options": [
+                    "built in data type and hand writed class object",
+                    "Python",
+                    "operator",
+                    "function"
+                  ],
+                  "answer": 0
+                }
+              ],
+              "text": "透過物件導向的概念，思考方法（method）歸屬於哪一種資料結構或類別實體。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "根據 Python 的物件導向與語法規則，下列關於動詞（ /動作）與名詞（物件/資料）的互動敘述，何者正確？",
+                  "options": [
+                    "放入自己寫的 class object 一定會 error，且動詞可以被當作參數直接傳入。",
+                    "只要最後動詞 return 成名詞，那麼將收到動詞，且可以任意放入動詞。",
+                    "動詞處理的對象可以是內建資料型態或自訂類別物件，只要該物件最終回傳名詞，就會收到名詞；若回傳動詞，則會收到動詞。過程中不可放入任何動詞本身，且放入自己寫的類別物件不會直接造成 error。",
+                    "不論輸入為何，最終都只會回傳 Python 的 operator。"
+                  ],
+                  "answer": 2
+                }
+              ],
+              "text": "釐清 Python 中「動詞（ /動作）」與「名詞（ 資料）」之間的呼叫、回傳型態以及型態限制概念。"
+            }
+          ]
+        },
+        {
+          "id": "les-05-05",
+          "title": "利用反射熟悉內建data type",
+          "titleEn": "New Lesson 5",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "內建data type"
+            },
+            {
+              "type": "paragraph",
+              "text": "前面有提到有關method的操作，現在讓我們用built in data type (一種object) 來認識他. \n"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "#reflect 反射 --找出我能用什麼\nprint(type(int))\n#ouput : <class 'int'>\n"
+            },
+            {
+              "type": "paragraph",
+              "text": "根據上面的reflect結果,我們可以發現 int 這個內建的data type 其實是用class定義的, 當我們寫 x=2 時. python 會將 2 翻譯成int,接著將2 給 class int 做處理。一個有趣的比喻是:class 是藍圖  , object 是依照藍圖生產的東西。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import math#把別人寫好的程式拿來用\nx=math.pi\nprint(f\"{  x  :.2f}\")#format output(f\"\" 能將資料用特定方法呈現，在這題中我們要印出math.pi到小數點第二位) : 3.14 \nprint(type(math))#reflect\n#output: <class 'module'>\n\n\nhelp(math)#reflect\n#output :\n\"\"\"\nHelp on built-in module math:\nFUNCTIONS\n    acos(x, /)\n        Return the arc cosine (measured in radians) of x.\n\n        The result is between 0 and pi.\n\n    acosh(x, /)\n        Return the inverse hyperbolic cosine of x.\n...\nDATA\n    e = 2.718281828459045\n    inf = inf\n    nan = nan\n    pi = 3.141592653589793-----------------看這裡，很熟悉吧\n    tau = 6.283185307179586\n\nFILE\n    (built-in)\n\"\"\""
+            },
+            {
+              "type": "paragraph",
+              "text": "上面是另一個比喻 ，但是這個比喻不太精確。\n不精確之處:\nmodule 比喻成 class , 而\n\nfunction of module 比喻成  method of class \n. 因此這個只能當過度用的學法"
+            },
+            {
+              "type": "paragraph",
+              "text": "看看 pi這個東西，聽起來這個就是屬於數學家更多於程式語言對吧。所以說，如果有個東西A很明確屬於東西B ,那我們會把 A 變成 method或是 property 後，放入 class B。俗稱藍圖，別人已經把藍圖寫好了(或是你已經把藍圖class寫好了) 那麼下一步就是讓你的code 把 藍圖的東西做出來，沒做出來等於不能用。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "#import math 將import 改成註解，使電腦自動忽略該行不執行\nx=math.pi\nprint(f\"{  x  :.2f}\")#format output(f\"\" 能將資料用特定方法呈現，在這題中我們要印出math.pi到小數點第二位) : before run code 開發環境發現了問題，因此我不執行程式碼\nprint(type(math))\n\n#before run code 開發環境發現了問題\n\"\"\"\n\"math\" 未定義 第2行\n\"math\" 未定義 第3行\n\"\"\"",
+              "text": "New paragraph"
+            },
+            {
+              "type": "paragraph",
+              "text": "從上面的code我們可以發現，定義class 跟程式碼有抓到class 藍圖 跟 因為知道藍圖所以能做出實體 是不一樣的。而python 的內建 data type 是內建的，因此python有自動幫你抓他們的藍圖。"
+            },
+            {
+              "type": "heading",
+              "text": "程式碼練習\n"
+            },
+            {
+              "type": "paragraph",
+              "text": "目標，印出常見的內建資料型態的help反射\n常見的內建資料型態:int, float, str, bool, list, tuple, set, dict, None"
+            },
+            {
+              "type": "ai-chat",
+              "title": "探索內建資料型態的秘密：help() 反射練習",
+              "subtitle": "使用 Python 的 help() 函數來觀察內建型態的詳細說明",
+              "difficulty": "Easy",
+              "coursePrompt": "你是一位友善的 Python 程式導師。請引導學生使用 help() 函數來查詢常見的內建資料型態（例如 int, float, str, bool, list, tuple, set, dict, None）。目標是讓學生寫出正確的程式碼來印出其中一個型態的 help 反射資訊。如果學生成功使用 help()，請稱讚他們並引導他們觀察裡面的方法（method）；如果寫錯了，請溫柔地給予提示。"
             }
           ]
         }
