@@ -3176,10 +3176,15 @@
         },
         {
           "id": "les-05-05",
-          "title": "利用反射熟悉內建data type",
+          "title": "為什麼名詞跟動詞用'.'黏在一起",
           "titleEn": "New Lesson 5",
           "pdfPages": [],
           "content": [
+            {
+              "type": "callout",
+              "label": "important",
+              "text": "在學習這個lesson的內容時，應該要對前面章節的class / object 有所理解"
+            },
             {
               "type": "heading",
               "text": "內建data type"
@@ -3234,6 +3239,46 @@
               "subtitle": "使用 Python 的 help() 函數來觀察內建型態的詳細說明",
               "difficulty": "Easy",
               "coursePrompt": "你是一位友善的 Python 程式導師。請引導學生使用 help() 函數來查詢常見的內建資料型態（例如 int, float, str, bool, list, tuple, set, dict, None）。目標是讓學生寫出正確的程式碼來印出其中一個型態的 help 反射資訊。如果學生成功使用 help()，請稱讚他們並引導他們觀察裡面的方法（method）；如果寫錯了，請溫柔地給予提示。"
+            },
+            {
+              "type": "heading",
+              "text": "精確的例子"
+            },
+            {
+              "type": "paragraph",
+              "text": "接下來我們會用python 真正的內建資料型態，來講解 class object"
+            },
+            {
+              "type": "heading",
+              "text": "名詞的無限展開"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "名詞 ───────── method ───────── another 名詞\n  │                                │\n  │                                ├── method ─── another 名詞\n  │                                │\n  │                                └── property ─── another 名詞\n  │\n  └──────── property ───────── another 名詞\n                                   │\n                                   ├── method ─── another 名詞\n                                   │\n                                   └── property ─── another 名詞"
+            },
+            {
+              "type": "heading",
+              "text": "名詞展開的例子"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "a_float_variable=3.1134\nprint(\"get result that is_intege method of float object\")\nprint(a_float_variable.is_integer())\n#output:\n\"\"\"\nget result that is_intege method of float object\nFalse\n\"\"\"",
+              "text": "New paragraph"
+            },
+            {
+              "type": "heading",
+              "text": "例子的無限展開"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "float ─── float.is_integer() ─── bool ─── bool.method ─── return 名詞 ─── another 名詞\n  │                            │\n  │                            └── bool.property ─── another 名詞\n  │\n  └── float.property ─── another 名詞"
+            },
+            {
+              "type": "paragraph",
+              "text": "從上面的3個code block 我們可以發現，名詞把它看作一個class object的時候，往往跟method 這個動詞有高度的連結。因此5-2   to  5-5 的學習路徑不一定是線性的。反而可能是跳來跳去。去別的章節解任務又跑回來的感覺"
             }
           ]
         }
