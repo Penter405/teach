@@ -3279,6 +3279,21 @@
             {
               "type": "paragraph",
               "text": "從上面的3個code block 我們可以發現，名詞把它看作一個class object的時候，往往跟method 這個動詞有高度的連結。因此5-2   to  5-5 的學習路徑不一定是線性的。反而可能是跳來跳去。去別的章節解任務又跑回來的感覺"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "class Penter():\n    def __init__(self,number:int=1):\n        self.name=0\n        self.number=number\n        print(\"Penter good guy initing\",number)\n\n    @property\n    def next(self):\n        self.child=Penter((self.number)+1)\n        return self.child\na_human=Penter(1)\n\nclass Bad_guy():\n    def __init__(self,number:int=1):\n        print(\"initing\",number)\n        self.next=Bad_guy(number+1)\na_stupid_human=Bad_guy()",
+              "text": "New paragraph"
+            },
+            {
+              "type": "code",
+              "language": "C",
+              "code": "#include <stdio>\nstruct me{\n\tint money_have;\n\tstruct me;\n};\n\nint main(){\n\tprintf(\"hello world\")\n\treturn 0;\n}"
+            },
+            {
+              "type": "paragraph",
+              "text": "descriptor is a good tool to stop C language struct initializing loop"
             }
           ]
         }
