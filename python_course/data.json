@@ -2465,8 +2465,8 @@
     },
     {
       "id": "mod-05",
-      "title": "實際寫寫看",
-      "titleEn": "Hands-On Coding",
+      "title": "語法",
+      "titleEn": "Syntax",
       "icon": "✍️",
       "lessons": [
         {
@@ -3294,6 +3294,78 @@
             {
               "type": "paragraph",
               "text": "descriptor is a good tool to stop C language struct initializing loop"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "module-1788428054338",
+      "title": "演算法",
+      "titleEn": "algorithm",
+      "icon": "📖",
+      "lessons": [
+        {
+          "id": "lesson-1788428054338",
+          "title": "AOV括樸",
+          "titleEn": "Lesson 1",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "什麼類型的題目也許可以用 AOV括樸"
+            },
+            {
+              "type": "paragraph",
+              "text": "與邊的連接有關係的問題可以用AOV解解看。\n"
+            },
+            {
+              "type": "callout",
+              "label": "remember",
+              "text": "tree 跟 graph 有邊"
+            },
+            {
+              "type": "heading",
+              "text": "leetcode 210"
+            },
+            {
+              "type": "paragraph",
+              "text": "例如說leetcode 210, task A 必須先做完才能task B(有很多這種relation ship) , 題目要求找到一條能夠執行的順序，順序的要求僅跟必須先做完有關，因此如果想要執行一個task,僅需確認沒有task要優先於itself .換成圖的想法，則應找到一個node that 沒有別的node point to it"
+            },
+            {
+              "type": "heading",
+              "text": "數學公式"
+            },
+            {
+              "type": "paragraph",
+              "text": "solve tasks order= task that can solve now, nothing need to do first + others"
+            },
+            {
+              "type": "paragraph",
+              "text": "隨著任務的進行 ,others 的各個task 的 應該優先於我做清單就會減少，直到自己也變成 nothing need to do first"
+            },
+            {
+              "type": "heading",
+              "text": "leetcode 310"
+            },
+            {
+              "type": "paragraph",
+              "text": "連接只有1的node=tree 結構的 leave.  leave always 距離root 最遠, 因此選leave當答案就會找出本身長度最長的hidth"
+            },
+            {
+              "type": "callout",
+              "label": "Note",
+              "text": "某個node 可以用某種邏輯確定他是不是答案，邏輯跟邊有關係。每個點都是一次決策問題"
+            },
+            {
+              "type": "heading",
+              "text": "模板"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import defaultdict\n\"\"\"init\"\"\"\nresult=[]\nedge=[]\n#降低之後搜尋的 big o\npointed=defaultdict(int)\npoint=defaultdict(set)#set can lower big o, if you dont need order of iterable dont use list, use set\nfor okay, must in edge:\n    pointed[okay]+=1\n    point[must].add(okay)\n\nunsolve=set(range(n))\nwhile unsolve:\n    buffer=[]\n    #find what we want\n    for me in unsolve:\n        if \"\"\"match what we are finding\"\"\":#such as pointed[me]==0\n            buffer.append(me)\n            result.append(me)\n\n    #make it disappear on the graph because it is in result\n    for me in buffer:\n        for take in point[me]:\n            pointed[me]-=1\nprint(result)",
+              "text": "New paragraph"
             }
           ]
         }
