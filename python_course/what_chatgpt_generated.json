@@ -1,0 +1,577 @@
+{
+    "id": "module-1788860477027",
+    "title": "熟悉語法",
+    "titleEn": "Python Syntax Fundamentals",
+    "icon": "📖",
+    "lessons": [
+        {
+            "id": "lesson-io",
+            "title": "Lesson 1：輸入與輸出",
+            "titleEn": "Input and Output",
+            "pdfPages": [],
+            "content": [
+                {
+                    "type": "heading",
+                    "text": "程式如何與使用者溝通？"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "程式可以把資料顯示給使用者，也可以從使用者取得資料。在 Python 中，print() 負責輸出，而 input() 負責輸入。可以把它想成程式和使用者之間的一個對話框。"
+                },
+                {
+                    "type": "code",
+                    "language": "python",
+                    "code": "name = input()\nprint(name)"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "input() 會等待使用者輸入資料，然後把輸入的內容交給程式。print() 則會把資料顯示在畫面上。"
+                },
+                {
+                    "type": "quiz",
+                    "questions": [
+                        {
+                            "question": "哪一個函式可以取得使用者輸入？",
+                            "options": [
+                                "print()",
+                                "input()",
+                                "return()"
+                            ],
+                            "answer": 1
+                        },
+                        {
+                            "question": "哪一個函式可以把資料顯示在畫面上？",
+                            "options": [
+                                "input()",
+                                "print()",
+                                "def()"
+                            ],
+                            "answer": 1
+                        }
+                    ]
+                },
+                {
+                    "type": "ai-chat",
+                    "title": "Coding：自我介紹",
+                    "subtitle": "使用 input() 和 print() 完成第一個程式",
+                    "difficulty": "Easy",
+                    "coursePrompt": "請讓學生完成一個 Python 程式：取得使用者的姓名與年齡，然後輸出一段自我介紹。此題只允許使用 input()、print()、變數與基本字串內容。不要要求或提示學生使用 if、for、while、def、list、dict、set、任何資料型別 method 或尚未教過的語法。讓學生先自行寫程式，再檢查並給予提示。"
+                }
+            ]
+        },
+        {
+            "id": "lesson-operator",
+            "title": "Lesson 2：運算子",
+            "titleEn": "Operators",
+            "pdfPages": [],
+            "content": [
+                {
+                    "type": "heading",
+                    "text": "讓程式進行運算"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "變數就像數學中的未知數，而運算子則告訴 Python 要如何處理資料。Python 可以進行加、減、乘、除，也能使用整除、餘數與次方。"
+                },
+                {
+                    "type": "code",
+                    "language": "python",
+                    "code": "a = 10\nb = 3\nprint(a + b)\nprint(a - b)\nprint(a * b)\nprint(a / b)\nprint(a // b)\nprint(a % b)\nprint(a ** b)"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "除了算術運算子之外，Python 也能比較兩個值。例如 >、<、==、!=、>=、<= 可以判斷兩個值之間的關係。"
+                },
+                {
+                    "type": "quiz",
+                    "questions": [
+                        {
+                            "question": "10 % 3 的結果是多少？",
+                            "options": [
+                                "0",
+                                "1",
+                                "3"
+                            ],
+                            "answer": 1
+                        },
+                        {
+                            "question": "2 ** 3 的結果是多少？",
+                            "options": [
+                                "5",
+                                "6",
+                                "8"
+                            ],
+                            "answer": 2
+                        },
+                        {
+                            "question": "哪一個運算子代表『等於』？",
+                            "options": [
+                                "=",
+                                "==",
+                                "!="
+                            ],
+                            "answer": 1
+                        }
+                    ]
+                },
+                {
+                    "type": "ai-chat",
+                    "title": "Coding：簡易計算機",
+                    "subtitle": "使用 IO 與運算子完成計算",
+                    "difficulty": "Easy",
+                    "coursePrompt": "請讓學生完成一個 Python 程式：輸入兩個數字，輸出它們的加、減、乘、除結果。允許使用 Lesson 1 的 input()、print()、變數，以及本課已學的算術運算子。不要使用 if、elif、else、for、while、def、list、dict、set 或任何資料型別 method。"
+                }
+            ]
+        },
+        {
+            "id": "lesson-choosing",
+            "title": "Lesson 3：選擇結構",
+            "titleEn": "Choosing",
+            "pdfPages": [],
+            "content": [
+                {
+                    "type": "heading",
+                    "text": "讓程式做選擇"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "到目前為止，程式會按照順序執行每一行。if 可以讓程式根據條件選擇不同的路徑，就像生活中的「如果……就……否則……」。"
+                },
+                {
+                    "type": "code",
+                    "language": "python",
+                    "code": "age = int(input())\n\nif age >= 18:\n    print(\"Adult\")\nelse:\n    print(\"Minor\")"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "if 後面放條件。條件成立時執行 if 區塊；如果不成立，可以使用 else 執行另一個區塊。當有多種情況時，可以使用 elif。"
+                },
+                {
+                    "type": "quiz",
+                    "questions": [
+                        {
+                            "question": "if 的主要用途是什麼？",
+                            "options": [
+                                "重複執行程式",
+                                "根據條件選擇執行路徑",
+                                "建立函式"
+                            ],
+                            "answer": 1
+                        },
+                        {
+                            "question": "如果 if 的條件不成立，可以使用哪一個區塊？",
+                            "options": [
+                                "else",
+                                "loop",
+                                "return"
+                            ],
+                            "answer": 0
+                        }
+                    ]
+                },
+                {
+                    "type": "ai-chat",
+                    "title": "Coding：判斷奇偶數",
+                    "subtitle": "使用條件判斷解決問題",
+                    "difficulty": "Easy",
+                    "coursePrompt": "請讓學生完成 Python Coding 題：輸入一個整數，如果是偶數輸出 Even，否則輸出 Odd。允許使用 Lesson 1 的 IO、Lesson 2 的運算子，以及本課的 if、else、elif。不要使用 for、while、def、list、dict、set 或任何資料型別 method。先讓學生自行完成，再檢查程式。"
+                }
+            ]
+        },
+        {
+            "id": "lesson-loop",
+            "title": "Lesson 4：迴圈",
+            "titleEn": "Loops",
+            "pdfPages": [],
+            "content": [
+                {
+                    "type": "heading",
+                    "text": "讓程式重複工作"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "當相同的工作需要執行很多次時，不需要把程式碼複製很多份。迴圈可以讓程式重複執行一段程式。while 適合根據條件持續執行，for 則常用來依序處理一段範圍。"
+                },
+                {
+                    "type": "code",
+                    "language": "python",
+                    "code": "for i in range(1, 6):\n    print(i)"
+                },
+                {
+                    "type": "code",
+                    "language": "python",
+                    "code": "i = 1\nwhile i <= 5:\n    print(i)\n    i += 1"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "for 可以搭配 range() 產生一段連續的數字。while 則會在條件成立時持續執行，因此必須注意條件是否最終會變成 False。"
+                },
+                {
+                    "type": "quiz",
+                    "questions": [
+                        {
+                            "question": "哪一種結構主要用來重複執行程式？",
+                            "options": [
+                                "if",
+                                "for / while",
+                                "def"
+                            ],
+                            "answer": 1
+                        },
+                        {
+                            "question": "range(1, 4) 會產生哪些數字？",
+                            "options": [
+                                "1, 2, 3",
+                                "1, 2, 3, 4",
+                                "0, 1, 2, 3"
+                            ],
+                            "answer": 0
+                        }
+                    ]
+                },
+                {
+                    "type": "ai-chat",
+                    "title": "Coding：計算總和",
+                    "subtitle": "使用迴圈累加數字",
+                    "difficulty": "Medium",
+                    "coursePrompt": "請讓學生完成 Python Coding 題：輸入正整數 N，計算 1 到 N 的總和並輸出。允許使用前面所有已學內容，以及 for、while、range。不要使用 def、list、dict、set 或任何資料型別 method。鼓勵學生自己選擇 for 或 while。若學生使用尚未學過的語法，指出並要求改寫。"
+                }
+            ]
+        },
+        {
+            "id": "lesson-function",
+            "title": "Lesson 5：函式",
+            "titleEn": "Functions",
+            "pdfPages": [],
+            "content": [
+                {
+                    "type": "heading",
+                    "text": "把程式包裝成可以重複使用的工具"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "如果一段程式需要使用很多次，可以把它包裝成函式。def 用來建立函式，參數讓函式接收資料，return 則可以把結果交還給呼叫函式的地方。"
+                },
+                {
+                    "type": "code",
+                    "language": "python",
+                    "code": "def add(a, b):\n    return a + b\n\nresult = add(3, 5)\nprint(result)"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "可以把函式想成一台機器：參數是放進去的材料，函式內的程式是加工過程，return 是最後拿出來的結果。"
+                },
+                {
+                    "type": "quiz",
+                    "questions": [
+                        {
+                            "question": "哪一個關鍵字用來建立函式？",
+                            "options": [
+                                "function",
+                                "def",
+                                "func"
+                            ],
+                            "answer": 1
+                        },
+                        {
+                            "question": "return 的主要用途是什麼？",
+                            "options": [
+                                "重複程式",
+                                "判斷條件",
+                                "回傳函式結果"
+                            ],
+                            "answer": 2
+                        }
+                    ]
+                },
+                {
+                    "type": "ai-chat",
+                    "title": "Coding：建立計算函式",
+                    "subtitle": "把重複的邏輯包裝起來",
+                    "difficulty": "Medium",
+                    "coursePrompt": "請讓學生完成 Python Coding 題：建立一個函式 max_two(a, b)，回傳兩個數字中較大的數字，然後取得兩個輸入並呼叫函式輸出結果。允許使用前面所有已學內容，以及 def、參數與 return。不要使用 list、dict、set 或任何資料型別 method。可以使用 if/else。"
+                }
+            ]
+        },
+        {
+            "id": "lesson-string-method",
+            "title": "Lesson 6：字串 Method",
+            "titleEn": "String Methods",
+            "pdfPages": [],
+            "content": [
+                {
+                    "type": "heading",
+                    "text": "使用資料自己的工具"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "Python 的內建資料型別不只是存放資料，也提供許多可以直接使用的 method。字串常見的 method 可以用來改變大小寫、清理空白或檢查文字內容。"
+                },
+                {
+                    "type": "code",
+                    "language": "python",
+                    "code": "text = input()\nprint(text.upper())\nprint(text.lower())\nprint(text.strip())"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "method 可以想成資料本身附帶的工具。text.upper() 表示請 text 這個字串執行 upper 工具。不同資料型別擁有不同的 method。"
+                },
+                {
+                    "type": "quiz",
+                    "questions": [
+                        {
+                            "question": "哪一個 method 可以把英文轉成大寫？",
+                            "options": [
+                                "upper()",
+                                "large()",
+                                "capitalize_all()"
+                            ],
+                            "answer": 0
+                        },
+                        {
+                            "question": "哪一個 method 可以移除字串前後的空白？",
+                            "options": [
+                                "clean()",
+                                "strip()",
+                                "remove()"
+                            ],
+                            "answer": 1
+                        }
+                    ]
+                },
+                {
+                    "type": "ai-chat",
+                    "title": "Coding：整理使用者名稱",
+                    "subtitle": "第一次使用字串 method",
+                    "difficulty": "Easy",
+                    "coursePrompt": "請讓學生完成 Python Coding 題：輸入一個可能包含前後空白且大小寫混合的英文姓名，將前後空白移除後，再輸出大寫版本。允許使用前面所有已學內容，以及本課介紹的 str.strip()、str.upper()、str.lower()。不要使用 list、dict、set 的 method，也不要引入尚未教過的語法。"
+                }
+            ]
+        },
+        {
+            "id": "lesson-list-method",
+            "title": "Lesson 7：List Method",
+            "titleEn": "List Methods",
+            "pdfPages": [],
+            "content": [
+                {
+                    "type": "heading",
+                    "text": "操作一組資料"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "List 可以把多個資料放在同一個容器中。除了存取資料之外，也可以使用 method 修改 list，例如 append() 加入資料、pop() 移除資料。"
+                },
+                {
+                    "type": "code",
+                    "language": "python",
+                    "code": "numbers = [10, 20, 30]\nnumbers.append(40)\nprint(numbers)\n\nnumbers.pop()\nprint(numbers)"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "append() 會把資料加入 list 的尾端；pop() 可以移除並取出元素。這些 method 會直接操作原本的 list。"
+                },
+                {
+                    "type": "quiz",
+                    "questions": [
+                        {
+                            "question": "哪一個 method 可以把元素加入 list 尾端？",
+                            "options": [
+                                "append()",
+                                "add()",
+                                "push()"
+                            ],
+                            "answer": 0
+                        },
+                        {
+                            "question": "哪一個 method 可以移除 list 中的元素？",
+                            "options": [
+                                "delete()",
+                                "pop()",
+                                "remove_all()"
+                            ],
+                            "answer": 1
+                        }
+                    ]
+                },
+                {
+                    "type": "ai-chat",
+                    "title": "Coding：管理購物清單",
+                    "subtitle": "使用 list method 修改資料",
+                    "difficulty": "Medium",
+                    "coursePrompt": "請讓學生完成 Python Coding 題：建立一個購物清單，使用 input() 取得三個商品名稱並加入 list，最後再加入一個額外商品並輸出完整清單。允許使用前面所有已學內容，以及 list.append()。可以使用 list、for、while、def 與已學語法，但不要使用尚未介紹的 list/dict/set method。"
+                }
+            ]
+        },
+        {
+            "id": "lesson-dict-method",
+            "title": "Lesson 8：Dictionary Method",
+            "titleEn": "Dictionary Methods",
+            "pdfPages": [],
+            "content": [
+                {
+                    "type": "heading",
+                    "text": "使用 Key 找到資料"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "Dictionary 用 key 對應 value，就像一本字典：你先提供單字，也就是 key，再取得它對應的解釋，也就是 value。Dictionary 也提供 method 幫助我們取得 keys、values 或安全地取得資料。"
+                },
+                {
+                    "type": "code",
+                    "language": "python",
+                    "code": "student = {\n    \"name\": \"Amy\",\n    \"score\": 90\n}\n\nprint(student.keys())\nprint(student.values())\nprint(student.get(\"score\"))"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "keys() 可以取得所有 key，values() 可以取得所有 value，而 get() 可以根據 key 取得對應的 value。"
+                },
+                {
+                    "type": "quiz",
+                    "questions": [
+                        {
+                            "question": "哪一個 method 可以取得 dictionary 的所有 key？",
+                            "options": [
+                                "keys()",
+                                "key()",
+                                "all_keys()"
+                            ],
+                            "answer": 0
+                        },
+                        {
+                            "question": "student.get(\"score\") 的用途是什麼？",
+                            "options": [
+                                "刪除 score",
+                                "取得 score 對應的 value",
+                                "建立新的 dictionary"
+                            ],
+                            "answer": 1
+                        }
+                    ]
+                },
+                {
+                    "type": "ai-chat",
+                    "title": "Coding：學生資料",
+                    "subtitle": "使用 dictionary 儲存與取得資料",
+                    "difficulty": "Medium",
+                    "coursePrompt": "請讓學生完成 Python Coding 題：建立一個 dictionary 儲存學生姓名與成績，讓使用者輸入 key 後取得對應資料並輸出。允許使用前面所有已學內容，以及 dict.keys()、dict.values()、dict.get()。不要使用尚未介紹的 dictionary method 或其他尚未學習的語法。"
+                }
+            ]
+        },
+        {
+            "id": "lesson-set-method",
+            "title": "Lesson 9：Set Method",
+            "titleEn": "Set Methods",
+            "pdfPages": [],
+            "content": [
+                {
+                    "type": "heading",
+                    "text": "處理不重複的資料"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "Set 是一種不允許重複元素的資料型別。它適合用來處理需要去除重複的資料，也可以使用 method 加入或移除元素。"
+                },
+                {
+                    "type": "code",
+                    "language": "python",
+                    "code": "numbers = {1, 2, 3}\nnumbers.add(4)\nprint(numbers)\n\nnumbers.remove(2)\nprint(numbers)"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "add() 可以加入元素，remove() 可以移除指定元素。Set 不保證元素按照加入的順序排列，因此不要把它當成有固定順序的資料容器。"
+                },
+                {
+                    "type": "quiz",
+                    "questions": [
+                        {
+                            "question": "Set 的主要特性之一是什麼？",
+                            "options": [
+                                "元素一定排序",
+                                "不允許重複元素",
+                                "只能存數字"
+                            ],
+                            "answer": 1
+                        },
+                        {
+                            "question": "哪一個 method 可以加入 Set 元素？",
+                            "options": [
+                                "append()",
+                                "add()",
+                                "insert()"
+                            ],
+                            "answer": 1
+                        }
+                    ]
+                },
+                {
+                    "type": "ai-chat",
+                    "title": "Coding：移除重複資料",
+                    "subtitle": "使用 Set 處理重複元素",
+                    "difficulty": "Medium",
+                    "coursePrompt": "請讓學生完成 Python Coding 題：給定一組包含重複數字的資料，建立 Set 並使用 Set 的 method 進行加入與移除操作，最後輸出結果。允許使用前面所有已學內容，以及 set.add()、set.remove()。不要使用尚未介紹的 set method。"
+                }
+            ]
+        },
+        {
+            "id": "lesson-integrated",
+            "title": "Lesson 10：綜合 Coding",
+            "titleEn": "Integrated Coding",
+            "pdfPages": [],
+            "content": [
+                {
+                    "type": "heading",
+                    "text": "把學過的語法組合起來"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "現在可以把 IO、運算子、選擇、迴圈、函式，以及各種內建資料型別的 method 組合起來。真正寫程式時，很少只使用一種語法，而是把不同工具組合成完整的解法。"
+                },
+                {
+                    "type": "callout",
+                    "label": "重點",
+                    "text": "遇到問題時，不需要一次想出所有程式碼。先找出需要的資料，再決定運算方式，接著判斷是否需要選擇或迴圈，最後再把重複的邏輯整理成函式。"
+                },
+                {
+                    "type": "quiz",
+                    "questions": [
+                        {
+                            "question": "如果需要讓程式重複執行某段程式，應該優先想到什麼？",
+                            "options": [
+                                "loop",
+                                "string method",
+                                "dictionary"
+                            ],
+                            "answer": 0
+                        },
+                        {
+                            "question": "如果一段邏輯需要重複使用，可以把它整理成什麼？",
+                            "options": [
+                                "operator",
+                                "function",
+                                "set"
+                            ],
+                            "answer": 1
+                        },
+                        {
+                            "question": "如果需要讓字串自己執行某個操作，例如轉成大寫，應該想到什麼？",
+                            "options": [
+                                "string method",
+                                "if",
+                                "variable only"
+                            ],
+                            "answer": 0
+                        }
+                    ]
+                },
+                {
+                    "type": "ai-chat",
+                    "title": "Final Coding：成績分析器",
+                    "subtitle": "整合目前所有語法",
+                    "difficulty": "Hard",
+                    "coursePrompt": "請讓學生完成一個 Python 成績分析器。程式取得多筆成績資料，計算平均或總分，判斷成績等級，並輸出結果。鼓勵學生自行拆分函式並使用適當的內建資料型別與已學過的 method。允許使用本章所有已學內容：input、print、變數、算術與比較運算子、if/elif/else、for、while、range、def、return、str 的 upper/lower/strip、list 的 append/pop、dict 的 keys/values/get、set 的 add/remove。不要要求任何本章尚未介紹的語法或 method。AI 應優先檢查學生是否能自行設計解法，而不是直接提供完整答案。"
+                }
+            ]
+        }
+    ]
+}

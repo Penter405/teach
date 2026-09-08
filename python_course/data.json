@@ -2591,6 +2591,96 @@
           ]
         },
         {
+          "id": "lesson-1788844723755",
+          "title": "English language ->programming language",
+          "titleEn": "English language ->programming language",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "本章將介紹如何從英文的角度學習程式語言"
+            },
+            {
+              "type": "heading",
+              "text": "來點英文文法"
+            },
+            {
+              "type": "paragraph",
+              "text": "英文語言可以分為speak word(發音) , spell word(單字) , grammar(文法)"
+            },
+            {
+              "type": "paragraph",
+              "text": "而英文單字的詞性，則讓人們能使用文法將句子拼湊成大家約定好，或是單純覺得方便、明瞭的用法。"
+            },
+            {
+              "type": "paragraph",
+              "text": "不過呢，有一個文法是大家公認絕對要用，沒有他會死掉的:"
+            },
+            {
+              "type": "callout",
+              "label": "Note",
+              "text": "one sentence contains one verb, not 0 or 2, just 1"
+            },
+            {
+              "type": "heading",
+              "text": "來點幹話中文(這段可以直接跳過)\n"
+            },
+            {
+              "type": "paragraph",
+              "text": "通常人類在跟朋友talk的時候，都會冒出那些句子呢? "
+            },
+            {
+              "type": "code",
+              "language": "example",
+              "code": "幹xx                                      現在的人會把它當語助詞，像是英文的damn ,  但是如果仔細觀察，你會發現\"幹\"是動詞\n機x ,你怎麼這樣                            \"機x\"是語助詞；\"怎麼這樣\"是夾雜動詞跟問句跟副詞"
+            },
+            {
+              "type": "heading",
+              "text": "沒有動詞會怎樣"
+            },
+            {
+              "type": "paragraph",
+              "text": "動詞的功能代表 名詞1號(通常放在動詞前面，在文法上稱這種名詞為主詞)  對某個名詞(可以不對某個名詞，也可以對某個名詞。這種放在動詞後面的名詞稱為受詞) 做某個\"動作\""
+            },
+            {
+              "type": "paragraph",
+              "text": "假設我們把動詞拿掉，句子就會變成兩個名詞放在一起，沒有任何動作，例如:"
+            },
+            {
+              "type": "code",
+              "language": "example",
+              "code": "# write code here\nPenter likes apple                        #沒有刪掉的情況\nPenter [刪掉了動詞] book                   #刪掉的情況\nPenter [刪掉了動詞] smart and hardworking  #刪掉的情況"
+            },
+            {
+              "type": "paragraph",
+              "text": "你會發現除非主詞後面是放形容詞(但是如果動詞跟副詞是 is not呢?  也一樣猜不出來)，不然這個句子沒有意義。Penter [刪掉了動詞] the book 可以寫成 Penter burned the book. 也可以是 Penter bought the book."
+            },
+            {
+              "type": "callout",
+              "label": "Note",
+              "text": "動詞很重要"
+            },
+            {
+              "type": "paragraph",
+              "text": "在寫英文考卷的時候，不知道你有沒有發現，如果克漏字是挖動詞，那麼要麼考的是動詞的附加時間跟狀態，不然就是根據上下文把一個動詞寫進去。發現了嗎，如果不給上下文，而且又考你動詞要放什麼，你根本不知道答案，so as people, thats why the rule \"one sentence contains one verb\"是這麼的重要"
+            },
+            {
+              "type": "heading",
+              "text": "轉換成programming"
+            },
+            {
+              "type": "paragraph",
+              "text": "程式語言即是讓你的打工仔(程式語言)，聽懂你想做什麼，但是他能聽懂的動作，他卻只有記得一些些仲介已經告訴他的。你的目標可以是讓他記得更多動作，像是告訴他x行動代表find all page opened, close them。不過在教他得過程中只能用他已經會得動作教"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "某些動詞叫做function 就像英文的主詞省略不說\nwrite home work 變成 write(homework)\n\n有些動詞叫做method 就像標準的英文句子\nPenter eats the cake  變成 Penter.eat(cake)\n\n有些動詞叫做operator 就像一個符號代表動詞，處理動詞左邊跟右邊的兩個名詞\n3+5",
+              "text": "New paragraph"
+            }
+          ]
+        },
+        {
           "id": "les-05-02",
           "title": "常見的名詞",
           "titleEn": "Common Nouns in Programming",
@@ -3300,6 +3390,1230 @@
       ]
     },
     {
+      "id": "module-1788860477027",
+      "title": "熟悉語法",
+      "titleEn": "Python Syntax Fundamentals",
+      "icon": "📖",
+      "lessons": [
+        {
+          "id": "lesson-io",
+          "title": "Lesson 1：輸入與輸出",
+          "titleEn": "Input and Output",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "程式如何與使用者溝通？"
+            },
+            {
+              "type": "paragraph",
+              "text": "程式可以把資料顯示給使用者，也可以從使用者取得資料。在 Python 中，print() 負責輸出，而 input() 負責輸入。可以把它想成程式和使用者之間的一個對話框。"
+            },
+            {
+              "type": "heading",
+              "text": "print() 的各種用法"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 基本輸出\nprint(\"Hello\")\nprint(123)\nprint(3.14)\n\n# 多個值一起輸出\nprint(\"Name:\", \"Alice\", \"Age:\", 25)\n\n# sep：改變分隔符號（預設是空格）\nprint(\"A\", \"B\", \"C\", sep=\"-\")        # A-B-C\nprint(\"2026\", \"09\", \"08\", sep=\"/\")    # 2026/09/08\n\n# end：改變結尾（預設是換行 \\n）\nprint(\"Hello\", end=\" \")\nprint(\"World\")   # Hello World（同一行）\n\n# f-string：在字串中嵌入變數\nname = \"Alice\"\nage = 25\nprint(f\"My name is {name}, I am {age} years old\")\nprint(f\"Next year I will be {age + 1}\")\n\n# 跳脫字元\nprint(\"Hello\\nWorld\")    # 換行\nprint(\"Tab\\there\")       # Tab\nprint(\"He said \\\"Hi\\\"\")  # 雙引號"
+            },
+            {
+              "type": "heading",
+              "text": "input() 的各種用法"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 基本輸入\ndata = input()                        # 等待使用者輸入\n\n# 帶提示訊息\nname = input(\"What is your name? \")   # 顯示提示文字\n\n# 注意：input() 回傳的永遠是 str\nage = input(\"Age: \")   # 即使輸入 25，age 也是 \"25\"（字串）\nage = int(input(\"Age: \"))   # 用 int() 轉換成整數\n\n# 一次輸入多個值\na, b = input().split()              # 用空格分開\nx, y = input().split(\",\")           # 用逗號分開\na, b = map(int, input().split())    # 分開後轉成 int"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "哪一個函式可以取得使用者輸入？",
+                  "options": [
+                    "print()",
+                    "input()",
+                    "return()"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "print(\"A\", \"B\", sep=\"-\") 的輸出是什麼？",
+                  "options": [
+                    "A B",
+                    "A-B",
+                    "AB"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "input() 回傳的資料型態是什麼？",
+                  "options": [
+                    "int",
+                    "str",
+                    "看使用者輸入什麼"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "f\"I am {age}\" 中的 {age} 會變成什麼？",
+                  "options": [
+                    "文字 {age}",
+                    "age 變數的值",
+                    "會出錯"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：自我介紹",
+              "subtitle": "使用 input() 和 print() 完成第一個程式",
+              "difficulty": "Easy",
+              "coursePrompt": "請讓學生完成一個 Python 程式：取得使用者的姓名與年齡，然後用 f-string 輸出一段自我介紹。此題只允許使用 input()、print()、變數、f-string 與基本字串內容。不要要求或提示學生使用 if、for、while、def、list、dict、set、任何資料型別 method 或尚未教過的語法。讓學生先自行寫程式，再檢查並給予提示。"
+            }
+          ]
+        },
+        {
+          "id": "lesson-operator",
+          "title": "Lesson 2：運算子",
+          "titleEn": "Operators",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "讓程式進行運算"
+            },
+            {
+              "type": "paragraph",
+              "text": "運算子告訴 Python 要如何處理資料。Python 提供了多種運算子，從基本的加減乘除到邏輯判斷。"
+            },
+            {
+              "type": "heading",
+              "text": "算術運算子 Arithmetic Operators"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "a = 10\nb = 3\n\nprint(a + b)    # 13    加法 Addition\nprint(a - b)    # 7     減法 Subtraction\nprint(a * b)    # 30    乘法 Multiplication\nprint(a / b)    # 3.33  除法 Division（結果是 float）\nprint(a // b)   # 3     整除 Floor Division（只取整數部分）\nprint(a % b)    # 1     餘數 Modulus\nprint(a ** b)   # 1000  次方 Exponentiation（10 的 3 次方）"
+            },
+            {
+              "type": "heading",
+              "text": "比較運算子 Comparison Operators"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "x = 5\ny = 10\n\nprint(x > y)     # False    大於\nprint(x < y)     # True     小於\nprint(x >= 5)    # True     大於等於\nprint(x <= 4)    # False    小於等於\nprint(x == 5)    # True     等於（注意是兩個 =）\nprint(x != y)    # True     不等於"
+            },
+            {
+              "type": "heading",
+              "text": "邏輯運算子 Logical Operators"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "a = True\nb = False\n\nprint(a and b)   # False    兩個都是 True 才是 True\nprint(a or b)    # True     其中一個是 True 就是 True\nprint(not a)     # False    反轉 True/False\n\n# 實際用法\nage = 25\nprint(age >= 18 and age <= 65)    # True：18 到 65 歲之間\nprint(age < 18 or age > 65)       # False：未成年或退休"
+            },
+            {
+              "type": "heading",
+              "text": "賦值運算子 Assignment Operators"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "x = 10       # 基本賦值\nx += 5       # x = x + 5  → 15\nx -= 3       # x = x - 3  → 12\nx *= 2       # x = x * 2  → 24\nx /= 4       # x = x / 4  → 6.0\nx //= 2      # x = x // 2 → 3.0\nx %= 2       # x = x % 2  → 1.0\nx **= 3      # x = x ** 3 → 1.0"
+            },
+            {
+              "type": "heading",
+              "text": "成員運算子 Membership Operators"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "fruits = [\"apple\", \"banana\", \"cherry\"]\n\nprint(\"apple\" in fruits)       # True    在裡面\nprint(\"grape\" not in fruits)   # True    不在裡面\n\ntext = \"Hello World\"\nprint(\"Hello\" in text)         # True    字串也可以用 in"
+            },
+            {
+              "type": "heading",
+              "text": "身份運算子 Identity Operators"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "a = [1, 2, 3]\nb = [1, 2, 3]\nc = a\n\nprint(a == b)    # True     值相同\nprint(a is b)    # False    不是同一個 object\nprint(a is c)    # True     是同一個 object\nprint(a is not b)  # True  不是同一個 object"
+            },
+            {
+              "type": "heading",
+              "text": "運算子優先順序 Operator Precedence（由高到低）"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 優先順序（由高到低）：\n# **         次方\n# *, /, //, %   乘、除、整除、餘數\n# +, -       加、減\n# ==, !=, >, <, >=, <=   比較\n# not        邏輯非\n# and        邏輯與\n# or         邏輯或\n\n# 範例：\nprint(2 + 3 * 4)      # 14（先乘後加）\nprint((2 + 3) * 4)    # 20（括號優先）\nprint(2 ** 3 ** 2)     # 512（次方是右結合：2^(3^2) = 2^9）"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "10 % 3 的結果是多少？",
+                  "options": [
+                    "0",
+                    "1",
+                    "3"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "2 ** 3 的結果是多少？",
+                  "options": [
+                    "5",
+                    "6",
+                    "8"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "哪一個運算子代表「等於」比較？",
+                  "options": [
+                    "=",
+                    "==",
+                    "!="
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "True and False 的結果是？",
+                  "options": [
+                    "True",
+                    "False",
+                    "Error"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "\"apple\" in [\"apple\", \"banana\"] 的結果是？",
+                  "options": [
+                    "True",
+                    "False",
+                    "Error"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "x += 5 等同於什麼？",
+                  "options": [
+                    "x = 5",
+                    "x = x + 5",
+                    "x == 5"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：簡易計算機",
+              "subtitle": "使用 IO 與運算子完成計算",
+              "difficulty": "Easy",
+              "coursePrompt": "請讓學生完成一個 Python 程式：輸入兩個數字，輸出它們的加、減、乘、除、整除、餘數、次方結果。允許使用 Lesson 1 的 input()、print()、f-string、變數，以及本課已學的所有算術運算子。不要使用 if、elif、else、for、while、def、list、dict、set 或任何資料型別 method。"
+            }
+          ]
+        },
+        {
+          "id": "lesson-choosing",
+          "title": "Lesson 3：選擇結構",
+          "titleEn": "Choosing",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "讓程式做選擇"
+            },
+            {
+              "type": "paragraph",
+              "text": "到目前為止，程式會按照順序執行每一行。if 可以讓程式根據條件選擇不同的路徑，就像生活中的「如果……就……否則……」。"
+            },
+            {
+              "type": "heading",
+              "text": "if / elif / else"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 基本 if\nage = int(input())\nif age >= 18:\n    print(\"Adult\")\n\n# if-else\nif age >= 18:\n    print(\"Adult\")\nelse:\n    print(\"Minor\")\n\n# if-elif-else（多種情況）\nscore = int(input())\nif score >= 90:\n    print(\"A\")\nelif score >= 80:\n    print(\"B\")\nelif score >= 70:\n    print(\"C\")\nelif score >= 60:\n    print(\"D\")\nelse:\n    print(\"F\")"
+            },
+            {
+              "type": "heading",
+              "text": "巢狀 if（Nested if）"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "age = int(input())\nhas_id = input(\"有帶證件嗎？(y/n) \")\n\nif age >= 18:\n    if has_id == \"y\":\n        print(\"可以進入\")\n    else:\n        print(\"請出示證件\")\nelse:\n    print(\"未成年不可進入\")"
+            },
+            {
+              "type": "heading",
+              "text": "三元運算子（Ternary Operator）"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 語法：值A if 條件 else 值B\nage = 20\nstatus = \"Adult\" if age >= 18 else \"Minor\"\nprint(status)   # Adult\n\n# 等同於：\nif age >= 18:\n    status = \"Adult\"\nelse:\n    status = \"Minor\""
+            },
+            {
+              "type": "heading",
+              "text": "搭配邏輯運算子"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "age = 25\nincome = 50000\n\n# and：兩個條件都要成立\nif age >= 18 and income >= 30000:\n    print(\"可以辦信用卡\")\n\n# or：任一條件成立即可\nday = \"Saturday\"\nif day == \"Saturday\" or day == \"Sunday\":\n    print(\"週末！\")\n\n# not：反轉條件\nis_raining = False\nif not is_raining:\n    print(\"出去玩！\")"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "if 的主要用途是什麼？",
+                  "options": [
+                    "重複執行程式",
+                    "根據條件選擇執行路徑",
+                    "建立函式"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "如果 if 的條件不成立，可以使用哪一個區塊？",
+                  "options": [
+                    "else",
+                    "loop",
+                    "return"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "\"A\" if True else \"B\" 的結果是？",
+                  "options": [
+                    "A",
+                    "B",
+                    "Error"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "elif 是什麼的縮寫？",
+                  "options": [
+                    "else-if",
+                    "element-if",
+                    "elif 不是縮寫"
+                  ],
+                  "answer": 0
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：判斷奇偶數",
+              "subtitle": "使用條件判斷解決問題",
+              "difficulty": "Easy",
+              "coursePrompt": "請讓學生完成 Python Coding 題：輸入一個整數，如果是偶數輸出 Even，否則輸出 Odd。允許使用 Lesson 1 的 IO、Lesson 2 的運算子，以及本課的 if、else、elif、三元運算子。不要使用 for、while、def、list、dict、set 或任何資料型別 method。先讓學生自行完成，再檢查程式。"
+            }
+          ]
+        },
+        {
+          "id": "lesson-loop",
+          "title": "Lesson 4：迴圈",
+          "titleEn": "Loops",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "讓程式重複工作"
+            },
+            {
+              "type": "paragraph",
+              "text": "當相同的工作需要執行很多次時，不需要把程式碼複製很多份。迴圈可以讓程式重複執行一段程式。"
+            },
+            {
+              "type": "heading",
+              "text": "for 迴圈"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 基本 for + range\nfor i in range(5):          # 0, 1, 2, 3, 4\n    print(i)\n\nfor i in range(1, 6):       # 1, 2, 3, 4, 5\n    print(i)\n\nfor i in range(0, 10, 2):   # 0, 2, 4, 6, 8（每次加 2）\n    print(i)\n\nfor i in range(5, 0, -1):   # 5, 4, 3, 2, 1（倒數）\n    print(i)\n\n# 遍歷 list\nfruits = [\"apple\", \"banana\", \"cherry\"]\nfor fruit in fruits:\n    print(fruit)\n\n# 遍歷字串\nfor char in \"Hello\":\n    print(char)     # H, e, l, l, o"
+            },
+            {
+              "type": "heading",
+              "text": "while 迴圈"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 基本 while\ni = 1\nwhile i <= 5:\n    print(i)\n    i += 1\n\n# 無限迴圈 + 手動跳出\nwhile True:\n    cmd = input(\"輸入 quit 離開：\")\n    if cmd == \"quit\":\n        break\n    print(f\"你輸入了：{cmd}\")"
+            },
+            {
+              "type": "heading",
+              "text": "break 與 continue"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# break：立刻跳出整個迴圈\nfor i in range(10):\n    if i == 5:\n        break       # 到 5 就停\n    print(i)        # 0, 1, 2, 3, 4\n\n# continue：跳過這次，繼續下一次\nfor i in range(10):\n    if i % 2 == 0:\n        continue    # 跳過偶數\n    print(i)        # 1, 3, 5, 7, 9"
+            },
+            {
+              "type": "heading",
+              "text": "enumerate()：同時取得 index 和 value"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "fruits = [\"apple\", \"banana\", \"cherry\"]\n\n# 不用 enumerate\nfor i in range(len(fruits)):\n    print(f\"{i}: {fruits[i]}\")\n\n# 用 enumerate（更 Pythonic）\nfor i, fruit in enumerate(fruits):\n    print(f\"{i}: {fruit}\")\n\n# 指定起始 index\nfor i, fruit in enumerate(fruits, start=1):\n    print(f\"{i}: {fruit}\")    # 1: apple, 2: banana, ..."
+            },
+            {
+              "type": "heading",
+              "text": "巢狀迴圈（Nested Loop）"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 九九乘法表\nfor i in range(1, 10):\n    for j in range(1, 10):\n        print(f\"{i}*{j}={i*j}\", end=\"\\t\")\n    print()    # 換行\n\n# 星星三角形\nfor i in range(1, 6):\n    print(\"*\" * i)\n# *\n# **\n# ***\n# ****\n# *****"
+            },
+            {
+              "type": "heading",
+              "text": "for-else / while-else"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# else 區塊會在迴圈「正常結束」時執行\n# 如果被 break 跳出，else 不會執行\n\nfor i in range(5):\n    if i == 10:    # 不會觸發\n        break\nelse:\n    print(\"迴圈正常結束\")    # 會印出\n\nfor i in range(5):\n    if i == 3:\n        break\nelse:\n    print(\"迴圈正常結束\")    # 不會印出（被 break 了）"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "哪一種結構主要用來重複執行程式？",
+                  "options": [
+                    "if",
+                    "for / while",
+                    "def"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "range(1, 4) 會產生哪些數字？",
+                  "options": [
+                    "1, 2, 3",
+                    "1, 2, 3, 4",
+                    "0, 1, 2, 3"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "break 的作用是什麼？",
+                  "options": [
+                    "跳過這次迴圈",
+                    "跳出整個迴圈",
+                    "暫停程式"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "continue 的作用是什麼？",
+                  "options": [
+                    "跳過這次，繼續下一次",
+                    "跳出整個迴圈",
+                    "重新開始迴圈"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "range(0, 10, 2) 會產生哪些數字？",
+                  "options": [
+                    "0, 2, 4, 6, 8",
+                    "0, 2, 4, 6, 8, 10",
+                    "2, 4, 6, 8"
+                  ],
+                  "answer": 0
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：計算總和",
+              "subtitle": "使用迴圈累加數字",
+              "difficulty": "Medium",
+              "coursePrompt": "請讓學生完成 Python Coding 題：輸入正整數 N，計算 1 到 N 的總和並輸出。允許使用前面所有已學內容，以及 for、while、range、break、continue、enumerate。不要使用 def、list、dict、set 或任何資料型別 method。鼓勵學生自己選擇 for 或 while。若學生使用尚未學過的語法，指出並要求改寫。"
+            }
+          ]
+        },
+        {
+          "id": "lesson-function",
+          "title": "Lesson 5：函式",
+          "titleEn": "Functions",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "把程式包裝成可以重複使用的工具"
+            },
+            {
+              "type": "paragraph",
+              "text": "如果一段程式需要使用很多次，可以把它包裝成函式。def 用來建立函式，參數讓函式接收資料，return 則可以把結果交還給呼叫函式的地方。"
+            },
+            {
+              "type": "heading",
+              "text": "def / return / 參數"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 基本函式\ndef say_hello():\n    print(\"Hello!\")\n\nsay_hello()    # 呼叫函式\n\n# 帶參數的函式\ndef greet(name):\n    print(f\"Hello, {name}!\")\n\ngreet(\"Alice\")\n\n# 帶 return 的函式\ndef add(a, b):\n    return a + b\n\nresult = add(3, 5)\nprint(result)    # 8\n\n# 多個參數\ndef introduce(name, age, city):\n    return f\"{name} is {age} years old, lives in {city}\"\n\nprint(introduce(\"Alice\", 25, \"Taipei\"))"
+            },
+            {
+              "type": "heading",
+              "text": "預設參數 Default Parameters"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def greet(name, greeting=\"Hello\"):\n    print(f\"{greeting}, {name}!\")\n\ngreet(\"Alice\")              # Hello, Alice!\ngreet(\"Bob\", \"Hi\")          # Hi, Bob!\ngreet(\"Charlie\", greeting=\"Hey\")  # Hey, Charlie!"
+            },
+            {
+              "type": "heading",
+              "text": "常用內建函式 Popular Built-in Functions"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# ─── 數值相關 ───\nprint(abs(-5))          # 5        絕對值\nprint(round(3.14159, 2))# 3.14     四捨五入\nprint(max(1, 5, 3))     # 5        最大值\nprint(min(1, 5, 3))     # 1        最小值\nprint(sum([1, 2, 3]))   # 6        總和\nprint(pow(2, 3))        # 8        次方（等同 2**3）\nprint(divmod(10, 3))    # (3, 1)   同時取得商和餘數\n\n# ─── 型態轉換 ───\nprint(int(\"123\"))       # 123      字串 → 整數\nprint(int(3.7))         # 3        浮點 → 整數（無條件捨去）\nprint(float(\"3.14\"))    # 3.14     字串 → 浮點\nprint(str(123))         # \"123\"    數字 → 字串\nprint(bool(0))          # False    轉布林\nprint(bool(1))          # True\nprint(list(\"abc\"))      # ['a', 'b', 'c']   字串 → list\nprint(tuple([1,2,3]))   # (1, 2, 3)         list → tuple\nprint(set([1,1,2]))     # {1, 2}             list → set\nprint(dict([(\"a\",1)]))  # {'a': 1}           → dict"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# ─── 資訊查詢 ───\nprint(len(\"Hello\"))     # 5        長度\nprint(len([1,2,3]))     # 3\nprint(type(123))        # <class 'int'>   型態\nprint(type(\"hi\"))       # <class 'str'>\nprint(id(123))          # 記憶體位址\nprint(isinstance(5, int))  # True   檢查型態\n\n# ─── 迭代工具 ───\nprint(range(5))                    # range(0, 5)\nprint(list(range(5)))              # [0, 1, 2, 3, 4]\nprint(list(enumerate([\"a\",\"b\"])))  # [(0,'a'), (1,'b')]\nprint(list(zip([1,2], [\"a\",\"b\"]))) # [(1,'a'), (2,'b')]\n\n# ─── 排序與反轉 ───\nprint(sorted([3,1,2]))             # [1, 2, 3]\nprint(sorted([3,1,2], reverse=True))  # [3, 2, 1]\nprint(list(reversed([1,2,3])))     # [3, 2, 1]\n\n# ─── 進階工具 ───\nprint(list(map(int, [\"1\",\"2\",\"3\"])))     # [1, 2, 3]\nprint(list(filter(lambda x: x>2, [1,2,3,4])))  # [3, 4]\nprint(chr(65))      # 'A'   ASCII 碼 → 字元\nprint(ord('A'))      # 65    字元 → ASCII 碼"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "哪一個關鍵字用來建立函式？",
+                  "options": [
+                    "function",
+                    "def",
+                    "func"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "return 的主要用途是什麼？",
+                  "options": [
+                    "重複程式",
+                    "判斷條件",
+                    "回傳函式結果"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "abs(-7) 的結果是？",
+                  "options": [
+                    "-7",
+                    "7",
+                    "0"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "sorted([3,1,2]) 的結果是？",
+                  "options": [
+                    "[3,1,2]",
+                    "[1,2,3]",
+                    "[3,2,1]"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "len(\"Hello\") 的結果是？",
+                  "options": [
+                    "4",
+                    "5",
+                    "6"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "int(\"123\") 做了什麼？",
+                  "options": [
+                    "把字串轉成整數",
+                    "把整數轉成字串",
+                    "計算長度"
+                  ],
+                  "answer": 0
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：建立計算函式",
+              "subtitle": "把重複的邏輯包裝起來",
+              "difficulty": "Medium",
+              "coursePrompt": "請讓學生完成 Python Coding 題：建立一個函式 max_two(a, b)，回傳兩個數字中較大的數字，然後取得兩個輸入並呼叫函式輸出結果。不可以使用內建的 max()，要自己用 if/else 判斷。允許使用前面所有已學內容，以及 def、參數與 return。不要使用 list、dict、set 或任何資料型別 method。"
+            }
+          ]
+        },
+        {
+          "id": "lesson-string-method",
+          "title": "Lesson 6：字串 Method",
+          "titleEn": "String Methods",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "str 的內建 Method"
+            },
+            {
+              "type": "paragraph",
+              "text": "字串（str）是 Python 的內建資料型別，自帶很多實用的 method。以下列出所有常用的 str method。"
+            },
+            {
+              "type": "heading",
+              "text": "大小寫轉換"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "text = \"Hello World\"\n\nprint(text.upper())        # \"HELLO WORLD\"     全部大寫\nprint(text.lower())        # \"hello world\"     全部小寫\nprint(text.capitalize())   # \"Hello world\"     首字母大寫\nprint(text.title())        # \"Hello World\"     每個單字首字母大寫\nprint(text.swapcase())     # \"hELLO wORLD\"     大小寫互換"
+            },
+            {
+              "type": "heading",
+              "text": "搜尋與檢查"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "text = \"Hello World Hello\"\n\nprint(text.find(\"World\"))      # 6       找到的位置（找不到回傳 -1）\nprint(text.index(\"World\"))     # 6       找到的位置（找不到會 Error）\nprint(text.rfind(\"Hello\"))     # 12      從右邊開始找\nprint(text.count(\"Hello\"))     # 2       出現幾次\n\nprint(text.startswith(\"Hello\"))  # True   是否以...開頭\nprint(text.endswith(\"Hello\"))    # True   是否以...結尾\n\n# 內容檢查\nprint(\"abc\".isalpha())     # True    全部是字母\nprint(\"123\".isdigit())     # True    全部是數字\nprint(\"abc123\".isalnum())  # True    全部是字母或數字\nprint(\"   \".isspace())     # True    全部是空白\nprint(\"hello\".islower())   # True    全部是小寫\nprint(\"HELLO\".isupper())   # True    全部是大寫"
+            },
+            {
+              "type": "heading",
+              "text": "修改與清理"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "text = \"  Hello World  \"\n\nprint(text.strip())        # \"Hello World\"     移除前後空白\nprint(text.lstrip())       # \"Hello World  \"   移除左邊空白\nprint(text.rstrip())       # \"  Hello World\"   移除右邊空白\nprint(text.strip(\" H\"))    # \"ello World\"      移除指定字元\n\nprint(\"Hello World\".replace(\"World\", \"Python\"))  # \"Hello Python\"  替換\nprint(\"Hello\".center(20, \"-\"))   # \"-------Hello--------\"  置中\nprint(\"Hello\".ljust(20, \"-\"))    # \"Hello---------------\"  靠左\nprint(\"Hello\".rjust(20, \"-\"))    # \"---------------Hello\"  靠右\nprint(\"42\".zfill(5))             # \"00042\"                 補零"
+            },
+            {
+              "type": "heading",
+              "text": "分割與合併"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# split：把字串拆成 list\ntext = \"apple,banana,cherry\"\nprint(text.split(\",\"))       # ['apple', 'banana', 'cherry']\nprint(\"Hello World\".split()) # ['Hello', 'World']（預設用空白分割）\nprint(\"a-b-c\".split(\"-\", 1)) # ['a', 'b-c']（最多切 1 次）\n\n# join：把 list 合成字串\nfruits = [\"apple\", \"banana\", \"cherry\"]\nprint(\", \".join(fruits))     # \"apple, banana, cherry\"\nprint(\"-\".join(fruits))      # \"apple-banana-cherry\"\nprint(\"\".join([\"H\",\"i\"]))    # \"Hi\"\n\n# splitlines：按行分割\nmultiline = \"line1\\nline2\\nline3\"\nprint(multiline.splitlines())  # ['line1', 'line2', 'line3']"
+            },
+            {
+              "type": "heading",
+              "text": "格式化"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# format\nprint(\"Hello, {}!\".format(\"Alice\"))               # Hello, Alice!\nprint(\"{0} is {1}\".format(\"Alice\", 25))            # Alice is 25\nprint(\"{name} is {age}\".format(name=\"Alice\", age=25))  # Alice is 25\n\n# f-string（推薦）\nname = \"Alice\"\nage = 25\nprint(f\"{name} is {age}\")           # Alice is 25\nprint(f\"{3.14159:.2f}\")             # 3.14（小數點 2 位）\nprint(f\"{1000000:,}\")               # 1,000,000（千位分隔）\nprint(f\"{'Hello':>20}\")             # \"               Hello\"（靠右 20 字元）"
+            },
+            {
+              "type": "heading",
+              "text": "索引與切片"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "text = \"Hello World\"\n\n# 索引（index）\nprint(text[0])      # 'H'       第一個字元\nprint(text[-1])     # 'd'       最後一個字元\n\n# 切片（slicing）\nprint(text[0:5])    # 'Hello'   從 0 到 4\nprint(text[6:])     # 'World'   從 6 到最後\nprint(text[:5])     # 'Hello'   從開頭到 4\nprint(text[::2])    # 'HloWrd'  每隔 2 個取一個\nprint(text[::-1])   # 'dlroW olleH'  反轉字串"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "哪一個 method 可以把英文全部轉成大寫？",
+                  "options": [
+                    "upper()",
+                    "large()",
+                    "capitalize()"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "哪一個 method 可以移除字串前後的空白？",
+                  "options": [
+                    "clean()",
+                    "strip()",
+                    "remove()"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "\"a,b,c\".split(\",\") 的結果是？",
+                  "options": [
+                    "\"a b c\"",
+                    "['a', 'b', 'c']",
+                    "('a', 'b', 'c')"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "\"-\".join([\"a\",\"b\",\"c\"]) 的結果是？",
+                  "options": [
+                    "\"a-b-c\"",
+                    "[\"a-b-c\"]",
+                    "\"abc\""
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "\"Hello\".find(\"xyz\") 的結果是？",
+                  "options": [
+                    "0",
+                    "-1",
+                    "Error"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "\"Hello\"[::-1] 的結果是？",
+                  "options": [
+                    "\"Hello\"",
+                    "\"olleH\"",
+                    "Error"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：整理使用者名稱",
+              "subtitle": "第一次使用字串 method",
+              "difficulty": "Easy",
+              "coursePrompt": "請讓學生完成 Python Coding 題：輸入一個可能包含前後空白且大小寫混合的英文姓名，將前後空白移除後，再輸出大寫版本和小寫版本。額外挑戰：計算名字中有幾個 'a'（不分大小寫）。允許使用前面所有已學內容，以及本課介紹的所有 str method。不要使用 list、dict、set 的 method，也不要引入尚未教過的語法。"
+            }
+          ]
+        },
+        {
+          "id": "lesson-list-method",
+          "title": "Lesson 7：List Method",
+          "titleEn": "List Methods",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "list 的內建 Method"
+            },
+            {
+              "type": "paragraph",
+              "text": "List 可以把多個資料放在同一個容器中。List 是 mutable（可變的），提供很多 method 來增刪改查。"
+            },
+            {
+              "type": "heading",
+              "text": "建立與存取"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 建立 list\nnums = [1, 2, 3, 4, 5]\nmixed = [1, \"hello\", 3.14, True]\nempty = []\n\n# 存取元素\nprint(nums[0])     # 1      第一個\nprint(nums[-1])    # 5      最後一個\nprint(nums[1:3])   # [2, 3] 切片\nprint(nums[::-1])  # [5, 4, 3, 2, 1]  反轉\n\n# 長度\nprint(len(nums))   # 5"
+            },
+            {
+              "type": "heading",
+              "text": "新增元素"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "nums = [1, 2, 3]\n\nnums.append(4)        # 尾端加入 → [1, 2, 3, 4]\nnums.insert(0, 0)     # 指定位置插入 → [0, 1, 2, 3, 4]\nnums.extend([5, 6])   # 合併另一個 list → [0, 1, 2, 3, 4, 5, 6]\n\n# append vs extend\na = [1, 2]\na.append([3, 4])    # [1, 2, [3, 4]]  加入一個元素（是 list）\nb = [1, 2]\nb.extend([3, 4])    # [1, 2, 3, 4]    把元素一個一個加進去\n\n# + 和 * 運算\nprint([1, 2] + [3, 4])   # [1, 2, 3, 4]\nprint([0] * 5)            # [0, 0, 0, 0, 0]"
+            },
+            {
+              "type": "heading",
+              "text": "刪除元素"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "nums = [1, 2, 3, 4, 5, 3]\n\nnums.pop()         # 移除並回傳最後一個 → 5，list 變 [1, 2, 3, 4, 3]\nnums.pop(0)        # 移除並回傳 index 0 → 1，list 變 [2, 3, 4, 3]\nnums.remove(3)     # 移除第一個值為 3 的元素 → [2, 4, 3]\nnums.clear()       # 清空 list → []\n\n# del 語法\nnums = [1, 2, 3, 4, 5]\ndel nums[0]        # 刪除 index 0 → [2, 3, 4, 5]\ndel nums[1:3]      # 刪除 index 1~2 → [2, 5]"
+            },
+            {
+              "type": "heading",
+              "text": "搜尋與計算"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "nums = [3, 1, 4, 1, 5, 9, 2, 6]\n\nprint(nums.index(4))      # 2       找到值 4 的 index\nprint(nums.count(1))      # 2       值 1 出現幾次\nprint(3 in nums)          # True    是否存在"
+            },
+            {
+              "type": "heading",
+              "text": "排序與反轉"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "nums = [3, 1, 4, 1, 5, 9]\n\n# sort()：原地排序（會修改原 list）\nnums.sort()               # [1, 1, 3, 4, 5, 9]\nnums.sort(reverse=True)   # [9, 5, 4, 3, 1, 1]\n\n# sorted()：回傳新 list（不修改原 list）\nnums = [3, 1, 4]\nnew = sorted(nums)        # new = [1, 3, 4]，nums 不變\n\n# reverse()：原地反轉\nnums = [1, 2, 3]\nnums.reverse()            # [3, 2, 1]\n\n# copy()：複製 list\noriginal = [1, 2, 3]\ncopied = original.copy()  # 獨立的副本"
+            },
+            {
+              "type": "heading",
+              "text": "List Comprehension"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 基本語法：[運算式 for 變數 in 可迭代物]\nsquares = [x**2 for x in range(5)]       # [0, 1, 4, 9, 16]\n\n# 帶條件：[運算式 for 變數 in 可迭代物 if 條件]\nevens = [x for x in range(10) if x % 2 == 0]  # [0, 2, 4, 6, 8]\n\n# 巢狀\nmatrix = [[i*3+j for j in range(3)] for i in range(3)]\n# [[0,1,2], [3,4,5], [6,7,8]]"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "哪一個 method 可以把元素加入 list 尾端？",
+                  "options": [
+                    "append()",
+                    "add()",
+                    "push()"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "pop() 和 remove() 的差別是？",
+                  "options": [
+                    "沒有差別",
+                    "pop 用 index，remove 用值",
+                    "remove 回傳值，pop 不會"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "sort() 和 sorted() 的差別是？",
+                  "options": [
+                    "沒有差別",
+                    "sort 修改原 list，sorted 回傳新 list",
+                    "sorted 比較快"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "append([3,4]) 和 extend([3,4]) 的差別是？",
+                  "options": [
+                    "沒有差別",
+                    "append 加入整個 list 為一個元素，extend 把元素逐一加入",
+                    "extend 會出錯"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "[x**2 for x in range(3)] 的結果是？",
+                  "options": [
+                    "[0, 1, 4]",
+                    "[1, 4, 9]",
+                    "[0, 1, 2]"
+                  ],
+                  "answer": 0
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：管理購物清單",
+              "subtitle": "使用 list method 修改資料",
+              "difficulty": "Medium",
+              "coursePrompt": "請讓學生完成 Python Coding 題：建立一個購物清單，使用 input() 取得三個商品名稱並加入 list，然後排序後輸出，再移除第二個商品並輸出最終清單。允許使用前面所有已學內容，以及本課介紹的所有 list method。不要使用尚未介紹的 dict/set method。"
+            }
+          ]
+        },
+        {
+          "id": "lesson-dict-method",
+          "title": "Lesson 8：Dictionary Method",
+          "titleEn": "Dictionary Methods",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "dict 的內建 Method"
+            },
+            {
+              "type": "paragraph",
+              "text": "Dictionary 用 key 對應 value，就像一本字典：你先提供單字（key），再取得它對應的解釋（value）。Dict 是 mutable 的。"
+            },
+            {
+              "type": "heading",
+              "text": "建立與存取"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 建立 dict\nstudent = {\"name\": \"Alice\", \"age\": 25, \"grade\": \"A\"}\nempty = {}\nalso_dict = dict(name=\"Bob\", age=30)\n\n# 存取\nprint(student[\"name\"])         # \"Alice\"     用 key 取值\nprint(student.get(\"name\"))     # \"Alice\"     用 get 取值\nprint(student.get(\"email\", \"N/A\"))  # \"N/A\"  key 不存在時的預設值\n# print(student[\"email\"])      # KeyError!  key 不存在會出錯\n\nprint(len(student))            # 3          幾個 key-value 對"
+            },
+            {
+              "type": "heading",
+              "text": "新增與修改"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "student = {\"name\": \"Alice\", \"age\": 25}\n\n# 新增 / 修改\nstudent[\"email\"] = \"alice@mail.com\"   # 新增\nstudent[\"age\"] = 26                   # 修改（key 已存在）\n\n# update()：一次更新多個\nstudent.update({\"grade\": \"A\", \"age\": 27})\nprint(student)\n# {'name': 'Alice', 'age': 27, 'email': 'alice@mail.com', 'grade': 'A'}\n\n# setdefault()：如果 key 不存在才設定\nstudent.setdefault(\"city\", \"Taipei\")   # 新增 city\nstudent.setdefault(\"name\", \"Bob\")      # name 已存在，不會改變"
+            },
+            {
+              "type": "heading",
+              "text": "刪除"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "student = {\"name\": \"Alice\", \"age\": 25, \"grade\": \"A\"}\n\nval = student.pop(\"grade\")     # 刪除並回傳 → \"A\"\nval = student.pop(\"x\", None)   # key 不存在時回傳預設值 None\n\nlast = student.popitem()       # 刪除並回傳最後一個 key-value pair\n\nstudent.clear()                # 清空 dict\n\n# del 語法\nstudent = {\"name\": \"Alice\", \"age\": 25}\ndel student[\"age\"]             # 刪除指定 key"
+            },
+            {
+              "type": "heading",
+              "text": "遍歷"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "student = {\"name\": \"Alice\", \"age\": 25, \"grade\": \"A\"}\n\n# 取得所有 keys\nprint(student.keys())      # dict_keys(['name', 'age', 'grade'])\n\n# 取得所有 values\nprint(student.values())    # dict_values(['Alice', 25, 'A'])\n\n# 取得所有 key-value pairs\nprint(student.items())     # dict_items([('name','Alice'), ('age',25), ('grade','A')])\n\n# 遍歷 key\nfor key in student:\n    print(key, student[key])\n\n# 遍歷 key-value\nfor key, value in student.items():\n    print(f\"{key}: {value}\")\n\n# 檢查 key 是否存在\nprint(\"name\" in student)       # True\nprint(\"email\" in student)      # False"
+            },
+            {
+              "type": "heading",
+              "text": "其他實用 Method"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# copy()：複製\noriginal = {\"a\": 1, \"b\": 2}\ncopied = original.copy()\n\n# fromkeys()：用 keys 建立 dict\nkeys = [\"a\", \"b\", \"c\"]\nnew_dict = dict.fromkeys(keys, 0)   # {'a': 0, 'b': 0, 'c': 0}\n\n# Dict Comprehension\nsquares = {x: x**2 for x in range(5)}\n# {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "哪一個 method 可以取得 dict 的所有 key？",
+                  "options": [
+                    "keys()",
+                    "key()",
+                    "all_keys()"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "student.get(\"email\", \"N/A\") 中 \"N/A\" 的用途是？",
+                  "options": [
+                    "設定 email 的值",
+                    "key 不存在時的預設值",
+                    "刪除 email"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "dict[key] 和 dict.get(key) 的差別是？",
+                  "options": [
+                    "沒有差別",
+                    "key 不存在時 [] 會 Error，get 回傳 None",
+                    "get 比較慢"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "哪一個 method 可以同時取得 key 和 value？",
+                  "options": [
+                    "keys()",
+                    "values()",
+                    "items()"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "如何檢查某個 key 是否在 dict 中？",
+                  "options": [
+                    "key in dict",
+                    "dict.has(key)",
+                    "dict.find(key)"
+                  ],
+                  "answer": 0
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：學生資料管理",
+              "subtitle": "使用 dictionary 儲存與取得資料",
+              "difficulty": "Medium",
+              "coursePrompt": "請讓學生完成 Python Coding 題：建立一個 dictionary 儲存三位學生的姓名與成績，讓使用者輸入學生名字後取得對應成績。如果找不到該學生，輸出提示訊息。允許使用前面所有已學內容，以及本課介紹的所有 dict method。不要使用尚未介紹的 set method。"
+            }
+          ]
+        },
+        {
+          "id": "lesson-set-method",
+          "title": "Lesson 9：Set Method",
+          "titleEn": "Set Methods",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "set 的內建 Method"
+            },
+            {
+              "type": "paragraph",
+              "text": "Set 是一種不允許重複元素且無序的資料型別。它適合用來處理需要去除重複或做集合運算的資料。Set 是 mutable 的。"
+            },
+            {
+              "type": "heading",
+              "text": "建立與基本操作"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 建立 set\nnums = {1, 2, 3, 4, 5}\nempty_set = set()          # 注意：{} 是空 dict，不是空 set！\nfrom_list = set([1, 2, 2, 3, 3])   # {1, 2, 3}  自動去重\n\nprint(len(nums))           # 5\nprint(3 in nums)           # True\nprint(10 not in nums)      # True"
+            },
+            {
+              "type": "heading",
+              "text": "新增與刪除"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "nums = {1, 2, 3}\n\n# 新增\nnums.add(4)               # {1, 2, 3, 4}\nnums.add(3)               # {1, 2, 3, 4}  重複的不會加入\nnums.update([5, 6, 7])    # {1, 2, 3, 4, 5, 6, 7}  加入多個\n\n# 刪除\nnums.remove(7)            # 刪除 7（不存在會 KeyError）\nnums.discard(10)          # 刪除 10（不存在不會出錯）\nval = nums.pop()          # 隨機移除並回傳一個元素\nnums.clear()              # 清空 set"
+            },
+            {
+              "type": "heading",
+              "text": "集合運算 Set Operations"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "a = {1, 2, 3, 4, 5}\nb = {4, 5, 6, 7, 8}\n\n# 聯集 Union（全部合在一起）\nprint(a | b)                  # {1, 2, 3, 4, 5, 6, 7, 8}\nprint(a.union(b))             # 同上\n\n# 交集 Intersection（共同的）\nprint(a & b)                  # {4, 5}\nprint(a.intersection(b))      # 同上\n\n# 差集 Difference（在 a 但不在 b）\nprint(a - b)                  # {1, 2, 3}\nprint(a.difference(b))        # 同上\n\n# 對稱差集 Symmetric Difference（不共同的）\nprint(a ^ b)                  # {1, 2, 3, 6, 7, 8}\nprint(a.symmetric_difference(b))  # 同上"
+            },
+            {
+              "type": "heading",
+              "text": "集合比較"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "a = {1, 2, 3}\nb = {1, 2, 3, 4, 5}\nc = {1, 2, 3}\n\n# 子集 Subset\nprint(a.issubset(b))       # True    a 是 b 的子集\nprint(a <= b)              # True    同上\nprint(a < b)               # True    真子集（a != b）\n\n# 超集 Superset\nprint(b.issuperset(a))     # True    b 是 a 的超集\nprint(b >= a)              # True    同上\n\n# 不相交 Disjoint\nprint({1, 2}.isdisjoint({3, 4}))   # True   沒有共同元素\nprint({1, 2}.isdisjoint({2, 3}))   # False  有共同元素 2\n\n# Set Comprehension\neven_set = {x for x in range(10) if x % 2 == 0}\n# {0, 2, 4, 6, 8}"
+            },
+            {
+              "type": "heading",
+              "text": "frozenset（不可變的 set）"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# frozenset 是 immutable 的 set，建立後不能修改\nfs = frozenset([1, 2, 3])\n# fs.add(4)    # Error! frozenset 不能 add\n\n# frozenset 可以當 dict 的 key 或放進其他 set\nmy_dict = {frozenset([1, 2]): \"hello\"}\nprint(my_dict[frozenset([1, 2])])   # \"hello\""
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "Set 的主要特性是什麼？",
+                  "options": [
+                    "元素一定排序",
+                    "不允許重複元素",
+                    "只能存數字"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "哪一個 method 可以加入元素到 Set？",
+                  "options": [
+                    "append()",
+                    "add()",
+                    "insert()"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "remove() 和 discard() 的差別是？",
+                  "options": [
+                    "沒有差別",
+                    "元素不存在時 remove 會 Error，discard 不會",
+                    "discard 比較慢"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "{1,2,3} & {2,3,4} 的結果是？",
+                  "options": [
+                    "{1,2,3,4}",
+                    "{2,3}",
+                    "{1,4}"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "{1,2,3} - {2,3,4} 的結果是？",
+                  "options": [
+                    "{1}",
+                    "{4}",
+                    "{1,4}"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "如何建立空的 set？",
+                  "options": [
+                    "{}",
+                    "set()",
+                    "[]"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：找出共同朋友",
+              "subtitle": "使用 Set 做集合運算",
+              "difficulty": "Medium",
+              "coursePrompt": "請讓學生完成 Python Coding 題：輸入兩個人各自的朋友名單（用逗號分隔），找出他們的共同朋友、各自獨有的朋友、以及全部的朋友（不重複）。允許使用前面所有已學內容，以及本課介紹的所有 set method 與集合運算子。"
+            }
+          ]
+        },
+        {
+          "id": "lesson-integrated",
+          "title": "Lesson 10：綜合 Coding",
+          "titleEn": "Integrated Coding",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "把學過的語法組合起來"
+            },
+            {
+              "type": "paragraph",
+              "text": "現在可以把 IO、運算子、選擇、迴圈、函式，以及各種內建資料型別的 method 組合起來。真正寫程式時，很少只使用一種語法，而是把不同工具組合成完整的解法。"
+            },
+            {
+              "type": "heading",
+              "text": "語法總覽"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# ═══════════════════════════════════════════\n#  本章學過的所有語法一覽表\n# ═══════════════════════════════════════════\n\n# Lesson 1：IO\n#   input(), print(), f-string, sep, end, \\n, \\t\n\n# Lesson 2：Operators\n#   +  -  *  /  //  %  **           算術\n#   >  <  >=  <=  ==  !=            比較\n#   and  or  not                    邏輯\n#   +=  -=  *=  /=  //=  %=  **=   賦值\n#   in  not in                      成員\n#   is  is not                      身份\n\n# Lesson 3：Choosing\n#   if  elif  else  巢狀if  三元運算子\n\n# Lesson 4：Loops\n#   for  while  range()  enumerate()\n#   break  continue  for-else  巢狀迴圈\n\n# Lesson 5：Functions\n#   def  return  預設參數\n#   abs  round  max  min  sum  pow  divmod\n#   int  float  str  bool  list  tuple  set  dict\n#   len  type  id  isinstance\n#   range  enumerate  zip  sorted  reversed\n#   map  filter  chr  ord\n\n# Lesson 6：str Method\n#   upper  lower  capitalize  title  swapcase\n#   find  index  rfind  count  startswith  endswith\n#   isalpha  isdigit  isalnum  isspace  islower  isupper\n#   strip  lstrip  rstrip  replace  center  ljust  rjust  zfill\n#   split  join  splitlines  format\n#   indexing  slicing\n\n# Lesson 7：list Method\n#   append  insert  extend  pop  remove  clear  del\n#   index  count  in\n#   sort  sorted  reverse  reversed  copy\n#   List Comprehension\n\n# Lesson 8：dict Method\n#   get  keys  values  items  update  setdefault\n#   pop  popitem  clear  del  copy  fromkeys\n#   in  Dict Comprehension\n\n# Lesson 9：set Method\n#   add  update  remove  discard  pop  clear\n#   union |  intersection &  difference -  symmetric_difference ^\n#   issubset  issuperset  isdisjoint\n#   Set Comprehension  frozenset"
+            },
+            {
+              "type": "callout",
+              "label": "重點",
+              "text": "遇到問題時，不需要一次想出所有程式碼。先找出需要的資料（IO），再決定運算方式（Operator），接著判斷是否需要選擇（if）或迴圈（for/while），選擇適當的資料結構（str/list/dict/set），最後再把重複的邏輯整理成函式（def）。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "如果需要讓程式重複執行某段程式，應該優先想到什麼？",
+                  "options": [
+                    "loop (for / while)",
+                    "string method",
+                    "dictionary"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "如果一段邏輯需要重複使用，可以把它整理成什麼？",
+                  "options": [
+                    "operator",
+                    "function (def)",
+                    "set"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "如果需要用 key 來找 value，應該用什麼資料結構？",
+                  "options": [
+                    "list",
+                    "set",
+                    "dict"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "如果需要去除重複資料，應該用什麼資料結構？",
+                  "options": [
+                    "list",
+                    "set",
+                    "dict"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "如果需要按順序儲存多筆資料，應該用什麼資料結構？",
+                  "options": [
+                    "list",
+                    "set",
+                    "dict"
+                  ],
+                  "answer": 0
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Final Coding：成績分析器",
+              "subtitle": "整合目前所有語法",
+              "difficulty": "Hard",
+              "coursePrompt": "請讓學生完成一個 Python 成績分析器。程式取得多筆學生姓名與成績資料，計算平均分、最高分、最低分，判斷每位學生的成績等級（A/B/C/D/F），找出不及格的學生，並輸出完整報告。鼓勵學生自行拆分函式並使用適當的內建資料型別與已學過的 method。允許使用本章所有已學內容。AI 應優先檢查學生是否能自行設計解法，而不是直接提供完整答案。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "module-1788851818117",
+      "title": "基礎演算法",
+      "titleEn": "basic algorithm",
+      "icon": "📖",
+      "lessons": [
+        {
+          "id": "lesson-1788851818117",
+          "title": "總共有哪些演算法",
+          "titleEn": "all type of algorithm",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "基礎演算法介紹"
+            },
+            {
+              "type": "paragraph",
+              "text": "基礎演算法會利用syntax tree的語法，根據題目的要求，一步一步地接近答案"
+            },
+            {
+              "type": "paragraph",
+              "text": "難處在於，程式語言不聰明，你只能用他知道的東西告訴他。明明在你眼中叫做幫公司做假帳一個大動作，但是他的腦袋裡面沒有裝的話你就要自己寫"
+            },
+            {
+              "type": "paragraph",
+              "text": "基礎的演算法還不會用到greedy dp 等等需要智商，也還要知道為什麼會比基礎演算法快(而且要先精通語法)"
+            },
+            {
+              "type": "paragraph",
+              "text": "all you have to do is follow steps"
+            },
+            {
+              "type": "heading",
+              "text": "範例"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "your boss is rich but lazy, he have you determin a list , that save employee's performence, \nhe want you find top 5 bad performence employee and top 5 good.\nand then sort their name from small to big letter order"
+            },
+            {
+              "type": "paragraph",
+              "text": "事實上，每一個問題都可以用just step by step 解決 ，但是由於有些題目用常規的just step by step ,而不用更快的方法 會花很久的時間才能解完，目前電腦的記憶單元已經不像one century ago 那樣又小又貴(what a good joke(no im serious)),所以你寫的problem algorithm 的 短時間 比 少空間 重要"
+            },
+            {
+              "type": "paragraph",
+              "text": "New paragraph"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "module-1788428054338",
       "title": "演算法",
       "titleEn": "algorithm",
@@ -3366,6 +4680,89 @@
               "language": "python",
               "code": "from collections import defaultdict\n\"\"\"init\"\"\"\nresult=[]\nedge=[]\n#降低之後搜尋的 big o\npointed=defaultdict(int)\npoint=defaultdict(set)#set can lower big o, if you dont need order of iterable dont use list, use set\nfor okay, must in edge:\n    pointed[okay]+=1\n    point[must].add(okay)\n\nunsolve=set(range(n))\nwhile unsolve:\n    buffer=[]\n    #find what we want\n    for me in unsolve:\n        if \"\"\"match what we are finding\"\"\":#such as pointed[me]==0\n            buffer.append(me)\n            result.append(me)\n\n    #make it disappear on the graph because it is in result\n    for me in buffer:\n        for take in point[me]:\n            pointed[me]-=1\nprint(result)",
               "text": "New paragraph"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1788830380136",
+          "title": "兩點間最短路徑 dijksta",
+          "titleEn": "shortest path, dijksta",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "解決的問題"
+            },
+            {
+              "type": "paragraph",
+              "text": "在解決將所有node連起來，並且花費最少的問題時。可以用最小生成樹"
+            },
+            {
+              "type": "paragraph",
+              "text": "最小生成樹是一個greedy的解法:"
+            },
+            {
+              "type": "paragraph",
+              "text": "在所有目前的leave中(leave 指目前已經走過的node, 並且是從其他當前最快的node 跑來的) 選一個leave's child 路徑中最短的來走"
+            },
+            {
+              "type": "heading",
+              "text": "數學公式"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# write code here\na_point's_shortest_path=min cost of (leaves) comes the point\nas a point become leave, we add all its child in (leaves)\nif the point in leaves already in result, that means already a min code added inside\ninside result:        min you chose\nnot inside result: not minimum, because we walk minimum way first, so only minimum puted in result",
+              "text": "New paragraph"
+            },
+            {
+              "type": "heading",
+              "text": "模板"
+            },
+            {
+              "type": "callout",
+              "label": "Note",
+              "text": "有點像是根據權重的bfs"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import heapq\nfrom collections import defaultdict\n\ntimes=[]\nk=int(input())\nn=int(input())\n#and then input data by some loop\n\n\n\"\"\"\nmain code below\n\"\"\"\npoint=defaultdict(list)    \nfor sub, obj,weight in times:\n    point[sub].append((weight,obj))\nwent={}\nnext_step=[(0,k)]#put went path weight in this queue, so heappop will compare all leave(the path that child has not been called) and get the minimum one\n#next_step means every leave possible to walk because we walked his parent\nwhile next_step:\n    weight,me=heapq.heappop(next_step)\n    if me in went:\n        continue\n    #minimum node walk first, from every path of leave found walk minimum one, therefore we can always get the minimum path: its a greedy\n    went[me]=weight#minimum one did not puted in, so we put\n    for weight,child in point[me]:#we shortest, try to add our leave in to queue\n        heapq.heappush(next_step,(went[me]+weight,child))",
+              "text": "New paragraph"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1788830382601",
+          "title": "min span tree (Prim or Kruskal)",
+          "titleEn": "min span tree (Prim or Kruskal)",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "難處"
+            },
+            {
+              "type": "paragraph",
+              "text": "hope you still remember CS, which is referemece\n\n"
+            },
+            {
+              "type": "paragraph",
+              "text": "go to Computer Science/變數與資料的關係"
+            },
+            {
+              "type": "heading",
+              "text": "模板(Kruskal)"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import heapq\n\ndef get():\n    #input initialization\n    points=[]#list[list[int]]\n\n\n    #node=key  (time,friend) =value\n    queue=[]\n    for a in range(len(points)):\n        for b in  range(len(points)):\n            if a==b:\n                continue\n            way=abs(points[a][0]-points[b][0])+abs(points[a][1]-points[b][1])\n            heapq.heappush(queue,(way,a,b))\n    went={}\n    for i in range(len(points)):\n        went[i]=set([i])\n    count=0\n    result=0\n\n    while queue:\n        way,a,b=heapq.heappop(queue)\n        if count==len(points)-1:\n            return result\n        if a in went[b] or b in went[a]:#dont know that how to cheak if should connect\n            continue\n        #at most one connected now\n        mix=went[a].copy()\n        mix.update(went[b])\n        for teammate in mix:\n            went[teammate]=mix#make sure every member can fetch lastest object, thats why for loop for all object\n        result+=way\n        count+=1\n    return result\nprint(get())",
+              "text": "New paragraph"
+            },
+            {
+              "type": "paragraph",
+              "text": "Prim 這個用bfs的algorithm 還是要cheak cycle"
             }
           ]
         }
