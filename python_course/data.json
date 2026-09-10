@@ -4614,9 +4614,103 @@
       ]
     },
     {
+      "id": "module-1789018506742",
+      "title": "data sturcture(data type that not built in)",
+      "titleEn": "data sturcture(data type that not built in)",
+      "icon": "📖",
+      "lessons": [
+        {
+          "id": "lesson-1789018579718",
+          "title": "binary tree",
+          "titleEn": "binary tree",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "warning:"
+            },
+            {
+              "type": "heading",
+              "text": "as you learning data structure, you should determine pointer of C++ in the same time or even earlier"
+            },
+            {
+              "type": "paragraph",
+              "text": "Add content here..."
+            }
+          ]
+        },
+        {
+          "id": "lesson-1789018604406",
+          "title": "tree",
+          "titleEn": "tree",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "New Lesson"
+            },
+            {
+              "type": "paragraph",
+              "text": "Add content here..."
+            }
+          ]
+        },
+        {
+          "id": "lesson-1789013303759",
+          "title": "union_find",
+          "titleEn": "union_find",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "介紹"
+            },
+            {
+              "type": "paragraph",
+              "text": "union_find, also known as marge nodes and find root of tree"
+            },
+            {
+              "type": "diagram",
+              "text": "New diagram"
+            },
+            {
+              "type": "paragraph",
+              "text": "New paragraph"
+            },
+            {
+              "type": "heading",
+              "text": "模板 of function (instead of class)"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def get(self, isConnected: list[list[int]]) -> int:\n    parent=[a for a in range(len(isConnected))]\n    rank=[1 for _ in range(len(isConnected))]#may not be used\n    result=len(isConnected)\n    def find(me):#get root of that tree\n        if parent[me]==me:\n            return me\n        return find(parent[me])\n    def union(a,b):#return value = whether can be marged\n        nonlocal result\n        root_a=find(a)\n        root_b=find(b)\n        print(a,b,\"  \",root_a,root_b)\n        if root_a==root_b:\n            return False\n        \n        parent[root_b]=root_a#wrote parent[b]=a \n        result-=1\n\n\n        return True\n    \n\n    for dad in range(len(isConnected)):\n        for child in range(len(isConnected)):\n            if isConnected[dad][child] ==0:\n                continue\n            union(dad,child)\n    return result\n\n\na=[[1,0,0,1],[0,1,1,0],[0,1,1,1],[1,0,1,1]]\n#input\n\nget(a)",
+              "text": "Add content here..."
+            }
+          ]
+        },
+        {
+          "id": "lesson-1789018613894",
+          "title": "graph",
+          "titleEn": "graph",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "New Lesson"
+            },
+            {
+              "type": "paragraph",
+              "text": "Add content here..."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "module-1788428054338",
-      "title": "演算法",
-      "titleEn": "algorithm",
+      "title": "graph 演算法",
+      "titleEn": "graph algorithm",
       "icon": "📖",
       "lessons": [
         {
@@ -4651,8 +4745,9 @@
               "text": "數學公式"
             },
             {
-              "type": "paragraph",
-              "text": "solve tasks order= task that can solve now, nothing need to do first + others"
+              "type": "code",
+              "language": "math",
+              "code": "solve tasks order= task that can solve now, nothing need to do first + others"
             },
             {
               "type": "paragraph",
@@ -4740,6 +4835,14 @@
           "content": [
             {
               "type": "heading",
+              "text": "minimum spanning tree"
+            },
+            {
+              "type": "paragraph",
+              "text": "根據多個node還有edge之間的權重，在所有能把all node connect 的連接方式中，找到total weight 最小的"
+            },
+            {
+              "type": "heading",
               "text": "難處"
             },
             {
@@ -4752,7 +4855,53 @@
             },
             {
               "type": "heading",
+              "text": "Kruskal 介紹"
+            },
+            {
+              "type": "paragraph",
+              "text": "一種 greedy"
+            },
+            {
+              "type": "paragraph",
+              "text": "題目要求= 連通+最短\n因此我們從最短的邊開始看，如果連上去不會導致cycle,則代表edge 的兩點還沒有在連通名單(或是他們兩個在不同的名單)。因此可以把他們連在一起"
+            },
+            {
+              "type": "heading",
+              "text": "Kruskal"
+            },
+            {
+              "type": "paragraph",
+              "text": "1.每次把minimum cost的邊找出來"
+            },
+            {
+              "type": "paragraph",
+              "text": "2.用 union_find (一種tree) 檢查有沒有cycle  , 沒有cycle 就把 邊 連上去"
+            },
+            {
+              "type": "heading",
+              "text": "Kruskal 數學公式"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "connected edges= now shortest and no loop + others"
+            },
+            {
+              "type": "heading",
               "text": "模板(Kruskal)"
+            },
+            {
+              "type": "heading",
+              "text": "1. (recommanded)"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import heapq\n\ndef get(points):\n    parent=[i for i in range(len(points))]\n    def find(me):\n        if parent[me]==me:\n            return me\n        return find(parent[me])\n    def union(a,b):\n        root_a=find(a)\n        root_b=find(b)\n        \n        if root_a==root_b:\n            return False\n        parent[root_b]=root_a\n\n        return True\n\n    result=0\n    count=0\n    queue=[]\n    for a in range(len(points)):\n        for b in range(len(points)):\n            if a==b:\n                continue\n            t=abs(points[a][0]-points[b][0])+abs(points[a][1]-points[b][1])\n            heapq.heappush(queue,(t,(a,b)))\n    while queue:\n        weight,point=heapq.heappop(queue)\n        if count==len(points)-1:\n            return result\n        if union(point[0],point[1]):\n            result+=weight\n            count+=1\n    return result\n\ndata=[]\n#input data\n\nprint(get(data))"
+            },
+            {
+              "type": "heading",
+              "text": "2.(用 dict 檢查有沒有cycle)"
             },
             {
               "type": "code",
@@ -4763,6 +4912,22 @@
             {
               "type": "paragraph",
               "text": "Prim 這個用bfs的algorithm 還是要cheak cycle"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1789012390759",
+          "title": "二分圖 (bipartite)",
+          "titleEn": "bipartite",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "New Lesson"
+            },
+            {
+              "type": "paragraph",
+              "text": "Add content here..."
             }
           ]
         }
