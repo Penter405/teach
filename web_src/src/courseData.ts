@@ -15,7 +15,7 @@ export interface PracticeProblem {
 }
 
 export interface ContentBlock {
-  type: 'heading' | 'paragraph' | 'code' | 'callout' | 'diagram' | 'list' | 'animation' | 'quiz' | 'practice' | 'ai-chat' | 'matching';
+  type: 'heading' | 'paragraph' | 'code' | 'callout' | 'diagram' | 'image' | 'list' | 'animation' | 'quiz' | 'practice' | 'ai-chat' | 'matching';
   text?: string;
   title?: string;
   subtitle?: string;
@@ -25,6 +25,7 @@ export interface ContentBlock {
   language?: string;
   label?: string;
   diagramId?: string;
+  imageId?: number;
   animationId?: number;
   caption?: string;
   style?: string;

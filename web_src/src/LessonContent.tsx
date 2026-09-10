@@ -44,6 +44,9 @@ function renderBlock(block: ContentBlock) {
     case 'diagram':
       return <RenderDiagram block={block} />;
 
+    case 'image':
+      return <RenderImage block={block} />;
+
     case 'list':
       return <RenderList block={block} />;
 
@@ -203,7 +206,7 @@ function RenderList({ block }: { block: ContentBlock }) {
   );
 }
 
-// ── Diagrams ──
+// ── Diagrams (JSX components) ──
 function RenderDiagram({ block }: { block: ContentBlock }) {
   const id = block.diagramId;
   
@@ -461,6 +464,51 @@ const CBPDiagram = () => (
     </div>
   </div>
 );
+
+// ── Image (loads from docs/diagrams/ folder) ──
+function RenderImage({ block }: { block: ContentBlock }) {
+  const id = block.imageId;
+  const [imgError, setImgError] = React.useState(false);
+
+  if (!id && id !== 0) {
+    return (
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800 mb-8 w-full overflow-hidden">
+        <div className="py-12 px-6 flex items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl w-full">
+          <p className="text-slate-500 dark:text-slate-400 font-medium">🖼️ {block.caption || 'Image — no ID assigned'}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const src = `./image/${id}.png`;
+
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800 mb-8 w-full overflow-hidden">
+      <div className="flex justify-center w-full overflow-hidden pb-4">
+        {imgError ? (
+          <div className="py-12 px-6 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl w-full gap-3">
+            <span className="text-4xl">🖼️</span>
+            <p className="text-slate-500 dark:text-slate-400 font-medium">Image #{id}</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500">Image not found: diagrams/{id}.png</p>
+          </div>
+        ) : (
+          <img
+            src={src}
+            alt={block.caption || `Image ${id}`}
+            className="max-w-full h-auto rounded-xl"
+            onError={() => setImgError(true)}
+          />
+        )}
+      </div>
+
+      {block.caption && (
+        <div className="mt-4 text-center text-sm text-slate-500 dark:text-slate-400 font-medium italic border-t border-slate-100 dark:border-slate-800/50 pt-4">
+          {block.caption}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ═══════════════════════════════════════════════
 // ── ANIMATIONS ──

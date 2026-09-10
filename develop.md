@@ -20,8 +20,11 @@ The output destination folder configured inside `vite.config.ts`.
 - **`/assets/`**: Contains obfuscated, bundled JavaScript and CSS output after running `npm run build`. Nothing in here should be modified manually.
 *(Note: To meet Github Pages standards natively, `docs/` serves as the standalone public folder.)*
 
-### `/python_course` (Legacy / Source Data)
-Contains the original static SPA implementation and the foundational curriculum metadata (`data.json`) that drives the entirety of `/src/courseData.ts`. It acts purely as a semantic data reservoir moving forward.
+### `/python_course` (Source Data)
+Contains the foundational curriculum metadata (`data.json`) that drives the entirety of `/src/courseData.ts`. It acts purely as a semantic data reservoir.
+
+### `/docs/image` (Image Files)
+Contains image files referenced by `data.json` via numeric `imageId` (using `"type": "image"`). Files are named `1.png`, `2.png`, etc.
 
 ### Root Configs
 - **`vite.config.ts`**: Handles routing rules and directs the compiler to push results directly into the `/docs/` environment using relative paths (`base: './'`).
