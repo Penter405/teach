@@ -4670,8 +4670,20 @@
               "text": "union_find, also known as marge nodes and find root of tree"
             },
             {
-              "type": "diagram",
-              "text": "New diagram"
+              "type": "paragraph",
+              "text": "下方為marge的過程"
+            },
+            {
+              "type": "image",
+              "imageId": 1,
+              "caption": "示意圖",
+              "text": ""
+            },
+            {
+              "type": "image",
+              "imageId": 2,
+              "caption": "示意圖",
+              "text": ""
             },
             {
               "type": "paragraph",
