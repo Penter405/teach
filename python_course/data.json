@@ -4720,6 +4720,30 @@
       ]
     },
     {
+      "id": "module-1789462310053",
+      "title": "recursion",
+      "titleEn": "recursion",
+      "icon": "📖",
+      "lessons": [
+        {
+          "id": "lesson-1789462310053",
+          "title": "backtracking",
+          "titleEn": "backtracking",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "Chapter Overview"
+            },
+            {
+              "type": "paragraph",
+              "text": "just a recursion that saving space in a way that edit out scope object in begin of recursion function , and MUST remove what you edited in every return of the recursion function. MAKE SURE be careful the Dram as when you using Pointer"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "module-1788428054338",
       "title": "graph 演算法",
       "titleEn": "graph algorithm",
@@ -4942,6 +4966,81 @@
               "text": "Add content here..."
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "module-1789380294802",
+      "title": "Dynamic programming",
+      "titleEn": "Dynamic programming",
+      "icon": "📖",
+      "lessons": [
+        {
+          "id": "lesson-1789461699493",
+          "title": "introduction",
+          "titleEn": "introduction",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "what is DP"
+            },
+            {
+              "type": "paragraph",
+              "text": "here is the story that DP was found out:"
+            },
+            {
+              "type": "paragraph",
+              "text": "one day while a smart guy doing a problem in recursion, he realize that some sub function with particular argument of that recursion, so he storage these result of every unique argument, and when his program know result of his argument is solved and storage in a vector, his function will just return the solved  instead of keep the recursion."
+            },
+            {
+              "type": "paragraph",
+              "text": "so DP is came from recursion with repeated argrment\na classic DPable problem should can be solved in recursion if the testcase is small enough"
+            },
+            {
+              "type": "paragraph",
+              "text": "big o will be (cuted recursion tree) instead of the while recursion tree"
+            },
+            {
+              "type": "heading",
+              "text": "how to know whether a problem is DPable"
+            },
+            {
+              "type": "paragraph",
+              "text": "by the story i shared, you can know most DP problem are came from recursion solution; recursion solution usually can be draw like a tree. just try to draw the tree and find whether something is being repeating"
+            },
+            {
+              "type": "heading",
+              "text": "easy steps"
+            },
+            {
+              "type": "paragraph",
+              "text": "find a recursion solution that accept local test"
+            },
+            {
+              "type": "paragraph",
+              "text": "find out whats changing"
+            },
+            {
+              "type": "paragraph",
+              "text": "knowing what is repeating(but thats only part of DP i solved, it might be wrong)"
+            },
+            {
+              "type": "paragraph",
+              "text": "storage these repeating and copy and paste when it is repeating"
+            },
+            {
+              "type": "paragraph",
+              "text": "bottom up to avoid maximum recursion error"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1789380294802",
+          "title": "Lesson 1",
+          "titleEn": "Lesson 1",
+          "pdfPages": [],
+          "content": []
         }
       ]
     }
