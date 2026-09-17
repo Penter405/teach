@@ -4959,11 +4959,21 @@
           "content": [
             {
               "type": "heading",
-              "text": "New Lesson"
+              "text": "what is bipartite"
             },
             {
               "type": "paragraph",
-              "text": "Add content here..."
+              "text": "from graph structure -> separate each node to two part -> in every edge between two node, they will not in same part"
+            },
+            {
+              "type": "heading",
+              "text": "example"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import deque,defaultdict\ndef get():\n    #data input\n    \n    point=defaultdict(list)\n\n    for a,b in edge:\n        point[a].append(b)\n        point[b].append(a)\n    \n    state=[0]*(n+1)\n\n    cheaked=[0]*(n+1)\n    legal=True\n    def bfs(me):\n        nonlocal state,cheaked,legal\n        queue=deque()\n        queue.append(me)\n        if state[me]==0:\n            state[me]=1\n        while queue:\n            node=queue.popleft()\n            if cheaked[node]==1:\n                continue\n            cheaked[node]=1\n            for neighbor in point[node]:\n                if state[neighbor]==0:\n                    state[neighbor]=-state[node]\n                else:\n                    if state[neighbor]==state[node]:\n                        legal=False\n                        return False\n                if cheaked[neighbor]==0:\n                    queue.append(neighbor)\n        return True\n    for node in range(1,n+1):\n        if bfs(node)==False:\n            return False\n    return True",
+              "text": "New paragraph"
             }
           ]
         }
@@ -5037,10 +5047,68 @@
         },
         {
           "id": "lesson-1789380294802",
-          "title": "Lesson 1",
-          "titleEn": "Lesson 1",
+          "title": "1d DP",
+          "titleEn": "1d DP",
           "pdfPages": [],
-          "content": []
+          "content": [
+            {
+              "type": "heading",
+              "text": "figure out"
+            },
+            {
+              "type": "paragraph",
+              "text": "cheak the definition of question(especially the legal way like subarray or subsequence), and know every possible way from a point to the legal point\n"
+            },
+            {
+              "type": "paragraph",
+              "text": "find out the relationship between now element and its child"
+            },
+            {
+              "type": "paragraph",
+              "text": "think about the math equation"
+            },
+            {
+              "type": "heading",
+              "text": "some tips to solving quicker"
+            },
+            {
+              "type": "paragraph",
+              "text": "initialize the dp table with a initial value"
+            },
+            {
+              "type": "paragraph",
+              "text": "define a function that process index out of dp table  || just get some choosing structure( if else )"
+            },
+            {
+              "type": "paragraph",
+              "text": "usually dp[i] means (  must choose myself , optional take children  ||  thats fine not to take myself, optional take children)"
+            },
+            {
+              "type": "heading",
+              "text": "example"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "#data input\n\ndp=[0]*(size)\n\ndef get(n:int):\n    if n<0:\n        return 0\n    return dp[n]\n\nfor index in range(len(data)):\n    dp[index]= max(  \n        data[index]+get(index-1)#take\n        get(index-1)            #skip\n          )#usually take or skip\n\nprint(max(dp))"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1789641970358",
+          "title": "table DP",
+          "titleEn": "table DP",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "New Lesson"
+            },
+            {
+              "type": "paragraph",
+              "text": "Add content here..."
+            }
+          ]
         }
       ]
     }
