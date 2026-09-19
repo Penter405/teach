@@ -4794,7 +4794,7 @@
               "type": "quiz",
               "questions": [
                 {
-                  "question": "Question?",
+                  "question": "對於preorder 這個 function 而言，雖然他的 parameter (一種放在 def 那行的變數設定）的變數名字就是那樣，除非你改程式碼，不然不會變。但是 argument( 像是傳給變數的資料，不過這個變數專門只parameter) 完全按照們的輸入；請問上方python code 的 testcase中  ，這個tree 有幾個root",
                   "options": [
                     "0",
                     "1",
@@ -4810,7 +4810,7 @@
               "type": "quiz",
               "questions": [
                 {
-                  "question": "Question?",
+                  "question": "對於python testcase中，parameter \"root\" 會收到哪些 argument?",
                   "options": [
                     "1",
                     "2",
