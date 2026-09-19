@@ -4630,12 +4630,16 @@
               "text": "warning:"
             },
             {
-              "type": "heading",
+              "type": "paragraph",
               "text": "as you learning data structure, you should determine pointer of C++ in the same time or even earlier"
             },
             {
+              "type": "heading",
+              "text": "whats binary tree"
+            },
+            {
               "type": "paragraph",
-              "text": "Add content here..."
+              "text": "B tree is a data structure that a tree can have at most 2 child."
             }
           ]
         },
@@ -4738,6 +4742,107 @@
             {
               "type": "paragraph",
               "text": "just a recursion that saving space in a way that edit out scope object in begin of recursion function , and MUST remove what you edited in every return of the recursion function. MAKE SURE be careful the Dram as when you using Pointer"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "module-1789822709120",
+      "title": "Tree algorithm",
+      "titleEn": "Tree algorithm",
+      "icon": "📖",
+      "lessons": [
+        {
+          "id": "lesson-1789822709120",
+          "title": "search",
+          "titleEn": "search",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "find out the logic about words in tree search"
+            },
+            {
+              "type": "paragraph",
+              "text": "order:  left node will be search before right node searched( left-> right)\n"
+            },
+            {
+              "type": "paragraph",
+              "text": "接下來要 排列組合 ： []  left  []  right []  , 你可以在left right 的左邊跟右邊看到[] .代表node 可以放的地方 (你們通常會叫他root, but i will explain why i use \"node\") "
+            },
+            {
+              "type": "paragraph",
+              "text": "preorder :  pre + order,  order 前面的 英文 都代表 node的位置,向這個pre代表  node 優先於left right , 也就是 node -> left -> right\ninorder: left -> node -> right\npostorder : left -> node -> right"
+            },
+            {
+              "type": "heading",
+              "text": "常見誤區"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "class tree():\n    def __init__(self,value):\n        self.value=value\n        self.left=None\n        self.right=None\ndef build_tree():\n    #by avoid python garbadge collect your result of tree build, you need to make the table in global or return it and then save to a variable\n    root=None\n    object_of_nodes=dict()#a_dict_point_to_object_of_nodes\n    while True:\n        bot=input().split()\n        if bot[0]==\"done\":\n            break\n        if root==None:\n            root=tree(bot[0])\n            object_of_nodes[bot[0]]=root# now both root and a_dict_point_to_object_of_nodes[bot[0]] points to same object\n        for element in bot:\n            if element==\"not\":\n                continue\n            if element not in object_of_nodes:\n                object_of_nodes[element]=tree(element)\n        if bot[1]!=\"not\":\n            object_of_nodes[bot[0]].left=object_of_nodes[bot[1]]\n        if bot[2]!=\"not\":\n            object_of_nodes[bot[0]].left=object_of_nodes[bot[2]]\n    return root\nroot_of_tree=build_tree()\nprint(\"next\")\nsearch_result=[]\ndef preorder(root):\n    if root==None:\n        return 0\n    search_result.append(root.value)\n\n    preorder(root.left)\n    preorder(root.right)\npreorder(root_of_tree)\nprint(search_result)\n\"\"\"testcase\n   1\n /   \\\n2     3\n\"\"\"\n\"\"\"\npreorder(1)         --- preorder(3)\n    \\\n     preorder(2)\n\"\"\""
+            },
+            {
+              "type": "code",
+              "language": "recursion的執行順序",
+              "code": "#1 ->  2  然後 1 -> 3\npreorder(1)         --- preorder(3)\n    \\\n     preorder(2)\n\n",
+              "text": "New paragraph"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "Question?",
+                  "options": [
+                    "0",
+                    "1",
+                    "2",
+                    "3"
+                  ],
+                  "answer": 1
+                }
+              ],
+              "text": "對於preorder 這個 function 而言，雖然他的 parameter (一種放在 def 那行的變數設定）的變數名字就是那樣，除非你改程式碼，不然不會變。但是 argument( 像是傳給變數的資料，不過這個變數專門只parameter) 完全按照們的輸入；請問上方python code 的 testcase中  ，這個tree 有幾個root"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "Question?",
+                  "options": [
+                    "1",
+                    "2",
+                    "012",
+                    "123"
+                  ],
+                  "answer": 4
+                }
+              ],
+              "text": "對於python testcase中，parameter \"root\" 會收到哪些 argument?"
+            },
+            {
+              "type": "heading",
+              "text": "why i use node as parameter to explain "
+            },
+            {
+              "type": "paragraph",
+              "text": "很明顯，一個tree只有一個root, 因此新手如果沒有問過自己上面兩個quiz ,他會把 root 當作\"tree只有一個root\" 的那個root, instead of a parameter name"
+            },
+            {
+              "type": "image",
+              "imageId": 3,
+              "caption": "",
+              "text": "explain call stack"
+            },
+            {
+              "type": "paragraph",
+              "text": "as you can see, one thing is call out, that when preorder(1) is not completely done but other function starts to run, it will saved to call back."
+            },
+            {
+              "type": "paragraph",
+              "text": "New paragraph"
             }
           ]
         }
