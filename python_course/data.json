@@ -5147,6 +5147,50 @@
             {
               "type": "paragraph",
               "text": "bottom up to avoid maximum recursion error"
+            },
+            {
+              "type": "heading",
+              "text": "compare to just recursion"
+            },
+            {
+              "type": "paragraph",
+              "text": "there are some benefit when you use bottom-up DP instead of resursion:"
+            },
+            {
+              "type": "paragraph",
+              "text": "to me, button-up means no recursion in need, therefore we can avoid recursion maximum error"
+            },
+            {
+              "type": "paragraph",
+              "text": "in some problem finding most, which child of node that we need to pick up is directly. BUT, in some not finding most, we cant confirm that each child must be part of result or not. so we still run it."
+            }
+          ]
+        },
+        {
+          "id": "lesson-1790061428357",
+          "title": "tips and shortcut",
+          "titleEn": "tips and shortcut",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "list or set"
+            },
+            {
+              "type": "paragraph",
+              "text": "list: when every node of tree you might need"
+            },
+            {
+              "type": "paragraph",
+              "text": "set: when you just want the leaves of tree"
+            },
+            {
+              "type": "heading",
+              "text": "dp_list.begin() or dp_list.rbegin()"
+            },
+            {
+              "type": "paragraph",
+              "text": "no matter what you choose, make it have no loop ( loop:  update dp table with current status that you also using it to update dp table in same run with right now you are updating)"
             }
           ]
         },
@@ -5200,6 +5244,26 @@
           ]
         },
         {
+          "id": "lesson-1790054414409",
+          "title": "not finding most",
+          "titleEn": "not finding most",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "introducing"
+            },
+            {
+              "type": "paragraph",
+              "text": "some problem is not finding maximum or minimum, basically they can figured out quickly in recursion"
+            },
+            {
+              "type": "paragraph",
+              "text": "dp"
+            }
+          ]
+        },
+        {
           "id": "lesson-1789641970358",
           "title": "table DP",
           "titleEn": "table DP",
@@ -5212,6 +5276,38 @@
             {
               "type": "paragraph",
               "text": "Add content here..."
+            }
+          ]
+        },
+        {
+          "id": "lesson-1790054368617",
+          "title": "bag 0/1",
+          "titleEn": "bag 0/1 (pick once or dont pick)",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "New Lesson"
+            },
+            {
+              "type": "paragraph",
+              "text": "Add content here..."
+            }
+          ]
+        },
+        {
+          "id": "lesson-1790061320846",
+          "title": "bag 0/n (free amount)",
+          "titleEn": "bag 0/n (whatever how many you want to choose)",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "New Lesson"
+            },
+            {
+              "type": "paragraph",
+              "text": "["
             }
           ]
         }
