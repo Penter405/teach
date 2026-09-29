@@ -5329,7 +5329,8 @@
             },
             {
               "type": "animation",
-              "title": "New animation",
+              "animationId": 27,
+              "caption": "LCS 最長公共子序列 DP 視覺化",
               "steps": [
                 "給定兩個字串 A 和 B，要找出最長公共子序列 (LCS)",
                 "🔍 放大鏡：找出不可能配對的字元（只出現在其中一個字串的字元可以先忽略）",
@@ -5337,9 +5338,7 @@
                 "問題變成：在這些線中找最多條不交叉的線（交叉 = 子序列順序矛盾）",
                 "用 premax 轉移：目前這條線的最佳值 = 找沒有連到它的最大 premax + 1",
                 "展開成 2D DP 表格逐格填入，右下角就是答案"
-              ],
-              "text": "New paragraph",
-              "animationId": 27
+              ]
             },
             {
               "type": "heading",
