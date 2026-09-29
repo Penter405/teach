@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y9m27d",
+    "version": "2026y9m29d",
     "language": "zh-TW"
   },
   "modules": [
@@ -5265,17 +5265,23 @@
         },
         {
           "id": "lesson-1789641970358",
-          "title": "table DP",
-          "titleEn": "table DP",
+          "title": "take which child(table DP)",
+          "titleEn": "take which child(table DP)",
           "pdfPages": [],
           "content": [
             {
               "type": "heading",
-              "text": "New Lesson"
+              "text": "introduce"
             },
             {
               "type": "paragraph",
-              "text": "Add content here..."
+              "text": "just like the title, its just like"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "me =  a_value + my best child",
+              "text": "New paragraph"
             }
           ]
         },
@@ -5287,11 +5293,11 @@
           "content": [
             {
               "type": "heading",
-              "text": "New Lesson"
+              "text": "key point"
             },
             {
               "type": "paragraph",
-              "text": "Add content here..."
+              "text": "there is a key point that why one option to define dp[i] means"
             }
           ]
         },
@@ -5303,11 +5309,124 @@
           "content": [
             {
               "type": "heading",
+              "text": "introduction"
+            },
+            {
+              "type": "paragraph",
+              "text": "it just that we can choose item twice or more"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1790671625415",
+          "title": "Longest common subsequence",
+          "titleEn": "Longest common subsequence",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "animation explain"
+            },
+            {
+              "type": "animation",
+              "title": "New animation",
+              "steps": [
+                "Explain this step"
+              ],
+              "text": "New paragraph",
+              "animationId": 27
+            },
+            {
+              "type": "heading",
+              "text": "math qeuation"
+            },
+            {
+              "type": "code",
+              "language": "math equation",
+              "code": "# this is a graph style explain\nmy best= (if can choose me->1 ,  else->0 ) + biggest premax but dont touch currect line  || biggest premax",
+              "text": "New paragraph"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1790671725600",
+          "title": "longest increasing subsequence",
+          "titleEn": "longest increasing subsequence",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "math equation"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "must choose me= from every smaller than me nodes, get max its value saved on dp(as we are finding longest, the dp[i] usually refer to total length he got)",
+              "text": "Add content here..."
+            }
+          ]
+        },
+        {
+          "id": "lesson-1790671807463",
+          "title": "split",
+          "titleEn": "split",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
               "text": "New Lesson"
             },
             {
               "type": "paragraph",
-              "text": "["
+              "text": "Add content here..."
+            }
+          ]
+        },
+        {
+          "id": "lesson-1790671819191",
+          "title": "split for most part",
+          "titleEn": "split for most part",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "New Lesson"
+            },
+            {
+              "type": "paragraph",
+              "text": "Add content here..."
+            }
+          ]
+        },
+        {
+          "id": "lesson-1790671834302",
+          "title": "splited math",
+          "titleEn": "splited math",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "New Lesson"
+            },
+            {
+              "type": "paragraph",
+              "text": "Add content here..."
+            }
+          ]
+        },
+        {
+          "id": "lesson-1790673602488",
+          "title": "math equations",
+          "titleEn": "math equations",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "New Lesson"
+            },
+            {
+              "type": "paragraph",
+              "text": "Add content here..."
             }
           ]
         }
