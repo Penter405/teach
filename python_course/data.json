@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y9m29d",
+    "version": "2026y9m30d",
     "language": "zh-TW"
   },
   "modules": [
@@ -5298,6 +5298,20 @@
             {
               "type": "paragraph",
               "text": "there is a key point that why one option to define dp[i] means"
+            },
+            {
+              "type": "heading",
+              "text": "math equation"
+            },
+            {
+              "type": "code",
+              "language": "eqation",
+              "code": "me[cost]=how many money i got\nme[cost]+=me[cost-new item cost]+new item money getting (no loop problem)\nme[cost+new item cost] = me[cost]+ new item money getting(with loop problem)\n",
+              "text": "New paragraph"
+            },
+            {
+              "type": "paragraph",
+              "text": "because each item we can only pick up once, therefore loop is a problem"
             }
           ]
         },
@@ -5314,6 +5328,36 @@
             {
               "type": "paragraph",
               "text": "it just that we can choose item twice or more"
+            },
+            {
+              "type": "paragraph",
+              "text": "first, review 0/n equation"
+            },
+            {
+              "type": "code",
+              "language": "equation",
+              "code": "me[cost]=how many money i got\nme[cost]+=me[cost-new item cost]+new item money getting (no loop issue)\nme[cost+new item cost] = me[cost]+ new item money getting(with loop issue)\n",
+              "text": "New paragraph"
+            },
+            {
+              "type": "paragraph",
+              "text": "because each item we can pick up any times, therefore loop is not a problem. "
+            },
+            {
+              "type": "code",
+              "language": "equation",
+              "code": "me[cost]=how many money i got\nme[cost]+=me[cost-new item cost]+new item money getting (no loop issue)#which is no loop, but we can choose any times\nme[cost+new item cost] = me[cost]+ new item money getting(with loop issue, but its not matter in 0/n) # we can use this\n",
+              "text": "New paragraph"
+            },
+            {
+              "type": "heading",
+              "text": "so, here is the equation we need in 0/n"
+            },
+            {
+              "type": "code",
+              "language": "equation",
+              "code": "me[cost+new item cost] = me[cost]+ new item money getting",
+              "text": "New paragraph"
             }
           ]
         },
