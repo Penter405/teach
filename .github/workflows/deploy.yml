@@ -1,0 +1,43 @@
+name: Deploy docs to GitHub Pages
+
+on:
+  # 當有程式碼推送到 main 分支時自動執行
+  push:
+    branches: ["main"]
+
+  # 允許你在 GitHub Actions 網頁上手動點擊執行
+  workflow_dispatch:
+
+# 就是這裡！必須明確給予權限才能解決 id-token 錯誤
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 確保不會有兩個部署同時進行發生衝突
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # 指定你要部署的資料夾是 docs
+          path: './docs'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 # 這裡使用 v4 即可穩定運作
