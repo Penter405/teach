@@ -10,9 +10,10 @@ interface LessonContentProps {
   key?: React.Key;
   block: ContentBlock;
   index: number;
+  student?: any;
 }
 
-export function LessonContent({ block, index }: LessonContentProps) {
+export function LessonContent({ block, index, student }: LessonContentProps) {
   const delay = Math.min(index * 0.06, 0.5); // Staggered animation delay
 
   return (
@@ -22,12 +23,12 @@ export function LessonContent({ block, index }: LessonContentProps) {
       transition={{ duration: 0.4, delay }}
       className="mb-8"
     >
-      {renderBlock(block)}
+      {renderBlock(block, student)}
     </motion.div>
   );
 }
 
-function renderBlock(block: ContentBlock) {
+function renderBlock(block: ContentBlock, student?: any) {
   switch (block.type) {
     case 'heading':
       return <h2 className="font-headline text-2xl font-semibold text-slate-800 dark:text-white mb-4 leading-snug">{block.text}</h2>;
@@ -60,7 +61,7 @@ function renderBlock(block: ContentBlock) {
       return <RenderPractice block={block} />;
 
     case 'ai-chat':
-      return <RenderAIChat block={block} />;
+      return <RenderAIChat block={block} student={student} />;
 
     case 'matching':
       return <MatchingExercise block={block} />;
@@ -71,7 +72,18 @@ function renderBlock(block: ContentBlock) {
 }
 
 // ── AI Chat ──
-function RenderAIChat({ block }: { block: ContentBlock }) {
+function RenderAIChat({ block, student }: { block: ContentBlock, student?: any }) {
+  if (student?.isGuest) {
+    return (
+      <div className="mb-8 mt-4 p-6 bg-slate-100 dark:bg-slate-800 rounded-xl text-center border border-slate-200 dark:border-slate-700">
+        <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-2">AI 助教</h3>
+        <p className="text-slate-500 dark:text-slate-400 text-sm">
+          訪客模式無法使用 AI 助教功能，請登入以體驗完整課程。
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="mb-8 mt-4">
       <AIChat 

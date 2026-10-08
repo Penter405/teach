@@ -30,6 +30,7 @@ interface StudentUser {
   name?: string;
   email?: string;
   googleId?: string;
+  isGuest?: boolean;
 }
 
 // --- Constants ---
@@ -49,6 +50,7 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 const LoginPage = ({ onLogin }: { onLogin: (user: StudentUser) => void }) => {
   const [clientId, setClientId] = useState<string | null>(null);
+  const [acceptedTos, setAcceptedTos] = useState(false);
 
   useEffect(() => {
     const apiBase = import.meta.env.VITE_API_URL || 'https://teach-beige.vercel.app';
@@ -114,23 +116,40 @@ const LoginPage = ({ onLogin }: { onLogin: (user: StudentUser) => void }) => {
                 </p>
               </div>
 
-              <div className="flex justify-center w-full mb-8">
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={() => console.log('Login Failed')}
-                  useOneTap={false}
-                  theme="filled_black"
-                  shape="pill"
-                />
-              </div>
+              <div className="w-full mb-8 flex flex-col items-center gap-4">
+                <label className="flex items-center justify-center gap-2 text-sm text-slate-600 dark:text-slate-300 cursor-pointer mb-2">
+                  <input 
+                    type="checkbox" 
+                    checked={acceptedTos} 
+                    onChange={(e) => setAcceptedTos(e.target.checked)}
+                    className="rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 bg-white dark:bg-slate-800"
+                  />
+                  <span>I agree to the <a href="privacy.html" className="text-cyan-600 dark:text-cyan-400 hover:underline" target="_blank">Privacy Policy</a> and <a href="tos.html" className="text-cyan-600 dark:text-cyan-400 hover:underline" target="_blank">Terms of Service</a></span>
+                </label>
+                
+                <div className="relative flex flex-col items-center gap-3">
+                  <div className={!acceptedTos ? 'pointer-events-none opacity-50' : ''} onClick={() => { if (!acceptedTos) alert('Please accept the Terms of Service and Privacy Policy first.'); }}>
+                    <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={() => console.log('Login Failed')}
+                      useOneTap={false}
+                      theme="filled_black"
+                      shape="pill"
+                    />
+                  </div>
 
-              <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 w-full text-center flex flex-col items-center gap-2">
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                  By signing in, you agree to our policies.
-                </p>
-                <div className="flex gap-4">
-                  <a href="privacy.html" className="text-xs text-cyan-600 dark:text-cyan-400 hover:underline">Privacy Policy</a>
-                  <a href="tos.html" className="text-xs text-cyan-600 dark:text-cyan-400 hover:underline">Terms of Service</a>
+                  <button
+                    onClick={() => {
+                      if (!acceptedTos) {
+                        alert('Please accept the Terms of Service and Privacy Policy first.');
+                        return;
+                      }
+                      onLogin({ isGuest: true, name: 'Guest User' });
+                    }}
+                    className={`px-6 py-2 rounded-full font-bold text-sm transition-all shadow-md ${acceptedTos ? 'bg-slate-100 dark:bg-slate-800 hover:scale-105 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 opacity-50 cursor-not-allowed'}`}
+                  >
+                    訪客登入 (Guest Mode)
+                  </button>
                 </div>
               </div>
 
@@ -362,14 +381,16 @@ const LessonPage = ({ lessonId, student, onBack, onLessonChange, onOpenCodeTree 
           <CodeTreeNavLink onClick={onOpenCodeTree} />
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            onClick={() => setTeacherChatOpen(true)}
-            className="flex items-center gap-2 rounded-full bg-cyan-600 px-3 py-2 text-xs sm:text-sm font-bold text-white shadow-lg shadow-cyan-600/20 transition-all hover:bg-cyan-700 hover:scale-105 active:scale-95"
-          >
-            <HelpCircle className="w-4 h-4" />
-            <span className="hidden sm:inline">Talk to teacher</span>
-            <span className="sm:hidden">Ask</span>
-          </button>
+          {!student?.isGuest && (
+            <button
+              onClick={() => setTeacherChatOpen(true)}
+              className="flex items-center gap-2 rounded-full bg-cyan-600 px-3 py-2 text-xs sm:text-sm font-bold text-white shadow-lg shadow-cyan-600/20 transition-all hover:bg-cyan-700 hover:scale-105 active:scale-95"
+            >
+              <HelpCircle className="w-4 h-4" />
+              <span className="hidden sm:inline">Talk to teacher</span>
+              <span className="sm:hidden">Ask</span>
+            </button>
+          )}
           <div className="font-mono text-xs text-slate-400 hidden sm:block">
             {currentIndex + 1} / {flatLessons.length}
           </div>
@@ -458,7 +479,7 @@ const LessonPage = ({ lessonId, student, onBack, onLessonChange, onOpenCodeTree 
 
             <div className="flex-1">
               {lesson.content.map((block, index) => (
-                <LessonContent key={`${lesson.id}-${index}`} block={block} index={index} />
+                <LessonContent key={`${lesson.id}-${index}`} block={block} index={index} student={student} />
               ))}
             </div>
 
