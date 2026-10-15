@@ -130,8 +130,41 @@
               "text": "therefore, by standardizing voltage, resistance in every unit of this structure and amount of power, we can get a directly way to check result of two input. and it called transistor(電晶體)"
             },
             {
-              "type": "diagram",
-              "text": "New diagram"
+              "type": "image",
+              "caption": "electric circuit example",
+              "imageId": 4
+            },
+            {
+              "type": "heading",
+              "text": "So, why cant i just tell computer help me solve a problem instead of write a algorithm"
+            },
+            {
+              "type": "paragraph",
+              "text": "computer only get power, it cant get a human sentence and know what should actually do, there is no any structure(such as transistor that make sentence to electric path, and finally show a result of that math question) can process it."
+            },
+            {
+              "type": "heading",
+              "text": "good news"
+            },
+            {
+              "type": "paragraph",
+              "text": "we have high level language that can let you write readable code and it will be translated to binary code that computer can read.\n"
+            },
+            {
+              "type": "heading",
+              "text": "bad news about high level language"
+            },
+            {
+              "type": "paragraph",
+              "text": "it still does not be able to translate a human sentence to machine code that computer 'know' how to set up electronic circuit."
+            },
+            {
+              "type": "heading",
+              "text": "what should we do"
+            },
+            {
+              "type": "paragraph",
+              "text": "it will work that you know syntax of high level language, and can easily use current node of Penter's syntax tree. and knowing which of the node is we want. time to 熟悉語法 with knowing what is going on in your memory unit and what cpu did."
             }
           ]
         },
