@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y9m30d",
+    "version": "2026y10m15d",
     "language": "zh-TW"
   },
   "modules": [
@@ -96,6 +96,42 @@
                   "answer": 1
                 }
               ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-1792053133769",
+          "title": "為什麼電腦聽不懂人話",
+          "titleEn": "why does computer cant understand human language",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "好東西"
+            },
+            {
+              "type": "paragraph",
+              "text": "https://www.youtube.com/watch?v=R149u6LGFDo"
+            },
+            {
+              "type": "heading",
+              "text": "what is computer"
+            },
+            {
+              "type": "paragraph",
+              "text": "as you can see, computer is just electronic circuit, with some hardware structure that get some input by electronic with different voltage(usually separate them to low and high, compare these two is simple), and in some situation it will return high voltage, we call it 1, having power. in others situation it will return low voltage."
+            },
+            {
+              "type": "paragraph",
+              "text": "science of electronic indicates that resistance（電阻） will restrict amount of electric(which is allow only few electric pass through) , and low voltage also restrict."
+            },
+            {
+              "type": "paragraph",
+              "text": "therefore, by standardizing voltage, resistance in every unit of this structure and amount of power, we can get a directly way to check result of two input. and it called transistor(電晶體)"
+            },
+            {
+              "type": "diagram",
+              "text": "New diagram"
             }
           ]
         },
