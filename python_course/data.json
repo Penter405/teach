@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y10m15d",
+    "version": "2026y10m16d",
     "language": "zh-TW"
   },
   "modules": [
@@ -5490,8 +5490,9 @@
           "pdfPages": [],
           "content": [
             {
-              "type": "heading",
-              "text": "New Lesson"
+              "type": "callout",
+              "label": "Note",
+              "text": "need to define meaning of dp , especially if inclide this index"
             },
             {
               "type": "paragraph",
