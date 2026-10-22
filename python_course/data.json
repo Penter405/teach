@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y10m16d",
+    "version": "2026y10m20d",
     "language": "zh-TW"
   },
   "modules": [
@@ -4787,6 +4787,52 @@
             {
               "type": "paragraph",
               "text": "Add content here..."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "module-1792483941223",
+      "title": "binary search",
+      "titleEn": "binary search",
+      "icon": "📖",
+      "lessons": [
+        {
+          "id": "lesson-1792483941223",
+          "title": "Lesson 1",
+          "titleEn": "Lesson 1",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "definition"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "every time looping will cut about half element until a situation",
+              "text": "Add your content here..."
+            },
+            {
+              "type": "paragraph",
+              "text": "top 2 popular is find element most left and most right in a sorted vector"
+            },
+            {
+              "type": "paragraph",
+              "text": "asking yourself these questions:"
+            },
+            {
+              "type": "paragraph",
+              "text": "   set mid near left or right"
+            },
+            {
+              "type": "paragraph",
+              "text": "    if num[mid] is matching target, should we set left or right on a side of mid? (if we have set a good loop stop logical gate)"
+            },
+            {
+              "type": "paragraph",
+              "text": "    so what is the good stopping logical gate?"
             }
           ]
         }
