@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y10m20d",
+    "version": "2026y10m30d",
     "language": "zh-TW"
   },
   "modules": [
@@ -4789,6 +4789,42 @@
               "text": "Add content here..."
             }
           ]
+        },
+        {
+          "id": "lesson-1793318837668",
+          "title": "Fenwick tree(binary indexed tree)",
+          "titleEn": "Fenwick tree(binary indexed tree)",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "code example"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "class BIT:\n    def __init__(self, n):\n        self.tree = [0] * (n + 1)\n\n    def update(self, i, delta):\n        while i < len(self.tree):\n            self.tree[i] += delta\n            i += i & -i\n\n    def prefix_sum(self, i):\n        total = 0\n        while i > 0:\n            total += self.tree[i]\n            i -= i & -i\n        return total\n\n    def range_sum(self, left, right):\n        return self.prefix_sum(right) - self.prefix_sum(left - 1)"
+            },
+            {
+              "type": "heading",
+              "text": "what is (i & -i)"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": " i  =  00001100   (12)\n-i  =  11110100   (-12, in two's complement)\n      --------\n &  =  00000100   (4)\nfrom every 1 get rightest one\nresult of ( i& -i) represent the length of this node  , index diff for child and parent",
+              "text": "New paragraph"
+            },
+            {
+              "type": "heading",
+              "text": "code sample 2"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "d=list(map(int,input().split()))\ntree=d.copy()\nfor now in range(1,len(tree)+1):\n    while True:\n        parent=now+(now&-now)\n        if parent-1<len(tree)-1:\n            tree[parent-1]+=tree[now-1]\n        else:\n            break\n        now=parent\ndef find(n):#n=1 indexed\n    res=tree[n-1]\n    while True:\n        my_range=( n & -n)\n        n-=my_range\n        if n==0:\n            break\n        res+=tree[n-1]\n    return res\ndef update(n,value):#n=1 indexed\n    diff=value-tree[n-1]\n    tree[n-1]+=diff\n    while True:\n        my_range=(n & -n)\n        n+=my_range\n        if n-1>len(tree)-1:\n            break\n        tree[n-1]+=diff\n    return 0"
+            }
+          ]
         }
       ]
     },
@@ -5591,6 +5627,42 @@
             {
               "type": "paragraph",
               "text": "Add content here..."
+            }
+          ]
+        },
+        {
+          "id": "lesson-1793329117125",
+          "title": "cycle DP",
+          "titleEn": "cycle DP",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "New Lesson"
+            },
+            {
+              "type": "paragraph",
+              "text": "Add content here..."
+            },
+            {
+              "type": "image",
+              "caption": "New image",
+              "imageId": 5
+            },
+            {
+              "type": "image",
+              "caption": "New image",
+              "imageId": 6
+            },
+            {
+              "type": "image",
+              "caption": "New image",
+              "imageId": 7
+            },
+            {
+              "type": "image",
+              "caption": "New image",
+              "imageId": 8
             }
           ]
         }
