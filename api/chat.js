@@ -1,4 +1,10 @@
-const cors = require('cors')({ origin: '*' });
+const cors = require('cors')({
+  origin: [
+    'https://penter405.github.io',
+    'http://localhost:5500',
+    'http://127.0.0.1:5500'
+  ]
+});
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 function runMiddleware(req, res, fn) {
@@ -56,7 +62,7 @@ module.exports = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Gemini API call failed',
-      error: error.message,
+      error: '服務暫時不可用',
     });
   }
 };

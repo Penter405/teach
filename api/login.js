@@ -1,6 +1,12 @@
 const { OAuth2Client } = require('google-auth-library');
 const { connectToDatabase, User } = require('./_db');
-const cors = require('cors')({ origin: '*' });
+const cors = require('cors')({
+  origin: [
+    'https://penter405.github.io',
+    'http://localhost:5500',
+    'http://127.0.0.1:5500'
+  ]
+});
 
 // Helper to run cors middleware
 function runMiddleware(req, res, fn) {
@@ -76,6 +82,6 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('Login Error:', error);
-    return res.status(401).json({ success: false, message: 'Invalid token', errorDetials: error.message, stack: error.stack });
+    return res.status(500).json({ error: '登入失敗' });
   }
 };
