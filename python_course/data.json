@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y11m3d",
+    "version": "2026y11m6d",
     "language": "zh-TW"
   },
   "modules": [
@@ -4676,6 +4676,67 @@
             },
             {
               "type": "paragraph",
+              "text": "New paragraph"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "module-1792648168328",
+      "title": "math",
+      "titleEn": "math",
+      "icon": "📖",
+      "lessons": [
+        {
+          "id": "lesson-1792648168328",
+          "title": "prime",
+          "titleEn": "prime",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "what is prime"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "prime=1*prime"
+            },
+            {
+              "type": "heading",
+              "text": "what is not prime"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "not_prime = a*b"
+            },
+            {
+              "type": "heading",
+              "text": "找質因數"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "not_prime=a*b...*z\na or b or zmore than not_prime**0.5\nif z is more, a*b... will under not_prime**0.5\nwe can for loop every prime under not_prime**0.5\nand in the end take z as its member of result"
+            },
+            {
+              "type": "heading",
+              "text": "cheaking if i am prime"
+            },
+            {
+              "type": "paragraph",
+              "text": "1. create prime table include the number  -> o(n**2)\n2. create a n**0.5 prime table and cheak if any prime is its devision -> o( 2(n**0.5)-- put cheak if devisionable in loop, no extra time)"
+            },
+            {
+              "type": "heading",
+              "text": "recommand way"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def cheak(cheak_prime=False,get_only_devisoin=False,get_devision=False):\n    want=int(input())\n    devision=[]\n    single=[]\n    prime=[False,False]+[True]*( (int(want**0.5)+1)  -1)\n    for i in range(2, len(prime)):\n        if prime[i]:\n            if want%i==0:\n                if cheak_prime:\n                    return False\n                single.append(i)\n                while want%i==0:\n                    want//=i\n                    devision.append(i)\n\n            for not_prime in range(i*2,len(prime),i):\n                prime[not_prime]=False\n        \n\n    if cheak_prime:\n        return True\n    if get_only_devisoin:\n        return single\n    if get_devision:\n        return devision\n    return -1",
               "text": "New paragraph"
             }
           ]
