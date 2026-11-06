@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y10m30d",
+    "version": "2026y11m3d",
     "language": "zh-TW"
   },
   "modules": [
@@ -5562,6 +5562,15 @@
               "language": "python",
               "code": "must choose me= from every smaller than me nodes, get max its value saved on dp(as we are finding longest, the dp[i] usually refer to total length he got)",
               "text": "Add content here..."
+            },
+            {
+              "type": "heading",
+              "text": "faster solution(binary search and greedy)"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def search_left(data,target):#if  no match element, find first bigger than us\n    left=0\n    right=len(data)-1\n    #find left-> near left\n    while left<=right:\n        mid=(left+right)//2\n        if data[mid]>=target:\n            right= mid-1\n        elif data[mid]<target:\n            left=mid+1\n    return left\n\n\"\"\"\narray=[1,7,2,6]\nsee 1  memo=[1] # we got 1 at last of subsequence of a length 1 array\nsee 7  memo=[1,7] # we find out 7 can be in front of 1 that 1 is a last occur element of subsequence\nsee 2  memo=[1,2] #we find 2 can be in front of 1, and 2 smaller than 7, \n means they both can be in front of 1, but 2 is better, \n so we saved 2, every >2 can be in front of 2, rather than >7. (so we have more chance if choosing 2)\nsee 6  memo=[1,2,6] # see, if we didnot pick up samller, 6 cant pick up memo=[1,7], but we can now let 6, (which is bigger than 2) be joined to this memo\n\"\"\"\n\n\nres=[]\nfor _ in range(int(input())):\n    d=eval(input())\n    d.sort(key= lambda item:(item[0],-item[1]))\n    #print(d)\n    memo=[]#index=size, value=best last occur integer in this length\n    for _,b in d:\n        good_place=search_left(memo,b)\n        if good_place>len(memo)-1:\n            memo.append(b)\n        else:\n            memo[good_place]=b\n    res.append(len(memo))\n\nfor rs in res:\n    print(rs)\n\n\"\"\"\n[[1,3],[1,4],[3,5],[3,4],[0,1]]\n\"\"\""
             }
           ]
         },
