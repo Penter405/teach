@@ -5737,6 +5737,106 @@
           ]
         }
       ]
+    },
+    {
+      "id": "module-1793931363773",
+      "title": "penter wrongs",
+      "titleEn": "penter wrongs",
+      "icon": "📖",
+      "lessons": [
+        {
+          "id": "lesson-1793931363773",
+          "title": "math inorder to postorder",
+          "titleEn": "math inorder to postorder",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "image",
+              "caption": "New image",
+              "imageId": 9
+            },
+            {
+              "type": "paragraph",
+              "text": "wrong code review"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "level={\n    \"+\":0,\n    \"-\":0,\n    \"*\":1,\n    \"/\":1,\n    \"(\":2,\n    \")\":2,\n}\nd=input().split()\nstack=[]\nres=[]\nfor rs in d:\n    if rs not in \"()\" and rs not in level:\n        res.append(rs)\n        continue\n\n    if rs ==\"(\":\n        stack.append(\"(\")\n        continue\n    if rs==\")\":#遇右括號輸出堆疊中的運算子至左括號\n        while True:\n            me=stack.pop()\n            if me==\"(\":\n                break\n            res.append(me)\n        continue\n----if len(stack)==0 or level[rs]>=level[stack[-1]]:#堆疊中運算子優先順序若not(大於等於)讀入的運算子優先順序，放入堆疊\n        stack.append(rs)\n    else:\n        while True:#堆疊中運算子優先順序若大於等於讀入的運算子優先順序，直接輸出堆疊中的運算子\n            if len(stack)==0 or stack[-1]==\"(\" or level[stack[-1]]<level[rs]:\n                break\n            res.append(stack.pop())\n        stack.append(rs)\nfor rs in stack[::-1]:\n    res.append(rs)\nprint(\" \".join(res))",
+              "text": "New paragraph"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "level={\n    \"+\":0,\n    \"-\":0,\n    \"*\":1,\n    \"/\":1,\n    \"(\":2,\n    \")\":2,\n}\nd=input().split()\nstack=[]\nres=[]\nfor rs in d:\n    if rs not in \"()\" and rs not in level:\n        res.append(rs)\n        continue\n\n    if rs ==\"(\":\n        stack.append(\"(\")\n        continue\n    if rs==\")\":#遇右括號輸出堆疊中的運算子至左括號\n        while True:\n            me=stack.pop()\n            if me==\"(\":\n                break\n            res.append(me)\n        continue\n----if len(stack)==0 or level[rs]>level[stack[-1]]:#堆疊中運算子優先順序若not(大於等於)讀入的運算子優先順序，放入堆疊\n        stack.append(rs)\n    else:\n        while True:#堆疊中運算子優先順序若大於等於讀入的運算子優先順序，直接輸出堆疊中的運算子\n            if len(stack)==0 or stack[-1]==\"(\" or level[stack[-1]]<level[rs]:\n                break\n            res.append(stack.pop())\n        stack.append(rs)\nfor rs in stack[::-1]:\n    res.append(rs)\nprint(\" \".join(res))"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1793931818964",
+          "title": "IP 校驗和",
+          "titleEn": "IP cheaker sum",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "image",
+              "caption": "New image",
+              "text": "New Lesson",
+              "imageId": 10
+            },
+            {
+              "type": "paragraph",
+              "text": "wrong code"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def imnot(d):\n    res=[]\n    for rs in d:\n        if rs==\"1\":\n            res.append(\"0\")\n        else:\n            res.append(\"1\")\n    return \"\".join(res)\nres=[]\nfor _ in range(int(input())):\n    d=input().split()\n    bnum=0\n    for rs in range(0,len(d),2):\n        hex_num=d[rs]+d[rs+1]\n        num=int(hex_num,16)\n        bnum+=num\n----\n    bnum=hex(bnum)[2:]\n    if len(bnum)==5:\n        bnum=int(bnum[1:],16)+int(bnum[0],16)\n----\n    rnum=imnot(bin(bnum)[2:].zfill(16))\n    res.append(hex(int(rnum,2))[2:])\n\nfor rs in res:\n    if len(rs)<4:\n        print(\"0\"*(4-len(rs)),end=\"\")\n    print(rs)"
+            },
+            {
+              "type": "paragraph",
+              "text": "correct"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def imnot(d):\n    res=[]\n    for rs in d:\n        if rs==\"1\":\n            res.append(\"0\")\n        else:\n            res.append(\"1\")\n    return \"\".join(res)\nres=[]\nfor _ in range(int(input())):\n    d=input().split()\n    bnum=0\n    for rs in range(0,len(d),2):\n        hex_num=d[rs]+d[rs+1]\n        num=int(hex_num,16)\n        bnum+=num\n----\n    bnum=hex(bnum)[2:]\n    if len(bnum)==5:\n        bnum=int(bnum[1:],16)+int(bnum[0],16)\n    else:\n        bnum=int(bnum,16)\n----\n    rnum=imnot(bin(bnum)[2:].zfill(16))\n    res.append(hex(int(rnum,2))[2:])\n\nfor rs in res:\n    if len(rs)<4:\n        print(\"0\"*(4-len(rs)),end=\"\")\n    print(rs)\n"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1793931872957",
+          "title": "撲克牌",
+          "titleEn": "New Lesson 3",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "image",
+              "caption": "New image",
+              "text": "New Lesson",
+              "imageId": 11
+            },
+            {
+              "type": "paragraph",
+              "text": "wrong code"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import Counter\nres=[]\nfor _ in range(int(input())):\n    d=list(map(int,input().split()))\n    d.sort()\n----\n    only=[(n-1)%13 for n in d]\n\n\n----\n    color=(d[0]-1)//13\n    last=d[0]\n    continuous=1\n    have_a=(d[0]-1)%13==0\n    for rs in d[1:]:\n        if (rs-1)%13==0:\n            have_a=True\n        if (rs-1)//13!=color:\n            continuous=1\n            color=(rs-1)//13\n        elif last+1!=rs:\n            continuous=1\n        else:\n            continuous+=1\n        last=rs\n        if continuous>=5 or ( continuous==4 and have_a and (last-1)%13==12):\n            break\n    if continuous>=5 or ( continuous==4 and have_a and  (last-1)%13==12):\n        res.append(str(7))\n        continue\n\n    see=Counter(only)\n    if 6>see.most_common(1)[0][1]>=4:\n        res.append(\"6\")\n        continue\n    if len(see.most_common())>=2 and see.most_common()[0][1]>=3 and see.most_common()[1][1]>=2:\n        res.append(\"5\")\n        continue\n   \n----\n    continuous=1\n    last=(only[0]-1)%13\n    have_a=(only[0]-1)%13==0\n    for rs in only[1:]:\n        now= (rs-1)%13\n        if now==0:\n            have_a=True\n        if now-1!=last:\n            continuous=1\n        else:\n            continuous+=1\n        last=now\n        if continuous>=5 or (continuous==4 and last==12 and have_a):\n            res.append(\"4\")\n            continue\n    if continuous>=5 or (continuous==4 and last==12 and have_a):\n        res.append(\"4\")\n        continue\n       \n----\n\n    if see.most_common()[0][1]>=3:\n        res.append(\"3\")\n        continue\n    if len(see.most_common())>=2 and see.most_common()[0][1]>=2 and see.most_common()[1][1]>=2:\n        res.append(\"2\")\n        continue\n    if see.most_common()[0][1]>=2:\n        res.append(\"1\")\n        continue\n    res.append(\"0\")\n\nfor rs in res:\n    print(rs)"
+            },
+            {
+              "type": "paragraph",
+              "text": "correct"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import Counter\nres=[]\nfor _ in range(int(input())):\n    d=list(map(int,input().split()))\n    d.sort()\n----\n    only=[(n-1)%13 for n in d]\n    only.sort()\n----\n    color=(d[0]-1)//13\n    last=d[0]\n    continuous=1\n    have_a=(d[0]-1)%13==0\n    for rs in d[1:]:\n        if (rs-1)%13==0:\n            have_a=True\n        if (rs-1)//13!=color:\n            continuous=1\n            color=(rs-1)//13\n        elif last+1!=rs:\n            continuous=1\n        else:\n            continuous+=1\n        last=rs\n        if continuous>=5 or ( continuous==4 and have_a and (last-1)%13==12):\n            break\n    if continuous>=5 or ( continuous==4 and have_a and  (last-1)%13==12):\n        res.append(str(7))\n        continue\n\n    see=Counter(only)\n    if 6>see.most_common(1)[0][1]>=4:\n        res.append(\"6\")\n        continue\n    if len(see.most_common())>=2 and see.most_common()[0][1]>=3 and see.most_common()[1][1]>=2:\n        res.append(\"5\")\n        continue\n\n----\n    continuous=1\n    last=only[0]\n    have_a=(only[0])%13==0\n    for rs in only[1:]:\n        now= rs\n        if now==0:\n            have_a=True\n        if now-1!=last:\n            continuous=1\n        else:\n            continuous+=1\n        last=now\n        if continuous>=5 or (continuous==4 and last==12 and have_a):\n            break\n    if continuous>=5 or (continuous==4 and last==12 and have_a):\n        res.append(\"4\")\n        continue\n----\n\n    if see.most_common()[0][1]>=3:\n        res.append(\"3\")\n        continue\n    if len(see.most_common())>=2 and see.most_common()[0][1]>=2 and see.most_common()[1][1]>=2:\n        res.append(\"2\")\n        continue\n    if see.most_common()[0][1]>=2:\n        res.append(\"1\")\n        continue\n    res.append(\"0\")\n\nfor rs in res:\n    print(rs)"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
