@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y11m6d",
+    "version": "2026y11m9d",
     "language": "zh-TW"
   },
   "modules": [
@@ -4740,6 +4740,77 @@
               "text": "New paragraph"
             }
           ]
+        },
+        {
+          "id": "lesson-1794182485993",
+          "title": "四捨五入",
+          "titleEn": "4/5",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from decimal import Decimal,ROUND_HALF_UP\n#print(help(Decimal))\nd=Decimal(input())\nfor format_rule in [\"1E1\",\"1\",\"0.1\",\"0.01\"]:\n    now=d.quantize(Decimal(format_rule),ROUND_HALF_UP)\n    print(now)",
+              "text": "New Lesson"
+            },
+            {
+              "type": "paragraph",
+              "text": "method quantize of object Decimal-> take format and rule of 4/5 and return a new Decimal object that match format and rule you wrote"
+            },
+            {
+              "type": "paragraph",
+              "text": "its two parameter"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "format-> another Decimal object\nrule of 4/5 -> a method/property of decimal(not Decimal)"
+            },
+            {
+              "type": "heading",
+              "text": "Decimal as 目標位數的寫法"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "目標          Decimal 格式       1234 的結果\n\n個位數        \"1\"                1234\n\n十位數        \"1E1\"              1230\n\n百位數        \"1E2\"              1200\n\n千位數        \"1E3\"              1000\n\n小數 1 位     \"0.1\"              1234.0\n\n小數 2 位     \"0.01\"             1234.00"
+            },
+            {
+              "type": "heading",
+              "text": "Rounding 規則介紹"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "Rounding              規則                         2.5    3.5\n\nROUND_HALF_UP         五入，剛好一半遠離 0          3      4\n\nROUND_HALF_DOWN       五捨，剛好一半靠近 0          2      3\n\nROUND_HALF_EVEN       銀行家捨入，取偶數            2      4\n\nROUND_UP              無條件遠離 0                  3      4\n\nROUND_DOWN            無條件靠近 0                  2      3\n\nROUND_CEILING         往正無限大                    3      4\n\nROUND_FLOOR           往負無限大                    2      3\n\nROUND_05UP            截斷後末位為 0 或 5 時遠離 0  3      4"
+            },
+            {
+              "type": "heading",
+              "text": "強制顯示normal 十進位 "
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "print(format( processed_Decimal_object , \"f\"))",
+              "text": "New heading"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1794186958084",
+          "title": "New Lesson 3",
+          "titleEn": "New Lesson 3",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "New Lesson"
+            },
+            {
+              "type": "paragraph",
+              "text": "Add content here..."
+            }
+          ]
         }
       ]
     },
@@ -5833,6 +5904,22 @@
               "type": "code",
               "language": "python",
               "code": "from collections import Counter\nres=[]\nfor _ in range(int(input())):\n    d=list(map(int,input().split()))\n    d.sort()\n----\n    only=[(n-1)%13 for n in d]\n    only.sort()\n----\n    color=(d[0]-1)//13\n    last=d[0]\n    continuous=1\n    have_a=(d[0]-1)%13==0\n    for rs in d[1:]:\n        if (rs-1)%13==0:\n            have_a=True\n        if (rs-1)//13!=color:\n            continuous=1\n            color=(rs-1)//13\n        elif last+1!=rs:\n            continuous=1\n        else:\n            continuous+=1\n        last=rs\n        if continuous>=5 or ( continuous==4 and have_a and (last-1)%13==12):\n            break\n    if continuous>=5 or ( continuous==4 and have_a and  (last-1)%13==12):\n        res.append(str(7))\n        continue\n\n    see=Counter(only)\n    if 6>see.most_common(1)[0][1]>=4:\n        res.append(\"6\")\n        continue\n    if len(see.most_common())>=2 and see.most_common()[0][1]>=3 and see.most_common()[1][1]>=2:\n        res.append(\"5\")\n        continue\n\n----\n    continuous=1\n    last=only[0]\n    have_a=(only[0])%13==0\n    for rs in only[1:]:\n        now= rs\n        if now==0:\n            have_a=True\n        if now-1!=last:\n            continuous=1\n        else:\n            continuous+=1\n        last=now\n        if continuous>=5 or (continuous==4 and last==12 and have_a):\n            break\n    if continuous>=5 or (continuous==4 and last==12 and have_a):\n        res.append(\"4\")\n        continue\n----\n\n    if see.most_common()[0][1]>=3:\n        res.append(\"3\")\n        continue\n    if len(see.most_common())>=2 and see.most_common()[0][1]>=2 and see.most_common()[1][1]>=2:\n        res.append(\"2\")\n        continue\n    if see.most_common()[0][1]>=2:\n        res.append(\"1\")\n        continue\n    res.append(\"0\")\n\nfor rs in res:\n    print(rs)"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1794187202633",
+          "title": "datetime",
+          "titleEn": "datetime",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "New Lesson"
+            },
+            {
+              "type": "paragraph",
+              "text": "Add content here..."
             }
           ]
         }
