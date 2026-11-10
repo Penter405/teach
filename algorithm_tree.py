@@ -14,13 +14,17 @@
   algorithm.next  : (演算法,       遇到新限制時可以繼續往哪裡走)
 
 解題流程（網頁上的互動步驟分頁）的選項與比對條件在檔案後段的 WIZARD_GROUPS 與 RULES。
+Python 沒有內建、要自己寫的資料結構（樹狀陣列、線段樹…）在 CUSTOM_DS，哪些演算法用到它們在 USES_DS。
 
 修改後執行 `python algorithm_tree.py`，會重新產生 web_src/src/algoTreeData.ts
 """
 
 
 class Node:
+    registry = []         # 所有建立過的節點：用來檢查每個演算法都能在判斷樹與解題流程中走到
+
     def __init__(self, name, category="", time="", space="", ds="", desc=""):
+        Node.registry.append(self)
         self.name = name
         self.category = category
         self.time = time
@@ -192,6 +196,50 @@ trie = Node("字典樹 (Trie)", "字串", "O(L) per op", "O(total chars)", "Tree
 "有大量字串需要查詢、或需要依照前綴搜尋。\n"
 "許多字串共用相同的前綴。")
 
+# 課程（docs/content/data.json）裡出現的其他演算法
+trial_div = Node("試除法 (Trial Division)", "數學", "O(√n)", "O(1)", "—",
+"判斷一個數是不是質數，或做質因數分解。\n"
+"只要試到 √n：如果 n = a × b，a 和 b 至少有一個 ≤ √n。")
+sieve = Node("埃氏篩 (Sieve of Eratosthenes)", "數學", "O(n log log n)", "O(n)", "Bool Array",
+"要知道 1～n 之間所有的質數，或判斷很多個數。\n"
+"從小到大，把每個質數的倍數都劃掉。")
+rank_compress = Node("座標壓縮 (Coordinate Compression)", "排序", "O(n log n)", "O(n)", "Sort + Dict",
+"需要知道每個元素「排第幾名」。\n"
+"或數值很大、但只在乎大小順序：排序後用 dict 把數值換成名次。")
+shunting = Node("運算式轉換 (Shunting-yard)", "資料結構", "O(n)", "O(n)", "Stack",
+"把中序運算式轉成後序（或直接計算）。\n"
+"用堆疊暫存運算子，依優先順序與括號決定何時輸出。")
+mo = Node("莫隊演算法 (Mo's Algorithm)", "區間查詢", "O((n + q)√n)", "O(n)", "Sort + Counter",
+"很多次區間查詢，而且可以離線（先讀完所有查詢）。\n"
+"答案不能用前綴相減（例如區間內不同值的個數），\n"
+"但加入／移除一個元素時，答案可以 O(1) 更新。")
+knap01 = Node("0/1 背包 (0/1 Knapsack)", "動態規劃", "O(n·W)", "O(W)", "1D Array",
+"每個物品最多選一次，容量有限，求最大價值。\n"
+"dp[w] = 容量 w 時的最佳價值；容量要由大到小更新，才不會重複選。")
+knap_unb = Node("無限背包 (Unbounded Knapsack)", "動態規劃", "O(n·W)", "O(W)", "1D Array",
+"每個物品可以選任意多次（0/n）。\n"
+"和 0/1 背包一樣，但容量由小到大更新，同一個物品可以重複使用。")
+lcs = Node("最長共同子序列 (LCS)", "動態規劃", "O(n·m)", "O(n·m)", "2D Table",
+"比較兩個序列，找最長的共同子序列（不必連續）。\n"
+"dp[i][j] = 前 i 個與前 j 個的答案。")
+lis = Node("最長遞增子序列 (LIS)", "動態規劃", "O(n log n)", "O(n)", "Array + Binary Search",
+"找一個序列中最長的遞增子序列。\n"
+"基本 DP 是 O(n²)；用「二分搜尋＋貪婪」維護每個長度的最小結尾，可以做到 O(n log n)。")
+interval_dp = Node("分割／區間 DP (Interval DP)", "動態規劃", "O(n³)", "O(n²)", "2D Table",
+"把序列切成幾段，或把相鄰的區間合併。\n"
+"dp[l][r] = 區間 [l, r] 的最佳答案，由所有切點 k 組合而來。")
+tree_traversal = Node("樹的走訪 (Tree Traversal)", "圖論", "O(n)", "O(h)", "Recursion / Stack",
+"依照前序（node→left→right）、中序（left→node→right）或後序（left→right→node）拜訪每個節點。")
+tree_diameter = Node("樹的直徑 (Tree Diameter)", "圖論", "O(n)", "O(n)", "BFS",
+"樹上每個點的最遠距離。\n"
+"最遠的點一定是直徑的一端：三次 BFS 找出直徑兩端，答案 = max(到兩端的距離)。")
+func_graph = Node("找環＋記憶化 (Functional Graph)", "圖論", "O(n)", "O(n)", "Array",
+"每個點只有一條出去的邊（例如每個人只寄給一個人）。\n"
+"從任何點出發最後都會進入一個環：找出環，環外的點 = 1 + 下一個點的答案。")
+bipartite = Node("二分圖判定 (Bipartite Check)", "圖論", "O(V + E)", "O(V)", "Queue + Color",
+"能不能把點分成兩組，讓每條邊的兩端都在不同組。\n"
+"用 BFS 著色：相鄰的點塗不同顏色，發現同色相鄰就不是二分圖。")
+
 
 # ════════════════════════════════════════════
 # Layer 1 ── 判斷樹 (Decision Tree)，依照「拆解問題」四個步驟
@@ -242,7 +290,7 @@ q_shape = ask("資料的形狀？ (Shape of the data?)",
 no(q_need, q_shape, "暴力太慢，需要優化 → 先了解資料。")
 
 
-def structure_subtree(parent, answer, note):
+def structure_subtree(parent, answer, note, dp_kinds=False):
     """「求一個最佳值／方法數」的問題結構判斷（常數資料與線性資料都會用到）"""
     q_greedy = ask("每步選最好就是最佳？ (Greedy choice provable?)",
     "能證明：每一步都選「目前看起來最好」的，最後就是全域最佳解。", "yesno", 3)
@@ -253,7 +301,21 @@ def structure_subtree(parent, answer, note):
     no(q_greedy, q_overlap, "貪婪不保證最佳（或找得到反例）。")
     q_o1 = ask("答案只依賴前幾個狀態？ (Only a few previous states?)",
     "例如 f(i) 只用到 f(i−1)、f(i−2)：答案可以只用 O(1) 空間，不需要儲存所有答案。", "yesno", 3)
-    yes(q_overlap, q_o1, "這就是動態規劃 (DP)：每個狀態只算一次。")
+    if dp_kinds:
+        q_dp_kind = ask("是哪一種 DP？ (Which kind of DP?)",
+        "常見的 DP 題型，五個選項互斥。都不像就選「一般狀態」。", "choice", 3)
+        yes(q_overlap, q_dp_kind, "這就是動態規劃 (DP)：每個狀態只算一次。")
+        q_knap_once = ask("每個物品最多選一次？ (Each item at most once?)",
+        "是 = 0/1 背包；否 = 同一個物品可以選很多次（0/n）。", "yesno", 3)
+        opt(q_dp_kind, "背包：選物品、容量有限", q_knap_once, "在容量限制下選物品，求最大價值或方法數。")
+        yes(q_knap_once, knap01, "容量由大到小更新 dp，每個物品只會用到一次。")
+        no(q_knap_once, knap_unb, "容量由小到大更新 dp，同一個物品可以重複用。")
+        opt(q_dp_kind, "兩個序列的共同部分", lcs, "dp[i][j]：第一個序列前 i 個、第二個前 j 個。")
+        opt(q_dp_kind, "最長遞增子序列", lis, "O(n²) DP，或二分搜尋＋貪婪 O(n log n)。")
+        opt(q_dp_kind, "切成幾段／合併區間", interval_dp, "dp[l][r]：枚舉切點 k。")
+        opt(q_dp_kind, "一般狀態", q_o1, "例如走樓梯、1D DP：自己定義狀態與轉移。")
+    else:
+        yes(q_overlap, q_o1, "這就是動態規劃 (DP)：每個狀態只算一次。")
     yes(q_o1, tabulation, "Bottom-up，只保留幾個變數（滾動陣列），空間 O(1)。")
     q_dp_order = ask("大部分狀態都要算，且順序好排？ (Fill the whole table?)",
     "幾乎所有狀態都會用到，而且能排出由小到大的計算順序。", "yesno", 3)
@@ -269,7 +331,7 @@ def structure_subtree(parent, answer, note):
 
 # ──── 2A. 常數資料 ────
 q_c_goal = ask("要的答案是？ (Constant input: what answer?)",
-"資料只有一個值或固定大小，重點在問題本身。四個選項互斥。", "choice", 3)
+"資料只有一個值或固定大小，重點在問題本身。五個選項互斥。", "choice", 3)
 opt(q_shape, "常數", q_c_goal, "例如只給一個 n，或固定大小的盤面。")
 opt(q_c_goal, "最小（大）可行答案", binary_answer, "能檢查「答案 x 可不可行」，且可行性隨 x 單調。")
 structure_subtree(q_c_goal, "一個最佳值／方法數", "最大值、最小值、有幾種方法。")
@@ -277,6 +339,11 @@ opt(q_c_goal, "所有可行解", backtracking, "列出所有組合／排列：�
 q_merge = ask("拆成多個獨立子問題再合併？ (Split & merge?)",
 "切成兩個以上互不重疊的子問題，各自解完後合併。", "yesno", 3)
 opt(q_c_goal, "由子問題組合出答案", q_merge, "答案可以由較小問題的答案算出。")
+q_prime_many = ask("要判斷很多個數（一整個範圍）？ (Many numbers?)",
+"例如「1～n 之間所有的質數」或很多筆查詢，而不是只判斷一個數。", "yesno", 3)
+opt(q_c_goal, "質數／因數", q_prime_many, "判斷質數、質因數分解。")
+yes(q_prime_many, sieve, "先篩一次，之後每次查詢 O(1)。")
+no(q_prime_many, trial_div, "只有一個數：試除到 √n 就夠了。")
 yes(q_merge, divide_conquer, "分治法：切、解、合併。")
 no(q_merge, recursion, "一般遞迴：每次縮小一點。")
 
@@ -295,7 +362,7 @@ opt(q_seq_goal, "區間（子陣列）答案", sliding, "一邊讀一邊維護�
 
 # 隨機存取
 q_lin_goal = ask("要輸出什麼？ (Array: what output?)",
-"依照「要輸出什麼」分類，十個選項互斥。", "choice", 3)
+"依照「要輸出什麼」分類，選項彼此互斥。", "choice", 3)
 opt(q_access, "隨機存取 O(1)", q_lin_goal, "可以用索引直接拿第 i 個元素（list、陣列、字串）。")
 
 #   找某個值
@@ -332,7 +399,11 @@ opt(q_range, "找符合條件的子陣列", sliding, "最長／最短／個數�
 opt(q_range, "固定視窗的最大／最小", monotonic_queue, "視窗往前滑，每次要視窗內的極值。")
 q_update = ask("查詢之間資料會修改？ (Updates between queries?)", "多次區間查詢之間，陣列的值會不會被改。", "yesno", 2)
 opt(q_range, "很多次區間查詢", q_update, "反覆問「[l, r] 的值是多少」。")
-no(q_update, prefix, "資料不變：前綴和 O(1) 查詢。")
+q_additive = ask("答案能用前綴相減嗎？ (Prefix-subtractable?)",
+"像總和、個數可以用「前 r 個 − 前 l−1 個」算出；不同值的個數、眾數就不行。", "yesno", 3)
+no(q_update, q_additive, "資料不變，可以先做前處理。")
+yes(q_additive, prefix, "前綴和：O(n) 前處理，每次 O(1)。")
+no(q_additive, mo, "離線排序查詢，移動兩個指標：O((n + q)√n)。")
 q_sum_only = ask("只需要區間和嗎？ (Sum only?)", "只問總和，不問最小值／最大值等其他運算。", "yesno", 3)
 yes(q_update, q_sum_only, "需要支援修改。")
 yes(q_sum_only, fenwick, "樹狀陣列，程式最短。")
@@ -349,7 +420,9 @@ no(q_pair_sorted, hash_lookup, "邊走邊把看過的值放進 Hash：O(n) 時�
 opt(q_lin_goal, "最小（大）可行答案", binary_answer, "能檢查「答案 x 可不可行」，且可行性隨 x 單調。")
 opt(q_lin_goal, "字串比對", kmp, "在長度 n 的文字中找長度 m 的模式。")
 opt(q_lin_goal, "前綴查詢", trie, "存很多字串，並依前綴查詢。")
-structure_subtree(q_lin_goal, "一個最佳值／方法數", "例如最長遞增子序列、背包、走樓梯。")
+opt(q_lin_goal, "每個元素的名次", rank_compress, "排序後用 dict 記下每個數值的名次。")
+opt(q_lin_goal, "運算式轉換／計算", shunting, "中序轉後序、計算 + - * / 和括號。")
+structure_subtree(q_lin_goal, "一個最佳值／方法數", "例如最長遞增子序列、背包、走樓梯。", dp_kinds=True)
 
 # ──── 2C. 關聯資料 ────
 q_rel = ask("是哪一種關係？ (What kind of relation?)",
@@ -362,7 +435,7 @@ opt(q_kv, "依鍵查找", hash_lookup, "dict 本身就是雜湊表，平均 O(1)
 opt(q_kv, "依前綴查找", trie, "鍵是字串，要依前綴找。")
 opt(q_kv, "依鍵的大小找範圍", binary, "把鍵排序後二分搜尋範圍的起點與終點。")
 
-q_graph = ask("要求什麼？ (Graph: what is asked?)", "圖的問題，依照「要輸出什麼」分成五種，彼此互斥。", "choice", 3)
+q_graph = ask("要求什麼？ (Graph: what is asked?)", "圖的問題，依照「要輸出什麼」分類，選項彼此互斥。", "choice", 3)
 opt(q_rel, "圖／樹", q_graph, "有點，也有點與點之間的邊（道路、關係、依賴）。")
 q_sp_all = ask("要所有點對，且點很少？ (All pairs, small V?)",
 "需要「每一對點」之間的最短距離，而且點數很少（約數百以內）。", "yesno", 3)
@@ -383,6 +456,13 @@ no(q_cycle, topo, "DAG：反覆取出入度為 0 的點。")
 yes(q_cycle, dfs, "先用 DFS 找出環（無法排序，需要回報或拆環）。")
 opt(q_graph, "動態判斷連通", dsu, "邊會一直加入，並且反覆問「兩點是否連通」。")
 opt(q_graph, "走訪／連通塊／找環", dfs, "只需要走過整張圖，找連通塊、環或路徑。")
+opt(q_graph, "前序／中序／後序", tree_traversal, "依固定順序拜訪樹的每個節點。")
+opt(q_graph, "分成兩組", bipartite, "相鄰的點要在不同組：BFS 著色。")
+q_far = ask("是哪一種圖？ (What kind of graph?)",
+"兩個選項互斥：樹（沒有環、n−1 條邊），或每個點只有一條出去的邊。", "choice", 2)
+opt(q_graph, "每個點能走多遠", q_far, "每個點的最遠距離，或從每個點出發能走到幾個點。")
+opt(q_far, "一棵樹", tree_diameter, "最遠的點一定是直徑的一端。")
+opt(q_far, "每點只有一條出去的邊", func_graph, "一定會走進環：找環＋記憶化。")
 
 
 # ════════════════════════════════════════════
@@ -419,6 +499,8 @@ g_mst = gain("最小生成樹 (Minimum Spanning Tree)",
 "用最小總成本把所有點連起來。")
 g_order = gain("合法的處理順序 (Valid Order)",
 "得到一個滿足所有依賴關係的順序，或發現依賴中有環。")
+g_prime = gain("質數與因數 (Primes & Factors)",
+"不必對每個數從頭試除，判斷質數變快。")
 g_text = gain("線性時間字串處理 (Linear-time Strings)",
 "字串比對或查詢不再需要 O(nm) 的暴力比較。")
 
@@ -465,6 +547,20 @@ gives(binary_answer, g_log, "只需要 O(log R) 次 check(x)。")
 gives(topo, g_order, "O(V + E) 得到順序，同時能偵測環。")
 gives(kmp, g_text, "O(nm) → O(n + m)。")
 gives(trie, g_text, "每次查詢 O(L)，與字串總數無關。")
+gives(trial_div, g_prime, "O(n) → O(√n)。")
+gives(sieve, g_prime, "篩一次 O(n log log n)，之後每次查詢 O(1)。")
+gives(rank_compress, g_sorted, "大數值換成 1～n 的名次，可以直接當陣列索引。")
+gives(shunting, g_order, "得到可以直接由左到右計算的後序式。")
+gives(mo, g_range, "無法前綴相減的區間查詢：O(nq) → O((n + q)√n)。")
+gives(knap01, g_dp, "指數級的選或不選 → O(n·W)。")
+gives(knap_unb, g_dp, "O(n·W)，同一物品可以重複選。")
+gives(lcs, g_dp, "指數級的枚舉子序列 → O(n·m)。")
+gives(lis, g_dp, "O(2ⁿ) → O(n²) DP → O(n log n)。")
+gives(interval_dp, g_dp, "指數級的切法 → O(n³)。")
+gives(tree_traversal, g_conn, "每個節點拜訪一次，O(n)。")
+gives(tree_diameter, g_shortest, "每個點各 BFS 一次 O(n²) → 三次 BFS O(n)。")
+gives(func_graph, g_conn, "每個點各模擬一次 O(n²) → O(n)。")
+gives(bipartite, g_conn, "O(V + E) 判斷，並得到分組。")
 
 
 # ════════════════════════════════════════════
@@ -474,7 +570,7 @@ outcome = Node("繼續或已解決 (Continue or Solved)", "終點",
 desc="問題已經解決 → 結束。\n"
      "還不夠快、或出現新的限制 → 帶著新的特性回到「問題發現」，繼續往下走。")
 for g in [g_baseline, g_log, g_lookup, g_sorted, g_linear, g_range, g_extreme,
-          g_structure, g_dp, g_search, g_shortest, g_conn, g_mst, g_order, g_text]:
+          g_structure, g_dp, g_search, g_shortest, g_conn, g_mst, g_order, g_text, g_prime]:
     g.child.append((outcome, "夠用了 → 已解決；\n出現新限制 → 回到問題特性，繼續優化。"))
 
 
@@ -520,6 +616,267 @@ nxt(binary, binary_answer, "要找的不是某個元素，而是「最小可行�
 nxt(dfs, topo, "需要依照依賴關係排出處理順序。")
 nxt(linear, kmp, "在文字中逐一比對模式字串 O(nm) 太慢。")
 nxt(hash_lookup, trie, "需要依照前綴查詢，Hash 做不到。")
+nxt(trial_div, sieve, "要判斷很多個數 → 先篩一次。")
+nxt(prefix, mo, "答案不能用前綴相減（例如不同值的個數）→ 離線＋莫隊。")
+nxt(tabulation, lis, "遞增子序列的 O(n²) DP 太慢 → 二分搜尋＋貪婪 O(n log n)。")
+nxt(knap01, knap_unb, "同一個物品可以選很多次 → 更新順序改成由小到大。")
+nxt(bfs, tree_diameter, "要每個點的最遠距離 → 只需要直徑兩端的三次 BFS。")
+nxt(dfs, bipartite, "要把點分成兩組 → 走訪時順便著色。")
+nxt(brute, func_graph, "每個點只有一條出去的邊，從每點模擬太慢 → 找環＋記憶化。")
+
+
+# ════════════════════════════════════════════
+# 非內建的資料結構 (Data structures Python does not have built in)
+#
+# heapq、collections.deque、dict、set 是 Python 內建的，直接用就好；
+# 下面這些 Python 沒有，要自己寫。用到它們的演算法會在網頁上標「自己寫」，
+# 並在詳細面板附上模板程式碼。
+# ════════════════════════════════════════════
+CUSTOM_DS = [
+    ("fenwick", "樹狀陣列 (Fenwick Tree / BIT)",
+     "單點加值、前綴和都是 O(log n)。關鍵是 i & -i：取出 i 最低位的 1。",
+     r'''
+class Fenwick:
+    """樹狀陣列：單點加值、前綴和，都是 O(log n)。索引從 1 開始。"""
+    def __init__(self, n):
+        self.n = n
+        self.tree = [0] * (n + 1)
+
+    def add(self, i, v):              # a[i] += v
+        while i <= self.n:
+            self.tree[i] += v
+            i += i & -i               # 跳到下一個「管到 i」的格子
+
+    def prefix(self, i):              # a[1] + … + a[i]
+        s = 0
+        while i > 0:
+            s += self.tree[i]
+            i -= i & -i               # 去掉最低位的 1
+        return s
+
+    def range_sum(self, l, r):        # a[l] + … + a[r]
+        return self.prefix(r) - self.prefix(l - 1)
+
+
+fw = Fenwick(5)
+for i, x in enumerate([3, 2, 3, 1, 2], start=1):
+    fw.add(i, x)
+print(fw.range_sum(2, 4))   # 2 + 3 + 1 = 6
+fw.add(3, 10)               # a[3] 變成 13
+print(fw.range_sum(2, 4))   # 16
+'''),
+    ("segment", "線段樹 (Segment Tree)",
+     "單點修改、區間查詢（最小值、最大值、總和都可以）都是 O(log n)。",
+     r'''
+class SegmentTree:
+    """線段樹（區間最小值）：單點修改、區間查詢，都是 O(log n)。索引從 0 開始。"""
+    def __init__(self, data):
+        self.n = 1
+        while self.n < len(data):
+            self.n *= 2
+        INF = float("inf")
+        self.t = [INF] * (2 * self.n)
+        self.t[self.n:self.n + len(data)] = data          # 葉子放原始資料
+        for i in range(self.n - 1, 0, -1):                # 由下往上建
+            self.t[i] = min(self.t[2 * i], self.t[2 * i + 1])
+
+    def update(self, i, v):                               # a[i] = v
+        i += self.n
+        self.t[i] = v
+        while i > 1:
+            i //= 2
+            self.t[i] = min(self.t[2 * i], self.t[2 * i + 1])
+
+    def query(self, l, r):                                # min(a[l..r])
+        res = float("inf")
+        l += self.n
+        r += self.n + 1
+        while l < r:
+            if l & 1:
+                res = min(res, self.t[l]); l += 1
+            if r & 1:
+                r -= 1; res = min(res, self.t[r])
+            l //= 2
+            r //= 2
+        return res
+
+
+st = SegmentTree([5, 2, 8, 6, 3])
+print(st.query(0, 2))   # min(5, 2, 8) = 2
+st.update(1, 9)
+print(st.query(0, 2))   # min(5, 9, 8) = 5
+print(st.query(2, 4))   # min(8, 6, 3) = 3
+'''),
+    ("dsu", "並查集 (Disjoint Set Union)",
+     "合併兩組、判斷是否同一組，近乎 O(1)。Kruskal 用它判斷加入的邊會不會成環。",
+     r'''
+class DSU:
+    """並查集：合併兩個集合、問兩個元素是否同一組，近乎 O(1)。"""
+    def __init__(self, n):
+        self.parent = list(range(n))   # 一開始每個人自己一組
+        self.size = [1] * n
+
+    def find(self, x):                 # 找 x 這一組的代表（順便路徑壓縮）
+        root = x
+        while self.parent[root] != root:
+            root = self.parent[root]
+        while self.parent[x] != root:
+            self.parent[x], x = root, self.parent[x]
+        return root
+
+    def union(self, a, b):             # 合併 a、b 兩組；已經同一組就回傳 False
+        a, b = self.find(a), self.find(b)
+        if a == b:
+            return False
+        if self.size[a] < self.size[b]:
+            a, b = b, a
+        self.parent[b] = a             # 小的接到大的下面
+        self.size[a] += self.size[b]
+        return True
+
+
+dsu = DSU(5)
+dsu.union(0, 1)
+dsu.union(3, 4)
+print(dsu.find(0) == dsu.find(1))   # True
+print(dsu.find(1) == dsu.find(3))   # False
+print(dsu.union(0, 1))              # False：已經同一組（Kruskal 用這個判斷會不會成環）
+'''),
+    ("trie", "字典樹 (Trie)",
+     "共用前綴的字串存在同一條路上；插入、查詢、數前綴都是 O(字串長度)。",
+     r'''
+class Trie:
+    """字典樹：插入、查詢、數前綴，都是 O(字串長度)。"""
+    def __init__(self):
+        self.root = {}                 # 每個節點是一個 dict：字母 → 下一個節點
+        self.END = "$"                 # 記「有字串在這裡結束」
+
+    def insert(self, word):
+        node = self.root
+        for ch in word:
+            node = node.setdefault(ch, {"#": 0})
+            node["#"] += 1             # 有幾個字串經過這個節點
+        node[self.END] = True
+
+    def contains(self, word):
+        node = self._walk(word)
+        return node is not None and self.END in node
+
+    def count_prefix(self, prefix):    # 有幾個字串以 prefix 開頭
+        node = self._walk(prefix)
+        return node["#"] if node else 0
+
+    def _walk(self, s):
+        node = self.root
+        for ch in s:
+            if ch not in node:
+                return None
+            node = node[ch]
+        return node
+
+
+t = Trie()
+for w in ["apple", "app", "apply", "bat"]:
+    t.insert(w)
+print(t.contains("app"), t.contains("ap"))   # True False
+print(t.count_prefix("app"))                 # 3
+'''),
+    ("binary_tree", "二元樹 (Binary Tree)",
+     "每個節點最多兩個孩子。Python 沒有內建的樹，要自己定義節點 class。",
+     r'''
+class TreeNode:
+    """二元樹的節點：每個節點最多兩個孩子。"""
+    def __init__(self, val):
+        self.val = val
+        self.left = None
+        self.right = None
+
+
+def preorder(node, out):     # node → left → right
+    if node:
+        out.append(node.val)
+        preorder(node.left, out)
+        preorder(node.right, out)
+
+def inorder(node, out):      # left → node → right
+    if node:
+        inorder(node.left, out)
+        out.append(node.val)
+        inorder(node.right, out)
+
+def postorder(node, out):    # left → right → node
+    if node:
+        postorder(node.left, out)
+        postorder(node.right, out)
+        out.append(node.val)
+
+
+#     1
+#    / \
+#   2   3
+#      / \
+#     4   5
+root = TreeNode(1)
+root.left = TreeNode(2)
+root.right = TreeNode(3)
+root.right.left = TreeNode(4)
+root.right.right = TreeNode(5)
+
+for f in (preorder, inorder, postorder):
+    out = []
+    f(root, out)
+    print(f.__name__, out)
+# preorder [1, 2, 3, 4, 5]
+# inorder [2, 1, 4, 3, 5]
+# postorder [2, 4, 5, 3, 1]
+'''),
+    ("graph", "圖：鄰接串列 (Adjacency List)",
+     "用 dict / list 記下每個點連到哪些點。圖的演算法都從這一步開始。",
+     r'''
+from collections import defaultdict, deque
+
+# 圖：用「鄰接串列」存 —— 每個點記下它連到哪些點
+edges = [(1, 2), (1, 3), (3, 4), (3, 5)]
+
+graph = defaultdict(list)
+for a, b in edges:
+    graph[a].append(b)
+    graph[b].append(a)          # 無向圖：兩個方向都要加（有向圖只加 a → b）
+
+# 有權重的圖：存 (鄰居, 權重)
+weighted = defaultdict(list)
+for a, b, w in [(1, 2, 7), (1, 3, 2), (3, 2, 1)]:
+    weighted[a].append((b, w))
+    weighted[b].append((a, w))
+
+# 用 BFS 走過整張圖
+def bfs(start):
+    dist = {start: 0}
+    q = deque([start])
+    while q:
+        u = q.popleft()
+        for v in graph[u]:
+            if v not in dist:
+                dist[v] = dist[u] + 1
+                q.append(v)
+    return dist
+
+print(dict(graph))     # {1: [2, 3], 2: [1], 3: [1, 4, 5], 4: [3], 5: [3]}
+print(bfs(1))          # {1: 0, 2: 1, 3: 1, 4: 2, 5: 2}
+print(weighted[3])     # [(1, 2), (2, 1)]
+'''),
+]
+
+USES_DS = {
+    fenwick: ["fenwick"],
+    segment: ["segment"],
+    dsu: ["dsu"],
+    kruskal: ["dsu"],
+    trie: ["trie"],
+    tree_traversal: ["binary_tree"],
+    bfs: ["graph"], dfs: ["graph"], dijkstra: ["graph"], bellman: ["graph"],
+    prim: ["graph"], topo: ["graph"], bipartite: ["graph"], tree_diameter: ["graph"],
+}
 
 
 # ════════════════════════════════════════════
@@ -556,6 +913,8 @@ WIZARD_GROUPS = [
         ("tr_negative", "有負權重",           "有些邊的成本是負的。"),
         ("tr_dag",      "有依賴且無環",       "A 必須在 B 之前，而且依賴沒有環（DAG）。"),
         ("tr_dense",    "圖很稠密",           "邊數接近 V²。"),
+        ("tr_tree",     "是一棵樹",           "沒有環，n 個點、n−1 條邊。"),
+        ("tr_func",     "每點只有一條出去的邊", "每個點恰好指向一個點（例如每個人只寄給一個人）。"),
     ]),
     ("output", 3, "要輸出什麼", "single", [
         ("out_find",     "找某個值",           "某個值在不在、在哪裡。"),
@@ -573,6 +932,12 @@ WIZARD_GROUPS = [
         ("out_all",      "所有可行解",         "列出所有組合／排列／方案。"),
         ("out_match",    "字串比對",           "在文字中找模式。"),
         ("out_prefix",   "前綴查詢",           "依前綴查很多字串。"),
+        ("out_prime",    "質數／因數",         "判斷質數、質因數分解。"),
+        ("out_rank",     "每個元素的名次",     "每個數排第幾。"),
+        ("out_expr",     "運算式轉換／計算",   "中序轉後序、計算有括號的算式。"),
+        ("out_traverse", "前序／中序／後序",   "依固定順序拜訪樹的每個節點。"),
+        ("out_twocolor", "分成兩組",           "相鄰的點要在不同組。"),
+        ("out_far",      "每個點能走多遠",     "每個點的最遠距離，或能走到幾個點。"),
     ]),
     ("queries", 3, "要查詢幾次", "single", [
         ("q_once", "一次", "只需要回答一次。"),
@@ -592,6 +957,14 @@ WIZARD_GROUPS = [
         ("need_worst",     "要最壞情況保證",     "不能接受偶爾變成 O(n²)。"),
         ("range_window",   "固定長度視窗",       "區間是一個往前滑動、長度固定的視窗。"),
         ("range_sumonly",  "只需要區間和",       "不需要 min / max 等其他運算。"),
+        ("range_nonadd",   "答案不能前綴相減",   "例如區間內不同值的個數、眾數。"),
+    ]),
+    ("dpkind", 3, "如果是 DP，是哪一種？", "single", [
+        ("dp_knap01",  "背包：每個物品最多一次", "容量有限，每個物品選或不選。"),
+        ("dp_knapunb", "背包：物品可重複選",     "同一個物品可以選很多次（0/n）。"),
+        ("dp_twoseq",  "兩個序列的共同部分",     "例如最長共同子序列。"),
+        ("dp_lis",     "最長遞增子序列",         "一個序列裡最長的遞增子序列。"),
+        ("dp_split",   "切成幾段／合併區間",     "枚舉切點。"),
     ]),
 ]
 
@@ -614,10 +987,10 @@ RULES = {
     two_pointers:    dict(all=["out_pair", "tr_sorted"], bonus=["o1_yes", "acc_random"]),
     sliding:         dict(all=["out_range"], none=["q_many", "range_window"], bonus=["o1_yes"]),
     monotonic_queue: dict(all=["range_window"], any=["out_range", "out_extreme"]),
-    prefix:          dict(all=["out_range", "q_many"], none=["tr_dynamic"],
+    prefix:          dict(all=["out_range", "q_many"], none=["tr_dynamic", "range_nonadd"],
                           note="前處理 O(n) 時間與空間，之後每次 O(1)。"),
-    fenwick:         dict(all=["out_range", "q_many", "tr_dynamic", "range_sumonly"]),
-    segment:         dict(all=["out_range", "q_many", "tr_dynamic"], none=["range_sumonly"]),
+    fenwick:         dict(all=["out_range", "q_many", "tr_dynamic", "range_sumonly"], none=["range_nonadd"]),
+    segment:         dict(all=["out_range", "q_many", "tr_dynamic"], none=["range_sumonly", "range_nonadd"]),
     heap:            dict(all=["out_extreme"], none=["range_window"], bonus=["tr_dynamic"]),
     monotonic_stack: dict(all=["out_nearest"]),
     binary_answer:   dict(all=["out_minfeas"]),
@@ -635,14 +1008,31 @@ RULES = {
     trie:            dict(all=["out_prefix"], bonus=["q_many"]),
     greedy:          dict(all=["st_greedy"], any=["out_optimal", "out_mst", "out_path"]),
     tabulation:      dict(all=["st_overlap", "out_optimal"], bonus=["o1_yes"],
+                          none=["dp_knap01", "dp_knapunb", "dp_twoseq", "dp_lis", "dp_split"],
                           note="只依賴前幾個狀態時，可以只保留幾個變數（滾動陣列），空間變 O(1)。"),
     memo:            dict(all=["st_overlap", "out_optimal"], bonus=["o1_no"],
+                          none=["dp_knap01", "dp_knapunb", "dp_twoseq", "dp_lis", "dp_split"],
                           note="狀態很多時要小心：每個狀態都要寫進 dict（雜湊＋配置記憶體），"
                                "也要付出遞迴呼叫的成本，不一定比表格化或暴力快。"),
     backtracking:    dict(all=["out_all"]),
     branch_bound:    dict(all=["out_optimal", "st_bound"], none=["st_overlap", "st_greedy"]),
     divide_conquer:  dict(all=["st_divide"], none=["st_overlap"]),
     recursion:       dict(all=["st_divide"], none=["st_overlap"], bonus=["tr_small"]),
+    trial_div:       dict(all=["out_prime"], none=["q_many"]),
+    sieve:           dict(all=["out_prime", "q_many"]),
+    rank_compress:   dict(all=["out_rank"]),
+    shunting:        dict(all=["out_expr"]),
+    mo:              dict(all=["out_range", "q_many", "range_nonadd"], none=["tr_dynamic"],
+                          note="Python 很慢：n、q 到 2×10⁵ 時可能要十幾秒。像「不同值個數」也可以改用離線＋樹狀陣列，O((n + q) log n)。"),
+    knap01:          dict(all=["st_overlap", "dp_knap01"]),
+    knap_unb:        dict(all=["st_overlap", "dp_knapunb"]),
+    lcs:             dict(all=["st_overlap", "dp_twoseq"]),
+    lis:             dict(all=["st_overlap", "dp_lis"]),
+    interval_dp:     dict(all=["st_overlap", "dp_split"], note="O(n³)：n 到幾百還可以，n 到幾千就太慢。"),
+    tree_traversal:  dict(all=["shape_rel", "tr_tree", "out_traverse"]),
+    tree_diameter:   dict(all=["shape_rel", "tr_tree", "out_far"]),
+    func_graph:      dict(all=["shape_rel", "tr_func", "out_far"]),
+    bipartite:       dict(all=["shape_rel", "out_twocolor"]),
     brute:           dict(all=[], note="永遠可行的基準解：先寫出來驗證答案，再用第 1 步算算看夠不夠快。"),
 }
 
@@ -683,7 +1073,7 @@ def export(path):
                       "category": n.category, "time": n.time, "space": n.space,
                       "ds": n.ds, "desc": n.desc.strip(),
                       "qtype": getattr(n, "qtype", ""), "stage": getattr(n, "stage", 0),
-                      "ref": ref})
+                      "ref": ref, "customDs": USES_DS.get(n, []) if kind_of(n) == "algorithm" else []})
 
     # 收穫與終點
     gain_ids = {}
@@ -744,6 +1134,25 @@ def export(path):
         for target, reason in n.next:
             nexts.append({"from": algo_first[id(n)], "to": algo_first[id(target)], "reason": reason.strip()})
 
+    # 每一個演算法都必須：(1) 是判斷樹的某個葉子  (2) 在解題流程的 RULES 裡有條件
+    all_algos = [n for n in Node.registry if kind_of(n) == "algorithm"]
+    for n in all_algos:
+        assert id(n) in algo_first, f"{n.name} 沒有出現在判斷樹的任何葉子"
+        assert n in RULES, f"{n.name} 沒有在解題流程的 RULES 裡設定條件"
+    # 解題流程：每個演算法的條件都要「選得出來」（同一個單選群組不能要求兩個選項）
+    single_group = {o[0]: g[0] for g in WIZARD_GROUPS if g[3] == "single" for o in g[4]}
+    for n, r in RULES.items():
+        groups = [single_group[o] for o in r.get("all", []) if o in single_group]
+        assert len(groups) == len(set(groups)), f"{n.name} 的條件在同一個單選群組裡要求了兩個選項"
+        assert not set(r.get("all", [])) & set(r.get("none", [])), f"{n.name} 的 all 和 none 互相矛盾"
+
+    ds_ids = {c[0] for c in CUSTOM_DS}
+    for n, used in USES_DS.items():
+        assert id(n) in algo_first, f"{n.name} 用到自製資料結構，但不在判斷樹裡"
+        for u in used:
+            assert u in ds_ids, f"{n.name} 用到不存在的資料結構 {u}"
+    structures = [{"id": c[0], "name": c[1], "desc": c[2], "code": c[3].strip()} for c in CUSTOM_DS]
+
     ids = {k: v for k, v in algo_first.items()}
     order = [n for n in RULES]
 
@@ -770,7 +1179,8 @@ def export(path):
             "  kind: AlgoNodeKind;\n  category: string;\n  time: string;\n  space: string;\n"
             "  ds: string;\n  desc: string;\n  /** question nodes: 'yesno' 是非題 | 'choice' 選擇題 */\n  qtype: '' | 'yesno' | 'choice';\n"
             "  /** question nodes: which step of 拆解問題 (1 需要優化嗎 / 2 了解資料 / 3 問題要什麼) */\n  stage: number;\n"
-            "  /** algorithm leaves: id of the algorithm this leaf stands for (same algorithm can be several leaves) */\n  ref: string;\n}\n\n"
+            "  /** algorithm leaves: id of the algorithm this leaf stands for (same algorithm can be several leaves) */\n  ref: string;\n"
+            "  /** non-built-in data structures this algorithm needs you to write (ids in customStructures) */\n  customDs: string[];\n}\n\n"
             "/** kind = the kind of the edge's target node */\n"
             "export interface AlgoEdge {\n  from: string;\n  to: string;\n  reason: string;\n"
             "  kind: AlgoNodeKind;\n  /** answer to the question (是 / 否 / option text) */\n  answer: string;\n}\n\n"
@@ -788,7 +1198,10 @@ def export(path):
             "export interface AlgoRule {\n  algo: string;\n  all: string[];\n  any: string[];\n"
             "  none: string[];\n  bonus: string[];\n  note: string;\n}\n\n"
             f"export const wizardGroups: WizardGroup[] = {json.dumps(groups, ensure_ascii=False, indent=2)};\n\n"
-            f"export const algoRules: AlgoRule[] = {json.dumps(rules, ensure_ascii=False, indent=2)};\n")
+            f"export const algoRules: AlgoRule[] = {json.dumps(rules, ensure_ascii=False, indent=2)};\n\n"
+            "// ── 非內建的資料結構：要自己寫 ──\n"
+            "export interface CustomStructure {\n  id: string;\n  name: string;\n  desc: string;\n  code: string;\n}\n\n"
+            f"export const customStructures: CustomStructure[] = {json.dumps(structures, ensure_ascii=False, indent=2)};\n")
     with open(path, "w", encoding="utf-8") as f:
         f.write(body)
     count = lambda k: sum(1 for x in nodes if x["kind"] == k)

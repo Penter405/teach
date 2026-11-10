@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Calculator, Database, Target, Sparkles, RotateCcw, Check, AlertTriangle, ArrowRight, Network } from 'lucide-react';
-import { algoNodes, algoEdges, wizardGroups, algoRules, WizardGroup, AlgoRule } from './algoTreeData';
+import { algoNodes, algoEdges, wizardGroups, algoRules, customStructures, WizardGroup, AlgoRule } from './algoTreeData';
 
 // 解題流程：1 真的需要優化嗎 → 2 了解資料 ＋ 3 問題要什麼（兩者分開選，可並列）→ 4 找到演算法
 
@@ -15,7 +15,7 @@ const gainsOf = (algoId: string) =>
 const CATEGORY_DOT: Record<string, string> = {
   '搜尋': 'bg-cyan-400', '排序': 'bg-sky-400', '陣列': 'bg-teal-400', '區間查詢': 'bg-indigo-400',
   '遞迴': 'bg-violet-400', '動態規劃': 'bg-purple-400', '最佳化': 'bg-fuchsia-400', '圖論': 'bg-emerald-400',
-  '最短路徑': 'bg-lime-400', '最小生成樹': 'bg-green-400', '字串': 'bg-rose-400', '資料結構': 'bg-orange-400',
+  '最短路徑': 'bg-lime-400', '最小生成樹': 'bg-green-400', '字串': 'bg-rose-400', '數學': 'bg-pink-400', '資料結構': 'bg-orange-400',
 };
 
 // ── Step 1: brute-force estimate ──
@@ -185,6 +185,12 @@ function ResultCard({ m, kind, onOpenInTree }: { key?: string; m: Match; kind: '
           <Network className="w-3.5 h-3.5" /> 判斷樹
         </button>
       </div>
+      {algo.customDs?.length > 0 && (
+        <button onClick={() => onOpenInTree(algo.id)} title="在判斷樹中看模板程式碼"
+          className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-orange-100 text-orange-800 border border-orange-300 dark:bg-orange-900/60 dark:text-orange-200 dark:border-orange-700 hover:underline">
+          🔧 需要自己寫：{algo.customDs.map(id => customStructures.find(c => c.id === id)?.name.split(' (')[0]).join('、')}
+        </button>
+      )}
       <div className="mt-2 flex flex-wrap gap-1">
         {m.matched.map(o => <Chip key={o} tone="ok"><Check className="w-3 h-3" />{optionLabel.get(o)}</Chip>)}
         {m.bonus.map(o => <Chip key={o} tone="bonus">+ {optionLabel.get(o)}</Chip>)}

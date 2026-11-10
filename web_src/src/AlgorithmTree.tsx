@@ -16,9 +16,10 @@ import {
   HelpCircle,
   ListChecks,
   Route,
+  Wrench,
 } from 'lucide-react';
 import {
-  algoNodes, algoEdges, algoNext, ALGO_ROOT_ID, ALGO_OUTCOME_ID,
+  algoNodes, algoEdges, algoNext, customStructures, ALGO_ROOT_ID, ALGO_OUTCOME_ID,
   AlgoNode, AlgoEdge, AlgoNodeKind,
 } from './algoTreeData';
 import { SolveWizard } from './SolveWizard';
@@ -54,6 +55,7 @@ const CATEGORY_STYLES: Record<string, CatStyle> = {
   '圖論':     { box: 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700', text: 'text-emerald-800 dark:text-emerald-200', dot: 'bg-emerald-400', label: '圖論' },
   '最短路徑': { box: 'bg-lime-50 dark:bg-lime-950/60 border-lime-300 dark:border-lime-700', text: 'text-lime-800 dark:text-lime-200', dot: 'bg-lime-400', label: '最短路徑' },
   '最小生成樹': { box: 'bg-green-50 dark:bg-green-950/60 border-green-300 dark:border-green-700', text: 'text-green-800 dark:text-green-200', dot: 'bg-green-400', label: '最小生成樹' },
+  '數學':     { box: 'bg-pink-50 dark:bg-pink-950/60 border-pink-300 dark:border-pink-700', text: 'text-pink-800 dark:text-pink-200', dot: 'bg-pink-400', label: '數學' },
   '字串':     { box: 'bg-rose-50 dark:bg-rose-950/60 border-rose-300 dark:border-rose-700', text: 'text-rose-800 dark:text-rose-200', dot: 'bg-rose-400', label: '字串' },
   '資料結構': { box: 'bg-orange-50 dark:bg-orange-950/60 border-orange-300 dark:border-orange-700', text: 'text-orange-800 dark:text-orange-200', dot: 'bg-orange-400', label: '資料結構' },
 };
@@ -87,6 +89,7 @@ const EDGE_STYLES: Record<AlgoNodeKind, { cls: string; marker: string; width: nu
 
 // ── Graph helpers ──
 const nodeById = new Map<string, AlgoNode>(algoNodes.map(n => [n.id, n]));
+const structureById = new Map(customStructures.map(c => [c.id, c]));
 const outgoing = new Map<string, AlgoEdge[]>();
 const incoming = new Map<string, AlgoEdge[]>();
 for (const n of algoNodes) { outgoing.set(n.id, []); incoming.set(n.id, []); }
@@ -342,6 +345,14 @@ function AlgoNodeBox({ node, pos, isMobile, state, onClick, onHover, onLeave, hi
           {node.time && !isMobile && (
             <span className={`font-mono text-[9px] mt-0.5 opacity-70 ${st.text} truncate max-w-full`}>{node.time}</span>
           )}
+          {node.customDs?.length > 0 && !isMobile && (
+            <span
+              title={`需要自己寫：${node.customDs.map(id => structureById.get(id)?.name).join('、')}`}
+              className="absolute -bottom-2.5 left-2 px-1.5 rounded-md text-[9px] font-bold border whitespace-nowrap bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900 dark:text-orange-200 dark:border-orange-700"
+            >
+              🔧 自己寫
+            </span>
+          )}
           {(hiddenCount > 0 || canFold) && (
             <button
               onClick={e => { e.stopPropagation(); onToggleFold(); }}
@@ -406,6 +417,36 @@ function LinkCard({ id, reason, tone, onSelect, answer }: {
         {n.kind === 'question' ? '→ ' : n.kind === 'algorithm' ? '✓ ' : ''}{n.labelZh} <span className="font-normal text-slate-400">· {n.label}</span>
       </button>
       {reason && reason !== answer && <Lines text={reason} />}
+    </div>
+  );
+}
+
+function StructureCard({ ds }: { key?: string; ds: { id: string; name: string; desc: string; code: string } }) {
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(ds.code); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch { /* clipboard blocked */ }
+  };
+  return (
+    <div className="rounded-xl border border-orange-200 dark:border-orange-900 bg-orange-50/60 dark:bg-orange-950/20 p-3">
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <div className="text-[12px] font-bold text-orange-900 dark:text-orange-200">🔧 {ds.name}</div>
+          <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">{ds.desc}</p>
+        </div>
+        <button onClick={() => setOpen(v => !v)}
+          className="flex-shrink-0 text-[11px] font-bold px-2 py-1 rounded-md bg-orange-200/70 dark:bg-orange-900 text-orange-900 dark:text-orange-100 hover:bg-orange-200">
+          {open ? '收起' : '看模板'}
+        </button>
+      </div>
+      {open && (
+        <div className="relative mt-2">
+          <button onClick={copy} className="absolute top-1.5 right-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-700 text-slate-100 hover:bg-slate-600">
+            {copied ? '已複製' : '複製'}
+          </button>
+          <pre className="max-h-80 overflow-auto rounded-lg bg-slate-900 text-slate-100 p-3 text-[11px] leading-relaxed font-mono whitespace-pre">{ds.code}</pre>
+        </div>
+      )}
     </div>
   );
 }
@@ -534,6 +575,19 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
         )}
 
         {/* ALGORITHM */}
+        {node.kind === 'algorithm' && node.customDs?.length > 0 && (
+          <section>
+            <SectionTitle icon={Wrench}>需要自己寫的資料結構</SectionTitle>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Python 沒有內建，要自己寫（heapq、deque、dict 是內建的，直接用就好）。</p>
+            <div className="mt-2 space-y-3">
+              {node.customDs.map(id => {
+                const ds = structureById.get(id);
+                if (!ds) return null;
+                return <StructureCard key={id} ds={ds} />;
+              })}
+            </div>
+          </section>
+        )}
         {node.kind === 'algorithm' && (
           <>
             <section>
@@ -938,6 +992,10 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
             <span className="text-[10px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300">{st.label}</span>
           </div>
         ))}
+        <div className="flex items-center gap-1.5">
+          <span className="px-1 rounded text-[9px] font-bold bg-orange-100 text-orange-800 border border-orange-300 dark:bg-orange-900 dark:text-orange-200 dark:border-orange-700">🔧</span>
+          <span className="text-[10px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300">需要自己寫的資料結構</span>
+        </div>
         <div className="flex items-center gap-x-3 gap-y-1 flex-wrap pl-3 sm:pl-4 border-l border-slate-200 dark:border-slate-700">
           {legendCategories.map(cat => {
             const st = CATEGORY_STYLES[cat] ?? FALLBACK_STYLE;

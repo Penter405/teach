@@ -21,6 +21,8 @@ export interface AlgoNode {
   stage: number;
   /** algorithm leaves: id of the algorithm this leaf stands for (same algorithm can be several leaves) */
   ref: string;
+  /** non-built-in data structures this algorithm needs you to write (ids in customStructures) */
+  customDs: string[];
 }
 
 /** kind = the kind of the edge's target node */
@@ -55,7 +57,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "先觀察問題本身有什麼特性，再決定要用哪個演算法。",
     "qtype": "",
     "stage": 0,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "q-does-brute-force-fit",
@@ -69,7 +72,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "用「解題流程」第 1 步算算看：資料量 n、暴力解的複雜度、語言速度、時間限制。\nPython 大約每秒 10⁷ 次簡單運算。",
     "qtype": "yesno",
     "stage": 1,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "brute-force",
@@ -83,7 +87,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "列出所有可能的答案，逐一檢查。\n一定正確，可以當作驗證更快解法的基準。",
     "qtype": "",
     "stage": 0,
-    "ref": "brute-force"
+    "ref": "brute-force",
+    "customDs": []
   },
   {
     "id": "q-shape-of-the-data",
@@ -97,7 +102,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "三個選項互斥：\n常數 = 單一值或固定大小（例如只給一個 n）；\n線性 = 一串元素（陣列、字串、串列）；\n關聯 = 元素之間有關係（圖、樹、鍵值對應）。",
     "qtype": "choice",
     "stage": 2,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "q-constant-input-what-answer",
@@ -108,10 +114,11 @@ export const algoNodes: AlgoNode[] = [
     "time": "",
     "space": "",
     "ds": "",
-    "desc": "資料只有一個值或固定大小，重點在問題本身。四個選項互斥。",
+    "desc": "資料只有一個值或固定大小，重點在問題本身。五個選項互斥。",
     "qtype": "choice",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "binary-search-on-answer",
@@ -125,7 +132,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "直接求答案很難，但「給定答案 x，檢查是否可行」很容易。\n可行性隨 x 單調變化（x 可行 → 更大的 x 也可行）。",
     "qtype": "",
     "stage": 0,
-    "ref": "binary-search-on-answer"
+    "ref": "binary-search-on-answer",
+    "customDs": []
   },
   {
     "id": "q-greedy-choice-provable",
@@ -139,7 +147,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "能證明：每一步都選「目前看起來最好」的，最後就是全域最佳解。",
     "qtype": "yesno",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "greedy",
@@ -153,7 +162,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "每一步都選「目前看起來最好」的選擇。\n可以證明局部最佳選擇不會讓全域答案變差。",
     "qtype": "",
     "stage": 0,
-    "ref": "greedy"
+    "ref": "greedy",
+    "customDs": []
   },
   {
     "id": "q-overlapping-subproblems",
@@ -167,7 +177,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "拆解時，同一個「狀態」會被算很多次。",
     "qtype": "yesno",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "q-only-a-few-previous-states",
@@ -181,7 +192,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "例如 f(i) 只用到 f(i−1)、f(i−2)：答案可以只用 O(1) 空間，不需要儲存所有答案。",
     "qtype": "yesno",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "dp-tabulation",
@@ -195,7 +207,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "動態規劃的 Bottom-up 寫法。\n子問題之間存在可計算的依賴順序。\n可以按照依賴順序由小問題推導大問題。\n不需要依賴遞迴呼叫堆疊。",
     "qtype": "",
     "stage": 0,
-    "ref": "dp-tabulation"
+    "ref": "dp-tabulation",
+    "customDs": []
   },
   {
     "id": "q-fill-the-whole-table",
@@ -209,7 +222,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "幾乎所有狀態都會用到，而且能排出由小到大的計算順序。",
     "qtype": "yesno",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "dp-tabulation-2",
@@ -223,7 +237,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "動態規劃的 Bottom-up 寫法。\n子問題之間存在可計算的依賴順序。\n可以按照依賴順序由小問題推導大問題。\n不需要依賴遞迴呼叫堆疊。",
     "qtype": "",
     "stage": 0,
-    "ref": "dp-tabulation"
+    "ref": "dp-tabulation",
+    "customDs": []
   },
   {
     "id": "dp-memoization",
@@ -237,7 +252,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "動態規劃的 Top-down 寫法。\n遞迴過程中會重複遇到相同狀態。\n可以儲存已經計算過的結果。\n避免重複計算相同子問題。",
     "qtype": "",
     "stage": 0,
-    "ref": "dp-memoization"
+    "ref": "dp-memoization",
+    "customDs": []
   },
   {
     "id": "q-bounds-available",
@@ -251,7 +267,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "對一個部分解，能算出「最好也只能到多少」。",
     "qtype": "yesno",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "branch-and-bound",
@@ -265,7 +282,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要尋找最佳解。\n可以計算候選分支的上下界。\n能夠排除不可能優於目前最佳解的分支。",
     "qtype": "",
     "stage": 0,
-    "ref": "branch-and-bound"
+    "ref": "branch-and-bound",
+    "customDs": []
   },
   {
     "id": "backtracking",
@@ -279,7 +297,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要枚舉可能的候選解。\n可以在部分候選解不符合條件時提前停止搜尋。",
     "qtype": "",
     "stage": 0,
-    "ref": "backtracking"
+    "ref": "backtracking",
+    "customDs": []
   },
   {
     "id": "backtracking-2",
@@ -293,7 +312,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要枚舉可能的候選解。\n可以在部分候選解不符合條件時提前停止搜尋。",
     "qtype": "",
     "stage": 0,
-    "ref": "backtracking"
+    "ref": "backtracking",
+    "customDs": []
   },
   {
     "id": "q-split-merge",
@@ -307,7 +327,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "切成兩個以上互不重疊的子問題，各自解完後合併。",
     "qtype": "yesno",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "divide-and-conquer",
@@ -321,7 +342,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "問題可以切成互不重疊、形式相同的子問題。\n子問題各自解完後，可以有效率地合併答案。",
     "qtype": "",
     "stage": 0,
-    "ref": "divide-and-conquer"
+    "ref": "divide-and-conquer",
+    "customDs": []
   },
   {
     "id": "recursion",
@@ -335,7 +357,53 @@ export const algoNodes: AlgoNode[] = [
     "desc": "問題可以自然拆解成較小的子問題。\n子問題之間具有遞迴關係。",
     "qtype": "",
     "stage": 0,
-    "ref": "recursion"
+    "ref": "recursion",
+    "customDs": []
+  },
+  {
+    "id": "q-many-numbers",
+    "labelZh": "要判斷很多個數（一整個範圍）？",
+    "label": "Many numbers?",
+    "kind": "question",
+    "category": "問題",
+    "time": "",
+    "space": "",
+    "ds": "",
+    "desc": "例如「1～n 之間所有的質數」或很多筆查詢，而不是只判斷一個數。",
+    "qtype": "yesno",
+    "stage": 3,
+    "ref": "",
+    "customDs": []
+  },
+  {
+    "id": "sieve-of-eratosthenes",
+    "labelZh": "埃氏篩",
+    "label": "Sieve of Eratosthenes",
+    "kind": "algorithm",
+    "category": "數學",
+    "time": "O(n log log n)",
+    "space": "O(n)",
+    "ds": "Bool Array",
+    "desc": "要知道 1～n 之間所有的質數，或判斷很多個數。\n從小到大，把每個質數的倍數都劃掉。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "sieve-of-eratosthenes",
+    "customDs": []
+  },
+  {
+    "id": "trial-division",
+    "labelZh": "試除法",
+    "label": "Trial Division",
+    "kind": "algorithm",
+    "category": "數學",
+    "time": "O(√n)",
+    "space": "O(1)",
+    "ds": "—",
+    "desc": "判斷一個數是不是質數，或做質因數分解。\n只要試到 √n：如果 n = a × b，a 和 b 至少有一個 ≤ √n。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "trial-division",
+    "customDs": []
   },
   {
     "id": "q-how-can-you-access-it",
@@ -349,7 +417,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "兩個選項互斥：能不能用索引直接拿到第 i 個元素。",
     "qtype": "choice",
     "stage": 2,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "q-sequential-data-what-output",
@@ -363,7 +432,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "只能從頭一個一個讀（串流、linked list、檔案）。三個選項互斥。",
     "qtype": "choice",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "linear-search",
@@ -377,7 +447,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要在未排序的集合中尋找特定元素。\n不需要額外的資料結構或前處理。",
     "qtype": "",
     "stage": 0,
-    "ref": "linear-search"
+    "ref": "linear-search",
+    "customDs": []
   },
   {
     "id": "merge-sort",
@@ -391,7 +462,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要穩定排序。\n需要保證最壞情況為 O(n log n)。\n允許使用 O(n) 額外記憶體。",
     "qtype": "",
     "stage": 0,
-    "ref": "merge-sort"
+    "ref": "merge-sort",
+    "customDs": []
   },
   {
     "id": "sliding-window",
@@ -405,7 +477,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "題目需要處理連續區間。\n新增或移除區間元素時，可以增量更新結果。\n不需要每次重新計算整個區間。",
     "qtype": "",
     "stage": 0,
-    "ref": "sliding-window"
+    "ref": "sliding-window",
+    "customDs": []
   },
   {
     "id": "q-array-what-output",
@@ -416,10 +489,11 @@ export const algoNodes: AlgoNode[] = [
     "time": "",
     "space": "",
     "ds": "",
-    "desc": "依照「要輸出什麼」分類，十個選項互斥。",
+    "desc": "依照「要輸出什麼」分類，選項彼此互斥。",
     "qtype": "choice",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "q-already-sorted",
@@ -433,7 +507,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "資料由小到大（或大到小）排好。",
     "qtype": "yesno",
     "stage": 2,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "q-uniformly-distributed",
@@ -447,7 +522,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "已排序的數值大致平均分布。",
     "qtype": "yesno",
     "stage": 2,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "interpolation-search",
@@ -461,7 +537,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "資料已經排序。\n數值分布近似均勻。\n可以根據搜尋值估算可能的位置。",
     "qtype": "",
     "stage": 0,
-    "ref": "interpolation-search"
+    "ref": "interpolation-search",
+    "customDs": []
   },
   {
     "id": "binary-search",
@@ -475,7 +552,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "資料已經排序，且支援隨機存取。\n可以每次排除一半的搜尋範圍。",
     "qtype": "",
     "stage": 0,
-    "ref": "binary-search"
+    "ref": "binary-search",
+    "customDs": []
   },
   {
     "id": "q-many-queries",
@@ -489,7 +567,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "同一份資料要回答很多次查找。",
     "qtype": "yesno",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "hash-lookup",
@@ -503,7 +582,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要大量精確查找。\n允許使用額外記憶體建立索引。\nHash 操作具有良好的預期效能。",
     "qtype": "",
     "stage": 0,
-    "ref": "hash-lookup"
+    "ref": "hash-lookup",
+    "customDs": []
   },
   {
     "id": "linear-search-2",
@@ -517,7 +597,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要在未排序的集合中尋找特定元素。\n不需要額外的資料結構或前處理。",
     "qtype": "",
     "stage": 0,
-    "ref": "linear-search"
+    "ref": "linear-search",
+    "customDs": []
   },
   {
     "id": "q-small-integer-keys",
@@ -531,7 +612,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "鍵值都是整數，而且範圍 k 不比資料量 n 大太多。",
     "qtype": "yesno",
     "stage": 2,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "counting-sort",
@@ -545,7 +627,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "資料是整數鍵值。\n鍵值範圍 k 相對於資料量 n 足夠小。\n可以利用計數取代比較排序。",
     "qtype": "",
     "stage": 0,
-    "ref": "counting-sort"
+    "ref": "counting-sort",
+    "customDs": []
   },
   {
     "id": "q-size-order-of-data",
@@ -559,7 +642,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "三個選項互斥。",
     "qtype": "choice",
     "stage": 2,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "insertion-sort",
@@ -573,7 +657,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "資料量小或資料接近排序完成。\n需要利用已排序部分減少移動次數。",
     "qtype": "",
     "stage": 0,
-    "ref": "insertion-sort"
+    "ref": "insertion-sort",
+    "customDs": []
   },
   {
     "id": "bubble-sort",
@@ -587,7 +672,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "資料量小。\n需要簡單的原地排序。\n可以接受 O(n²) 的時間複雜度。",
     "qtype": "",
     "stage": 0,
-    "ref": "bubble-sort"
+    "ref": "bubble-sort",
+    "customDs": []
   },
   {
     "id": "q-what-matters-most",
@@ -601,7 +687,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "三個選項互斥：穩定、最壞保證＋省空間、平均速度。",
     "qtype": "choice",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "merge-sort-2",
@@ -615,7 +702,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要穩定排序。\n需要保證最壞情況為 O(n log n)。\n允許使用 O(n) 額外記憶體。",
     "qtype": "",
     "stage": 0,
-    "ref": "merge-sort"
+    "ref": "merge-sort",
+    "customDs": []
   },
   {
     "id": "heap-sort",
@@ -629,7 +717,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要保證 O(n log n) 的最壞時間。\n希望額外空間維持 O(1)。",
     "qtype": "",
     "stage": 0,
-    "ref": "heap-sort"
+    "ref": "heap-sort",
+    "customDs": []
   },
   {
     "id": "quick-sort",
@@ -643,7 +732,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "重視平均情況下的排序效能。\n可以接受 O(n²) 的最壞情況。",
     "qtype": "",
     "stage": 0,
-    "ref": "quick-sort"
+    "ref": "quick-sort",
+    "customDs": []
   },
   {
     "id": "q-range-what-is-asked",
@@ -657,7 +747,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "三個選項互斥。",
     "qtype": "choice",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "sliding-window-2",
@@ -671,7 +762,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "題目需要處理連續區間。\n新增或移除區間元素時，可以增量更新結果。\n不需要每次重新計算整個區間。",
     "qtype": "",
     "stage": 0,
-    "ref": "sliding-window"
+    "ref": "sliding-window",
+    "customDs": []
   },
   {
     "id": "monotonic-queue",
@@ -685,7 +777,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要持續查詢滑動視窗中的最大值或最小值。\n可以利用單調性移除不可能成為答案的元素。",
     "qtype": "",
     "stage": 0,
-    "ref": "monotonic-queue"
+    "ref": "monotonic-queue",
+    "customDs": []
   },
   {
     "id": "q-updates-between-queries",
@@ -699,7 +792,23 @@ export const algoNodes: AlgoNode[] = [
     "desc": "多次區間查詢之間，陣列的值會不會被改。",
     "qtype": "yesno",
     "stage": 2,
-    "ref": ""
+    "ref": "",
+    "customDs": []
+  },
+  {
+    "id": "q-prefix-subtractable",
+    "labelZh": "答案能用前綴相減嗎？",
+    "label": "Prefix-subtractable?",
+    "kind": "question",
+    "category": "問題",
+    "time": "",
+    "space": "",
+    "ds": "",
+    "desc": "像總和、個數可以用「前 r 個 − 前 l−1 個」算出；不同值的個數、眾數就不行。",
+    "qtype": "yesno",
+    "stage": 3,
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "prefix-sum",
@@ -713,7 +822,23 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要大量查詢連續區間總和。\n原始陣列不會被修改。\n可以接受 O(n) 的前處理成本。",
     "qtype": "",
     "stage": 0,
-    "ref": "prefix-sum"
+    "ref": "prefix-sum",
+    "customDs": []
+  },
+  {
+    "id": "mo-s-algorithm",
+    "labelZh": "莫隊演算法",
+    "label": "Mo's Algorithm",
+    "kind": "algorithm",
+    "category": "區間查詢",
+    "time": "O((n + q)√n)",
+    "space": "O(n)",
+    "ds": "Sort + Counter",
+    "desc": "很多次區間查詢，而且可以離線（先讀完所有查詢）。\n答案不能用前綴相減（例如區間內不同值的個數），\n但加入／移除一個元素時，答案可以 O(1) 更新。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "mo-s-algorithm",
+    "customDs": []
   },
   {
     "id": "q-sum-only",
@@ -727,7 +852,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "只問總和，不問最小值／最大值等其他運算。",
     "qtype": "yesno",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "fenwick-tree",
@@ -741,7 +867,10 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要動態修改單一位置的數值。\n同時需要前綴和或區間和查詢。\n更新與查詢都希望達到 O(log n)。",
     "qtype": "",
     "stage": 0,
-    "ref": "fenwick-tree"
+    "ref": "fenwick-tree",
+    "customDs": [
+      "fenwick"
+    ]
   },
   {
     "id": "segment-tree",
@@ -755,7 +884,10 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要動態區間查詢。\n查詢操作可能是區間最小值、最大值或總和。\n需要支援更一般化的區間操作。",
     "qtype": "",
     "stage": 0,
-    "ref": "segment-tree"
+    "ref": "segment-tree",
+    "customDs": [
+      "segment"
+    ]
   },
   {
     "id": "heap-priority-queue",
@@ -769,7 +901,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要反覆取得目前的最大值或最小值。\n需要動態插入及移除元素。",
     "qtype": "",
     "stage": 0,
-    "ref": "heap-priority-queue"
+    "ref": "heap-priority-queue",
+    "customDs": []
   },
   {
     "id": "monotonic-stack",
@@ -783,7 +916,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要尋找每個元素左側或右側最近的較大／較小元素。\n可以利用單調性排除不再需要的元素。",
     "qtype": "",
     "stage": 0,
-    "ref": "monotonic-stack"
+    "ref": "monotonic-stack",
+    "customDs": []
   },
   {
     "id": "q-sorted-or-can-sort",
@@ -797,7 +931,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "排序後不影響答案（例如只要找數值，不要原本的位置）。",
     "qtype": "yesno",
     "stage": 2,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "two-pointers",
@@ -811,7 +946,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "資料已排序或可以先排序。\n指標移動具有單調性。\n可以透過移動指標排除不必要的比較。",
     "qtype": "",
     "stage": 0,
-    "ref": "two-pointers"
+    "ref": "two-pointers",
+    "customDs": []
   },
   {
     "id": "hash-lookup-2",
@@ -825,7 +961,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要大量精確查找。\n允許使用額外記憶體建立索引。\nHash 操作具有良好的預期效能。",
     "qtype": "",
     "stage": 0,
-    "ref": "hash-lookup"
+    "ref": "hash-lookup",
+    "customDs": []
   },
   {
     "id": "binary-search-on-answer-2",
@@ -839,7 +976,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "直接求答案很難，但「給定答案 x，檢查是否可行」很容易。\n可行性隨 x 單調變化（x 可行 → 更大的 x 也可行）。",
     "qtype": "",
     "stage": 0,
-    "ref": "binary-search-on-answer"
+    "ref": "binary-search-on-answer",
+    "customDs": []
   },
   {
     "id": "kmp",
@@ -853,7 +991,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要在長文字中找出某個模式字串。\n暴力比對 O(nm) 太慢，失配時不想從頭再比。",
     "qtype": "",
     "stage": 0,
-    "ref": "kmp"
+    "ref": "kmp",
+    "customDs": []
   },
   {
     "id": "trie",
@@ -867,7 +1006,40 @@ export const algoNodes: AlgoNode[] = [
     "desc": "有大量字串需要查詢、或需要依照前綴搜尋。\n許多字串共用相同的前綴。",
     "qtype": "",
     "stage": 0,
-    "ref": "trie"
+    "ref": "trie",
+    "customDs": [
+      "trie"
+    ]
+  },
+  {
+    "id": "coordinate-compression",
+    "labelZh": "座標壓縮",
+    "label": "Coordinate Compression",
+    "kind": "algorithm",
+    "category": "排序",
+    "time": "O(n log n)",
+    "space": "O(n)",
+    "ds": "Sort + Dict",
+    "desc": "需要知道每個元素「排第幾名」。\n或數值很大、但只在乎大小順序：排序後用 dict 把數值換成名次。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "coordinate-compression",
+    "customDs": []
+  },
+  {
+    "id": "shunting-yard",
+    "labelZh": "運算式轉換",
+    "label": "Shunting-yard",
+    "kind": "algorithm",
+    "category": "資料結構",
+    "time": "O(n)",
+    "space": "O(n)",
+    "ds": "Stack",
+    "desc": "把中序運算式轉成後序（或直接計算）。\n用堆疊暫存運算子，依優先順序與括號決定何時輸出。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "shunting-yard",
+    "customDs": []
   },
   {
     "id": "q-greedy-choice-provable-2",
@@ -881,7 +1053,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "能證明：每一步都選「目前看起來最好」的，最後就是全域最佳解。",
     "qtype": "yesno",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "greedy-2",
@@ -895,7 +1068,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "每一步都選「目前看起來最好」的選擇。\n可以證明局部最佳選擇不會讓全域答案變差。",
     "qtype": "",
     "stage": 0,
-    "ref": "greedy"
+    "ref": "greedy",
+    "customDs": []
   },
   {
     "id": "q-overlapping-subproblems-2",
@@ -909,7 +1083,113 @@ export const algoNodes: AlgoNode[] = [
     "desc": "拆解時，同一個「狀態」會被算很多次。",
     "qtype": "yesno",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
+  },
+  {
+    "id": "q-which-kind-of-dp",
+    "labelZh": "是哪一種 DP？",
+    "label": "Which kind of DP?",
+    "kind": "question",
+    "category": "問題",
+    "time": "",
+    "space": "",
+    "ds": "",
+    "desc": "常見的 DP 題型，五個選項互斥。都不像就選「一般狀態」。",
+    "qtype": "choice",
+    "stage": 3,
+    "ref": "",
+    "customDs": []
+  },
+  {
+    "id": "q-each-item-at-most-once",
+    "labelZh": "每個物品最多選一次？",
+    "label": "Each item at most once?",
+    "kind": "question",
+    "category": "問題",
+    "time": "",
+    "space": "",
+    "ds": "",
+    "desc": "是 = 0/1 背包；否 = 同一個物品可以選很多次（0/n）。",
+    "qtype": "yesno",
+    "stage": 3,
+    "ref": "",
+    "customDs": []
+  },
+  {
+    "id": "0-1-knapsack",
+    "labelZh": "0/1 背包",
+    "label": "0/1 Knapsack",
+    "kind": "algorithm",
+    "category": "動態規劃",
+    "time": "O(n·W)",
+    "space": "O(W)",
+    "ds": "1D Array",
+    "desc": "每個物品最多選一次，容量有限，求最大價值。\ndp[w] = 容量 w 時的最佳價值；容量要由大到小更新，才不會重複選。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "0-1-knapsack",
+    "customDs": []
+  },
+  {
+    "id": "unbounded-knapsack",
+    "labelZh": "無限背包",
+    "label": "Unbounded Knapsack",
+    "kind": "algorithm",
+    "category": "動態規劃",
+    "time": "O(n·W)",
+    "space": "O(W)",
+    "ds": "1D Array",
+    "desc": "每個物品可以選任意多次（0/n）。\n和 0/1 背包一樣，但容量由小到大更新，同一個物品可以重複使用。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "unbounded-knapsack",
+    "customDs": []
+  },
+  {
+    "id": "lcs",
+    "labelZh": "最長共同子序列",
+    "label": "LCS",
+    "kind": "algorithm",
+    "category": "動態規劃",
+    "time": "O(n·m)",
+    "space": "O(n·m)",
+    "ds": "2D Table",
+    "desc": "比較兩個序列，找最長的共同子序列（不必連續）。\ndp[i][j] = 前 i 個與前 j 個的答案。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "lcs",
+    "customDs": []
+  },
+  {
+    "id": "lis",
+    "labelZh": "最長遞增子序列",
+    "label": "LIS",
+    "kind": "algorithm",
+    "category": "動態規劃",
+    "time": "O(n log n)",
+    "space": "O(n)",
+    "ds": "Array + Binary Search",
+    "desc": "找一個序列中最長的遞增子序列。\n基本 DP 是 O(n²)；用「二分搜尋＋貪婪」維護每個長度的最小結尾，可以做到 O(n log n)。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "lis",
+    "customDs": []
+  },
+  {
+    "id": "interval-dp",
+    "labelZh": "分割／區間 DP",
+    "label": "Interval DP",
+    "kind": "algorithm",
+    "category": "動態規劃",
+    "time": "O(n³)",
+    "space": "O(n²)",
+    "ds": "2D Table",
+    "desc": "把序列切成幾段，或把相鄰的區間合併。\ndp[l][r] = 區間 [l, r] 的最佳答案，由所有切點 k 組合而來。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "interval-dp",
+    "customDs": []
   },
   {
     "id": "q-only-a-few-previous-states-2",
@@ -923,7 +1203,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "例如 f(i) 只用到 f(i−1)、f(i−2)：答案可以只用 O(1) 空間，不需要儲存所有答案。",
     "qtype": "yesno",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "dp-tabulation-2-2",
@@ -937,7 +1218,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "動態規劃的 Bottom-up 寫法。\n子問題之間存在可計算的依賴順序。\n可以按照依賴順序由小問題推導大問題。\n不需要依賴遞迴呼叫堆疊。",
     "qtype": "",
     "stage": 0,
-    "ref": "dp-tabulation"
+    "ref": "dp-tabulation",
+    "customDs": []
   },
   {
     "id": "q-fill-the-whole-table-2",
@@ -951,7 +1233,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "幾乎所有狀態都會用到，而且能排出由小到大的計算順序。",
     "qtype": "yesno",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "dp-tabulation-2-2-2",
@@ -965,7 +1248,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "動態規劃的 Bottom-up 寫法。\n子問題之間存在可計算的依賴順序。\n可以按照依賴順序由小問題推導大問題。\n不需要依賴遞迴呼叫堆疊。",
     "qtype": "",
     "stage": 0,
-    "ref": "dp-tabulation"
+    "ref": "dp-tabulation",
+    "customDs": []
   },
   {
     "id": "dp-memoization-2",
@@ -979,7 +1263,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "動態規劃的 Top-down 寫法。\n遞迴過程中會重複遇到相同狀態。\n可以儲存已經計算過的結果。\n避免重複計算相同子問題。",
     "qtype": "",
     "stage": 0,
-    "ref": "dp-memoization"
+    "ref": "dp-memoization",
+    "customDs": []
   },
   {
     "id": "q-bounds-available-2",
@@ -993,7 +1278,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "對一個部分解，能算出「最好也只能到多少」。",
     "qtype": "yesno",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "branch-and-bound-2",
@@ -1007,7 +1293,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要尋找最佳解。\n可以計算候選分支的上下界。\n能夠排除不可能優於目前最佳解的分支。",
     "qtype": "",
     "stage": 0,
-    "ref": "branch-and-bound"
+    "ref": "branch-and-bound",
+    "customDs": []
   },
   {
     "id": "backtracking-2-2",
@@ -1021,7 +1308,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要枚舉可能的候選解。\n可以在部分候選解不符合條件時提前停止搜尋。",
     "qtype": "",
     "stage": 0,
-    "ref": "backtracking"
+    "ref": "backtracking",
+    "customDs": []
   },
   {
     "id": "q-what-kind-of-relation",
@@ -1035,7 +1323,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "兩個選項互斥：點與點之間有邊（圖、樹），或鍵對應到值（dict）。",
     "qtype": "choice",
     "stage": 2,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "q-key-value-what-to-do",
@@ -1049,7 +1338,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "三個選項互斥。",
     "qtype": "choice",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "hash-lookup-2-2",
@@ -1063,7 +1353,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要大量精確查找。\n允許使用額外記憶體建立索引。\nHash 操作具有良好的預期效能。",
     "qtype": "",
     "stage": 0,
-    "ref": "hash-lookup"
+    "ref": "hash-lookup",
+    "customDs": []
   },
   {
     "id": "trie-2",
@@ -1077,7 +1368,10 @@ export const algoNodes: AlgoNode[] = [
     "desc": "有大量字串需要查詢、或需要依照前綴搜尋。\n許多字串共用相同的前綴。",
     "qtype": "",
     "stage": 0,
-    "ref": "trie"
+    "ref": "trie",
+    "customDs": [
+      "trie"
+    ]
   },
   {
     "id": "binary-search-2",
@@ -1091,7 +1385,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "資料已經排序，且支援隨機存取。\n可以每次排除一半的搜尋範圍。",
     "qtype": "",
     "stage": 0,
-    "ref": "binary-search"
+    "ref": "binary-search",
+    "customDs": []
   },
   {
     "id": "q-graph-what-is-asked",
@@ -1102,10 +1397,11 @@ export const algoNodes: AlgoNode[] = [
     "time": "",
     "space": "",
     "ds": "",
-    "desc": "圖的問題，依照「要輸出什麼」分成五種，彼此互斥。",
+    "desc": "圖的問題，依照「要輸出什麼」分類，選項彼此互斥。",
     "qtype": "choice",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "q-all-pairs-small-v",
@@ -1119,7 +1415,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要「每一對點」之間的最短距離，而且點數很少（約數百以內）。",
     "qtype": "yesno",
     "stage": 3,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "floyd-warshall",
@@ -1133,7 +1430,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要計算所有節點彼此之間的最短路徑。\n節點數量足夠小，可以接受 O(V³) 的成本。",
     "qtype": "",
     "stage": 0,
-    "ref": "floyd-warshall"
+    "ref": "floyd-warshall",
+    "customDs": []
   },
   {
     "id": "q-edge-weights",
@@ -1147,7 +1445,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "三個選項互斥：沒有權重、全部非負、有負數。",
     "qtype": "choice",
     "stage": 2,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "bfs",
@@ -1161,7 +1460,10 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要在無權圖中尋找最短路徑。\n或需要按照距離層級遍歷圖形。",
     "qtype": "",
     "stage": 0,
-    "ref": "bfs"
+    "ref": "bfs",
+    "customDs": [
+      "graph"
+    ]
   },
   {
     "id": "dijkstra",
@@ -1175,7 +1477,10 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要尋找單一起點的最短路徑。\n所有邊的權重都必須非負。\n可以使用 Min Heap 快速取得目前距離最小的節點。",
     "qtype": "",
     "stage": 0,
-    "ref": "dijkstra"
+    "ref": "dijkstra",
+    "customDs": [
+      "graph"
+    ]
   },
   {
     "id": "bellman-ford",
@@ -1189,7 +1494,10 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要尋找單一起點的最短路徑。\n圖中可能存在負權重邊。\n也可以用來偵測可達的負權重環。",
     "qtype": "",
     "stage": 0,
-    "ref": "bellman-ford"
+    "ref": "bellman-ford",
+    "customDs": [
+      "graph"
+    ]
   },
   {
     "id": "q-dense-graph-e-v",
@@ -1203,7 +1511,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "邊數接近 V²（幾乎每兩點之間都有邊）。",
     "qtype": "yesno",
     "stage": 2,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "prim",
@@ -1217,7 +1526,10 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要建立最小生成樹。\n可以逐步選擇連接目前生成樹的最小權重邊。\n使用 Min Heap 加速選擇。",
     "qtype": "",
     "stage": 0,
-    "ref": "prim"
+    "ref": "prim",
+    "customDs": [
+      "graph"
+    ]
   },
   {
     "id": "kruskal",
@@ -1231,7 +1543,10 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要建立最小生成樹。\n可以按照邊權重由小到大處理。\n使用 DSU 判斷是否形成環。",
     "qtype": "",
     "stage": 0,
-    "ref": "kruskal"
+    "ref": "kruskal",
+    "customDs": [
+      "dsu"
+    ]
   },
   {
     "id": "q-do-dependencies-form-a-cycle",
@@ -1245,7 +1560,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "A→B→…→A：有環就排不出合法順序。",
     "qtype": "yesno",
     "stage": 2,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "topological-sort",
@@ -1259,7 +1575,10 @@ export const algoNodes: AlgoNode[] = [
     "desc": "事情之間有先後依賴（A 要在 B 之前）。\n依賴關係沒有環（有向無環圖 DAG）。",
     "qtype": "",
     "stage": 0,
-    "ref": "topological-sort"
+    "ref": "topological-sort",
+    "customDs": [
+      "graph"
+    ]
   },
   {
     "id": "dfs",
@@ -1273,7 +1592,10 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要深入探索圖形。\n需要判斷連通性、尋找環或進行拓樸相關操作。",
     "qtype": "",
     "stage": 0,
-    "ref": "dfs"
+    "ref": "dfs",
+    "customDs": [
+      "graph"
+    ]
   },
   {
     "id": "disjoint-set-union",
@@ -1287,7 +1609,10 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要維護多個互不相交的集合。\n需要快速合併集合及判斷兩個元素是否屬於同一集合。",
     "qtype": "",
     "stage": 0,
-    "ref": "disjoint-set-union"
+    "ref": "disjoint-set-union",
+    "customDs": [
+      "dsu"
+    ]
   },
   {
     "id": "dfs-2",
@@ -1301,7 +1626,91 @@ export const algoNodes: AlgoNode[] = [
     "desc": "需要深入探索圖形。\n需要判斷連通性、尋找環或進行拓樸相關操作。",
     "qtype": "",
     "stage": 0,
-    "ref": "dfs"
+    "ref": "dfs",
+    "customDs": [
+      "graph"
+    ]
+  },
+  {
+    "id": "tree-traversal",
+    "labelZh": "樹的走訪",
+    "label": "Tree Traversal",
+    "kind": "algorithm",
+    "category": "圖論",
+    "time": "O(n)",
+    "space": "O(h)",
+    "ds": "Recursion / Stack",
+    "desc": "依照前序（node→left→right）、中序（left→node→right）或後序（left→right→node）拜訪每個節點。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "tree-traversal",
+    "customDs": [
+      "binary_tree"
+    ]
+  },
+  {
+    "id": "bipartite-check",
+    "labelZh": "二分圖判定",
+    "label": "Bipartite Check",
+    "kind": "algorithm",
+    "category": "圖論",
+    "time": "O(V + E)",
+    "space": "O(V)",
+    "ds": "Queue + Color",
+    "desc": "能不能把點分成兩組，讓每條邊的兩端都在不同組。\n用 BFS 著色：相鄰的點塗不同顏色，發現同色相鄰就不是二分圖。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "bipartite-check",
+    "customDs": [
+      "graph"
+    ]
+  },
+  {
+    "id": "q-what-kind-of-graph",
+    "labelZh": "是哪一種圖？",
+    "label": "What kind of graph?",
+    "kind": "question",
+    "category": "問題",
+    "time": "",
+    "space": "",
+    "ds": "",
+    "desc": "兩個選項互斥：樹（沒有環、n−1 條邊），或每個點只有一條出去的邊。",
+    "qtype": "choice",
+    "stage": 2,
+    "ref": "",
+    "customDs": []
+  },
+  {
+    "id": "tree-diameter",
+    "labelZh": "樹的直徑",
+    "label": "Tree Diameter",
+    "kind": "algorithm",
+    "category": "圖論",
+    "time": "O(n)",
+    "space": "O(n)",
+    "ds": "BFS",
+    "desc": "樹上每個點的最遠距離。\n最遠的點一定是直徑的一端：三次 BFS 找出直徑兩端，答案 = max(到兩端的距離)。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "tree-diameter",
+    "customDs": [
+      "graph"
+    ]
+  },
+  {
+    "id": "functional-graph",
+    "labelZh": "找環＋記憶化",
+    "label": "Functional Graph",
+    "kind": "algorithm",
+    "category": "圖論",
+    "time": "O(n)",
+    "space": "O(n)",
+    "ds": "Array",
+    "desc": "每個點只有一條出去的邊（例如每個人只寄給一個人）。\n從任何點出發最後都會進入一個環：找出環，環外的點 = 1 + 下一個點的答案。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "functional-graph",
+    "customDs": []
   },
   {
     "id": "gain-correct-baseline",
@@ -1315,7 +1724,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "一定正確，但通常是 O(n) 或 O(n²)。\n可以當作驗證更快解法的基準。",
     "qtype": "",
     "stage": 0,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "gain-logarithmic-search",
@@ -1329,7 +1739,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "每一步排除一大部分，搜尋次數變成 log n。",
     "qtype": "",
     "stage": 0,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "gain-all-or-best-solutions",
@@ -1343,7 +1754,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "系統化地找到所有可行解或最佳解，\n並透過剪枝減少搜尋量。",
     "qtype": "",
     "stage": 0,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "gain-exponential-polynomial",
@@ -1357,7 +1769,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "每個狀態只計算一次，時間 = 狀態數 × 轉移數。",
     "qtype": "",
     "stage": 0,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "gain-recursive-structure",
@@ -1371,7 +1784,23 @@ export const algoNodes: AlgoNode[] = [
     "desc": "寫出遞迴關係式，看清楚狀態與轉移。\n接著可以檢查是否有重複子問題。",
     "qtype": "",
     "stage": 0,
-    "ref": ""
+    "ref": "",
+    "customDs": []
+  },
+  {
+    "id": "gain-primes-factors",
+    "labelZh": "質數與因數",
+    "label": "Primes & Factors",
+    "kind": "gain",
+    "category": "收穫",
+    "time": "",
+    "space": "",
+    "ds": "",
+    "desc": "不必對每個數從頭試除，判斷質數變快。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "gain-sorted-data",
@@ -1385,7 +1814,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "資料排好序之後，就多了「有序」這個特性，\n可以接著使用二分搜尋、雙指標等方法。",
     "qtype": "",
     "stage": 0,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "gain-single-pass",
@@ -1399,7 +1829,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "每個元素只進出一次，消除巢狀迴圈。",
     "qtype": "",
     "stage": 0,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "gain-constant-time-lookup",
@@ -1413,7 +1844,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "用額外空間建立索引，查詢不再需要掃描。",
     "qtype": "",
     "stage": 0,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "gain-fast-range-queries",
@@ -1427,7 +1859,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "區間查詢從 O(n) 降到 O(1) 或 O(log n)。",
     "qtype": "",
     "stage": 0,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "gain-fast-min-max",
@@ -1441,7 +1874,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "不必每次掃描全部元素找最大／最小值。",
     "qtype": "",
     "stage": 0,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "gain-linear-time-strings",
@@ -1455,49 +1889,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "字串比對或查詢不再需要 O(nm) 的暴力比較。",
     "qtype": "",
     "stage": 0,
-    "ref": ""
-  },
-  {
-    "id": "gain-shortest-paths",
-    "labelZh": "最短路徑",
-    "label": "Shortest Paths",
-    "kind": "gain",
-    "category": "收穫",
-    "time": "",
-    "space": "",
-    "ds": "",
-    "desc": "得到起點到各點（或所有點對）的最短距離。",
-    "qtype": "",
-    "stage": 0,
-    "ref": ""
-  },
-  {
-    "id": "gain-connectivity",
-    "labelZh": "連通性與圖的結構",
-    "label": "Connectivity",
-    "kind": "gain",
-    "category": "收穫",
-    "time": "",
-    "space": "",
-    "ds": "",
-    "desc": "知道哪些點相連、是否有環、連通塊有幾個。",
-    "qtype": "",
-    "stage": 0,
-    "ref": ""
-  },
-  {
-    "id": "gain-minimum-spanning-tree",
-    "labelZh": "最小生成樹",
-    "label": "Minimum Spanning Tree",
-    "kind": "gain",
-    "category": "收穫",
-    "time": "",
-    "space": "",
-    "ds": "",
-    "desc": "用最小總成本把所有點連起來。",
-    "qtype": "",
-    "stage": 0,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "gain-valid-order",
@@ -1511,7 +1904,53 @@ export const algoNodes: AlgoNode[] = [
     "desc": "得到一個滿足所有依賴關係的順序，或發現依賴中有環。",
     "qtype": "",
     "stage": 0,
-    "ref": ""
+    "ref": "",
+    "customDs": []
+  },
+  {
+    "id": "gain-shortest-paths",
+    "labelZh": "最短路徑",
+    "label": "Shortest Paths",
+    "kind": "gain",
+    "category": "收穫",
+    "time": "",
+    "space": "",
+    "ds": "",
+    "desc": "得到起點到各點（或所有點對）的最短距離。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "",
+    "customDs": []
+  },
+  {
+    "id": "gain-connectivity",
+    "labelZh": "連通性與圖的結構",
+    "label": "Connectivity",
+    "kind": "gain",
+    "category": "收穫",
+    "time": "",
+    "space": "",
+    "ds": "",
+    "desc": "知道哪些點相連、是否有環、連通塊有幾個。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "",
+    "customDs": []
+  },
+  {
+    "id": "gain-minimum-spanning-tree",
+    "labelZh": "最小生成樹",
+    "label": "Minimum Spanning Tree",
+    "kind": "gain",
+    "category": "收穫",
+    "time": "",
+    "space": "",
+    "ds": "",
+    "desc": "用最小總成本把所有點連起來。",
+    "qtype": "",
+    "stage": 0,
+    "ref": "",
+    "customDs": []
   },
   {
     "id": "continue-or-solved",
@@ -1525,7 +1964,8 @@ export const algoNodes: AlgoNode[] = [
     "desc": "問題已經解決 → 結束。\n還不夠快、或出現新的限制 → 帶著新的特性回到「問題發現」，繼續往下走。",
     "qtype": "",
     "stage": 0,
-    "ref": ""
+    "ref": "",
+    "customDs": []
   }
 ];
 
@@ -1744,6 +2184,41 @@ export const algoEdges: AlgoEdge[] = [
     "from": "q-split-merge",
     "to": "recursion",
     "reason": "一般遞迴：每次縮小一點。",
+    "kind": "algorithm",
+    "answer": "否"
+  },
+  {
+    "from": "q-constant-input-what-answer",
+    "to": "q-many-numbers",
+    "reason": "判斷質數、質因數分解。",
+    "kind": "question",
+    "answer": "質數／因數"
+  },
+  {
+    "from": "sieve-of-eratosthenes",
+    "to": "gain-primes-factors",
+    "reason": "篩一次 O(n log log n)，之後每次查詢 O(1)。",
+    "kind": "gain",
+    "answer": ""
+  },
+  {
+    "from": "q-many-numbers",
+    "to": "sieve-of-eratosthenes",
+    "reason": "先篩一次，之後每次查詢 O(1)。",
+    "kind": "algorithm",
+    "answer": "是"
+  },
+  {
+    "from": "trial-division",
+    "to": "gain-primes-factors",
+    "reason": "O(n) → O(√n)。",
+    "kind": "gain",
+    "answer": ""
+  },
+  {
+    "from": "q-many-numbers",
+    "to": "trial-division",
+    "reason": "只有一個數：試除到 √n 就夠了。",
     "kind": "algorithm",
     "answer": "否"
   },
@@ -2042,6 +2517,13 @@ export const algoEdges: AlgoEdge[] = [
     "answer": "很多次區間查詢"
   },
   {
+    "from": "q-updates-between-queries",
+    "to": "q-prefix-subtractable",
+    "reason": "資料不變，可以先做前處理。",
+    "kind": "question",
+    "answer": "否"
+  },
+  {
     "from": "prefix-sum",
     "to": "gain-fast-range-queries",
     "reason": "前處理 O(n)，每次查詢 O(1)。",
@@ -2049,9 +2531,23 @@ export const algoEdges: AlgoEdge[] = [
     "answer": ""
   },
   {
-    "from": "q-updates-between-queries",
+    "from": "q-prefix-subtractable",
     "to": "prefix-sum",
-    "reason": "資料不變：前綴和 O(1) 查詢。",
+    "reason": "前綴和：O(n) 前處理，每次 O(1)。",
+    "kind": "algorithm",
+    "answer": "是"
+  },
+  {
+    "from": "mo-s-algorithm",
+    "to": "gain-fast-range-queries",
+    "reason": "無法前綴相減的區間查詢：O(nq) → O((n + q)√n)。",
+    "kind": "gain",
+    "answer": ""
+  },
+  {
+    "from": "q-prefix-subtractable",
+    "to": "mo-s-algorithm",
+    "reason": "離線排序查詢，移動兩個指標：O((n + q)√n)。",
     "kind": "algorithm",
     "answer": "否"
   },
@@ -2196,6 +2692,34 @@ export const algoEdges: AlgoEdge[] = [
     "answer": "前綴查詢"
   },
   {
+    "from": "coordinate-compression",
+    "to": "gain-sorted-data",
+    "reason": "大數值換成 1～n 的名次，可以直接當陣列索引。",
+    "kind": "gain",
+    "answer": ""
+  },
+  {
+    "from": "q-array-what-output",
+    "to": "coordinate-compression",
+    "reason": "排序後用 dict 記下每個數值的名次。",
+    "kind": "algorithm",
+    "answer": "每個元素的名次"
+  },
+  {
+    "from": "shunting-yard",
+    "to": "gain-valid-order",
+    "reason": "得到可以直接由左到右計算的後序式。",
+    "kind": "gain",
+    "answer": ""
+  },
+  {
+    "from": "q-array-what-output",
+    "to": "shunting-yard",
+    "reason": "中序轉後序、計算 + - * / 和括號。",
+    "kind": "algorithm",
+    "answer": "運算式轉換／計算"
+  },
+  {
     "from": "q-array-what-output",
     "to": "q-greedy-choice-provable-2",
     "reason": "例如最長遞增子序列、背包、走樓梯。",
@@ -2225,10 +2749,94 @@ export const algoEdges: AlgoEdge[] = [
   },
   {
     "from": "q-overlapping-subproblems-2",
-    "to": "q-only-a-few-previous-states-2",
+    "to": "q-which-kind-of-dp",
     "reason": "這就是動態規劃 (DP)：每個狀態只算一次。",
     "kind": "question",
     "answer": "是"
+  },
+  {
+    "from": "q-which-kind-of-dp",
+    "to": "q-each-item-at-most-once",
+    "reason": "在容量限制下選物品，求最大價值或方法數。",
+    "kind": "question",
+    "answer": "背包：選物品、容量有限"
+  },
+  {
+    "from": "0-1-knapsack",
+    "to": "gain-exponential-polynomial",
+    "reason": "指數級的選或不選 → O(n·W)。",
+    "kind": "gain",
+    "answer": ""
+  },
+  {
+    "from": "q-each-item-at-most-once",
+    "to": "0-1-knapsack",
+    "reason": "容量由大到小更新 dp，每個物品只會用到一次。",
+    "kind": "algorithm",
+    "answer": "是"
+  },
+  {
+    "from": "unbounded-knapsack",
+    "to": "gain-exponential-polynomial",
+    "reason": "O(n·W)，同一物品可以重複選。",
+    "kind": "gain",
+    "answer": ""
+  },
+  {
+    "from": "q-each-item-at-most-once",
+    "to": "unbounded-knapsack",
+    "reason": "容量由小到大更新 dp，同一個物品可以重複用。",
+    "kind": "algorithm",
+    "answer": "否"
+  },
+  {
+    "from": "lcs",
+    "to": "gain-exponential-polynomial",
+    "reason": "指數級的枚舉子序列 → O(n·m)。",
+    "kind": "gain",
+    "answer": ""
+  },
+  {
+    "from": "q-which-kind-of-dp",
+    "to": "lcs",
+    "reason": "dp[i][j]：第一個序列前 i 個、第二個前 j 個。",
+    "kind": "algorithm",
+    "answer": "兩個序列的共同部分"
+  },
+  {
+    "from": "lis",
+    "to": "gain-exponential-polynomial",
+    "reason": "O(2ⁿ) → O(n²) DP → O(n log n)。",
+    "kind": "gain",
+    "answer": ""
+  },
+  {
+    "from": "q-which-kind-of-dp",
+    "to": "lis",
+    "reason": "O(n²) DP，或二分搜尋＋貪婪 O(n log n)。",
+    "kind": "algorithm",
+    "answer": "最長遞增子序列"
+  },
+  {
+    "from": "interval-dp",
+    "to": "gain-exponential-polynomial",
+    "reason": "指數級的切法 → O(n³)。",
+    "kind": "gain",
+    "answer": ""
+  },
+  {
+    "from": "q-which-kind-of-dp",
+    "to": "interval-dp",
+    "reason": "dp[l][r]：枚舉切點 k。",
+    "kind": "algorithm",
+    "answer": "切成幾段／合併區間"
+  },
+  {
+    "from": "q-which-kind-of-dp",
+    "to": "q-only-a-few-previous-states-2",
+    "reason": "例如走樓梯、1D DP：自己定義狀態與轉移。",
+    "kind": "question",
+    "answer": "一般狀態"
   },
   {
     "from": "dp-tabulation-2-2",
@@ -2553,6 +3161,69 @@ export const algoEdges: AlgoEdge[] = [
     "answer": "走訪／連通塊／找環"
   },
   {
+    "from": "tree-traversal",
+    "to": "gain-connectivity",
+    "reason": "每個節點拜訪一次，O(n)。",
+    "kind": "gain",
+    "answer": ""
+  },
+  {
+    "from": "q-graph-what-is-asked",
+    "to": "tree-traversal",
+    "reason": "依固定順序拜訪樹的每個節點。",
+    "kind": "algorithm",
+    "answer": "前序／中序／後序"
+  },
+  {
+    "from": "bipartite-check",
+    "to": "gain-connectivity",
+    "reason": "O(V + E) 判斷，並得到分組。",
+    "kind": "gain",
+    "answer": ""
+  },
+  {
+    "from": "q-graph-what-is-asked",
+    "to": "bipartite-check",
+    "reason": "相鄰的點要在不同組：BFS 著色。",
+    "kind": "algorithm",
+    "answer": "分成兩組"
+  },
+  {
+    "from": "q-graph-what-is-asked",
+    "to": "q-what-kind-of-graph",
+    "reason": "每個點的最遠距離，或從每個點出發能走到幾個點。",
+    "kind": "question",
+    "answer": "每個點能走多遠"
+  },
+  {
+    "from": "tree-diameter",
+    "to": "gain-shortest-paths",
+    "reason": "每個點各 BFS 一次 O(n²) → 三次 BFS O(n)。",
+    "kind": "gain",
+    "answer": ""
+  },
+  {
+    "from": "q-what-kind-of-graph",
+    "to": "tree-diameter",
+    "reason": "最遠的點一定是直徑的一端。",
+    "kind": "algorithm",
+    "answer": "一棵樹"
+  },
+  {
+    "from": "functional-graph",
+    "to": "gain-connectivity",
+    "reason": "每個點各模擬一次 O(n²) → O(n)。",
+    "kind": "gain",
+    "answer": ""
+  },
+  {
+    "from": "q-what-kind-of-graph",
+    "to": "functional-graph",
+    "reason": "一定會走進環：找環＋記憶化。",
+    "kind": "algorithm",
+    "answer": "每點只有一條出去的邊"
+  },
+  {
     "from": "gain-correct-baseline",
     "to": "continue-or-solved",
     "reason": "夠用了 → 已解決；\n出現新限制 → 回到問題特性，繼續優化。",
@@ -2582,6 +3253,13 @@ export const algoEdges: AlgoEdge[] = [
   },
   {
     "from": "gain-recursive-structure",
+    "to": "continue-or-solved",
+    "reason": "夠用了 → 已解決；\n出現新限制 → 回到問題特性，繼續優化。",
+    "kind": "outcome",
+    "answer": ""
+  },
+  {
+    "from": "gain-primes-factors",
     "to": "continue-or-solved",
     "reason": "夠用了 → 已解決；\n出現新限制 → 回到問題特性，繼續優化。",
     "kind": "outcome",
@@ -2630,6 +3308,13 @@ export const algoEdges: AlgoEdge[] = [
     "answer": ""
   },
   {
+    "from": "gain-valid-order",
+    "to": "continue-or-solved",
+    "reason": "夠用了 → 已解決；\n出現新限制 → 回到問題特性，繼續優化。",
+    "kind": "outcome",
+    "answer": ""
+  },
+  {
     "from": "gain-shortest-paths",
     "to": "continue-or-solved",
     "reason": "夠用了 → 已解決；\n出現新限制 → 回到問題特性，繼續優化。",
@@ -2645,13 +3330,6 @@ export const algoEdges: AlgoEdge[] = [
   },
   {
     "from": "gain-minimum-spanning-tree",
-    "to": "continue-or-solved",
-    "reason": "夠用了 → 已解決；\n出現新限制 → 回到問題特性，繼續優化。",
-    "kind": "outcome",
-    "answer": ""
-  },
-  {
-    "from": "gain-valid-order",
     "to": "continue-or-solved",
     "reason": "夠用了 → 已解決；\n出現新限制 → 回到問題特性，繼續優化。",
     "kind": "outcome",
@@ -2752,6 +3430,11 @@ export const algoNext: AlgoNext[] = [
     "reason": "陣列會被修改，重建前綴和 O(n) 太慢 → O(log n) 更新。"
   },
   {
+    "from": "prefix-sum",
+    "to": "mo-s-algorithm",
+    "reason": "答案不能用前綴相減（例如不同值的個數）→ 離線＋莫隊。"
+  },
+  {
     "from": "fenwick-tree",
     "to": "segment-tree",
     "reason": "需要 min / max 或區間修改 → 線段樹。"
@@ -2760,6 +3443,11 @@ export const algoNext: AlgoNext[] = [
     "from": "bfs",
     "to": "dijkstra",
     "reason": "邊開始有（非負）權重，層數不等於距離。"
+  },
+  {
+    "from": "bfs",
+    "to": "tree-diameter",
+    "reason": "要每個點的最遠距離 → 只需要直徑兩端的三次 BFS。"
   },
   {
     "from": "dijkstra",
@@ -2792,9 +3480,19 @@ export const algoNext: AlgoNext[] = [
     "reason": "需要依照依賴關係排出處理順序。"
   },
   {
+    "from": "dfs",
+    "to": "bipartite-check",
+    "reason": "要把點分成兩組 → 走訪時順便著色。"
+  },
+  {
     "from": "greedy",
     "to": "dp-tabulation",
     "reason": "找到反例，貪婪不保證最佳 → 動態規劃。"
+  },
+  {
+    "from": "dp-tabulation",
+    "to": "lis",
+    "reason": "遞增子序列的 O(n²) DP 太慢 → 二分搜尋＋貪婪 O(n log n)。"
   },
   {
     "from": "dp-memoization",
@@ -2832,6 +3530,16 @@ export const algoNext: AlgoNext[] = [
     "reason": "子問題互不重疊，可以各自解完再合併。"
   },
   {
+    "from": "trial-division",
+    "to": "sieve-of-eratosthenes",
+    "reason": "要判斷很多個數 → 先篩一次。"
+  },
+  {
+    "from": "0-1-knapsack",
+    "to": "unbounded-knapsack",
+    "reason": "同一個物品可以選很多次 → 更新順序改成由小到大。"
+  },
+  {
     "from": "brute-force",
     "to": "branch-and-bound",
     "reason": "能估計上下界 → 剪掉不可能更好的分支。"
@@ -2840,6 +3548,11 @@ export const algoNext: AlgoNext[] = [
     "from": "brute-force",
     "to": "dp-memoization",
     "reason": "列舉時同一狀態重複出現 → 動態規劃。"
+  },
+  {
+    "from": "brute-force",
+    "to": "functional-graph",
+    "reason": "每個點只有一條出去的邊，從每點模擬太慢 → 找環＋記憶化。"
   }
 ];
 
@@ -2969,6 +3682,16 @@ export const wizardGroups: WizardGroup[] = [
         "id": "tr_dense",
         "label": "圖很稠密",
         "desc": "邊數接近 V²。"
+      },
+      {
+        "id": "tr_tree",
+        "label": "是一棵樹",
+        "desc": "沒有環，n 個點、n−1 條邊。"
+      },
+      {
+        "id": "tr_func",
+        "label": "每點只有一條出去的邊",
+        "desc": "每個點恰好指向一個點（例如每個人只寄給一個人）。"
       }
     ]
   },
@@ -3052,6 +3775,36 @@ export const wizardGroups: WizardGroup[] = [
         "id": "out_prefix",
         "label": "前綴查詢",
         "desc": "依前綴查很多字串。"
+      },
+      {
+        "id": "out_prime",
+        "label": "質數／因數",
+        "desc": "判斷質數、質因數分解。"
+      },
+      {
+        "id": "out_rank",
+        "label": "每個元素的名次",
+        "desc": "每個數排第幾。"
+      },
+      {
+        "id": "out_expr",
+        "label": "運算式轉換／計算",
+        "desc": "中序轉後序、計算有括號的算式。"
+      },
+      {
+        "id": "out_traverse",
+        "label": "前序／中序／後序",
+        "desc": "依固定順序拜訪樹的每個節點。"
+      },
+      {
+        "id": "out_twocolor",
+        "label": "分成兩組",
+        "desc": "相鄰的點要在不同組。"
+      },
+      {
+        "id": "out_far",
+        "label": "每個點能走多遠",
+        "desc": "每個點的最遠距離，或能走到幾個點。"
       }
     ]
   },
@@ -3141,6 +3894,44 @@ export const wizardGroups: WizardGroup[] = [
         "id": "range_sumonly",
         "label": "只需要區間和",
         "desc": "不需要 min / max 等其他運算。"
+      },
+      {
+        "id": "range_nonadd",
+        "label": "答案不能前綴相減",
+        "desc": "例如區間內不同值的個數、眾數。"
+      }
+    ]
+  },
+  {
+    "id": "dpkind",
+    "step": 3,
+    "title": "如果是 DP，是哪一種？",
+    "type": "single",
+    "options": [
+      {
+        "id": "dp_knap01",
+        "label": "背包：每個物品最多一次",
+        "desc": "容量有限，每個物品選或不選。"
+      },
+      {
+        "id": "dp_knapunb",
+        "label": "背包：物品可重複選",
+        "desc": "同一個物品可以選很多次（0/n）。"
+      },
+      {
+        "id": "dp_twoseq",
+        "label": "兩個序列的共同部分",
+        "desc": "例如最長共同子序列。"
+      },
+      {
+        "id": "dp_lis",
+        "label": "最長遞增子序列",
+        "desc": "一個序列裡最長的遞增子序列。"
+      },
+      {
+        "id": "dp_split",
+        "label": "切成幾段／合併區間",
+        "desc": "枚舉切點。"
       }
     ]
   }
@@ -3327,7 +4118,8 @@ export const algoRules: AlgoRule[] = [
     ],
     "any": [],
     "none": [
-      "tr_dynamic"
+      "tr_dynamic",
+      "range_nonadd"
     ],
     "bonus": [],
     "note": "前處理 O(n) 時間與空間，之後每次 O(1)。"
@@ -3341,7 +4133,9 @@ export const algoRules: AlgoRule[] = [
       "range_sumonly"
     ],
     "any": [],
-    "none": [],
+    "none": [
+      "range_nonadd"
+    ],
     "bonus": [],
     "note": ""
   },
@@ -3354,7 +4148,8 @@ export const algoRules: AlgoRule[] = [
     ],
     "any": [],
     "none": [
-      "range_sumonly"
+      "range_sumonly",
+      "range_nonadd"
     ],
     "bonus": [],
     "note": ""
@@ -3554,7 +4349,13 @@ export const algoRules: AlgoRule[] = [
       "out_optimal"
     ],
     "any": [],
-    "none": [],
+    "none": [
+      "dp_knap01",
+      "dp_knapunb",
+      "dp_twoseq",
+      "dp_lis",
+      "dp_split"
+    ],
     "bonus": [
       "o1_yes"
     ],
@@ -3567,7 +4368,13 @@ export const algoRules: AlgoRule[] = [
       "out_optimal"
     ],
     "any": [],
-    "none": [],
+    "none": [
+      "dp_knap01",
+      "dp_knapunb",
+      "dp_twoseq",
+      "dp_lis",
+      "dp_split"
+    ],
     "bonus": [
       "o1_no"
     ],
@@ -3624,11 +4431,217 @@ export const algoRules: AlgoRule[] = [
     "note": ""
   },
   {
+    "algo": "trial-division",
+    "all": [
+      "out_prime"
+    ],
+    "any": [],
+    "none": [
+      "q_many"
+    ],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "sieve-of-eratosthenes",
+    "all": [
+      "out_prime",
+      "q_many"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "coordinate-compression",
+    "all": [
+      "out_rank"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "shunting-yard",
+    "all": [
+      "out_expr"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "mo-s-algorithm",
+    "all": [
+      "out_range",
+      "q_many",
+      "range_nonadd"
+    ],
+    "any": [],
+    "none": [
+      "tr_dynamic"
+    ],
+    "bonus": [],
+    "note": "Python 很慢：n、q 到 2×10⁵ 時可能要十幾秒。像「不同值個數」也可以改用離線＋樹狀陣列，O((n + q) log n)。"
+  },
+  {
+    "algo": "0-1-knapsack",
+    "all": [
+      "st_overlap",
+      "dp_knap01"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "unbounded-knapsack",
+    "all": [
+      "st_overlap",
+      "dp_knapunb"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "lcs",
+    "all": [
+      "st_overlap",
+      "dp_twoseq"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "lis",
+    "all": [
+      "st_overlap",
+      "dp_lis"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "interval-dp",
+    "all": [
+      "st_overlap",
+      "dp_split"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": "O(n³)：n 到幾百還可以，n 到幾千就太慢。"
+  },
+  {
+    "algo": "tree-traversal",
+    "all": [
+      "shape_rel",
+      "tr_tree",
+      "out_traverse"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "tree-diameter",
+    "all": [
+      "shape_rel",
+      "tr_tree",
+      "out_far"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "functional-graph",
+    "all": [
+      "shape_rel",
+      "tr_func",
+      "out_far"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "bipartite-check",
+    "all": [
+      "shape_rel",
+      "out_twocolor"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
     "algo": "brute-force",
     "all": [],
     "any": [],
     "none": [],
     "bonus": [],
     "note": "永遠可行的基準解：先寫出來驗證答案，再用第 1 步算算看夠不夠快。"
+  }
+];
+
+// ── 非內建的資料結構：要自己寫 ──
+export interface CustomStructure {
+  id: string;
+  name: string;
+  desc: string;
+  code: string;
+}
+
+export const customStructures: CustomStructure[] = [
+  {
+    "id": "fenwick",
+    "name": "樹狀陣列 (Fenwick Tree / BIT)",
+    "desc": "單點加值、前綴和都是 O(log n)。關鍵是 i & -i：取出 i 最低位的 1。",
+    "code": "class Fenwick:\n    \"\"\"樹狀陣列：單點加值、前綴和，都是 O(log n)。索引從 1 開始。\"\"\"\n    def __init__(self, n):\n        self.n = n\n        self.tree = [0] * (n + 1)\n\n    def add(self, i, v):              # a[i] += v\n        while i <= self.n:\n            self.tree[i] += v\n            i += i & -i               # 跳到下一個「管到 i」的格子\n\n    def prefix(self, i):              # a[1] + … + a[i]\n        s = 0\n        while i > 0:\n            s += self.tree[i]\n            i -= i & -i               # 去掉最低位的 1\n        return s\n\n    def range_sum(self, l, r):        # a[l] + … + a[r]\n        return self.prefix(r) - self.prefix(l - 1)\n\n\nfw = Fenwick(5)\nfor i, x in enumerate([3, 2, 3, 1, 2], start=1):\n    fw.add(i, x)\nprint(fw.range_sum(2, 4))   # 2 + 3 + 1 = 6\nfw.add(3, 10)               # a[3] 變成 13\nprint(fw.range_sum(2, 4))   # 16"
+  },
+  {
+    "id": "segment",
+    "name": "線段樹 (Segment Tree)",
+    "desc": "單點修改、區間查詢（最小值、最大值、總和都可以）都是 O(log n)。",
+    "code": "class SegmentTree:\n    \"\"\"線段樹（區間最小值）：單點修改、區間查詢，都是 O(log n)。索引從 0 開始。\"\"\"\n    def __init__(self, data):\n        self.n = 1\n        while self.n < len(data):\n            self.n *= 2\n        INF = float(\"inf\")\n        self.t = [INF] * (2 * self.n)\n        self.t[self.n:self.n + len(data)] = data          # 葉子放原始資料\n        for i in range(self.n - 1, 0, -1):                # 由下往上建\n            self.t[i] = min(self.t[2 * i], self.t[2 * i + 1])\n\n    def update(self, i, v):                               # a[i] = v\n        i += self.n\n        self.t[i] = v\n        while i > 1:\n            i //= 2\n            self.t[i] = min(self.t[2 * i], self.t[2 * i + 1])\n\n    def query(self, l, r):                                # min(a[l..r])\n        res = float(\"inf\")\n        l += self.n\n        r += self.n + 1\n        while l < r:\n            if l & 1:\n                res = min(res, self.t[l]); l += 1\n            if r & 1:\n                r -= 1; res = min(res, self.t[r])\n            l //= 2\n            r //= 2\n        return res\n\n\nst = SegmentTree([5, 2, 8, 6, 3])\nprint(st.query(0, 2))   # min(5, 2, 8) = 2\nst.update(1, 9)\nprint(st.query(0, 2))   # min(5, 9, 8) = 5\nprint(st.query(2, 4))   # min(8, 6, 3) = 3"
+  },
+  {
+    "id": "dsu",
+    "name": "並查集 (Disjoint Set Union)",
+    "desc": "合併兩組、判斷是否同一組，近乎 O(1)。Kruskal 用它判斷加入的邊會不會成環。",
+    "code": "class DSU:\n    \"\"\"並查集：合併兩個集合、問兩個元素是否同一組，近乎 O(1)。\"\"\"\n    def __init__(self, n):\n        self.parent = list(range(n))   # 一開始每個人自己一組\n        self.size = [1] * n\n\n    def find(self, x):                 # 找 x 這一組的代表（順便路徑壓縮）\n        root = x\n        while self.parent[root] != root:\n            root = self.parent[root]\n        while self.parent[x] != root:\n            self.parent[x], x = root, self.parent[x]\n        return root\n\n    def union(self, a, b):             # 合併 a、b 兩組；已經同一組就回傳 False\n        a, b = self.find(a), self.find(b)\n        if a == b:\n            return False\n        if self.size[a] < self.size[b]:\n            a, b = b, a\n        self.parent[b] = a             # 小的接到大的下面\n        self.size[a] += self.size[b]\n        return True\n\n\ndsu = DSU(5)\ndsu.union(0, 1)\ndsu.union(3, 4)\nprint(dsu.find(0) == dsu.find(1))   # True\nprint(dsu.find(1) == dsu.find(3))   # False\nprint(dsu.union(0, 1))              # False：已經同一組（Kruskal 用這個判斷會不會成環）"
+  },
+  {
+    "id": "trie",
+    "name": "字典樹 (Trie)",
+    "desc": "共用前綴的字串存在同一條路上；插入、查詢、數前綴都是 O(字串長度)。",
+    "code": "class Trie:\n    \"\"\"字典樹：插入、查詢、數前綴，都是 O(字串長度)。\"\"\"\n    def __init__(self):\n        self.root = {}                 # 每個節點是一個 dict：字母 → 下一個節點\n        self.END = \"$\"                 # 記「有字串在這裡結束」\n\n    def insert(self, word):\n        node = self.root\n        for ch in word:\n            node = node.setdefault(ch, {\"#\": 0})\n            node[\"#\"] += 1             # 有幾個字串經過這個節點\n        node[self.END] = True\n\n    def contains(self, word):\n        node = self._walk(word)\n        return node is not None and self.END in node\n\n    def count_prefix(self, prefix):    # 有幾個字串以 prefix 開頭\n        node = self._walk(prefix)\n        return node[\"#\"] if node else 0\n\n    def _walk(self, s):\n        node = self.root\n        for ch in s:\n            if ch not in node:\n                return None\n            node = node[ch]\n        return node\n\n\nt = Trie()\nfor w in [\"apple\", \"app\", \"apply\", \"bat\"]:\n    t.insert(w)\nprint(t.contains(\"app\"), t.contains(\"ap\"))   # True False\nprint(t.count_prefix(\"app\"))                 # 3"
+  },
+  {
+    "id": "binary_tree",
+    "name": "二元樹 (Binary Tree)",
+    "desc": "每個節點最多兩個孩子。Python 沒有內建的樹，要自己定義節點 class。",
+    "code": "class TreeNode:\n    \"\"\"二元樹的節點：每個節點最多兩個孩子。\"\"\"\n    def __init__(self, val):\n        self.val = val\n        self.left = None\n        self.right = None\n\n\ndef preorder(node, out):     # node → left → right\n    if node:\n        out.append(node.val)\n        preorder(node.left, out)\n        preorder(node.right, out)\n\ndef inorder(node, out):      # left → node → right\n    if node:\n        inorder(node.left, out)\n        out.append(node.val)\n        inorder(node.right, out)\n\ndef postorder(node, out):    # left → right → node\n    if node:\n        postorder(node.left, out)\n        postorder(node.right, out)\n        out.append(node.val)\n\n\n#     1\n#    / \\\n#   2   3\n#      / \\\n#     4   5\nroot = TreeNode(1)\nroot.left = TreeNode(2)\nroot.right = TreeNode(3)\nroot.right.left = TreeNode(4)\nroot.right.right = TreeNode(5)\n\nfor f in (preorder, inorder, postorder):\n    out = []\n    f(root, out)\n    print(f.__name__, out)\n# preorder [1, 2, 3, 4, 5]\n# inorder [2, 1, 4, 3, 5]\n# postorder [2, 4, 5, 3, 1]"
+  },
+  {
+    "id": "graph",
+    "name": "圖：鄰接串列 (Adjacency List)",
+    "desc": "用 dict / list 記下每個點連到哪些點。圖的演算法都從這一步開始。",
+    "code": "from collections import defaultdict, deque\n\n# 圖：用「鄰接串列」存 —— 每個點記下它連到哪些點\nedges = [(1, 2), (1, 3), (3, 4), (3, 5)]\n\ngraph = defaultdict(list)\nfor a, b in edges:\n    graph[a].append(b)\n    graph[b].append(a)          # 無向圖：兩個方向都要加（有向圖只加 a → b）\n\n# 有權重的圖：存 (鄰居, 權重)\nweighted = defaultdict(list)\nfor a, b, w in [(1, 2, 7), (1, 3, 2), (3, 2, 1)]:\n    weighted[a].append((b, w))\n    weighted[b].append((a, w))\n\n# 用 BFS 走過整張圖\ndef bfs(start):\n    dist = {start: 0}\n    q = deque([start])\n    while q:\n        u = q.popleft()\n        for v in graph[u]:\n            if v not in dist:\n                dist[v] = dist[u] + 1\n                q.append(v)\n    return dist\n\nprint(dict(graph))     # {1: [2, 3], 2: [1], 3: [1, 4, 5], 4: [3], 5: [3]}\nprint(bfs(1))          # {1: 0, 2: 1, 3: 1, 4: 2, 5: 2}\nprint(weighted[3])     # [(1, 2), (2, 1)]"
   }
 ];
