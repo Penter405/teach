@@ -492,7 +492,7 @@ function RenderImage({ block }: { block: ContentBlock }) {
     );
   }
 
-  const src = `./image/${id}.png`;
+  const src = `./content/image/${id}.png`;
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800 mb-8 w-full overflow-hidden">
@@ -501,7 +501,7 @@ function RenderImage({ block }: { block: ContentBlock }) {
           <div className="py-12 px-6 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl w-full gap-3">
             <span className="text-4xl">🖼️</span>
             <p className="text-slate-500 dark:text-slate-400 font-medium">Image #{id}</p>
-            <p className="text-xs text-slate-400 dark:text-slate-500">Image not found: diagrams/{id}.png</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500">Image not found: content/image/{id}.png</p>
           </div>
         ) : (
           <img

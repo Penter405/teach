@@ -78,7 +78,7 @@ export interface FlatLesson extends Lesson {
 export let courseData: CourseData = {} as CourseData;
 
 export async function loadCourseData(): Promise<void> {
-  const response = await fetch('./data.json');
+  const response = await fetch('./content/data.json');
   if (!response.ok) throw new Error(`Failed to load data.json: ${response.status}`);
   const data = await response.json();
   courseData = data as CourseData;
