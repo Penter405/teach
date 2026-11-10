@@ -1,13 +1,13 @@
 """
 演算法樹 (Algorithm Tree)
 
-思考流程：
-  問題發現 -> 判斷樹（是非題／選擇題）-> 可用的演算法 -> 得到了什麼 -> 繼續或解決
+思考流程（拆解問題）：
+  1 真的需要優化嗎 -> 2 了解資料 -> 3 問題要什麼 -> 4 演算法 -> 得到了什麼 -> 繼續或解決
 
-  判斷樹的每個節點是一個問題，答案互斥，所以一個問題只會走出唯一一條路徑，
-  最後抵達唯一一個演算法（每個演算法只出現在一個葉子）。
+  判斷樹的每個節點是一個問題（是非題／選擇題），答案互斥，
+  所以一個問題只會走出唯一一條路徑。同一個演算法可以出現在不同的葉子。
 
-  ask(...)        : 建立問題節點（"yesno" 是非題 / "choice" 選擇題）
+  ask(..., stage) : 建立問題節點（"yesno" 是非題 / "choice" 選擇題；stage = 屬於第幾步）
   yes/no/opt(...) : 答案 -> 下一個問題或演算法
   algorithm.child : (收穫 gain,   具體得到了什麼)
   gain.child      : (終點 outcome, 已解決 / 遇到新問題)
@@ -194,18 +194,26 @@ trie = Node("字典樹 (Trie)", "字串", "O(L) per op", "O(total chars)", "Tree
 
 
 # ════════════════════════════════════════════
-# Layer 1 ── 問題判斷樹 (Decision Tree)
+# Layer 1 ── 判斷樹 (Decision Tree)，依照「拆解問題」四個步驟
+#
+#   步驟 1  真的需要優化嗎？        暴力解跑得完 → 直接用暴力解
+#   步驟 2  了解資料                形狀（常數／線性／關聯）→ 存取方式 → 資料特性
+#   步驟 3  問題要什麼              要輸出什麼、查幾次、答案能否 O(1) 空間、問題結構
+#   步驟 4  演算法（葉子）
 #
 # 每個節點是一個問題：
-#   - 是非題 (yes/no)：只有「是」「否」兩個答案
+#   - 是非題 (yesno)：只有「是」「否」
 #   - 選擇題 (choice)：選項彼此互斥，只會符合其中一個
-# 所以同一個問題只會走出「唯一一條路徑」，最後抵達唯一一個演算法。
+# 所以同一個問題只會走出「唯一一條路徑」。
+# 同一個演算法可以出現在不同的葉子（例如 DP 可以從「常數」或「線性」資料走到），
+# 匯出時每個葉子都是獨立的節點。
 # ════════════════════════════════════════════
 ANSWERS = {}   # (id(question), id(child)) -> 答案文字（顯示在連線上）
 
-def ask(name, desc, qtype):
+def ask(name, desc, qtype, stage):
     q = Node(name, "問題", desc=desc)
     q.qtype = qtype            # "yesno" | "choice"
+    q.stage = stage            # 1 / 2 / 3
     return q
 
 def opt(q, answer, child, note=""):
@@ -220,131 +228,161 @@ def no(q, child, note=""):
     opt(q, "否", child, note)
 
 
-# ── 第一層：資料是什麼形式？ ──
-q_data = ask("資料是什麼形式？ (What kind of input?)",
-"先看輸入長什麼樣子。四個選項互斥：\n"
-"圖 = 有「點」和「點之間的邊」；字串 = 要對文字做比對或查詢；\n"
-"序列 = 一串數字／元素；選擇 = 沒有現成資料要處理，而是要「做一連串決定」或「把問題拆小」。",
-"choice")
-root.child.append((q_data, "從輸入的形式開始判斷。"))
+# ════ 步驟 1：真的需要優化嗎？ ════
+q_need = ask("暴力解跑得完嗎？ (Does brute force fit?)",
+"用「解題流程」第 1 步算算看：資料量 n、暴力解的複雜度、語言速度、時間限制。\n"
+"Python 大約每秒 10⁷ 次簡單運算。", "yesno", 1)
+root.child.append((q_need, "先確定到底需不需要優化。"))
+yes(q_need, brute, "跑得完就不需要優化：寫出正確的暴力解就完成了。")
 
-# ════ A. 圖 ════
-q_graph = ask("要求什麼？ (Graph: what is asked?)",
-"圖的問題，依照「要輸出什麼」分成五種，彼此互斥。", "choice")
-opt(q_data, "圖", q_graph, "有點，也有點與點之間的邊（道路、關係、依賴）。")
+# ════ 步驟 2：資料的形狀 ════
+q_shape = ask("資料的形狀？ (Shape of the data?)",
+"三個選項互斥：\n常數 = 單一值或固定大小（例如只給一個 n）；\n"
+"線性 = 一串元素（陣列、字串、串列）；\n關聯 = 元素之間有關係（圖、樹、鍵值對應）。", "choice", 2)
+no(q_need, q_shape, "暴力太慢，需要優化 → 先了解資料。")
 
-q_sp_all = ask("要所有點對，且點很少？ (All pairs, small V?)",
-"需要「每一對點」之間的最短距離，而且點數很少（約數百以內）。", "yesno")
-opt(q_graph, "最短路徑", q_sp_all, "求某些點之間的最短距離。")
-yes(q_sp_all, floyd, "三層迴圈 O(V³)，一次求出所有點對。")
 
-q_weight = ask("邊的權重是？ (Edge weights?)",
-"三個選項互斥：沒有權重、全部非負、有負數。", "choice")
-no(q_sp_all, q_weight, "只需要從一個起點出發。")
-opt(q_weight, "沒有權重", bfs, "每條邊成本相同，第一次走到就是最短。")
-opt(q_weight, "全部 ≥ 0", dijkstra, "非負權重，每次確定距離最小的點。")
-opt(q_weight, "有負數", bellman, "有負權重，需要 V−1 輪鬆弛，也能偵測負環。")
+def structure_subtree(parent, answer, note):
+    """「求一個最佳值／方法數」的問題結構判斷（常數資料與線性資料都會用到）"""
+    q_greedy = ask("每步選最好就是最佳？ (Greedy choice provable?)",
+    "能證明：每一步都選「目前看起來最好」的，最後就是全域最佳解。", "yesno", 3)
+    opt(parent, answer, q_greedy, note)
+    yes(q_greedy, greedy, "直接貪婪，通常排序後一次掃描。")
+    q_overlap = ask("子問題會重複出現嗎？ (Overlapping subproblems?)",
+    "拆解時，同一個「狀態」會被算很多次。", "yesno", 3)
+    no(q_greedy, q_overlap, "貪婪不保證最佳（或找得到反例）。")
+    q_o1 = ask("答案只依賴前幾個狀態？ (Only a few previous states?)",
+    "例如 f(i) 只用到 f(i−1)、f(i−2)：答案可以只用 O(1) 空間，不需要儲存所有答案。", "yesno", 3)
+    yes(q_overlap, q_o1, "這就是動態規劃 (DP)：每個狀態只算一次。")
+    yes(q_o1, tabulation, "Bottom-up，只保留幾個變數（滾動陣列），空間 O(1)。")
+    q_dp_order = ask("大部分狀態都要算，且順序好排？ (Fill the whole table?)",
+    "幾乎所有狀態都會用到，而且能排出由小到大的計算順序。", "yesno", 3)
+    no(q_o1, q_dp_order, "需要記住很多狀態。")
+    yes(q_dp_order, tabulation, "Bottom-up：依序填表，沒有遞迴成本。")
+    no(q_dp_order, memo, "Top-down：遞迴＋快取，只算需要的狀態。（狀態很多時注意 dict 成本）")
+    q_bound = ask("能估計分支的上下界嗎？ (Bounds available?)",
+    "對一個部分解，能算出「最好也只能到多少」。", "yesno", 3)
+    no(q_overlap, q_bound, "子問題各自獨立。")
+    yes(q_bound, branch_bound, "用界限剪掉不可能更好的分支。")
+    no(q_bound, backtracking, "逐一嘗試所有選擇，不合法就退回（找最佳時要比較全部）。")
 
-q_dense = ask("圖很稠密嗎？ (Dense graph, E ≈ V²?)",
-"邊數接近 V²（幾乎每兩點之間都有邊）。", "yesno")
-opt(q_graph, "最小生成樹", q_dense, "用最小總成本把所有點連起來。")
-yes(q_dense, prim, "從一點往外長，配合 Min Heap。")
-no(q_dense, kruskal, "邊不多：把邊排序，用 DSU 避免成環。")
 
-opt(q_graph, "排出先後順序", topo, "事情之間有依賴（A 要在 B 之前），要排出合法順序。")
-opt(q_graph, "動態判斷連通", dsu, "邊會一直加入，並且反覆問「兩點是否連通」。")
-opt(q_graph, "走訪／連通塊／找環", dfs, "只需要走過整張圖，找連通塊、環或路徑。")
+# ──── 2A. 常數資料 ────
+q_c_goal = ask("要的答案是？ (Constant input: what answer?)",
+"資料只有一個值或固定大小，重點在問題本身。四個選項互斥。", "choice", 3)
+opt(q_shape, "常數", q_c_goal, "例如只給一個 n，或固定大小的盤面。")
+opt(q_c_goal, "最小（大）可行答案", binary_answer, "能檢查「答案 x 可不可行」，且可行性隨 x 單調。")
+structure_subtree(q_c_goal, "一個最佳值／方法數", "最大值、最小值、有幾種方法。")
+opt(q_c_goal, "所有可行解", backtracking, "列出所有組合／排列：逐步選擇，不合法就退回。")
+q_merge = ask("拆成多個獨立子問題再合併？ (Split & merge?)",
+"切成兩個以上互不重疊的子問題，各自解完後合併。", "yesno", 3)
+opt(q_c_goal, "由子問題組合出答案", q_merge, "答案可以由較小問題的答案算出。")
+yes(q_merge, divide_conquer, "分治法：切、解、合併。")
+no(q_merge, recursion, "一般遞迴：每次縮小一點。")
 
-# ════ B. 字串 ════
-q_str = ask("要對字串做什麼？ (Strings: what to do?)",
-"兩個選項互斥：在一段文字裡找模式，或管理很多字串。", "choice")
-opt(q_data, "字串", q_str, "要對文字做比對或查詢。")
-opt(q_str, "在文字中找模式", kmp, "在長度 n 的文字中找長度 m 的模式。")
-opt(q_str, "大量字串／前綴查詢", trie, "存很多字串，並依前綴查詢。")
+# ──── 2B. 線性資料 ────
+q_access = ask("存取方式？ (How can you access it?)",
+"兩個選項互斥：能不能用索引直接拿到第 i 個元素。", "choice", 2)
+opt(q_shape, "線性", q_access, "一串元素：陣列、字串、串列。")
 
-# ════ C. 序列／陣列 ════
-q_task = ask("主要任務是？ (Sequence: main task?)",
-"依照「要輸出什麼」分類，七個選項互斥。", "choice")
-opt(q_data, "序列／陣列", q_task, "一串數字或元素。")
+# 只能依序走過
+q_seq_goal = ask("要輸出什麼？ (Sequential data: what output?)",
+"只能從頭一個一個讀（串流、linked list、檔案）。三個選項互斥。", "choice", 3)
+opt(q_access, "只能依序走過", q_seq_goal, "串流、linked list、檔案。")
+opt(q_seq_goal, "找某個值", linear, "只能逐一比較。")
+opt(q_seq_goal, "排序", merge, "合併排序只需要依序讀寫，適合 linked list。")
+opt(q_seq_goal, "區間（子陣列）答案", sliding, "一邊讀一邊維護視窗，不必回頭。")
 
-# C1 排序
+# 隨機存取
+q_lin_goal = ask("要輸出什麼？ (Array: what output?)",
+"依照「要輸出什麼」分類，十個選項互斥。", "choice", 3)
+opt(q_access, "隨機存取 O(1)", q_lin_goal, "可以用索引直接拿第 i 個元素（list、陣列、字串）。")
+
+#   找某個值
+q_sorted = ask("資料已經排序嗎？ (Already sorted?)", "資料由小到大（或大到小）排好。", "yesno", 2)
+opt(q_lin_goal, "找某個值", q_sorted, "某個值在不在、在哪裡。")
+q_uniform = ask("數值分布均勻嗎？ (Uniformly distributed?)", "已排序的數值大致平均分布。", "yesno", 2)
+yes(q_sorted, q_uniform, "可以利用順序排除範圍。")
+yes(q_uniform, interpolation, "由數值估算位置，平均 O(log log n)。")
+no(q_uniform, binary, "每次排除一半，O(log n)。")
+q_many = ask("要查很多次嗎？ (Many queries?)", "同一份資料要回答很多次查找。", "yesno", 3)
+no(q_sorted, q_many, "無序資料。")
+yes(q_many, hash_lookup, "先建 Hash Table（O(n) 空間），之後每次 O(1)。")
+no(q_many, linear, "只查一次，不值得做前處理。")
+
+#   排序
 q_sort_int = ask("鍵值是範圍小的整數？ (Small integer keys?)",
-"鍵值都是整數，而且範圍 k 不比資料量 n 大太多。", "yesno")
-opt(q_task, "排序", q_sort_int, "輸出排好序的資料。")
+"鍵值都是整數，而且範圍 k 不比資料量 n 大太多。", "yesno", 2)
+opt(q_lin_goal, "排序", q_sort_int, "輸出排好序的資料。")
 yes(q_sort_int, counting, "直接計數，O(n + k)。")
-q_sort_state = ask("資料的狀況？ (Size / order of data?)",
-"三個選項互斥。", "choice")
+q_sort_state = ask("資料的狀況？ (Size / order of data?)", "三個選項互斥。", "choice", 2)
 no(q_sort_int, q_sort_state, "需要比較排序。")
 opt(q_sort_state, "幾乎已排好", insertion, "大部分元素已在正確位置，插入排序接近 O(n)。")
 opt(q_sort_state, "很少且未排好", bubble, "資料量小，用最簡單的方法。")
-q_sort_need = ask("最在意什麼？ (What matters most?)",
-"三個選項互斥：穩定、最壞保證＋省空間、平均速度。", "choice")
+q_sort_need = ask("最在意什麼？ (What matters most?)", "三個選項互斥：穩定、最壞保證＋省空間、平均速度。", "choice", 3)
 opt(q_sort_state, "很多且未排好", q_sort_need, "需要 O(n log n) 的排序。")
 opt(q_sort_need, "穩定", merge, "相同鍵值保持原本順序。")
 opt(q_sort_need, "最壞保證＋O(1) 空間", heap_sort, "不能接受 O(n²)，也不能多用記憶體。")
 opt(q_sort_need, "平均最快", quick, "平均 O(n log n)，常數小。")
 
-# C2 查找
-q_find = ask("資料的狀態？ (Data state for lookup?)",
-"三個選項互斥。", "choice")
-opt(q_task, "找某個值", q_find, "判斷某個值在不在、在哪裡。")
-opt(q_find, "未排序、只查一次", linear, "不值得做前處理，逐一比較。")
-opt(q_find, "未排序、查很多次", hash_lookup, "先建 Hash Table，之後每次 O(1)。")
-q_uniform = ask("數值分布均勻嗎？ (Uniformly distributed?)",
-"已排序的數值大致平均分布。", "yesno")
-opt(q_find, "已排序", q_uniform, "可以利用順序排除範圍。")
-yes(q_uniform, interpolation, "由數值估算位置，平均 O(log log n)。")
-no(q_uniform, binary, "每次排除一半，O(log n)。")
-
-# C3 區間
-q_range = ask("區間要做什麼？ (Range: what is asked?)",
-"三個選項互斥。", "choice")
-opt(q_task, "區間（子陣列）問題", q_range, "答案和某一段連續的子陣列有關。")
-opt(q_range, "找符合條件的子陣列", sliding, "最長／最短／個數，左右端點都只往前。")
+#   區間
+q_range = ask("區間要做什麼？ (Range: what is asked?)", "三個選項互斥。", "choice", 3)
+opt(q_lin_goal, "區間（子陣列）答案", q_range, "答案和某一段連續的子陣列有關。")
+opt(q_range, "找符合條件的子陣列", sliding, "最長／最短／個數，左右端點都只往前，O(1) 空間。")
 opt(q_range, "固定視窗的最大／最小", monotonic_queue, "視窗往前滑，每次要視窗內的極值。")
-q_update = ask("查詢之間資料會修改？ (Updates between queries?)",
-"多次區間查詢之間，陣列的值會不會被改。", "yesno")
+q_update = ask("查詢之間資料會修改？ (Updates between queries?)", "多次區間查詢之間，陣列的值會不會被改。", "yesno", 2)
 opt(q_range, "很多次區間查詢", q_update, "反覆問「[l, r] 的值是多少」。")
 no(q_update, prefix, "資料不變：前綴和 O(1) 查詢。")
-q_sum_only = ask("只需要區間和嗎？ (Sum only?)",
-"只問總和，不問最小值／最大值等其他運算。", "yesno")
+q_sum_only = ask("只需要區間和嗎？ (Sum only?)", "只問總和，不問最小值／最大值等其他運算。", "yesno", 3)
 yes(q_update, q_sum_only, "需要支援修改。")
 yes(q_sum_only, fenwick, "樹狀陣列，程式最短。")
 no(q_sum_only, segment, "需要 min / max 或區間修改 → 線段樹。")
 
-# C4~C7
-opt(q_task, "反覆取最大／最小", heap, "資料不斷加入或移除，每次要目前的極值。")
-opt(q_task, "每個元素找最近的較大／較小", monotonic_stack, "對每個位置找左邊或右邊第一個更大（小）的元素。")
-opt(q_task, "找一對元素滿足條件", two_pointers, "資料已排序（或可先排序），找兩個數的組合。")
-opt(q_task, "找最小（大）的可行答案", binary_answer, "能檢查「答案 x 可不可行」，且可行性隨 x 單調。")
+#   其他輸出
+opt(q_lin_goal, "反覆取最大／最小", heap, "資料不斷加入或移除，每次要目前的極值。")
+opt(q_lin_goal, "最近的較大／較小", monotonic_stack, "對每個位置找左邊或右邊第一個更大（小）的元素。")
+q_pair_sorted = ask("已排序或可以先排序？ (Sorted, or can sort?)",
+"排序後不影響答案（例如只要找數值，不要原本的位置）。", "yesno", 2)
+opt(q_lin_goal, "一對元素", q_pair_sorted, "找兩個（一組）元素滿足條件。")
+yes(q_pair_sorted, two_pointers, "兩個指標往中間靠，O(n)，O(1) 空間。")
+no(q_pair_sorted, hash_lookup, "邊走邊把看過的值放進 Hash：O(n) 時間、O(n) 空間。")
+opt(q_lin_goal, "最小（大）可行答案", binary_answer, "能檢查「答案 x 可不可行」，且可行性隨 x 單調。")
+opt(q_lin_goal, "字串比對", kmp, "在長度 n 的文字中找長度 m 的模式。")
+opt(q_lin_goal, "前綴查詢", trie, "存很多字串，並依前綴查詢。")
+structure_subtree(q_lin_goal, "一個最佳值／方法數", "例如最長遞增子序列、背包、走樓梯。")
 
-# ════ D. 做一連串選擇／拆解問題 ════
-q_greedy = ask("每步選最好就是最佳？ (Greedy choice provable?)",
-"能證明：每一步都選「目前看起來最好」的，最後就是全域最佳解。", "yesno")
-opt(q_data, "做選擇／拆解問題", q_greedy, "沒有現成資料要處理，而是要做一連串決定或把問題拆小。")
-yes(q_greedy, greedy, "直接貪婪，通常排序後一次掃描。")
-q_overlap = ask("子問題會重複出現嗎？ (Overlapping subproblems?)",
-"拆解時，同一個「狀態」會被算很多次。", "yesno")
-no(q_greedy, q_overlap, "貪婪不保證最佳（或找得到反例）。")
-q_dp_order = ask("大部分狀態都要算，且順序好排？ (Fill the whole table?)",
-"幾乎所有狀態都會用到，而且能排出由小到大的計算順序。", "yesno")
-yes(q_overlap, q_dp_order, "這就是動態規劃 (DP)：每個狀態只算一次。")
-yes(q_dp_order, tabulation, "Bottom-up：依序填表。")
-no(q_dp_order, memo, "Top-down：遞迴＋快取，只算需要的狀態。")
-q_goal = ask("要的答案是？ (What answer is needed?)",
-"三個選項互斥。", "choice")
-no(q_overlap, q_goal, "子問題各自獨立。")
-opt(q_goal, "列出所有可行解", backtracking, "逐步選擇，不合法就退回。")
-q_bound = ask("能估計分支的上下界嗎？ (Bounds available?)",
-"對一個部分解，能算出「最好也只能到多少」。", "yesno")
-opt(q_goal, "一個最佳解", q_bound, "要在所有可能中找最好的。")
-yes(q_bound, branch_bound, "用界限剪掉不可能更好的分支。")
-no(q_bound, brute, "只能全部試過。")
-q_merge = ask("拆成多個獨立子問題再合併？ (Split & merge?)",
-"切成兩個以上互不重疊的子問題，各自解完後合併。", "yesno")
-opt(q_goal, "由子問題組合出答案", q_merge, "答案可以由較小問題的答案算出。")
-yes(q_merge, divide_conquer, "分治法：切、解、合併。")
-no(q_merge, recursion, "一般遞迴：每次縮小一點。")
+# ──── 2C. 關聯資料 ────
+q_rel = ask("是哪一種關係？ (What kind of relation?)",
+"兩個選項互斥：點與點之間有邊（圖、樹），或鍵對應到值（dict）。", "choice", 2)
+opt(q_shape, "關聯", q_rel, "元素之間有關係。")
+
+q_kv = ask("要做什麼？ (Key-value: what to do?)", "三個選項互斥。", "choice", 3)
+opt(q_rel, "鍵值對應", q_kv, "dict / map：一個鍵對應一個值。")
+opt(q_kv, "依鍵查找", hash_lookup, "dict 本身就是雜湊表，平均 O(1)。")
+opt(q_kv, "依前綴查找", trie, "鍵是字串，要依前綴找。")
+opt(q_kv, "依鍵的大小找範圍", binary, "把鍵排序後二分搜尋範圍的起點與終點。")
+
+q_graph = ask("要求什麼？ (Graph: what is asked?)", "圖的問題，依照「要輸出什麼」分成五種，彼此互斥。", "choice", 3)
+opt(q_rel, "圖／樹", q_graph, "有點，也有點與點之間的邊（道路、關係、依賴）。")
+q_sp_all = ask("要所有點對，且點很少？ (All pairs, small V?)",
+"需要「每一對點」之間的最短距離，而且點數很少（約數百以內）。", "yesno", 3)
+opt(q_graph, "最短路徑", q_sp_all, "求某些點之間的最短距離。")
+yes(q_sp_all, floyd, "三層迴圈 O(V³)，一次求出所有點對。")
+q_weight = ask("邊的權重是？ (Edge weights?)", "三個選項互斥：沒有權重、全部非負、有負數。", "choice", 2)
+no(q_sp_all, q_weight, "只需要從一個起點出發。")
+opt(q_weight, "沒有權重", bfs, "每條邊成本相同，第一次走到就是最短。")
+opt(q_weight, "全部 ≥ 0", dijkstra, "非負權重，每次確定距離最小的點。")
+opt(q_weight, "有負數", bellman, "有負權重，需要 V−1 輪鬆弛，也能偵測負環。")
+q_dense = ask("圖很稠密嗎？ (Dense graph, E ≈ V²?)", "邊數接近 V²（幾乎每兩點之間都有邊）。", "yesno", 2)
+opt(q_graph, "最小生成樹", q_dense, "用最小總成本把所有點連起來。")
+yes(q_dense, prim, "從一點往外長，配合 Min Heap。")
+no(q_dense, kruskal, "邊不多：把邊排序，用 DSU 避免成環。")
+q_cycle = ask("依賴關係有環嗎？ (Do dependencies form a cycle?)", "A→B→…→A：有環就排不出合法順序。", "yesno", 2)
+opt(q_graph, "排出先後順序", q_cycle, "事情之間有依賴（A 要在 B 之前）。")
+no(q_cycle, topo, "DAG：反覆取出入度為 0 的點。")
+yes(q_cycle, dfs, "先用 DFS 找出環（無法排序，需要回報或拆環）。")
+opt(q_graph, "動態判斷連通", dsu, "邊會一直加入，並且反覆問「兩點是否連通」。")
+opt(q_graph, "走訪／連通塊／找環", dfs, "只需要走過整張圖，找連通塊、環或路徑。")
 
 
 # ════════════════════════════════════════════
@@ -623,39 +661,44 @@ def slug(text):
     return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
 
 def export(path):
-    ids, order = {}, []
+    used = set()
 
-    def visit(n, prefix=""):
-        if id(n) in ids:
-            return
-        zh, en = split_name(n.name)
-        base = slug(en) or f"node-{len(ids)}"
-        if n.category == "問題":
-            base = "q-" + base
-        elif n.category == "收穫":
-            base = "gain-" + base
-        while base in ids.values():
+    def new_id(base):
+        base = base or "node"
+        while base in used:
             base += "-2"
-        ids[id(n)] = base
-        order.append(n)
-        for child, _ in n.child:
-            visit(child)
-
-    visit(root)
+        used.add(base)
+        return base
 
     def kind_of(n):
         return {"root": "root", "問題": "question", "收穫": "gain", "終點": "outcome"}.get(n.category, "algorithm")
 
-    # 檢查：判斷樹必須是真正的樹 —— 每個問題／演算法只有一個上層，所以路徑唯一
-    tree_parents = {}
-    for n in order:
-        if n is root or n.category == "問題":
-            for child, _ in n.child:
-                tree_parents.setdefault(id(child), []).append(n.name)
-    for n in order:
-        if kind_of(n) in ("question", "algorithm"):
-            ps = tree_parents.get(id(n), [])
-            assert len(ps) == 1, f"{n.name} 應該只有一個上層，但有 {len(ps)} 個: {ps}"
+    nodes, edges, nexts = [], [], []
+    algo_first = {}   # id(algorithm Node) -> 第一個葉子的 id（也是演算法本身的 id）
+    seen_q = set()
+
+    def add_node(n, nid, ref=""):
+        zh, en = split_name(n.name)
+        nodes.append({"id": nid, "labelZh": zh, "label": en, "kind": kind_of(n),
+                      "category": n.category, "time": n.time, "space": n.space,
+                      "ds": n.ds, "desc": n.desc.strip(),
+                      "qtype": getattr(n, "qtype", ""), "stage": getattr(n, "stage", 0),
+                      "ref": ref})
+
+    # 收穫與終點
+    gain_ids = {}
+    gain_list = []
+    def collect_gains(n):
+        for child, _ in n.child:
+            if kind_of(child) == "gain" and id(child) not in gain_ids:
+                gain_ids[id(child)] = new_id("gain-" + slug(split_name(child.name)[1]))
+                gain_list.append(child)
+    outcome_id = new_id(slug(split_name(outcome.name)[1]))
+    root_id = new_id(slug(split_name(root.name)[1]))
+    add_node(root, root_id)
+
+    # 判斷樹：問題節點只能出現一次；演算法每出現一次就是一個新的葉子
+    def walk(n, nid):
         if n.category == "問題":
             answers = [ANSWERS[(id(n), id(c))] for c, _ in n.child]
             assert len(answers) == len(set(answers)), f"{n.name} 的答案重複: {answers}"
@@ -663,29 +706,51 @@ def export(path):
                 assert sorted(answers) == ["否", "是"], f"{n.name} 是非題需要「是」和「否」: {answers}"
             else:
                 assert len(answers) >= 2, f"{n.name} 選擇題至少要兩個選項"
-        if kind_of(n) == "algorithm":
-            assert n.child, f"{n.name} 沒有連到任何收穫"
-
-    nodes, edges, nexts = [], [], []
-    for n in order:
-        zh, en = split_name(n.name)
-        kind = kind_of(n)
-        nodes.append({"id": ids[id(n)], "labelZh": zh, "label": en, "kind": kind,
-                      "category": n.category, "time": n.time, "space": n.space,
-                      "ds": n.ds, "desc": n.desc.strip(),
-                      "qtype": getattr(n, "qtype", "")})
         for child, reason in n.child:
-            edges.append({"from": ids[id(n)], "to": ids[id(child)],
-                          "reason": reason.strip(), "kind": kind_of(child),
+            if child.category == "問題":
+                assert id(child) not in seen_q, f"問題「{child.name}」出現在兩個地方 —— 路徑會不唯一"
+                seen_q.add(id(child))
+                cid = new_id("q-" + slug(split_name(child.name)[1]))
+                add_node(child, cid)
+            else:
+                assert kind_of(child) == "algorithm", f"{child.name} 不是問題也不是演算法"
+                assert child.child, f"{child.name} 沒有連到任何收穫"
+                if id(child) not in algo_first:
+                    cid = new_id(slug(split_name(child.name)[1]))
+                    algo_first[id(child)] = cid
+                else:
+                    cid = new_id(algo_first[id(child)])
+                add_node(child, cid, ref=algo_first[id(child)])
+                collect_gains(child)
+                for g, g_reason in child.child:
+                    edges.append({"from": cid, "to": gain_ids[id(g)], "reason": g_reason.strip(),
+                                  "kind": "gain", "answer": ""})
+            edges.append({"from": nid, "to": cid, "reason": reason.strip(), "kind": kind_of(child),
                           "answer": ANSWERS.get((id(n), id(child)), "")})
+            if child.category == "問題":
+                walk(child, cid)
+
+    walk(root, root_id)
+
+    for g in gain_list:
+        add_node(g, gain_ids[id(g)])
+        for child, reason in g.child:
+            edges.append({"from": gain_ids[id(g)], "to": outcome_id, "reason": reason.strip(),
+                          "kind": "outcome", "answer": ""})
+    add_node(outcome, outcome_id)
+
+    for n in RULES:
+        assert id(n) in algo_first, f"{n.name} 有設定 RULES，但沒有出現在判斷樹的任何葉子"
         for target, reason in n.next:
-            nexts.append({"from": ids[id(n)], "to": ids[id(target)], "reason": reason.strip()})
+            nexts.append({"from": algo_first[id(n)], "to": algo_first[id(target)], "reason": reason.strip()})
+
+    ids = {k: v for k, v in algo_first.items()}
+    order = [n for n in RULES]
 
     # ── 解題流程資料 ──
     option_ids = {o[0] for g in WIZARD_GROUPS for o in g[4]}
-    algo_nodes = [n for n in order if kind_of(n) == "algorithm"]
-    for n in algo_nodes:
-        assert n in RULES, f"{n.name} 沒有在 RULES 裡設定條件"
+    for n_id in algo_first:
+        assert any(id(n) == n_id for n in RULES), "判斷樹裡有演算法沒有在 RULES 裡設定條件"
     rules = []
     for n, r in RULES.items():
         for key in ("all", "any", "none", "bonus"):
@@ -699,17 +764,19 @@ def export(path):
     body = ("// ── Algorithm Tree Data ──\n"
             "// AUTO-GENERATED by algorithm_tree.py — edit the Python file, then run:\n"
             "//   python algorithm_tree.py\n"
-            "// Flow: 問題發現 → 判斷樹（是非題／選擇題）→ 可用的演算法 → 得到了什麼 → 繼續或解決\n\n"
+            "// Flow: 步驟1 需要優化嗎 → 步驟2 了解資料 → 步驟3 問題要什麼 → 步驟4 演算法 → 得到了什麼 → 繼續或解決\n\n"
             "export type AlgoNodeKind = 'root' | 'question' | 'algorithm' | 'gain' | 'outcome';\n\n"
             "export interface AlgoNode {\n  id: string;\n  label: string;\n  labelZh: string;\n"
             "  kind: AlgoNodeKind;\n  category: string;\n  time: string;\n  space: string;\n"
-            "  ds: string;\n  desc: string;\n  /** question nodes: 'yesno' 是非題 | 'choice' 選擇題 */\n  qtype: '' | 'yesno' | 'choice';\n}\n\n"
+            "  ds: string;\n  desc: string;\n  /** question nodes: 'yesno' 是非題 | 'choice' 選擇題 */\n  qtype: '' | 'yesno' | 'choice';\n"
+            "  /** question nodes: which step of 拆解問題 (1 需要優化嗎 / 2 了解資料 / 3 問題要什麼) */\n  stage: number;\n"
+            "  /** algorithm leaves: id of the algorithm this leaf stands for (same algorithm can be several leaves) */\n  ref: string;\n}\n\n"
             "/** kind = the kind of the edge's target node */\n"
             "export interface AlgoEdge {\n  from: string;\n  to: string;\n  reason: string;\n"
             "  kind: AlgoNodeKind;\n  /** answer to the question (是 / 否 / option text) */\n  answer: string;\n}\n\n"
             "export interface AlgoNext {\n  from: string;\n  to: string;\n  reason: string;\n}\n\n"
-            f"export const ALGO_ROOT_ID = {json.dumps(ids[id(root)])};\n"
-            f"export const ALGO_OUTCOME_ID = {json.dumps(ids[id(outcome)])};\n\n"
+            f"export const ALGO_ROOT_ID = {json.dumps(root_id)};\n"
+            f"export const ALGO_OUTCOME_ID = {json.dumps(outcome_id)};\n\n"
             f"export const algoNodes: AlgoNode[] = {json.dumps(nodes, ensure_ascii=False, indent=2)};\n\n"
             f"export const algoEdges: AlgoEdge[] = {json.dumps(edges, ensure_ascii=False, indent=2)};\n\n"
             f"/** 遇到新限制時可以繼續往哪裡走（顯示在詳細面板） */\n"
@@ -725,7 +792,7 @@ def export(path):
     with open(path, "w", encoding="utf-8") as f:
         f.write(body)
     count = lambda k: sum(1 for x in nodes if x["kind"] == k)
-    print(f"Exported {count('question')} questions, {count('algorithm')} algorithms, "
+    print(f"Exported {count('question')} questions, {count('algorithm')} leaves ({len(algo_first)} algorithms), "
           f"{count('gain')} gains, {len(edges)} edges, {len(nexts)} continue-paths, {len(rules)} wizard rules -> {path}")
 
 
