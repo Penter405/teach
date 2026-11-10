@@ -21,6 +21,7 @@ import { LessonContent } from './LessonContent';
 import { Sidebar } from './Sidebar';
 import { CodeSyntaxTreePage } from './CodeSyntaxTree';
 import { NodeExplainPage } from './NodeExplainPage';
+import { AlgorithmTreePage } from './AlgorithmTree';
 import { codeTree } from './codeTreeData';
 import { TeacherQuestionPanel } from './TeacherQuestionPanel';
 
@@ -235,38 +236,6 @@ const AlgoTreeNavLink = ({ onClick }: { onClick: () => void }) => {
     </div>
   );
 };
-
-const AlgoTreePlaceholderPage = ({ onBack }: { onBack: () => void }) => (
-  <div className="min-h-screen bg-surface dark:bg-slate-950 flex flex-col transition-colors duration-500">
-    <nav className="w-full flex-shrink-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center px-4 sm:px-6 py-3">
-      <button 
-        onClick={onBack}
-        className="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors text-sm font-semibold uppercase tracking-wider"
-      >
-        <ChevronRight className="w-5 h-5 rotate-180" />
-        Back
-      </button>
-      <h1 className="font-headline font-bold text-lg text-slate-800 dark:text-white flex items-center gap-2">
-        <Network className="w-5 h-5 text-emerald-500" />
-        Algorithm Optimization Tree
-      </h1>
-      <div className="w-16" />
-    </nav>
-    <main className="flex-1 flex items-center justify-center px-6">
-      <div className="text-center max-w-lg">
-        <div className="text-6xl mb-6">🌳</div>
-        <h2 className="font-headline text-3xl font-bold text-slate-800 dark:text-white mb-4">Coming Soon</h2>
-        <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
-          演算法優化樹正在建構中。從 Brute Force 出發，探索每一個優化路徑的條件、複雜度改進與代價。
-        </p>
-        <div className="mt-8 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-sm font-bold">
-          <Network className="w-4 h-4" />
-          Brute Force → Optimized Solutions
-        </div>
-      </div>
-    </main>
-  </div>
-);
 
 const LearningPathPage = ({ onSelectModule, onSelectLesson, onOpenCodeTree, onOpenAlgoTree }: { onSelectModule: () => void, onSelectLesson: (id: string) => void, onOpenCodeTree: () => void, onOpenAlgoTree: () => void }) => {
   return (
@@ -763,7 +732,7 @@ export default function App() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <AlgoTreePlaceholderPage
+            <AlgorithmTreePage
               onBack={() => setCurrentPage(previousPage)}
             />
           </motion.div>
