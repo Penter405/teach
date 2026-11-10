@@ -5842,6 +5842,77 @@
               "type": "code",
               "language": "python",
               "code": "level={\n    \"+\":0,\n    \"-\":0,\n    \"*\":1,\n    \"/\":1,\n    \"(\":2,\n    \")\":2,\n}\nd=input().split()\nstack=[]\nres=[]\nfor rs in d:\n    if rs not in \"()\" and rs not in level:\n        res.append(rs)\n        continue\n\n    if rs ==\"(\":\n        stack.append(\"(\")\n        continue\n    if rs==\")\":#遇右括號輸出堆疊中的運算子至左括號\n        while True:\n            me=stack.pop()\n            if me==\"(\":\n                break\n            res.append(me)\n        continue\n----if len(stack)==0 or level[rs]>level[stack[-1]]:#堆疊中運算子優先順序若not(大於等於)讀入的運算子優先順序，放入堆疊\n        stack.append(rs)\n    else:\n        while True:#堆疊中運算子優先順序若大於等於讀入的運算子優先順序，直接輸出堆疊中的運算子\n            if len(stack)==0 or stack[-1]==\"(\" or level[stack[-1]]<level[rs]:\n                break\n            res.append(stack.pop())\n        stack.append(rs)\nfor rs in stack[::-1]:\n    res.append(rs)\nprint(\" \".join(res))"
+            },
+            {
+              "type": "heading",
+              "text": "老師講解：錯在「同級運算子」"
+            },
+            {
+              "type": "paragraph",
+              "text": "兩個版本只差一個符號：>= 和 >。錯的版本在「讀入的運算子和堆疊頂端同級」時（例如兩個 -），選擇把新的運算子直接疊上去；正確的做法是先把堆疊頂端那個輸出。"
+            },
+            {
+              "type": "paragraph",
+              "text": "為什麼？因為 + - * / 都是「左結合」：a - b - c 要先算 a - b，再減 c。先進堆疊的那個 - 要先輸出，才會得到 a b - c -。錯的版本會輸出 a b c - -，意思變成 a - (b - c)，答案就錯了。題目的 4 個範例剛好都沒有「連續兩個同級運算子」，所以範例全過、送出卻錯。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "口訣",
+                  "definition": "讀到運算子時：只要堆疊頂端的優先順序「大於或等於」自己，就先把它輸出，最後才把自己放進去。"
+                },
+                {
+                  "term": "左括號",
+                  "definition": "直接放進堆疊；它像一道牆，彈出運算子時遇到它就停。"
+                },
+                {
+                  "term": "右括號",
+                  "definition": "一直輸出，直到遇到左括號；左括號丟掉，不輸出。"
+                },
+                {
+                  "term": "運算元",
+                  "definition": "a、b、1、2 這些直接輸出。"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "建議把「(」從優先順序表裡拿掉，改成單獨判斷，比較不會在比較大小時出錯："
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 優先順序：數字越大越先算；\"(\" 不放進表裡，單獨處理\nprec = {\"+\": 1, \"-\": 1, \"*\": 2, \"/\": 2}\n\ntokens = input().split()\nstack, out = [], []\nfor t in tokens:\n    if t == \"(\":\n        stack.append(t)\n    elif t == \")\":\n        while stack[-1] != \"(\":          # 把括號裡的運算子全部輸出\n            out.append(stack.pop())\n        stack.pop()                       # 丟掉 \"(\"\n    elif t in prec:\n        # 堆疊頂端的運算子「優先順序 >= 自己」就先輸出（同級要先輸出：左結合）\n        while stack and stack[-1] != \"(\" and prec[stack[-1]] >= prec[t]:\n            out.append(stack.pop())\n        stack.append(t)\n    else:                                  # 運算元：直接輸出\n        out.append(t)\nwhile stack:\n    out.append(stack.pop())\nprint(\" \".join(out))"
+            },
+            {
+              "type": "callout",
+              "label": "自我檢查",
+              "text": "範例都過了也不代表對。送出前自己多試一個「邊界」：連續同級（a - b - c、a / b / c）、只有一個運算元（a）、整個被括號包住（( a + b )）。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "a - b - c 的後序式是？",
+                  "options": [
+                    "a b c - -",
+                    "a b - c -",
+                    "a - b c -"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "讀到「-」時，堆疊頂端是「+」，應該怎麼做？",
+                  "options": [
+                    "把 - 直接放進堆疊",
+                    "先輸出 +，再把 - 放進堆疊",
+                    "把 + 和 - 都丟掉"
+                  ],
+                  "answer": 1
+                }
+              ]
             }
           ]
         },
@@ -5874,6 +5945,59 @@
               "type": "code",
               "language": "python",
               "code": "def imnot(d):\n    res=[]\n    for rs in d:\n        if rs==\"1\":\n            res.append(\"0\")\n        else:\n            res.append(\"1\")\n    return \"\".join(res)\nres=[]\nfor _ in range(int(input())):\n    d=input().split()\n    bnum=0\n    for rs in range(0,len(d),2):\n        hex_num=d[rs]+d[rs+1]\n        num=int(hex_num,16)\n        bnum+=num\n----\n    bnum=hex(bnum)[2:]\n    if len(bnum)==5:\n        bnum=int(bnum[1:],16)+int(bnum[0],16)\n    else:\n        bnum=int(bnum,16)\n----\n    rnum=imnot(bin(bnum)[2:].zfill(16))\n    res.append(hex(int(rnum,2))[2:])\n\nfor rs in res:\n    if len(rs)<4:\n        print(\"0\"*(4-len(rs)),end=\"\")\n    print(rs)\n"
+            },
+            {
+              "type": "heading",
+              "text": "老師講解：錯在「同一個變數裝了兩種型態」"
+            },
+            {
+              "type": "paragraph",
+              "text": "錯的版本裡，bnum = hex(bnum)[2:] 把數字變成「十六進位字串」。如果結果剛好 5 位數，才在 if 裡把它變回整數；但如果沒有進位（4 位數），bnum 就一直是字串，後面的 bin(bnum) 會出現 TypeError。正確版本補上 else，讓兩條路都變回整數。"
+            },
+            {
+              "type": "callout",
+              "label": "習慣",
+              "text": "一個變數只裝一種型態。需要字串時另外取名字（例如 hex_str），就不會發生「有時候是數字、有時候是字串」的錯。"
+            },
+            {
+              "type": "paragraph",
+              "text": "另外，「正確」版本其實還有一個沒被測到的問題：進位加回去之後，可能「又」產生進位。例如總和是 0x1FFFF：低 16 bits 0xFFFF + 進位 1 = 0x10000，又超過 16 bits 了，要再加一次才會變成 0x0001。只加一次的版本在這種資料會輸出 ffff，正確答案是 fffe。"
+            },
+            {
+              "type": "paragraph",
+              "text": "用位元運算處理，不用轉字串，而且用 while 一直加到沒有進位為止："
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "for _ in range(int(input())):\n    b = input().split()                      # 20 個 byte（十六進位字串）\n    total = 0\n    for i in range(0, len(b), 2):\n        total += int(b[i] + b[i + 1], 16)    # 每 2 bytes 一組，當成一個 16 位元整數\n    while total > 0xFFFF:                    # 超過 16 bits：進位加回低 16 bits（可能要加不只一次）\n        total = (total & 0xFFFF) + (total >> 16)\n    checksum = ~total & 0xFFFF               # 取 1 的補數，只留 16 bits\n    print(f\"{checksum:04x}\")                 # 補滿 4 位、小寫十六進位"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "total & 0xFFFF",
+                  "definition": "只留下低 16 bits。"
+                },
+                {
+                  "term": "total >> 16",
+                  "definition": "把超過 16 bits 的部分（進位）移下來。"
+                },
+                {
+                  "term": "~total & 0xFFFF",
+                  "definition": "1 的補數：每個 bit 反過來，再只留 16 bits（Python 的 ~ 會產生負數，所以要 & 0xFFFF）。"
+                },
+                {
+                  "term": "f\"{x:04x}\"",
+                  "definition": "輸出 4 位的小寫十六進位，不夠 4 位自動補 0，不需要自己算要補幾個 0。"
+                }
+              ]
+            },
+            {
+              "type": "callout",
+              "label": "自我檢查",
+              "text": "進位相關的題目，至少測三種：沒有進位、進位一次、進位之後又進位。"
             }
           ]
         },
@@ -5906,6 +6030,72 @@
               "type": "code",
               "language": "python",
               "code": "from collections import Counter\nres=[]\nfor _ in range(int(input())):\n    d=list(map(int,input().split()))\n    d.sort()\n----\n    only=[(n-1)%13 for n in d]\n    only.sort()\n----\n    color=(d[0]-1)//13\n    last=d[0]\n    continuous=1\n    have_a=(d[0]-1)%13==0\n    for rs in d[1:]:\n        if (rs-1)%13==0:\n            have_a=True\n        if (rs-1)//13!=color:\n            continuous=1\n            color=(rs-1)//13\n        elif last+1!=rs:\n            continuous=1\n        else:\n            continuous+=1\n        last=rs\n        if continuous>=5 or ( continuous==4 and have_a and (last-1)%13==12):\n            break\n    if continuous>=5 or ( continuous==4 and have_a and  (last-1)%13==12):\n        res.append(str(7))\n        continue\n\n    see=Counter(only)\n    if 6>see.most_common(1)[0][1]>=4:\n        res.append(\"6\")\n        continue\n    if len(see.most_common())>=2 and see.most_common()[0][1]>=3 and see.most_common()[1][1]>=2:\n        res.append(\"5\")\n        continue\n\n----\n    continuous=1\n    last=only[0]\n    have_a=(only[0])%13==0\n    for rs in only[1:]:\n        now= rs\n        if now==0:\n            have_a=True\n        if now-1!=last:\n            continuous=1\n        else:\n            continuous+=1\n        last=now\n        if continuous>=5 or (continuous==4 and last==12 and have_a):\n            break\n    if continuous>=5 or (continuous==4 and last==12 and have_a):\n        res.append(\"4\")\n        continue\n----\n\n    if see.most_common()[0][1]>=3:\n        res.append(\"3\")\n        continue\n    if len(see.most_common())>=2 and see.most_common()[0][1]>=2 and see.most_common()[1][1]>=2:\n        res.append(\"2\")\n        continue\n    if see.most_common()[0][1]>=2:\n        res.append(\"1\")\n        continue\n    res.append(\"0\")\n\nfor rs in res:\n    print(rs)"
+            },
+            {
+              "type": "heading",
+              "text": "老師講解：錯在哪裡"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "only 沒有排序",
+                  "definition": "判斷順子時是看「相鄰的點數差 1」，點數沒排序就看不出來。（d 排序了，但換算成點數後順序會變。）"
+                },
+                {
+                  "term": "點數換算了兩次",
+                  "definition": "only 已經是 (n-1)%13，迴圈裡又算了一次 (rs-1)%13，點數就錯了。"
+                },
+                {
+                  "term": "在內層 for 裡用 continue",
+                  "definition": "continue 只會跳到內層迴圈的下一圈，不會跳過這一副牌，所以同一副牌可能 append 好幾次「4」，輸出的行數就會變多。這裡要用 break 離開內層迴圈。"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "你的正確版本修好了這三個，但還有一個測資沒抓到的問題：如果順子中間有重複的點數，例如點數 2 3 4 5 5 6，排序後 5 和 5 相鄰，「差 1」斷掉，計數就被重設，會漏掉 2-3-4-5-6 這個順子（應該是 4 分，卻輸出 1 分）。我用 3000 副隨機的牌比對，還有 6 副會錯。"
+            },
+            {
+              "type": "heading",
+              "text": "建議：把問題拆小，用暴力法"
+            },
+            {
+              "type": "paragraph",
+              "text": "6 張牌選 5 張，只有 6 種組合。與其在 6 張牌上直接判斷（要處理重複、跳過一張牌等很多情況），不如把每一種 5 張的組合都算一次分數，取最大。這就是 Algorithm Tree 解題流程的第 1 步：暴力解跑得完，就不需要更聰明的方法。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import Counter\nfrom itertools import combinations\n\ndef score(hand):\n    \"\"\"5 張牌的分數。牌 1~52：花色 = (c-1)//13，點數 = (c-1)%13 + 1（A=1, J=11, Q=12, K=13）\"\"\"\n    suits = {(c - 1) // 13 for c in hand}\n    ranks = sorted((c - 1) % 13 + 1 for c in hand)\n    counts = sorted(Counter(ranks).values(), reverse=True)   # 例如 [3, 2]、[2, 2, 1]\n\n    straight = (len(set(ranks)) == 5 and ranks[4] - ranks[0] == 4) \\\n               or ranks == [1, 10, 11, 12, 13]               # 10-J-Q-K-A（A 當 14）\n    flush = len(suits) == 1\n\n    if straight and flush:   return 7   # 同花順\n    if counts[0] == 4:       return 6   # 四條\n    if counts == [3, 2]:     return 5   # 葫蘆\n    if straight:             return 4   # 順子\n    if counts[0] == 3:       return 3   # 三條\n    if counts == [2, 2, 1]:  return 2   # 二對\n    if counts[0] == 2:       return 1   # 一對\n    return 0                            # 雜牌\n\nfor _ in range(int(input())):\n    cards = list(map(int, input().split()))\n    print(max(score(h) for h in combinations(cards, 5)))   # 6 張取 5 張，只有 6 種組合"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "score(hand)",
+                  "definition": "只處理「剛好 5 張」，邏輯簡單很多：用 Counter 數每個點數出現幾次，再看是不是順子、是不是同花。"
+                },
+                {
+                  "term": "counts",
+                  "definition": "把出現次數由大到小排好，例如 [3, 2] 就是葫蘆、[2, 2, 1] 就是二對，一眼就看得出牌型。"
+                },
+                {
+                  "term": "A 的兩種用法",
+                  "definition": "一般順子 A 當 1；10-J-Q-K-A 單獨判斷。J-Q-K-A-2 不算順子，這樣寫也自然不會算到。"
+                },
+                {
+                  "term": "combinations(cards, 5)",
+                  "definition": "itertools 幫你列出所有 5 張的組合，不用自己寫兩層迴圈。"
+                }
+              ]
+            },
+            {
+              "type": "callout",
+              "label": "自我檢查",
+              "text": "題目給的例子都可以拿來測：3 44 4 6 7 5 → 7；拿掉一張後的 5 張：44 4 6 7 5 → 1，3 44 4 6 7 → 4。"
             }
           ]
         },
@@ -5917,7 +6107,7 @@
           "content": [
             {
               "type": "image",
-              "caption": "New image",
+              "caption": "G108,31",
               "text": "New Lesson",
               "imageId": 12
             },
@@ -5928,7 +6118,43 @@
             },
             {
               "type": "heading",
-              "text": "G108,31"
+              "text": "老師講解"
+            },
+            {
+              "type": "paragraph",
+              "text": "題目看起來很長，其實只要做一件事：每一個「位置（直行）」各自找出出現最多次的字母；同樣多時選字典序最小的（A < C < G < T）。每一行彼此獨立，所以一行一行處理就好。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "取出同一個位置",
+                  "definition": "zip(*seqs) 會把「每個字串的第 i 個字母」放在一起，等於把表格轉 90 度。"
+                },
+                {
+                  "term": "數次數",
+                  "definition": "Counter(col) 一次數好 A、C、G、T 各幾個。"
+                },
+                {
+                  "term": "同樣多選最小",
+                  "definition": "max(\"ACGT\", key=...) 會依 A、C、G、T 的順序比較，遇到一樣大時保留先出現的那個，就是字典序最小的。"
+                },
+                {
+                  "term": "讀輸入",
+                  "definition": "題目說「以一個或多個空白作為區隔」，用 sys.stdin.read().split() 一次讀完所有 token，最不容易被多餘的空白或換行弄錯。"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import sys\nfrom collections import Counter\n\ndata = sys.stdin.read().split()      # 題目說「一個或多個空白」→ 直接讀全部 token 最安全\npos = 0\nt = int(data[pos]); pos += 1\nfor _ in range(t):\n    a, b = int(data[pos]), int(data[pos + 1]); pos += 2\n    seqs = data[pos:pos + a]; pos += a\n    ans = []\n    for col in zip(*seqs):            # zip(*seqs)：一次拿出「同一個位置」的所有字母\n        cnt = Counter(col)\n        # 依 A、C、G、T 的順序找：max 遇到同樣多時會留下第一個 → 自然是字典序最小\n        ans.append(max(\"ACGT\", key=lambda ch: cnt[ch]))\n    print(\"\".join(ans))"
+            },
+            {
+              "type": "callout",
+              "label": "自我檢查",
+              "text": "題目表格裡畫出來的答案都可以拿來對：TAAGATAC、ACGTACGTAA、AAGTTACCAA、CAGCACGTA。"
             }
           ]
         },
@@ -5940,7 +6166,7 @@
           "content": [
             {
               "type": "image",
-              "caption": "New image",
+              "caption": "G109, 42",
               "imageId": 14
             },
             {
@@ -5950,11 +6176,64 @@
             },
             {
               "type": "heading",
-              "text": "G109, 42"
+              "text": ""
             },
             {
               "type": "paragraph",
               "text": "Add content here...   test test"
+            },
+            {
+              "type": "heading",
+              "text": "老師講解：每個人只寄給一個人 → 一條鏈最後一定繞回環"
+            },
+            {
+              "type": "paragraph",
+              "text": "每個人收到郵件後都只會寄給「一個」固定的人。從任何人出發，郵件會一直往下傳，因為人數有限，最後一定會走到一個已經收過的人，形成一個「環」。所以每條路線的形狀都是：一段尾巴 + 一個環。"
+            },
+            {
+              "type": "paragraph",
+              "text": "最直接的做法是：從每個人開始模擬，數有幾個人收到。但 N 最多 50000，每次模擬最多走 N 步，總共 N² = 25 億步，太慢。"
+            },
+            {
+              "type": "heading",
+              "text": "關鍵：記住算過的答案"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "在環上的人",
+                  "definition": "從環上任何一個人出發，收到的人數都是「環的長度」。"
+                },
+                {
+                  "term": "不在環上的人",
+                  "definition": "收到的人數 = 1（自己）+ 下一個人的答案。"
+                },
+                {
+                  "term": "怎麼找環",
+                  "definition": "沿著郵件一路走，把走過的人標成「這一輪正在走」。如果走到一個「這一輪正在走」的人，從他到目前的這一段就是環；如果走到一個「已經算好」的人，就不用再往下走了。"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "每個人只會被走過一次、算一次，所以總共 O(N)。用迴圈（不是遞迴）寫，N = 50000 時也不會遇到遞迴深度的限制。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import sys\n\ndef solve(n, nxt):\n    \"\"\"nxt[u] = 收到郵件後寄給誰。回傳：從誰開始寄，能讓最多人收到（同樣多取編號最小）\"\"\"\n    reach = [0] * (n + 1)      # reach[u] = 從 u 開始，總共有幾個人收到\n    state = [0] * (n + 1)      # 0 = 還沒處理，1 = 這一輪正在走，2 = 已算好\n    for start in range(1, n + 1):\n        if state[start]:\n            continue\n        path = []\n        u = start\n        while state[u] == 0:          # 沿著郵件一路走，直到遇到走過的人\n            state[u] = 1\n            path.append(u)\n            u = nxt[u]\n        if state[u] == 1:             # 撞到這一輪的路徑 → 找到一個環\n            k = path.index(u)\n            cycle = path[k:]\n            for v in cycle:           # 環上每個人都會收到整個環\n                reach[v] = len(cycle)\n                state[v] = 2\n            path = path[:k]\n        for v in reversed(path):      # 環外的人 = 1 + 下一個人的答案（從後往前算）\n            reach[v] = 1 + reach[nxt[v]]\n            state[v] = 2\n    best = max(range(1, n + 1), key=lambda u: (reach[u], -u))\n    return best\n\ndata = sys.stdin.read().split()\npos = 0\nt = int(data[pos]); pos += 1\nfor _ in range(t):\n    n = int(data[pos]); pos += 1\n    nxt = [0] * (n + 1)\n    for _ in range(n):\n        u, v = int(data[pos]), int(data[pos + 1]); pos += 2\n        nxt[u] = v\n    print(solve(n, nxt))"
+            },
+            {
+              "type": "callout",
+              "label": "自我檢查",
+              "text": "題目兩個輸入檔的 8 組答案（1 4 3 / 6 1 7 1 3）都能對上。「同樣多人時輸出最小的編號」用 key=(reach[u], -u) 一次處理。"
+            },
+            {
+              "type": "callout",
+              "label": "延伸",
+              "text": "這種「每個點只有一條出去的邊」的圖叫做 functional graph，找環＋記憶化是它的標準做法。"
             }
           ]
         },
@@ -5970,7 +6249,118 @@
             },
             {
               "type": "paragraph",
-              "text": "Add content here..."
+              "text": "python module datetime explains"
+            },
+            {
+              "type": "heading",
+              "text": "datetime 模組：日期與時間"
+            },
+            {
+              "type": "paragraph",
+              "text": "處理日期時，不要自己算「這個月有幾天」「是不是閏年」，交給 datetime。最常用的有三個：date（日期）、datetime（日期＋時間）、timedelta（一段時間的長度）。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from datetime import date, datetime, timedelta\n\n# 1. 建立日期／時間\nd = date(2026, 11, 10)                    # 年, 月, 日\nt = datetime(2026, 11, 10, 15, 30, 0)     # 年, 月, 日, 時, 分, 秒\nprint(d)              # 2026-11-10\nprint(t)              # 2026-11-10 15:30:00\n\n# 2. 拿出各個部分\nprint(d.year, d.month, d.day)             # 2026 11 10\nprint(d.weekday())                        # 星期一 = 0 … 星期日 = 6 → 1（星期二）\nprint(d.isoweekday())                     # 星期一 = 1 … 星期日 = 7 → 2\n\n# 3. 日期加減：用 timedelta\nprint(d + timedelta(days=30))             # 2026-12-10\nprint(d - timedelta(weeks=1))             # 2026-11-03\n\n# 4. 兩個日期相減 → timedelta，用 .days 拿天數\ndiff = date(2027, 1, 1) - d\nprint(diff.days)                          # 52"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "date",
+                  "definition": "只有年、月、日。"
+                },
+                {
+                  "term": "datetime",
+                  "definition": "年、月、日、時、分、秒。"
+                },
+                {
+                  "term": "timedelta",
+                  "definition": "兩個時間點之間的差。日期 ± timedelta = 新的日期；日期 − 日期 = timedelta。"
+                },
+                {
+                  "term": "weekday()",
+                  "definition": "星期一 = 0、星期日 = 6。isoweekday() 則是星期一 = 1、星期日 = 7，題目要哪一種要看清楚。"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "字串和日期互相轉換"
+            },
+            {
+              "type": "paragraph",
+              "text": "題目給的日期通常是字串。strptime 把字串「解析」成 datetime，strftime 把 datetime「格式化」成字串。兩個函式用同一套格式代碼。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from datetime import datetime\n\n# 字串 → datetime：strptime（parse）\nt = datetime.strptime(\"2026/11/10 08:05\", \"%Y/%m/%d %H:%M\")\n\n# datetime → 字串：strftime（format）\nprint(t.strftime(\"%Y-%m-%d\"))             # 2026-11-10\nprint(t.strftime(\"%m/%d %H:%M\"))          # 11/10 08:05\nprint(t.strftime(\"%A\"))                   # Tuesday\n\n# 兩個時間差幾秒、幾分鐘\na = datetime.strptime(\"08:05:30\", \"%H:%M:%S\")\nb = datetime.strptime(\"10:00:00\", \"%H:%M:%S\")\nsec = int((b - a).total_seconds())\nprint(sec, sec // 60)                     # 6870 114"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "%Y",
+                  "definition": "四位數年份，例如 2026"
+                },
+                {
+                  "term": "%m",
+                  "definition": "月，01～12"
+                },
+                {
+                  "term": "%d",
+                  "definition": "日，01～31"
+                },
+                {
+                  "term": "%H / %M / %S",
+                  "definition": "時（24 小時制）/ 分 / 秒"
+                },
+                {
+                  "term": "%A",
+                  "definition": "星期幾的英文全名"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "其他常用工具"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import calendar\nfrom datetime import date, timedelta\n\nprint(calendar.isleap(2024), calendar.isleap(2100))   # True False\nfirst_wd, days = calendar.monthrange(2026, 2)\nprint(first_wd, days)                                 # 6 28：2/1 是星期日(6)、2 月有 28 天\n\n# 一天一天走過一段日期\nd, end = date(2026, 12, 30), date(2027, 1, 2)\nwhile d <= end:\n    print(d, end=\" \")                                 # 2026-12-30 2026-12-31 2027-01-01 2027-01-02\n    d += timedelta(days=1)\nprint()\n\n# 第幾天（1 月 1 日是第 1 天）\nprint(date(2026, 11, 10).timetuple().tm_yday)          # 314"
+            },
+            {
+              "type": "callout",
+              "label": "小提醒",
+              "text": "比較日期可以直接用 < > ==；要排序一堆日期，先轉成 date 再 sort()，不要排字串（\"2026-9-1\" 和 \"2026-10-1\" 用字串排會排錯）。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "date(2026, 3, 1) - date(2026, 2, 1) 的 .days 是多少？",
+                  "options": [
+                    "28",
+                    "29",
+                    "30"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "要把 \"2026/11/10\" 變成 date，應該用哪一個？",
+                  "options": [
+                    "strftime",
+                    "strptime",
+                    "timedelta"
+                  ],
+                  "answer": 1
+                }
+              ]
             }
           ]
         },
@@ -5982,13 +6372,62 @@
           "content": [
             {
               "type": "image",
-              "caption": "New image",
+              "caption": "G113 414_",
               "text": "New Lesson",
               "imageId": 16
             },
             {
               "type": "paragraph",
-              "text": "G113 414_"
+              "text": "we would had a good algorithm that it is faster"
+            },
+            {
+              "type": "heading",
+              "text": "老師講解：更快的方法就是「直徑」"
+            },
+            {
+              "type": "paragraph",
+              "text": "直接做法是從每個節點各 BFS 一次，找最遠距離，總共 O(n²)。n 最多 10⁶，太慢了。"
+            },
+            {
+              "type": "paragraph",
+              "text": "關鍵性質：樹上離任何一個點最遠的點，一定是「直徑」（樹上最長的路徑）的其中一端。所以只要找到直徑的兩端 A、B，每個點的答案就是 max(到 A 的距離, 到 B 的距離)。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "第 1 次 BFS",
+                  "definition": "從任意點（例如 1）出發，最遠的點 A 一定是直徑的一端。"
+                },
+                {
+                  "term": "第 2 次 BFS",
+                  "definition": "從 A 出發，最遠的點 B 是直徑的另一端；同時得到每個點到 A 的距離。"
+                },
+                {
+                  "term": "第 3 次 BFS",
+                  "definition": "從 B 出發，得到每個點到 B 的距離。"
+                },
+                {
+                  "term": "答案",
+                  "definition": "每個點 v：max(dA[v], dB[v])。三次 BFS，總共 O(n)。"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import sys\nfrom collections import deque\n\ndef bfs(start, n, adj):\n    \"\"\"從 start 出發，回傳到每個節點的距離\"\"\"\n    dist = [-1] * (n + 1)\n    dist[start] = 0\n    q = deque([start])\n    while q:\n        u = q.popleft()\n        for v in adj[u]:\n            if dist[v] < 0:\n                dist[v] = dist[u] + 1\n                q.append(v)\n    return dist\n\ndef main():\n    data = sys.stdin.buffer.read().split()   # n 到 10^6：一次讀完，比 input() 快很多\n    n = int(data[0])\n    adj = [[] for _ in range(n + 1)]\n    for i in range(n - 1):\n        a, b = int(data[1 + 2 * i]), int(data[2 + 2 * i])\n        adj[a].append(b)\n        adj[b].append(a)\n\n    d1 = bfs(1, n, adj)\n    A = max(range(1, n + 1), key=d1.__getitem__)   # 離 1 最遠的點：直徑的一端\n    dA = bfs(A, n, adj)\n    B = max(range(1, n + 1), key=dA.__getitem__)   # 離 A 最遠的點：直徑的另一端\n    dB = bfs(B, n, adj)\n    # 每個點最遠的點，一定是直徑的兩端之一\n    print(\" \".join(str(max(dA[v], dB[v])) for v in range(1, n + 1)))\n\nmain()"
+            },
+            {
+              "type": "callout",
+              "label": "自我檢查",
+              "text": "兩個範例都對，我也用 200 棵隨機的小樹和「每個點各 BFS 一次」的暴力解比對過，答案完全一樣。"
+            },
+            {
+              "type": "callout",
+              "label": "速度",
+              "text": "n = 10⁶ 時，這個 Python 程式大約要幾秒（我的測試約 4 秒）。如果時間限制很緊：用 sys.stdin.buffer 一次讀完（已經這樣寫了）、改用 PyPy，或用 C++。演算法本身已經是最好的 O(n)。"
             }
           ]
         },
@@ -6000,13 +6439,66 @@
           "content": [
             {
               "type": "image",
-              "caption": "New image",
+              "caption": "G112 K2",
               "text": "New Lesson",
               "imageId": 17
             },
             {
               "type": "paragraph",
-              "text": "G112 K2"
+              "text": "still , having a good algorithm"
+            },
+            {
+              "type": "heading",
+              "text": "老師講解：不要真的去刪"
+            },
+            {
+              "type": "paragraph",
+              "text": "直接做法是：每一種刪法都產生新字串，丟進 set 數有幾種。但每次產生新字串要 O(n)，總共 O(n²)；n 到 2×10⁶，太慢，記憶體也不夠。"
+            },
+            {
+              "type": "paragraph",
+              "text": "換個角度：總共有 n−1 種刪法（刪第 i、i+1 個字母）。什麼時候兩種刪法會得到同樣的字串？"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "刪 (i, i+1)",
+                  "definition": "留下 … s[i-1] s[i+2] s[i+3] …"
+                },
+                {
+                  "term": "刪 (i+1, i+2)",
+                  "definition": "留下 … s[i-1] s[i] s[i+3] …"
+                },
+                {
+                  "term": "兩者相同",
+                  "definition": "只差在中間那個字母：一個是 s[i+2]，一個是 s[i]。所以 s[i] == s[i+2] 時，這兩種刪法結果一樣。"
+                },
+                {
+                  "term": "答案",
+                  "definition": "n − 1 −（有幾個 i 滿足 s[i] == s[i+2]）。只要掃一次字串，O(n)。"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "例如 aaabcc：s[0] = a、s[2] = a 相同，所以 5 − 1 = 4 種。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import sys\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    t = int(data[0])\n    out = []\n    pos = 1\n    for _ in range(t):\n        n = int(data[pos]); s = data[pos + 1]; pos += 2\n        # 共有 n-1 種刪法；刪 (i, i+1) 和刪 (i+1, i+2) 結果相同 ⇔ s[i] == s[i+2]\n        same = sum(1 for i in range(n - 2) if s[i] == s[i + 2])\n        out.append(n - 1 - same)\n    print(\"\\n\".join(map(str, out)))\n\nmain()"
+            },
+            {
+              "type": "callout",
+              "label": "自我檢查",
+              "text": "7 組範例都對，也用 300 個隨機短字串和「真的刪掉再丟進 set」的暴力解比對過。"
+            },
+            {
+              "type": "callout",
+              "label": "一般方法",
+              "text": "「數有幾種不同結果」的題目，先想：兩個結果什麼時候會一樣？把「一樣」的條件找出來，往往就不用真的產生所有結果。"
             }
           ]
         },
@@ -6018,7 +6510,7 @@
           "content": [
             {
               "type": "image",
-              "caption": "New image",
+              "caption": "G112 P",
               "text": "New Lesson",
               "imageId": 18
             },
@@ -6030,7 +6522,194 @@
             },
             {
               "type": "paragraph",
-              "text": "G112 P"
+              "text": ""
+            },
+            {
+              "type": "heading",
+              "text": "老師講解：一行算出 S"
+            },
+            {
+              "type": "paragraph",
+              "text": "題目的 Hint 用解方程組的方法，可以做，但有更短的想法："
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "整個方陣的總和",
+                  "definition": "3 列，每列和都是 S，所以總和 = 3S。"
+                },
+                {
+                  "term": "缺的 3 格",
+                  "definition": "剛好就是主對角線，主對角線的和 = S。"
+                },
+                {
+                  "term": "已知的數字總和",
+                  "definition": "= 3S − S = 2S，所以 S = 已知數字總和 ÷ 2。"
+                },
+                {
+                  "term": "補回對角線",
+                  "definition": "第 i 列只缺 g[i][i] 那一格：g[i][i] = S − 第 i 列其他數字的和。"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "g = [list(map(int, input().split())) for _ in range(3)]\n\n# 整個方陣的總和 = 3S（三列）；主對角線的和 = S\n# 已知的數字 = 總和 − 主對角線 = 3S − S = 2S  →  S = 已知數字的總和 ÷ 2\nS = sum(map(sum, g)) // 2\n\nfor i in range(3):\n    g[i][i] = S - sum(g[i])   # 每一列只缺對角線那一格（那格目前是 0）\n\nfor row in g:\n    print(*row)"
+            },
+            {
+              "type": "callout",
+              "label": "自我檢查",
+              "text": "3 組範例都對：S 分別是 3、15、171。"
+            },
+            {
+              "type": "callout",
+              "label": "一般方法",
+              "text": "遇到「有很多條件都相等」的題目，先試著把所有條件加起來，常常會出現一個可以直接算的式子。"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1794296764911",
+          "title": "Mo's algorithm",
+          "titleEn": "Mo's algorithm",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "image",
+              "caption": "G113 413_",
+              "text": "New Lesson",
+              "imageId": 20
+            },
+            {
+              "type": "paragraph",
+              "text": "teach me this"
+            },
+            {
+              "type": "heading",
+              "text": "Mo's algorithm（莫隊演算法）"
+            },
+            {
+              "type": "paragraph",
+              "text": "問題：陣列長度 n，有 q 筆查詢，每筆問 [a, b] 裡有幾個不同的值。每筆查詢都重新數一次是 O(n)，總共 O(nq)，太慢。"
+            },
+            {
+              "type": "paragraph",
+              "text": "Mo's algorithm 的想法：如果我已經知道 [l, r] 的答案，要算 [l, r+1] 只需要「加入一個元素」；算 [l+1, r] 只需要「移除一個元素」。所以只要維持一個「目前的區間」，讓兩個指標一步一步移到下一個查詢的位置就好。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "需要的條件",
+                  "definition": "1. 可以離線：先讀完所有查詢，最後再一起輸出。2. 加入／移除一個元素時，答案可以 O(1) 更新。"
+                },
+                {
+                  "term": "加入一個元素",
+                  "definition": "cnt[x] 從 0 變 1 時，不同值的數量 +1。"
+                },
+                {
+                  "term": "移除一個元素",
+                  "definition": "cnt[x] 從 1 變 0 時，不同值的數量 −1。"
+                },
+                {
+                  "term": "關鍵：查詢的順序",
+                  "definition": "如果照原本順序處理，指標可能左右亂跳，最壞還是 O(nq)。所以要先把查詢排序。"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "怎麼排序查詢"
+            },
+            {
+              "type": "paragraph",
+              "text": "把陣列切成每塊大約 √n 個（或 n/√q 個）元素。查詢先依「左端點在第幾塊」排序，同一塊裡再依右端點排序。這樣：同一塊裡左指標每次最多移動一塊的長度，右指標只往一個方向走；換塊時右指標最多走一次 n。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "時間複雜度",
+                  "definition": "O((n + q)·√n)。"
+                },
+                {
+                  "term": "奇偶優化",
+                  "definition": "奇數塊的右端點由大到小、偶數塊由小到大，右指標就不用每換一塊都跑回最左邊，實際上快不少。"
+                },
+                {
+                  "term": "答案順序",
+                  "definition": "排序會打亂順序，所以每筆查詢要記住原本的編號，答案存回 ans[原本的編號]。"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import sys\nfrom math import isqrt\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    n, q = int(data[0]), int(data[1])\n    a = [0] + [int(x) for x in data[2:2 + n]]        # 1-indexed\n    queries = []\n    for i in range(q):\n        l, r = int(data[2 + n + 2 * i]), int(data[3 + n + 2 * i])\n        queries.append((l, r, i))\n\n    # 1. 分塊：左端點在同一塊的查詢放一起，塊內依右端點排序\n    #    （奇數塊右端點由大到小，偶數塊由小到大，讓右指標來回走，少走很多路）\n    block = max(1, int(n / max(1, isqrt(q))) )\n    queries.sort(key=lambda x: (x[0] // block, x[1] if (x[0] // block) % 2 == 0 else -x[1]))\n\n    # 2. 準備「目前區間」[cur_l, cur_r] 的狀態：每個值出現幾次、有幾種不同的值\n    cnt = {}\n    distinct = 0\n    cur_l, cur_r = 1, 0          # 一開始是空區間\n    ans = [0] * q\n\n    for l, r, idx in queries:\n        # 3. 移動兩個指標，每次只加入或移除一個元素：O(1)\n        while cur_r < r:                      # 右邊擴張：加入\n            cur_r += 1\n            x = a[cur_r]\n            c = cnt.get(x, 0)\n            if c == 0: distinct += 1\n            cnt[x] = c + 1\n        while cur_l > l:                      # 左邊擴張：加入\n            cur_l -= 1\n            x = a[cur_l]\n            c = cnt.get(x, 0)\n            if c == 0: distinct += 1\n            cnt[x] = c + 1\n        while cur_r > r:                      # 右邊縮小：移除\n            x = a[cur_r]\n            cnt[x] -= 1\n            if cnt[x] == 0: distinct -= 1\n            cur_r -= 1\n        while cur_l < l:                      # 左邊縮小：移除\n            x = a[cur_l]\n            cnt[x] -= 1\n            if cnt[x] == 0: distinct -= 1\n            cur_l += 1\n        ans[idx] = distinct                   # 4. 依原本的順序存答案\n\n    print(\"\\n\".join(map(str, ans)))\n\nmain()"
+            },
+            {
+              "type": "callout",
+              "label": "自我檢查",
+              "text": "範例輸出 2 3 3 正確；也用 100 組隨機資料和「直接用 set 數」的暴力解比對過。"
+            },
+            {
+              "type": "heading",
+              "text": "在 Python 裡要注意速度"
+            },
+            {
+              "type": "paragraph",
+              "text": "Mo's 的指標總共要移動大約 (n + q)·√n 次。n = q = 2×10⁵ 時，我測到大約 11 秒，Python 很可能超時。"
+            },
+            {
+              "type": "paragraph",
+              "text": "這一題（區間不同值）其實還有一個更快的離線方法：把查詢依右端點排序，從左到右掃陣列，每個值只在「最後一次出現的位置」標 1，用樹狀陣列（Fenwick tree）求區間和。複雜度 O((n + q) log n)，同樣的資料約 1 秒。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import sys\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    n, q = int(data[0]), int(data[1])\n    a = [0] + [int(x) for x in data[2:2 + n]]\n    by_r = [[] for _ in range(n + 1)]                 # 依右端點把查詢分組\n    for i in range(q):\n        l, r = int(data[2 + n + 2 * i]), int(data[3 + n + 2 * i])\n        by_r[r].append((l, i))\n\n    tree = [0] * (n + 1)                              # Fenwick tree\n    def add(i, v):\n        while i <= n:\n            tree[i] += v; i += i & -i\n    def prefix(i):\n        s = 0\n        while i > 0:\n            s += tree[i]; i -= i & -i\n        return s\n\n    last = {}                                         # 每個值「最後一次」出現的位置\n    ans = [0] * q\n    for r in range(1, n + 1):\n        x = a[r]\n        if x in last:\n            add(last[x], -1)                          # 舊的位置不算了\n        add(r, 1)                                     # 只在最右邊的位置記 1\n        last[x] = r\n        for l, i in by_r[r]:\n            ans[i] = prefix(r) - prefix(l - 1)        # [l, r] 裡標 1 的數量 = 不同值的個數\n    print(\"\\n\".join(map(str, ans)))\n\nmain()"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "什麼時候用 Mo's",
+                  "definition": "加入／移除很容易寫，但很難用資料結構直接維護答案的題目（例如區間眾數、區間內出現偶數次的值有幾個）。"
+                },
+                {
+                  "term": "什麼時候用樹狀陣列",
+                  "definition": "像這一題，能找到「只記最後一次出現」這種技巧時，log n 比 √n 快很多，Python 尤其明顯。"
+                }
+              ]
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "Mo's algorithm 為什麼要先把查詢排序？",
+                  "options": [
+                    "讓答案由小到大輸出",
+                    "讓兩個指標移動的總步數變少",
+                    "因為題目規定"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "Mo's algorithm 需要哪個條件？",
+                  "options": [
+                    "查詢必須線上即時回答",
+                    "加入或移除一個元素時，答案可以快速更新",
+                    "陣列必須已經排序"
+                  ],
+                  "answer": 1
+                }
+              ]
             }
           ]
         }
