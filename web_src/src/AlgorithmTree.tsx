@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronRight,
@@ -19,16 +19,23 @@ import {
   Wrench,
 } from 'lucide-react';
 import {
-  algoNodes, algoEdges, algoNext, customStructures, ALGO_ROOT_ID, ALGO_OUTCOME_ID,
-  AlgoNode, AlgoEdge, AlgoNodeKind,
+  algoNodes, algoEdges, algoNext, customStructures, dataStructures, goalTree, ALGO_ROOT_ID, ALGO_OUTCOME_ID,
+  AlgoNode, AlgoEdge, AlgoNodeKind, GoalItem,
 } from './algoTreeData';
 import { SolveWizard } from './SolveWizard';
-import { GoalTree } from './GoalTree';
 
-// Flow: 問題發現 → 判斷樹（是非題／選擇題）→ 可用的演算法 → 得到了什麼 → 繼續或解決
-// The decision part is a real tree: every answer is exclusive, so a problem has exactly one path.
+// Two trees, drawn by the same viewer:
+//   判斷樹: 問題發現 → 是非題／選擇題 → 演算法 → 得到了什麼 → 繼續或解決（答案互斥，路徑唯一）
+//   任務樹: 問題發現 → [任務] → [條件] → 演算法 或 資料結構 → 得到了什麼 → 繼續或解決（依照要做什麼分類）
 
 type LayoutMode = 'vertical' | 'horizontal';
+
+/** node kinds of both trees: the decision tree's, plus 任務 / 條件 / 資料結構 for the goal tree */
+type ViewKind = AlgoNodeKind | 'task' | 'cond' | 'ds';
+type VNode = Omit<AlgoNode, 'kind'> & { kind: ViewKind; dsId?: string };
+type VEdge = Omit<AlgoEdge, 'kind'> & { kind: ViewKind };
+type ViewId = 'tree' | 'goal';
+interface TreeView { id: ViewId; rootId: string; outcomeId: string; nodes: VNode[]; edges: VEdge[] }
 
 interface NodePosition { x: number; y: number; width: number; height: number }
 
@@ -62,17 +69,26 @@ const CATEGORY_STYLES: Record<string, CatStyle> = {
 };
 const FALLBACK_STYLE: CatStyle = { box: 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600', text: 'text-slate-800 dark:text-slate-200', dot: 'bg-slate-400', label: '其他' };
 
+const TASK_STYLE: CatStyle = { box: 'bg-slate-700 dark:bg-slate-200 border-slate-700 dark:border-slate-200', text: 'text-white dark:text-slate-900', dot: 'bg-slate-700 dark:bg-slate-200', label: '任務' };
+const COND_STYLE: CatStyle = { box: 'bg-white dark:bg-slate-800 border-slate-400 dark:border-slate-500 border-dashed', text: 'text-slate-800 dark:text-slate-100', dot: 'bg-white dark:bg-slate-800', label: '條件' };
+const DS_BUILTIN_STYLE: CatStyle = { box: 'bg-sky-50 dark:bg-sky-950/60 border-sky-400 dark:border-sky-600', text: 'text-sky-900 dark:text-sky-100', dot: 'bg-sky-400', label: '資料結構：Python 內建' };
+const DS_CUSTOM_STYLE: CatStyle = { box: 'bg-orange-50 dark:bg-orange-950/60 border-orange-400 dark:border-orange-600', text: 'text-orange-900 dark:text-orange-100', dot: 'bg-orange-400', label: '資料結構：要自己寫' };
+
 const STAGES: Record<number, { label: string; tag: string; dot: string }> = {
   1: { label: '步驟 1 需要優化嗎', tag: 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900 dark:text-amber-200 dark:border-amber-700', dot: 'bg-amber-400' },
   2: { label: '步驟 2 了解資料', tag: 'bg-sky-100 text-sky-800 border-sky-300 dark:bg-sky-900 dark:text-sky-200 dark:border-sky-700', dot: 'bg-sky-400' },
   3: { label: '步驟 3 問題要什麼', tag: 'bg-violet-100 text-violet-800 border-violet-300 dark:bg-violet-900 dark:text-violet-200 dark:border-violet-700', dot: 'bg-violet-400' },
 };
 /** an algorithm can be several leaves; `ref` is the id of the algorithm itself */
-const algoIdOf = (n: AlgoNode) => n.ref || n.id;
+const algoIdOf = (n: VNode) => n.ref || n.id;
+const dsById = new Map(dataStructures.map(d => [d.id, d]));
 
-function styleFor(n: AlgoNode): CatStyle {
+function styleFor(n: VNode): CatStyle {
   switch (n.kind) {
     case 'root': return ROOT_STYLE;
+    case 'task': return TASK_STYLE;
+    case 'cond': return COND_STYLE;
+    case 'ds': return dsById.get(n.dsId ?? '')?.builtin ? DS_BUILTIN_STYLE : DS_CUSTOM_STYLE;
     case 'question': return n.qtype === 'choice' ? CHOICE_STYLE : YESNO_STYLE;
     case 'gain': return GAIN_STYLE;
     case 'outcome': return OUTCOME_STYLE;
@@ -80,7 +96,10 @@ function styleFor(n: AlgoNode): CatStyle {
   }
 }
 
-const EDGE_STYLES: Record<AlgoNodeKind, { cls: string; marker: string; width: number; base: number; dash?: string }> = {
+const EDGE_STYLES: Record<ViewKind, { cls: string; marker: string; width: number; base: number; dash?: string }> = {
+  task:      { cls: 'stroke-slate-400 dark:stroke-slate-500', marker: 'fill-slate-400 dark:fill-slate-500', width: 1.75, base: 0.7 },
+  cond:      { cls: 'stroke-slate-400 dark:stroke-slate-500', marker: 'fill-slate-400 dark:fill-slate-500', width: 1.75, base: 0.7 },
+  ds:        { cls: 'stroke-sky-400 dark:stroke-sky-500', marker: 'fill-sky-400 dark:fill-sky-500', width: 2, base: 0.8 },
   root:      { cls: 'stroke-slate-400 dark:stroke-slate-500', marker: 'fill-slate-400 dark:fill-slate-500', width: 1.75, base: 0.7 },
   question:  { cls: 'stroke-slate-400 dark:stroke-slate-500', marker: 'fill-slate-400 dark:fill-slate-500', width: 1.75, base: 0.7 },
   algorithm: { cls: 'stroke-emerald-400 dark:stroke-emerald-500', marker: 'fill-emerald-400 dark:fill-emerald-500', width: 2, base: 0.8 },
@@ -89,31 +108,84 @@ const EDGE_STYLES: Record<AlgoNodeKind, { cls: string; marker: string; width: nu
 };
 
 // ── Graph helpers ──
-const nodeById = new Map<string, AlgoNode>(algoNodes.map(n => [n.id, n]));
-const structureById = new Map(customStructures.map(c => [c.id, c]));
-const outgoing = new Map<string, AlgoEdge[]>();
-const incoming = new Map<string, AlgoEdge[]>();
-for (const n of algoNodes) { outgoing.set(n.id, []); incoming.set(n.id, []); }
-for (const e of algoEdges) { outgoing.get(e.from)!.push(e); incoming.get(e.to)!.push(e); }
+/** 任務樹 as nodes and edges, built from goalTree. Leaves reuse the decision tree's gains and outcome. */
+const GOAL_ROOT_ID = 'g-root';
+function buildGoalView(): TreeView {
+  const base = new Map<string, AlgoNode>(algoNodes.map(n => [n.id, n]));
+  const root = base.get(ALGO_ROOT_ID)!;
+  const blank = { label: '', category: '', time: '', space: '', ds: '', desc: '', qtype: '' as const, stage: 0, ref: '', customDs: [] as string[] };
+  const nodes: VNode[] = [{ ...root, id: GOAL_ROOT_ID, desc: '先想清楚：我們要做什麼？再依條件找到演算法或資料結構。' }];
+  const edges: VEdge[] = [];
+  const gainEdgesOf = (algoId: string, from: string) =>
+    algoEdges.filter(e => e.from === algoId && e.kind === 'gain').forEach(e => edges.push({ ...e, from }));
+  const add = (items: GoalItem[], parent: string, path: number[]) => items.forEach((it, i) => {
+    const id = `g-${[...path, i].join('.')}`;
+    if ('children' in it) {
+      const kind: ViewKind = path.length === 0 ? 'task' : 'cond';
+      nodes.push({ ...blank, id, kind, labelZh: it.label });
+      edges.push({ from: parent, to: id, reason: '', kind, answer: '' });
+      add(it.children, id, [...path, i]);
+    } else if ('algo' in it) {
+      const a = base.get(it.algo)!;
+      nodes.push({ ...a, id, ref: a.ref || a.id });
+      edges.push({ from: parent, to: id, reason: '', kind: 'algorithm', answer: '' });
+      gainEdgesOf(a.ref || a.id, id);
+    } else {
+      const d = dsById.get(it.ds)!;
+      const m = d.name.match(/^(.*?)\s*\((.*)\)\s*$/);
+      nodes.push({ ...blank, id, kind: 'ds', dsId: d.id, labelZh: m ? m[1] : d.name, label: m ? m[2] : '',
+        category: d.builtin ? 'Python 內建' : '要自己寫', desc: d.desc, ref: d.algo,
+        customDs: d.builtin ? [] : [d.id] });
+      edges.push({ from: parent, to: id, reason: '', kind: 'ds', answer: '' });
+      if (d.algo) gainEdgesOf(d.algo, id);
+    }
+  });
+  add(goalTree, GOAL_ROOT_ID, []);
+  // shared with the decision tree: gains and the outcome
+  nodes.push(...algoNodes.filter(n => n.kind === 'gain' || n.kind === 'outcome'));
+  edges.push(...algoEdges.filter(e => e.kind === 'outcome'));
+  return { id: 'goal', rootId: GOAL_ROOT_ID, outcomeId: ALGO_OUTCOME_ID, nodes, edges };
+}
 
-const isTreeNode = (id: string) => {
-  const k = nodeById.get(id)!.kind;
-  return k === 'root' || k === 'question' || k === 'algorithm';
+const VIEWS: Record<ViewId, TreeView> = {
+  tree: { id: 'tree', rootId: ALGO_ROOT_ID, outcomeId: ALGO_OUTCOME_ID, nodes: algoNodes, edges: algoEdges },
+  goal: buildGoalView(),
 };
-/** children inside the decision tree (questions / algorithms), in answer order */
+
+// one lookup over both trees
+const nodeById = new Map<string, VNode>();
+[...VIEWS.tree.nodes, ...VIEWS.goal.nodes].forEach(n => nodeById.set(n.id, n));
+const structureById = new Map(customStructures.map(c => [c.id, c]));
+const outgoing = new Map<string, VEdge[]>();
+const incoming = new Map<string, VEdge[]>();
+nodeById.forEach((_, id) => { outgoing.set(id, []); incoming.set(id, []); });
+const edgeKey = (e: VEdge) => `${e.from}->${e.to}`;
+const seenEdges = new Set<string>();
+[...VIEWS.tree.edges, ...VIEWS.goal.edges].forEach(e => {
+  if (seenEdges.has(edgeKey(e))) return;          // gain → outcome edges are shared
+  seenEdges.add(edgeKey(e));
+  outgoing.get(e.from)!.push(e); incoming.get(e.to)!.push(e);
+});
+
+const TREE_KINDS = new Set<ViewKind>(['root', 'question', 'algorithm', 'task', 'cond', 'ds']);
+const isLeafKind = (k: ViewKind) => k === 'algorithm' || k === 'ds';
+const isTreeNode = (id: string) => TREE_KINDS.has(nodeById.get(id)!.kind);
+/** children inside the tree part (questions / tasks / conditions / leaves), in order */
 const treeChildren = (id: string) =>
-  nodeById.get(id)!.kind === 'algorithm' ? [] : outgoing.get(id)!.filter(e => isTreeNode(e.to));
+  isLeafKind(nodeById.get(id)!.kind) ? [] : outgoing.get(id)!.filter(e => isTreeNode(e.to));
 const treeParent = (id: string) => incoming.get(id)!.find(e => isTreeNode(e.from));
 
 const depthOf = new Map<string, number>();
-(function walk(id: string, d: number) {
-  depthOf.set(id, d);
-  treeChildren(id).forEach(e => walk(e.to, d + 1));
-})(ALGO_ROOT_ID, 0);
+for (const view of Object.values(VIEWS)) {
+  (function walk(id: string, d: number) {
+    depthOf.set(id, d);
+    treeChildren(id).forEach(e => walk(e.to, d + 1));
+  })(view.rootId, 0);
+}
 
-/** The question → answer steps from the root down to `id`. */
-function pathTo(id: string): AlgoEdge[] {
-  const steps: AlgoEdge[] = [];
+/** The steps from the root down to `id`. */
+function pathTo(id: string): VEdge[] {
+  const steps: VEdge[] = [];
   let cur = treeParent(id);
   while (cur) { steps.unshift(cur); cur = treeParent(cur.from); }
   return steps;
@@ -125,30 +197,30 @@ function pathTo(id: string): AlgoEdge[] {
  * Questions are opened shallow-first while the leaves still fit; others stay folded ("+N")
  * until clicked (`expanded`). The root is always open.
  */
-function computeVisible(autoCollapse: boolean, expanded: Set<string>, capacity: number): Set<string> {
-  const visible = new Set<string>([ALGO_ROOT_ID]);
+function computeVisible(view: TreeView, autoCollapse: boolean, expanded: Set<string>, capacity: number): Set<string> {
+  const visible = new Set<string>([view.rootId]);
   if (!autoCollapse) {
-    algoNodes.forEach(n => visible.add(n.id));
+    view.nodes.forEach(n => visible.add(n.id));
     return visible;
   }
   let leaves = 1;
-  const queue = [ALGO_ROOT_ID];
+  const queue = [view.rootId];
   // BFS so shallow questions open first
   while (queue.length) {
     const id = queue.shift()!;
     const kids = treeChildren(id);
     if (!kids.length) continue;
-    const forced = id === ALGO_ROOT_ID || expanded.has(id);
+    const forced = id === view.rootId || expanded.has(id);
     if (forced || leaves + kids.length - 1 <= capacity) {
       kids.forEach(e => { visible.add(e.to); queue.push(e.to); });
       leaves += kids.length - 1;
     }
   }
-  // gains of visible algorithms, and the outcome
-  algoEdges.forEach(e => {
-    if (visible.has(e.from) && nodeById.get(e.from)!.kind === 'algorithm') visible.add(e.to);
+  // gains of visible leaves, and the outcome
+  view.edges.forEach(e => {
+    if (visible.has(e.from) && isLeafKind(nodeById.get(e.from)!.kind)) visible.add(e.to);
   });
-  if (algoNodes.some(n => n.kind === 'gain' && visible.has(n.id))) visible.add(ALGO_OUTCOME_ID);
+  if (view.nodes.some(n => n.kind === 'gain' && visible.has(n.id))) visible.add(view.outcomeId);
   return visible;
 }
 
@@ -162,7 +234,7 @@ function revealPath(id: string, expanded: Set<string>): Set<string> {
 }
 
 // ── Layout ──
-function calculateLayout(layout: LayoutMode, isMobile: boolean, visible: Set<string>) {
+function calculateLayout(view: TreeView, layout: LayoutMode, isMobile: boolean, visible: Set<string>) {
   const s = isMobile ? SIZE.mobile : SIZE.desktop;
   const positions = new Map<string, NodePosition>();
   const crossSize = layout === 'vertical' ? s.w : s.h;
@@ -191,11 +263,11 @@ function calculateLayout(layout: LayoutMode, isMobile: boolean, visible: Set<str
     }
     crossOf.set(id, c);
     place(id, s.pad + d * layerStep, c);
-  })(ALGO_ROOT_ID);
+  })(view.rootId);
 
   // gains: one column after the deepest visible node, near the algorithms that lead to them
   const gainAlong = s.pad + (maxDepth + 1) * layerStep;
-  const gains = algoNodes
+  const gains = view.nodes
     .filter(n => n.kind === 'gain' && visible.has(n.id))
     .map(n => {
       const from = incoming.get(n.id)!.map(e => crossOf.get(e.from)).filter((v): v is number => v !== undefined);
@@ -211,10 +283,10 @@ function calculateLayout(layout: LayoutMode, isMobile: boolean, visible: Set<str
   });
 
   const outcomeAlong = gainAlong + layerStep;
-  if (visible.has(ALGO_OUTCOME_ID) && gains.length) {
+  if (visible.has(view.outcomeId) && gains.length) {
     const c = (crossOf.get(gains[0].id)! + crossOf.get(gains[gains.length - 1].id)!) / 2;
-    crossOf.set(ALGO_OUTCOME_ID, c);
-    place(ALGO_OUTCOME_ID, outcomeAlong, c);
+    crossOf.set(view.outcomeId, c);
+    place(view.outcomeId, outcomeAlong, c);
   }
 
   let maxCross = 0;
@@ -255,7 +327,7 @@ function loopPath(outcome: NodePosition, root: NodePosition, layout: LayoutMode)
 // ── Edge ──
 function AlgoEdgePath({ edge, from, to, layout, state }: {
   key?: string;
-  edge: AlgoEdge; from: NodePosition; to: NodePosition; layout: LayoutMode;
+  edge: VEdge; from: NodePosition; to: NodePosition; layout: LayoutMode;
   state: 'normal' | 'active' | 'dim';
 }) {
   const st = EDGE_STYLES[edge.kind];
@@ -278,7 +350,7 @@ function AlgoEdgePath({ edge, from, to, layout, state }: {
 /** The answer written on a branch: 是 / 否 / option text. */
 function AnswerLabel({ edge, to, layout, isMobile, dim }: {
   key?: string;
-  edge: AlgoEdge; to: NodePosition; layout: LayoutMode; isMobile: boolean; dim: boolean;
+  edge: VEdge; to: NodePosition; layout: LayoutMode; isMobile: boolean; dim: boolean;
 }) {
   if (!edge.answer) return null;
   const cls =
@@ -299,13 +371,15 @@ function AnswerLabel({ edge, to, layout, isMobile, dim }: {
 // ── Node ──
 function AlgoNodeBox({ node, pos, isMobile, state, onClick, onHover, onLeave, hiddenCount, canFold, onToggleFold }: {
   key?: string;
-  node: AlgoNode; pos: NodePosition; isMobile: boolean;
+  node: VNode; pos: NodePosition; isMobile: boolean;
   state: 'normal' | 'active' | 'selected' | 'dim';
   onClick: () => void; onHover: () => void; onLeave: () => void;
   hiddenCount: number; canFold: boolean; onToggleFold: () => void;
 }) {
   const st = styleFor(node);
   const isQ = node.kind === 'question';
+  const isGoalGroup = node.kind === 'task' || node.kind === 'cond';
+  const dsInfo = node.kind === 'ds' ? dsById.get(node.dsId ?? '') : undefined;
   const special = node.kind === 'root' || node.kind === 'outcome';
   const Icon = node.kind === 'outcome' ? Flag : node.kind === 'gain' ? Gift : null;
   return (
@@ -319,7 +393,7 @@ function AlgoNodeBox({ node, pos, isMobile, state, onClick, onHover, onLeave, hi
           onClick={onClick}
           onMouseEnter={onHover}
           onMouseLeave={onLeave}
-          className={`relative w-full h-full ${isQ ? 'rounded-xl' : 'rounded-2xl'} border-2 cursor-pointer px-2 flex flex-col items-center justify-center text-center leading-tight select-none
+          className={`relative w-full h-full ${isQ || isGoalGroup ? 'rounded-xl' : 'rounded-2xl'} border-2 cursor-pointer px-2 flex flex-col items-center justify-center text-center leading-tight select-none
             ${st.box} ${special ? 'shadow-lg' : 'shadow-sm'}
             ${state === 'selected' ? 'ring-4 ring-emerald-400/60 dark:ring-emerald-500/50' : ''}
             ${state === 'active' || state === 'selected' ? 'shadow-xl' : ''}`}
@@ -334,11 +408,20 @@ function AlgoNodeBox({ node, pos, isMobile, state, onClick, onHover, onLeave, hi
               {`步驟${node.stage} · ${node.qtype === 'choice' ? '選擇題' : '是非題'}`}
             </span>
           )}
+          {(isGoalGroup || dsInfo) && (
+            <span className={`absolute -top-2.5 left-2 px-1.5 rounded-md text-[9px] font-bold tracking-wider border whitespace-nowrap
+              ${node.kind === 'task' ? 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900 dark:text-amber-200 dark:border-amber-700'
+                : node.kind === 'cond' ? 'bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600'
+                : dsInfo?.builtin ? 'bg-sky-100 text-sky-800 border-sky-300 dark:bg-sky-900 dark:text-sky-200 dark:border-sky-700'
+                : 'bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900 dark:text-orange-200 dark:border-orange-700'}`}>
+              {node.kind === 'task' ? '任務' : node.kind === 'cond' ? '條件' : dsInfo?.builtin ? '資料結構 · 內建' : '資料結構 · 自己寫'}
+            </span>
+          )}
           <span className={`flex items-center gap-1 font-headline font-bold ${isMobile ? 'text-[11px]' : 'text-[13px]'} ${st.text} max-w-full`}>
             {Icon && <Icon className="w-3 h-3 flex-shrink-0 opacity-80" />}
-            <span className={isQ ? 'line-clamp-2' : 'truncate'}>{node.labelZh}</span>
+            <span className={isQ || isGoalGroup ? 'line-clamp-2' : 'truncate'}>{node.labelZh}</span>
           </span>
-          {!(isQ && isMobile) && (
+          {node.label && !((isQ || isGoalGroup) && isMobile) && (
             <span className={`${isMobile ? 'text-[9px]' : 'text-[10px]'} font-medium opacity-70 ${st.text} truncate max-w-full`}>
               {node.label}
             </span>
@@ -346,7 +429,7 @@ function AlgoNodeBox({ node, pos, isMobile, state, onClick, onHover, onLeave, hi
           {node.time && !isMobile && (
             <span className={`font-mono text-[9px] mt-0.5 opacity-70 ${st.text} truncate max-w-full`}>{node.time}</span>
           )}
-          {node.customDs?.length > 0 && !isMobile && (
+          {node.kind === 'algorithm' && node.customDs?.length > 0 && !isMobile && (
             <span
               title={`需要自己寫：${node.customDs.map(id => structureById.get(id)?.name).join('、')}`}
               className="absolute -bottom-2.5 left-2 px-1.5 rounded-md text-[9px] font-bold border whitespace-nowrap bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900 dark:text-orange-200 dark:border-orange-700"
@@ -405,6 +488,7 @@ function LinkCard({ id, reason, tone, onSelect, answer }: {
   id: string; reason: string; tone: 'slate' | 'emerald' | 'yellow' | 'amber'; onSelect: (id: string) => void; answer?: string;
 }) {
   const n = nodeById.get(id)!;
+  const prefix = n.kind === 'question' || n.kind === 'task' || n.kind === 'cond' ? '→ ' : n.kind === 'algorithm' ? '✓ ' : n.kind === 'ds' ? '🗄 ' : '';
   const tones = {
     slate: 'border-slate-200 dark:border-slate-700',
     emerald: 'border-emerald-200 dark:border-emerald-900 bg-emerald-50/50 dark:bg-emerald-950/20',
@@ -415,29 +499,33 @@ function LinkCard({ id, reason, tone, onSelect, answer }: {
     <div className={`rounded-xl border p-3 ${tones[tone]}`}>
       {answer && <div className="mb-1.5"><AnswerChip answer={answer} /></div>}
       <button onClick={() => onSelect(id)} className="text-[12px] font-bold text-slate-800 dark:text-slate-100 hover:underline text-left">
-        {n.kind === 'question' ? '→ ' : n.kind === 'algorithm' ? '✓ ' : ''}{n.labelZh} <span className="font-normal text-slate-400">· {n.label}</span>
+        {prefix}{n.labelZh} {n.label && <span className="font-normal text-slate-400">· {n.label}</span>}
       </button>
       {reason && reason !== answer && <Lines text={reason} />}
     </div>
   );
 }
 
-function StructureCard({ ds }: { key?: string; ds: { id: string; name: string; desc: string; code: string } }) {
-  const [open, setOpen] = useState(false);
+function StructureCard({ ds, startOpen = false, builtin = false }: {
+  key?: string; ds: { id: string; name: string; desc: string; code: string }; startOpen?: boolean; builtin?: boolean;
+}) {
+  const [open, setOpen] = useState(startOpen);
   const [copied, setCopied] = useState(false);
   const copy = async () => {
     try { await navigator.clipboard.writeText(ds.code); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch { /* clipboard blocked */ }
   };
   return (
-    <div className="rounded-xl border border-orange-200 dark:border-orange-900 bg-orange-50/60 dark:bg-orange-950/20 p-3">
+    <div className={`rounded-xl border p-3 ${builtin
+      ? 'border-sky-200 dark:border-sky-900 bg-sky-50/60 dark:bg-sky-950/20'
+      : 'border-orange-200 dark:border-orange-900 bg-orange-50/60 dark:bg-orange-950/20'}`}>
       <div className="flex items-start justify-between gap-2">
         <div>
-          <div className="text-[12px] font-bold text-orange-900 dark:text-orange-200">🔧 {ds.name}</div>
+          <div className={`text-[12px] font-bold ${builtin ? 'text-sky-900 dark:text-sky-200' : 'text-orange-900 dark:text-orange-200'}`}>{builtin ? '' : '🔧 '}{ds.name}</div>
           <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">{ds.desc}</p>
         </div>
         <button onClick={() => setOpen(v => !v)}
           className="flex-shrink-0 text-[11px] font-bold px-2 py-1 rounded-md bg-orange-200/70 dark:bg-orange-900 text-orange-900 dark:text-orange-100 hover:bg-orange-200">
-          {open ? '收起' : '看模板'}
+          {open ? '收起' : builtin ? '看用法' : '看模板'}
         </button>
       </div>
       {open && (
@@ -452,19 +540,32 @@ function StructureCard({ ds }: { key?: string; ds: { id: string; name: string; d
   );
 }
 
-function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: () => void; onSelect: (id: string) => void }) {
+function DetailPanel({ view, nodeId, onClose, onSelect, onOpenDecision }: {
+  view: TreeView; nodeId: string; onClose: () => void; onSelect: (id: string) => void;
+  /** goal tree only: jump to this algorithm in the 判斷樹 */
+  onOpenDecision: (algoId: string) => void;
+}) {
   const node = nodeById.get(nodeId)!;
   const st = styleFor(node);
-  const ins = incoming.get(nodeId)!;
+  const isGoal = view.id === 'goal';
+  const ins = incoming.get(nodeId)!.filter(e => view.nodes.some(n => n.id === e.from));
   const outs = outgoing.get(nodeId)!;
   const nexts = algoNext.filter(x => x.from === algoIdOf(node));
   const comesFrom = algoNext.filter(x => x.to === algoIdOf(node));
-  const sameAlgoLeaves = node.kind === 'algorithm' ? algoNodes.filter(n => algoIdOf(n) === algoIdOf(node) && n.id !== nodeId) : [];
-  const path = node.kind === 'question' || node.kind === 'algorithm'
-    ? pathTo(nodeId).filter(step => step.from !== ALGO_ROOT_ID)
+  const sameAlgoLeaves = node.kind === 'algorithm'
+    ? view.nodes.filter(n => n.kind === 'algorithm' && algoIdOf(n) === algoIdOf(node) && n.id !== nodeId) : [];
+  const path = TREE_KINDS.has(node.kind) && node.kind !== 'root'
+    ? pathTo(nodeId).filter(step => step.from !== view.rootId)
     : [];
+  /** how a path step is shown: the answer (判斷樹) or the task / condition passed through (任務樹) */
+  const stepLabel = (step: VEdge) => step.answer || nodeById.get(step.from)!.labelZh;
+  const dsInfo = node.kind === 'ds' ? dsById.get(node.dsId ?? '') : undefined;
+  const gainEdges = (outs.some(e => e.kind === 'gain') ? outs : outgoing.get(algoIdOf(node)) ?? []).filter(e => e.kind === 'gain');
   const kindLabel =
     node.kind === 'root' ? '問題發現' :
+    node.kind === 'task' ? '任務：我們要做什麼' :
+    node.kind === 'cond' ? '條件' :
+    node.kind === 'ds' ? `資料結構 · ${dsInfo?.builtin ? 'Python 內建' : '要自己寫'}` :
     node.kind === 'question' ? `${STAGES[node.stage]?.label ?? ''} · ${node.qtype === 'choice' ? '選擇題（選項互斥）' : '是非題'}` :
     node.kind === 'algorithm' ? `可用的演算法 · ${node.category}` :
     node.kind === 'gain' ? '得到了什麼' : '繼續或解決';
@@ -485,7 +586,7 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
               <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">{kindLabel}</span>
             </div>
             <h2 className="font-headline text-xl font-bold text-slate-900 dark:text-white">{node.labelZh}</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{node.label}</p>
+            {node.label && <p className="text-sm text-slate-500 dark:text-slate-400">{node.label}</p>}
           </div>
           <button onClick={onClose} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500" aria-label="Close">
             <X className="w-5 h-5" />
@@ -519,7 +620,7 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
         {/* The unique sequence of answers from the root */}
         {path.length > 0 && (
           <section>
-            <SectionTitle icon={Route}>判斷路徑（唯一）</SectionTitle>
+            <SectionTitle icon={Route}>{isGoal ? '任務路徑' : '判斷路徑（唯一）'}</SectionTitle>
             <ol className="mt-2 space-y-1.5">
               {path.map((step, i) => (
                 <li key={step.from} className="flex items-start gap-2 text-xs">
@@ -527,22 +628,28 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
                   <button onClick={() => onSelect(step.from)} className="text-left text-slate-700 dark:text-slate-200 hover:underline flex-1">
                     {nodeById.get(step.from)!.labelZh}
                   </button>
-                  <AnswerChip answer={step.answer} />
+                  {step.answer && <AnswerChip answer={step.answer} />}
                 </li>
               ))}
             </ol>
+            {isGoal && (node.kind === 'algorithm' || (node.kind === 'ds' && node.ref)) && (
+              <button onClick={() => onOpenDecision(algoIdOf(node))}
+                className="mt-3 w-full flex items-center justify-center gap-1.5 rounded-xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100">
+                <Network className="w-3.5 h-3.5" /> 在判斷樹中看它的判斷路徑
+              </button>
+            )}
           </section>
         )}
 
         {sameAlgoLeaves.length > 0 && (
           <section>
-            <SectionTitle icon={Route}>也可以從其他路徑走到 · {sameAlgoLeaves.length}</SectionTitle>
+            <SectionTitle icon={Route}>{isGoal ? '也出現在其他任務' : '也可以從其他路徑走到'} · {sameAlgoLeaves.length}</SectionTitle>
             <div className="mt-2 space-y-2">
               {sameAlgoLeaves.map(leaf => (
                 <button key={leaf.id} onClick={() => onSelect(leaf.id)}
                   className="w-full text-left rounded-xl border border-slate-200 dark:border-slate-700 p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800">
                   <div className="flex flex-wrap gap-1">
-                    {pathTo(leaf.id).filter(st => st.from !== ALGO_ROOT_ID).map(st => <AnswerChip key={st.from} answer={st.answer} />)}
+                    {pathTo(leaf.id).filter(st => st.from !== view.rootId).map(st => <AnswerChip key={st.from} answer={stepLabel(st)} />)}
                   </div>
                 </button>
               ))}
@@ -553,11 +660,43 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
         {/* ROOT */}
         {node.kind === 'root' && (
           <section>
-            <SectionTitle icon={HelpCircle}>從第一個問題開始</SectionTitle>
+            <SectionTitle icon={HelpCircle}>{isGoal ? '我們要做什麼？' : '從第一個問題開始'}</SectionTitle>
             <div className="mt-2 space-y-2.5">
               {outs.map(e => <LinkCard key={e.to} id={e.to} reason={e.reason} tone="slate" onSelect={onSelect} />)}
             </div>
           </section>
+        )}
+
+        {/* TASK / CONDITION (任務樹) */}
+        {(node.kind === 'task' || node.kind === 'cond') && (
+          <section>
+            <SectionTitle icon={ListChecks}>底下有 · {treeChildren(nodeId).length}</SectionTitle>
+            <div className="mt-2 space-y-2.5">
+              {treeChildren(nodeId).map(e => (
+                <LinkCard key={e.to} id={e.to} reason="" onSelect={onSelect}
+                  tone={nodeById.get(e.to)!.kind === 'algorithm' ? 'emerald' : nodeById.get(e.to)!.kind === 'ds' ? 'yellow' : 'slate'} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* DATA STRUCTURE (任務樹) */}
+        {node.kind === 'ds' && dsInfo && (
+          <>
+            <div className="flex flex-wrap gap-1.5">
+              {dsInfo.ops.map(o => (
+                <span key={o.op} className="px-2 py-1 rounded-lg bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-[11px] font-mono text-slate-700 dark:text-slate-200">
+                  <span className="font-sans text-slate-400">{o.op}:</span> {o.cost}
+                </span>
+              ))}
+            </div>
+            <section>
+              <SectionTitle icon={dsInfo.builtin ? ListChecks : Wrench}>{dsInfo.builtin ? 'Python 怎麼用' : '模板：要自己寫'}</SectionTitle>
+              <div className="mt-2">
+                <StructureCard ds={{ id: dsInfo.id, name: dsInfo.name, desc: dsInfo.desc, code: dsInfo.code }} startOpen builtin={dsInfo.builtin} />
+              </div>
+            </section>
+          </>
         )}
 
         {/* QUESTION */}
@@ -594,7 +733,7 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
             <section>
               <SectionTitle icon={Gift}>得到了什麼</SectionTitle>
               <div className="mt-2 space-y-2.5">
-                {outs.map(e => <LinkCard key={e.to} id={e.to} reason={e.reason} tone="yellow" onSelect={onSelect} />)}
+                {gainEdges.map(e => <LinkCard key={e.to} id={e.to} reason={e.reason} tone="yellow" onSelect={onSelect} />)}
               </div>
             </section>
             {nexts.length > 0 && (
@@ -628,10 +767,10 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
               <SectionTitle icon={ArrowRight}>由這些演算法得到 · {new Set(ins.map(e => algoIdOf(nodeById.get(e.from)!))).size}</SectionTitle>
               <div className="mt-2 space-y-2.5">
                 {ins.filter((e, i) => ins.findIndex(x => algoIdOf(nodeById.get(x.from)!) === algoIdOf(nodeById.get(e.from)!)) === i)
-                  .map(e => <LinkCard key={e.from} id={algoIdOf(nodeById.get(e.from)!)} reason={e.reason} tone="emerald" onSelect={onSelect} />)}
+                  .map(e => <LinkCard key={e.from} id={isGoal ? e.from : algoIdOf(nodeById.get(e.from)!)} reason={e.reason} tone="emerald" onSelect={onSelect} />)}
               </div>
             </section>
-            <button onClick={() => onSelect(ALGO_OUTCOME_ID)}
+            <button onClick={() => onSelect(view.outcomeId)}
               className="w-full text-left rounded-xl border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-3 hover:bg-amber-100 dark:hover:bg-amber-900/30">
               <div className="flex items-center gap-1.5 text-[12px] font-bold text-amber-700 dark:text-amber-300">
                 <Flag className="w-3.5 h-3.5" /> 下一步：繼續或已解決
@@ -649,7 +788,7 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
                 <div className="text-sm font-bold text-emerald-700 dark:text-emerald-300">✓ 已解決</div>
                 <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">時間與空間都夠用 → 結束。</p>
               </div>
-              <button onClick={() => onSelect(ALGO_ROOT_ID)}
+              <button onClick={() => onSelect(view.rootId)}
                 className="text-left rounded-xl border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-3 hover:bg-amber-100 dark:hover:bg-amber-900/30">
                 <div className="text-sm font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1"><RotateCcw className="w-3.5 h-3.5" /> 繼續</div>
                 <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">還不夠快或有新限制 → 回到問題發現。</p>
@@ -680,9 +819,16 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
   const [isMobile, setIsMobile] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [autoCollapse, setAutoCollapse] = useState(true);
-  const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
+  // each tree keeps its own selection and opened branches
+  const [selectedMap, setSelectedMap] = useState<Record<ViewId, string | null>>({ tree: null, goal: null });
+  const [expandedMap, setExpandedMap] = useState<Record<ViewId, Set<string>>>({ tree: new Set(), goal: new Set() });
+  const viewId: ViewId = tab === 'goal' ? 'goal' : 'tree';
+  const view = VIEWS[viewId];
+  const selectedId = selectedMap[viewId];
+  const expanded = expandedMap[viewId];
+  const setSelectedId = (id: string | null) => setSelectedMap(m => ({ ...m, [viewId]: id }));
+  const setExpanded = (fn: (prev: Set<string>) => Set<string>) => setExpandedMap(m => ({ ...m, [viewId]: fn(m[viewId]) }));
   const [viewport, setViewport] = useState({ w: 1280, h: 800 });
 
   useEffect(() => {
@@ -703,10 +849,10 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
     return Math.max(4, Math.floor(room / zoom / per));
   }, [layout, isMobile, viewport, zoom]);
 
-  const visible = useMemo(() => computeVisible(autoCollapse, expanded, capacity), [autoCollapse, expanded, capacity]);
+  const visible = useMemo(() => computeVisible(view, autoCollapse, expanded, capacity), [view, autoCollapse, expanded, capacity]);
   const { positions, bounds, pad, gainAlong, outcomeAlong } = useMemo(
-    () => calculateLayout(layout, isMobile, visible),
-    [layout, isMobile, visible]
+    () => calculateLayout(view, layout, isMobile, visible),
+    [view, layout, isMobile, visible]
   );
 
   const hiddenChildren = (id: string) =>
@@ -726,10 +872,24 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
     setSelectedId(id);
     if (hiddenChildren(id) > 0) setExpanded(prev => new Set(prev).add(id));
   };
+  // scroll the canvas to a node after a jump
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const [scrollTarget, setScrollTarget] = useState<string | null>(null);
+
   /** Jump from the detail panel: make sure the target is on screen. */
   const jumpTo = (id: string) => {
     setSelectedId(id);
     if (autoCollapse && !visible.has(id)) setExpanded(prev => revealPath(id, prev));
+    setScrollTarget(id);
+  };
+  /** From the wizard or the 任務樹: open an algorithm in the 判斷樹. */
+  const openInDecision = (algoId: string) => {
+    setTab('tree');
+    setHoveredId(null);
+    setSelectedMap(m => ({ ...m, tree: algoId }));
+    setExpandedMap(m => ({ ...m, tree: revealPath(algoId, m.tree) }));
+    setScrollTarget(algoId);
   };
 
   // Highlight the whole path through the focused node: up to the root, down to the outcome.
@@ -751,13 +911,30 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
     return { nodes, edges };
   }, [focusId]);
 
+  useEffect(() => {
+    if (!scrollTarget || tab === 'wizard') return;
+    const pos = positions.get(scrollTarget);
+    const box = scrollRef.current, svg = svgRef.current;
+    if (!pos || !box || !svg) return;
+    const t = setTimeout(() => {               // wait for the new layout to render
+      const b = box.getBoundingClientRect(), r = svg.getBoundingClientRect();
+      box.scrollTo({
+        left: box.scrollLeft + (r.left - b.left) + (pos.x + pos.width / 2) * zoom - b.width / 2,
+        top: box.scrollTop + (r.top - b.top) + (pos.y + pos.height / 2) * zoom - b.height / 2,
+        behavior: 'smooth',
+      });
+      setScrollTarget(null);
+    }, 80);
+    return () => clearTimeout(t);
+  }, [scrollTarget, positions, zoom, tab]);
+
   const legendCategories = useMemo(
-    () => Array.from(new Set(algoNodes.filter(n => n.kind === 'algorithm').map(n => n.category))),
-    []
+    () => Array.from(new Set(view.nodes.filter(n => n.kind === 'algorithm').map(n => n.category))),
+    [view]
   );
 
-  const rootPos = positions.get(ALGO_ROOT_ID);
-  const outcomePos = positions.get(ALGO_OUTCOME_ID);
+  const rootPos = positions.get(view.rootId);
+  const outcomePos = positions.get(view.outcomeId);
   const s = isMobile ? SIZE.mobile : SIZE.desktop;
 
   const fit = () => {
@@ -765,13 +942,13 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
     setZoom(Math.max(0.25, Math.min(1, +(Math.min(vw / bounds.width, vh / bounds.height)).toFixed(2))));
   };
 
-  const visibleEdges = algoEdges.filter(e => positions.has(e.from) && positions.has(e.to));
+  const visibleEdges = view.edges.filter(e => positions.has(e.from) && positions.has(e.to));
   const titleStyle = { fontSize: isMobile ? 11 : 13, letterSpacing: '0.05em', paintOrder: 'stroke' as const };
   const titleCls = 'fill-slate-400 dark:fill-slate-500 stroke-[#f7f9fb] dark:stroke-slate-950 font-headline font-bold';
   const firstQ = pad + (layout === 'horizontal' ? s.w + s.gapLayerH : s.h + s.gapLayerV);
   const stageTitles = [
     { label: '問題發現', along: pad },
-    { label: '步驟 1～3：判斷（是非題／選擇題）→ 步驟 4：演算法', along: firstQ },
+    { label: viewId === 'goal' ? '任務 → 條件 → 演算法 或 資料結構' : '步驟 1～3：判斷（是非題／選擇題）→ 步驟 4：演算法', along: firstQ },
     { label: '得到了什麼', along: gainAlong },
     { label: '繼續或解決', along: outcomeAlong },
   ];
@@ -805,7 +982,7 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
           </div>
         </div>
 
-        {tab === 'tree' && <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+        {tab !== 'wizard' && <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           {/* Auto-collapse switch */}
           <label
             className="flex items-center gap-2 cursor-pointer select-none px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
@@ -816,7 +993,7 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
               role="switch"
               aria-checked={autoCollapse}
               aria-label="Auto-collapse crowded branches"
-              onClick={() => { setAutoCollapse(v => !v); setExpanded(new Set()); }}
+              onClick={() => { setAutoCollapse(v => !v); setExpandedMap({ tree: new Set(), goal: new Set() }); }}
               className={`relative w-9 h-5 rounded-full transition-colors ${autoCollapse ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'}`}
             >
               <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${autoCollapse ? 'translate-x-4' : 'translate-x-0'}`} />
@@ -864,21 +1041,15 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
 
       {tab === 'wizard' && (
         <div className="flex-1 min-h-0">
-          <SolveWizard onOpenInTree={id => { setTab('tree'); jumpTo(id); }} />
+          <SolveWizard onOpenInTree={openInDecision} />
         </div>
       )}
 
-      {tab === 'goal' && (
-        <div className="flex-1 min-h-0">
-          <GoalTree onOpenInTree={id => { setTab('tree'); jumpTo(id); }} />
-        </div>
-      )}
-
-      {tab === 'tree' && <>
+      {tab !== 'wizard' && <>
 
       {/* Canvas */}
       <div className="flex-1 relative overflow-hidden">
-        <div className="absolute inset-0 overflow-auto" onClick={() => setSelectedId(null)}>
+        <div ref={scrollRef} className="absolute inset-0 overflow-auto" onClick={() => setSelectedId(null)}>
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-10 left-10 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px]" />
             <div className="absolute bottom-10 right-10 w-80 h-80 bg-amber-500/5 rounded-full blur-[100px]" />
@@ -886,16 +1057,17 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
 
           <div className="relative mx-auto p-4 sm:p-6" style={{ width: bounds.width * zoom + 48, height: bounds.height * zoom + 48 }}>
             <svg
-              key={`${layout}-${isMobile}`}
+              ref={svgRef}
+              key={`${viewId}-${layout}-${isMobile}`}
               width={bounds.width * zoom}
               height={bounds.height * zoom}
               viewBox={`0 0 ${bounds.width} ${bounds.height}`}
               style={{ overflow: 'visible' }}
               onClick={e => e.stopPropagation()}
-              aria-label="Algorithm decision tree"
+              aria-label={viewId === 'goal' ? 'Algorithm goal tree' : 'Algorithm decision tree'}
             >
               <defs>
-                {(Object.keys(EDGE_STYLES) as AlgoNodeKind[]).map(k => (
+                {(Object.keys(EDGE_STYLES) as ViewKind[]).map(k => (
                   <marker key={k} id={`arrow-${k}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
                     <path d="M 0 0 L 10 5 L 0 10 z" className={EDGE_STYLES[k].marker} />
                   </marker>
@@ -911,7 +1083,7 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
 
               {/* Loop: 繼續 → 回到問題發現 */}
               {rootPos && outcomePos && (
-                <g opacity={focus && !focus.nodes.has(ALGO_OUTCOME_ID) ? 0.15 : 1}>
+                <g opacity={focus && !focus.nodes.has(view.outcomeId) ? 0.15 : 1}>
                   <path
                     d={loopPath(outcomePos, rootPos, layout)}
                     fill="none" strokeWidth={2} strokeDasharray="6 5"
@@ -951,7 +1123,7 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
                   dim={!!focus && !focus.edges.has(`${e.from}->${e.to}`)} />
               ))}
 
-              {algoNodes.map(n => {
+              {view.nodes.map(n => {
                 const pos = positions.get(n.id);
                 if (!pos) return null;
                 const state =
@@ -969,7 +1141,7 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
                     onHover={() => !isMobile && setHoveredId(n.id)}
                     onLeave={() => setHoveredId(null)}
                     hiddenCount={hiddenChildren(n.id)}
-                    canFold={autoCollapse && expanded.has(n.id) && n.id !== ALGO_ROOT_ID}
+                    canFold={autoCollapse && expanded.has(n.id) && n.id !== view.rootId}
                     onToggleFold={() => toggleFold(n.id)}
                   />
                 );
@@ -980,20 +1152,23 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
 
         <AnimatePresence>
           {selectedId && (
-            <DetailPanel key={selectedId} nodeId={selectedId} onClose={() => setSelectedId(null)} onSelect={jumpTo} />
+            <DetailPanel key={`${viewId}-${selectedId}`} view={view} nodeId={selectedId} onClose={() => setSelectedId(null)}
+              onSelect={jumpTo} onOpenDecision={openInDecision} />
           )}
         </AnimatePresence>
       </div>
 
       {/* Legend */}
       <div className="flex-shrink-0 px-3 sm:px-6 py-2 sm:py-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex items-center justify-center gap-x-3 sm:gap-x-4 gap-y-1.5 flex-wrap">
-        {[1, 2, 3].map(k => (
+        {viewId === 'tree' && [1, 2, 3].map(k => (
           <div key={k} className="flex items-center gap-1.5">
             <div className={`w-2.5 h-2.5 rounded-sm ${STAGES[k].dot}`} />
             <span className="text-[10px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300">{STAGES[k].label}</span>
           </div>
         ))}
-        {[ROOT_STYLE, CHOICE_STYLE, YESNO_STYLE, GAIN_STYLE, OUTCOME_STYLE].map(st => (
+        {(viewId === 'goal'
+          ? [ROOT_STYLE, TASK_STYLE, COND_STYLE, DS_BUILTIN_STYLE, DS_CUSTOM_STYLE, GAIN_STYLE, OUTCOME_STYLE]
+          : [ROOT_STYLE, CHOICE_STYLE, YESNO_STYLE, GAIN_STYLE, OUTCOME_STYLE]).map(st => (
           <div key={st.label} className="flex items-center gap-1.5">
             <div className={`w-2.5 h-2.5 rounded-full border border-slate-300 dark:border-slate-600 ${st.dot}`} />
             <span className="text-[10px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300">{st.label}</span>
