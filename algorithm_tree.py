@@ -13,6 +13,8 @@
   gain.child      : (終點 outcome, 已解決 / 遇到新問題)
   algorithm.next  : (演算法,       遇到新限制時可以繼續往哪裡走)
 
+解題流程（網頁上的互動步驟分頁）的選項與比對條件在檔案後段的 WIZARD_GROUPS 與 RULES。
+
 修改後執行 `python algorithm_tree.py`，會重新產生 web_src/src/algoTreeData.ts
 """
 
@@ -483,6 +485,130 @@ nxt(hash_lookup, trie, "需要依照前綴查詢，Hash 做不到。")
 
 
 # ════════════════════════════════════════════
+# 解題流程 (Solve Wizard) —— 網頁上的「互動步驟」分頁
+#
+#   1. 真的需要優化嗎？   算算看暴力解能不能通過（網頁上計算）
+#   2. 了解資料           形狀（單選）＋ 存取方式（單選）＋ 資料特性（多選）
+#   3. 問題要什麼         輸出（單選）＋ 查詢次數 ＋ 答案能否 O(1) 空間 ＋ 問題結構（多選）
+#   4. 找到演算法         依照 RULES 比對 2、3 的選擇
+#
+# 2 和 3 是兩件不同的事，可以分開選；第 4 步一定同時考慮兩邊。
+# ════════════════════════════════════════════
+
+# (id, 步驟, 標題, 類型 single/multi, [(選項 id, 名稱, 說明), ...])
+WIZARD_GROUPS = [
+    ("shape", 2, "資料的形狀", "single", [
+        ("shape_const",  "常數",  "單一值或固定大小（例如：一個整數 n、固定 3×3 的盤面）。"),
+        ("shape_linear", "線性",  "一串元素：陣列、字串、串列。"),
+        ("shape_rel",    "關聯",  "元素之間有關係：圖、樹、鍵值對應。"),
+    ]),
+    ("access", 2, "存取方式", "single", [
+        ("acc_random", "隨機存取 O(1)", "可以用索引直接拿到第 i 個元素（list、陣列）。"),
+        ("acc_seq",    "只能依序走過",   "只能從頭一個一個讀（串流、linked list、檔案）。"),
+        ("acc_link",   "透過關係找",     "透過鍵、指標或邊找到下一個（dict、樹、圖）。"),
+    ]),
+    ("traits", 2, "資料特性（可多選）", "multi", [
+        ("tr_sorted",   "已排序／單調",       "資料已排序，或答案隨位置單調變化。"),
+        ("tr_uniform",  "數值分布均勻",       "排序後的數值大致平均分布。"),
+        ("tr_smallint", "整數且範圍小",       "鍵值是整數，範圍 k 不比 n 大太多。"),
+        ("tr_small",    "資料量很小",         "n 很小（例如 ≤ 20～50）。"),
+        ("tr_nearly",   "幾乎已排好",         "大部分元素已在正確位置。"),
+        ("tr_dynamic",  "會動態修改",         "查詢之間資料會被插入、刪除或修改。"),
+        ("tr_weighted", "邊有權重",           "圖的每條邊有不同成本。"),
+        ("tr_negative", "有負權重",           "有些邊的成本是負的。"),
+        ("tr_dag",      "有依賴且無環",       "A 必須在 B 之前，而且依賴沒有環（DAG）。"),
+        ("tr_dense",    "圖很稠密",           "邊數接近 V²。"),
+    ]),
+    ("output", 3, "要輸出什麼", "single", [
+        ("out_find",     "找某個值",           "某個值在不在、在哪裡。"),
+        ("out_sort",     "排序後的資料",       "把資料排好。"),
+        ("out_range",    "區間（子陣列）答案", "和一段連續子陣列有關的答案。"),
+        ("out_extreme",  "反覆取最大／最小",   "過程中一再要目前的極值。"),
+        ("out_nearest",  "最近的較大／較小",   "每個元素左右第一個更大（小）的元素。"),
+        ("out_pair",     "一對元素",           "找兩個（一組）元素滿足條件。"),
+        ("out_minfeas",  "最小（大）可行答案", "能檢查「答案 x 可不可行」。"),
+        ("out_path",     "最短路徑",           "點與點之間的最短距離。"),
+        ("out_mst",      "最小生成樹",         "用最小成本連接所有點。"),
+        ("out_order",    "先後順序",           "排出滿足依賴的順序。"),
+        ("out_connect",  "連通／走訪",         "哪些點相連、有沒有環。"),
+        ("out_optimal",  "一個最佳值",         "最大值、最小值、方法數。"),
+        ("out_all",      "所有可行解",         "列出所有組合／排列／方案。"),
+        ("out_match",    "字串比對",           "在文字中找模式。"),
+        ("out_prefix",   "前綴查詢",           "依前綴查很多字串。"),
+    ]),
+    ("queries", 3, "要查詢幾次", "single", [
+        ("q_once", "一次", "只需要回答一次。"),
+        ("q_many", "很多次", "同一份資料要回答很多次 → 值得先做前處理。"),
+    ]),
+    ("o1", 3, "答案可以只用 O(1) 空間嗎？", "single", [
+        ("o1_yes", "可以", "不需要儲存所有中間答案，只要保留目前需要的幾個值。"),
+        ("o1_no",  "不行", "需要記住很多中間結果。"),
+    ]),
+    ("detail", 3, "問題的結構與細節（可多選）", "multi", [
+        ("st_divide",      "可拆成子問題",       "大問題可以切成形式相同的小問題。"),
+        ("st_overlap",     "子問題會重複",       "同一個狀態會被算很多次。"),
+        ("st_greedy",      "每步選最好就是最佳", "能證明貪婪選擇是對的。"),
+        ("st_bound",       "能估計上下界",       "對部分解能算出「最好也只能到多少」。"),
+        ("need_allpairs",  "要所有點對",         "最短路徑要每一對點之間的距離。"),
+        ("need_stable",    "排序要穩定",         "相同鍵值要保持原本順序。"),
+        ("need_worst",     "要最壞情況保證",     "不能接受偶爾變成 O(n²)。"),
+        ("range_window",   "固定長度視窗",       "區間是一個往前滑動、長度固定的視窗。"),
+        ("range_sumonly",  "只需要區間和",       "不需要 min / max 等其他運算。"),
+    ]),
+]
+
+# 演算法的條件：
+#   all  = 全部都要符合        any  = 至少符合一個
+#   none = 不能出現            bonus = 符合會更適合（排序用）
+#   note = 成本提醒（顯示在結果卡片）
+RULES = {
+    linear:          dict(all=["out_find"], bonus=["q_once", "acc_seq"]),
+    binary:          dict(all=["out_find", "tr_sorted", "acc_random"]),
+    interpolation:   dict(all=["out_find", "tr_sorted", "tr_uniform", "acc_random"]),
+    hash_lookup:     dict(all=["out_find", "q_many"], bonus=["o1_no"],
+                          note="需要 O(n) 額外空間；建表本身也要 O(n) 時間，只查一次時不划算。"),
+    bubble:          dict(all=["out_sort", "tr_small"]),
+    insertion:       dict(all=["out_sort"], any=["tr_nearly", "tr_small"]),
+    merge:           dict(all=["out_sort"], bonus=["need_stable", "need_worst", "acc_seq"]),
+    quick:           dict(all=["out_sort", "acc_random"], none=["need_worst", "need_stable"]),
+    heap_sort:       dict(all=["out_sort", "acc_random"], bonus=["need_worst", "o1_yes"], none=["need_stable"]),
+    counting:        dict(all=["out_sort", "tr_smallint"]),
+    two_pointers:    dict(all=["out_pair", "tr_sorted"], bonus=["o1_yes", "acc_random"]),
+    sliding:         dict(all=["out_range"], none=["q_many", "range_window"], bonus=["o1_yes"]),
+    monotonic_queue: dict(all=["range_window"], any=["out_range", "out_extreme"]),
+    prefix:          dict(all=["out_range", "q_many"], none=["tr_dynamic"],
+                          note="前處理 O(n) 時間與空間，之後每次 O(1)。"),
+    fenwick:         dict(all=["out_range", "q_many", "tr_dynamic", "range_sumonly"]),
+    segment:         dict(all=["out_range", "q_many", "tr_dynamic"], none=["range_sumonly"]),
+    heap:            dict(all=["out_extreme"], none=["range_window"], bonus=["tr_dynamic"]),
+    monotonic_stack: dict(all=["out_nearest"]),
+    binary_answer:   dict(all=["out_minfeas"]),
+    bfs:             dict(all=["shape_rel", "out_path"], none=["tr_weighted", "need_allpairs"]),
+    dijkstra:        dict(all=["shape_rel", "out_path", "tr_weighted"], none=["tr_negative", "need_allpairs"]),
+    bellman:         dict(all=["shape_rel", "out_path", "tr_negative"], none=["need_allpairs"]),
+    floyd:           dict(all=["shape_rel", "out_path", "need_allpairs"], bonus=["tr_small"],
+                          note="O(V³)：V = 500 時約 1.25 億次運算，Python 會太慢。"),
+    kruskal:         dict(all=["shape_rel", "out_mst"], none=["tr_dense"]),
+    prim:            dict(all=["shape_rel", "out_mst", "tr_dense"]),
+    topo:            dict(all=["shape_rel", "out_order", "tr_dag"]),
+    dsu:             dict(all=["out_connect", "tr_dynamic"]),
+    dfs:             dict(all=["shape_rel", "out_connect"], none=["tr_dynamic"]),
+    kmp:             dict(all=["out_match"]),
+    trie:            dict(all=["out_prefix"], bonus=["q_many"]),
+    greedy:          dict(all=["st_greedy"], any=["out_optimal", "out_mst", "out_path"]),
+    tabulation:      dict(all=["st_overlap", "out_optimal"], bonus=["o1_yes"],
+                          note="只依賴前幾個狀態時，可以只保留幾個變數（滾動陣列），空間變 O(1)。"),
+    memo:            dict(all=["st_overlap", "out_optimal"], bonus=["o1_no"],
+                          note="狀態很多時要小心：每個狀態都要寫進 dict（雜湊＋配置記憶體），"
+                               "也要付出遞迴呼叫的成本，不一定比表格化或暴力快。"),
+    backtracking:    dict(all=["out_all"]),
+    branch_bound:    dict(all=["out_optimal", "st_bound"], none=["st_overlap", "st_greedy"]),
+    divide_conquer:  dict(all=["st_divide"], none=["st_overlap"]),
+    recursion:       dict(all=["st_divide"], none=["st_overlap"], bonus=["tr_small"]),
+    brute:           dict(all=[], note="永遠可行的基準解：先寫出來驗證答案，再用第 1 步算算看夠不夠快。"),
+}
+
+# ════════════════════════════════════════════
 # Export to the web app (web_src/src/algoTreeData.ts)
 # ════════════════════════════════════════════
 import json, os, re
@@ -555,6 +681,21 @@ def export(path):
         for target, reason in n.next:
             nexts.append({"from": ids[id(n)], "to": ids[id(target)], "reason": reason.strip()})
 
+    # ── 解題流程資料 ──
+    option_ids = {o[0] for g in WIZARD_GROUPS for o in g[4]}
+    algo_nodes = [n for n in order if kind_of(n) == "algorithm"]
+    for n in algo_nodes:
+        assert n in RULES, f"{n.name} 沒有在 RULES 裡設定條件"
+    rules = []
+    for n, r in RULES.items():
+        for key in ("all", "any", "none", "bonus"):
+            for o in r.get(key, []):
+                assert o in option_ids, f"{n.name} 的條件 {o} 不存在於 WIZARD_GROUPS"
+        rules.append({"algo": ids[id(n)], "all": r.get("all", []), "any": r.get("any", []),
+                      "none": r.get("none", []), "bonus": r.get("bonus", []), "note": r.get("note", "")})
+    groups = [{"id": g[0], "step": g[1], "title": g[2], "type": g[3],
+               "options": [{"id": o[0], "label": o[1], "desc": o[2]} for o in g[4]]} for g in WIZARD_GROUPS]
+
     body = ("// ── Algorithm Tree Data ──\n"
             "// AUTO-GENERATED by algorithm_tree.py — edit the Python file, then run:\n"
             "//   python algorithm_tree.py\n"
@@ -572,12 +713,20 @@ def export(path):
             f"export const algoNodes: AlgoNode[] = {json.dumps(nodes, ensure_ascii=False, indent=2)};\n\n"
             f"export const algoEdges: AlgoEdge[] = {json.dumps(edges, ensure_ascii=False, indent=2)};\n\n"
             f"/** 遇到新限制時可以繼續往哪裡走（顯示在詳細面板） */\n"
-            f"export const algoNext: AlgoNext[] = {json.dumps(nexts, ensure_ascii=False, indent=2)};\n")
+            f"export const algoNext: AlgoNext[] = {json.dumps(nexts, ensure_ascii=False, indent=2)};\n\n"
+            "// ── 解題流程 (Solve Wizard) ──\n"
+            "export interface WizardOption {\n  id: string;\n  label: string;\n  desc: string;\n}\n\n"
+            "export interface WizardGroup {\n  id: string;\n  step: number;\n  title: string;\n"
+            "  type: 'single' | 'multi';\n  options: WizardOption[];\n}\n\n"
+            "export interface AlgoRule {\n  algo: string;\n  all: string[];\n  any: string[];\n"
+            "  none: string[];\n  bonus: string[];\n  note: string;\n}\n\n"
+            f"export const wizardGroups: WizardGroup[] = {json.dumps(groups, ensure_ascii=False, indent=2)};\n\n"
+            f"export const algoRules: AlgoRule[] = {json.dumps(rules, ensure_ascii=False, indent=2)};\n")
     with open(path, "w", encoding="utf-8") as f:
         f.write(body)
     count = lambda k: sum(1 for x in nodes if x["kind"] == k)
     print(f"Exported {count('question')} questions, {count('algorithm')} algorithms, "
-          f"{count('gain')} gains, {len(edges)} edges, {len(nexts)} continue-paths -> {path}")
+          f"{count('gain')} gains, {len(edges)} edges, {len(nexts)} continue-paths, {len(rules)} wizard rules -> {path}")
 
 
 if __name__ == "__main__":
