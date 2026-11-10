@@ -71,9 +71,18 @@ export interface FlatLesson extends Lesson {
 }
 
 // ── Data ──
-import data from '../../python_course/data.json';
+// Data is loaded at runtime via fetch() so that editing data.json
+// does NOT require a rebuild — just copy it to docs/ and push.
+// loadCourseData() must be called (and awaited) before React renders.
 
-export const courseData: CourseData = data as CourseData;
+export let courseData: CourseData = {} as CourseData;
+
+export async function loadCourseData(): Promise<void> {
+  const response = await fetch('./data.json');
+  if (!response.ok) throw new Error(`Failed to load data.json: ${response.status}`);
+  const data = await response.json();
+  courseData = data as CourseData;
+}
 
 export function getFlatLessons(): FlatLesson[] {
   const flat: FlatLesson[] = [];

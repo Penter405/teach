@@ -12,7 +12,8 @@ import {
   ArrowRight,
   GitBranch,
   Menu,
-  X
+  X,
+  Network
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { courseData, getFlatLessons, findLesson } from './courseData';
@@ -24,7 +25,7 @@ import { codeTree } from './codeTreeData';
 import { TeacherQuestionPanel } from './TeacherQuestionPanel';
 
 // --- Types ---
-type Page = 'login' | 'path' | 'lesson' | 'tree' | 'tree-node';
+type Page = 'login' | 'path' | 'lesson' | 'tree' | 'tree-node' | 'algo-tree';
 
 interface StudentUser {
   name?: string;
@@ -198,7 +199,76 @@ const CodeTreeNavLink = ({ onClick }: { onClick: () => void }) => {
   );
 };
 
-const LearningPathPage = ({ onSelectModule, onSelectLesson, onOpenCodeTree }: { onSelectModule: () => void, onSelectLesson: (id: string) => void, onOpenCodeTree: () => void }) => {
+const AlgoTreeNavLink = ({ onClick }: { onClick: () => void }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  return (
+    <div className="relative">
+      <button
+        onClick={onClick}
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+        className="font-headline font-bold text-emerald-500 dark:text-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300 py-1 flex items-center gap-1.5 transition-colors border-b-2 border-transparent hover:border-emerald-400 dark:hover:border-emerald-500"
+      >
+        <Network className="w-4 h-4" />
+        Algorithm Tree
+      </button>
+      <AnimatePresence>
+        {showTooltip && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-[100] pointer-events-none"
+          >
+            <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-lg rounded-xl px-4 py-3 shadow-xl border border-slate-200 dark:border-slate-700 w-[260px]">
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                演算法優化樹：從 Brute Force 出發，看見每一步優化的條件與代價。
+              </p>
+              <div className="mt-1.5 text-[10px] text-emerald-500 dark:text-emerald-400 font-bold uppercase tracking-widest">
+                Click to explore →
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const AlgoTreePlaceholderPage = ({ onBack }: { onBack: () => void }) => (
+  <div className="min-h-screen bg-surface dark:bg-slate-950 flex flex-col transition-colors duration-500">
+    <nav className="w-full flex-shrink-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center px-4 sm:px-6 py-3">
+      <button 
+        onClick={onBack}
+        className="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors text-sm font-semibold uppercase tracking-wider"
+      >
+        <ChevronRight className="w-5 h-5 rotate-180" />
+        Back
+      </button>
+      <h1 className="font-headline font-bold text-lg text-slate-800 dark:text-white flex items-center gap-2">
+        <Network className="w-5 h-5 text-emerald-500" />
+        Algorithm Optimization Tree
+      </h1>
+      <div className="w-16" />
+    </nav>
+    <main className="flex-1 flex items-center justify-center px-6">
+      <div className="text-center max-w-lg">
+        <div className="text-6xl mb-6">🌳</div>
+        <h2 className="font-headline text-3xl font-bold text-slate-800 dark:text-white mb-4">Coming Soon</h2>
+        <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
+          演算法優化樹正在建構中。從 Brute Force 出發，探索每一個優化路徑的條件、複雜度改進與代價。
+        </p>
+        <div className="mt-8 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-sm font-bold">
+          <Network className="w-4 h-4" />
+          Brute Force → Optimized Solutions
+        </div>
+      </div>
+    </main>
+  </div>
+);
+
+const LearningPathPage = ({ onSelectModule, onSelectLesson, onOpenCodeTree, onOpenAlgoTree }: { onSelectModule: () => void, onSelectLesson: (id: string) => void, onOpenCodeTree: () => void, onOpenAlgoTree: () => void }) => {
   return (
     <div className="min-h-screen bg-surface dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col relative overflow-hidden transition-colors duration-500">
       <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/50">
@@ -209,6 +279,7 @@ const LearningPathPage = ({ onSelectModule, onSelectLesson, onOpenCodeTree }: { 
         <nav className="flex items-center gap-3 sm:gap-4 md:gap-8 text-sm md:text-base shrink-0">
           <a href="#" className="font-headline font-bold text-cyan-600 dark:text-white border-b-2 border-cyan-500 dark:border-slate-500 py-1 hidden sm:inline-block">Curriculum Area</a>
           <CodeTreeNavLink onClick={onOpenCodeTree} />
+          <AlgoTreeNavLink onClick={onOpenAlgoTree} />
         </nav>
         <div className="flex items-center gap-4 shrink-0">
           <User className="w-5 h-5 text-slate-500 dark:text-slate-400" />
@@ -319,7 +390,7 @@ const LearningPathPage = ({ onSelectModule, onSelectLesson, onOpenCodeTree }: { 
   );
 };
 
-const LessonPage = ({ lessonId, student, onBack, onLessonChange, onOpenCodeTree }: { lessonId: string, student: StudentUser | null, onBack: () => void, onLessonChange: (id: string) => void, onOpenCodeTree: () => void }) => {
+const LessonPage = ({ lessonId, student, onBack, onLessonChange, onOpenCodeTree, onOpenAlgoTree }: { lessonId: string, student: StudentUser | null, onBack: () => void, onLessonChange: (id: string) => void, onOpenCodeTree: () => void, onOpenAlgoTree: () => void }) => {
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [teacherChatOpen, setTeacherChatOpen] = useState(false);
@@ -379,6 +450,7 @@ const LessonPage = ({ lessonId, student, onBack, onLessonChange, onOpenCodeTree 
             <span className="sm:hidden">Back</span>
           </button>
           <CodeTreeNavLink onClick={onOpenCodeTree} />
+          <AlgoTreeNavLink onClick={onOpenAlgoTree} />
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
           {!student?.isGuest && (
@@ -583,6 +655,11 @@ export default function App() {
     setCurrentPage('tree');
   };
 
+  const navigateToAlgoTree = () => {
+    setPreviousPage(currentPage);
+    setCurrentPage('algo-tree');
+  };
+
   const navigateToNodeExplain = (nodeId: string) => {
     setCurrentNodeId(nodeId);
     setCurrentPage('tree-node');
@@ -623,6 +700,7 @@ export default function App() {
                 setCurrentPage('lesson');
               }}
               onOpenCodeTree={navigateToTree}
+              onOpenAlgoTree={navigateToAlgoTree}
             />
           </motion.div>
         )}
@@ -641,6 +719,7 @@ export default function App() {
               onLessonChange={setCurrentLessonId}
               onBack={() => setCurrentPage('path')}
               onOpenCodeTree={navigateToTree}
+              onOpenAlgoTree={navigateToAlgoTree}
             />
           </motion.div>
         )}
@@ -672,6 +751,20 @@ export default function App() {
               nodeId={currentNodeId}
               onBack={() => setCurrentPage('tree')}
               onNodeClick={navigateToNodeExplain}
+            />
+          </motion.div>
+        )}
+
+        {currentPage === 'algo-tree' && (
+          <motion.div
+            key="algo-tree"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <AlgoTreePlaceholderPage
+              onBack={() => setCurrentPage(previousPage)}
             />
           </motion.div>
         )}
