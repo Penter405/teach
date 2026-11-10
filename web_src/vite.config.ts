@@ -1,5 +1,6 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import express from 'express';
 import path from 'path';
 import {defineConfig, loadEnv} from 'vite';
 
@@ -8,7 +9,16 @@ export default defineConfig(({mode}) => {
   return {
     base: './',
     envPrefix: ['VITE_', 'Client_ID'],
-    plugins: [react(), tailwindcss()],
+    plugins: [
+      react(),
+      tailwindcss(),
+      {
+        name: 'serve-docs-content',
+        configureServer(server) {
+          server.middlewares.use('/content', express.static(path.resolve(__dirname, '../docs/content')));
+        },
+      },
+    ],
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
     },
