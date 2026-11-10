@@ -10,51 +10,38 @@ import {
   Maximize2,
   X,
   Flag,
-  Lightbulb,
   Gift,
   RotateCcw,
   ArrowRight,
+  HelpCircle,
+  ListChecks,
+  Route,
 } from 'lucide-react';
 import {
   algoNodes, algoEdges, algoNext, ALGO_ROOT_ID, ALGO_OUTCOME_ID,
   AlgoNode, AlgoEdge, AlgoNodeKind,
 } from './algoTreeData';
 
-// Flow: 問題發現 → 問題特性 → 可用的演算法 → 得到了什麼 → 繼續或解決
+// Flow: 問題發現 → 判斷樹（是非題／選擇題）→ 可用的演算法 → 得到了什麼 → 繼續或解決
+// The decision part is a real tree: every answer is exclusive, so a problem has exactly one path.
 
-// ── Types ──
 type LayoutMode = 'vertical' | 'horizontal';
 
-interface NodePosition {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+interface NodePosition { x: number; y: number; width: number; height: number }
 
 // ── Constants ──
 const SIZE = {
-  desktop: { w: 176, h: 64, gapCross: 18, gapLayerV: 150, gapLayerH: 170, pad: 70 },
-  mobile: { w: 132, h: 56, gapCross: 10, gapLayerV: 110, gapLayerH: 90, pad: 56 },
-};
-
-const LAYER_ORDER: AlgoNodeKind[] = ['root', 'trait', 'algorithm', 'gain', 'outcome'];
-const LAYER_TITLES: Record<AlgoNodeKind, { zh: string; en: string }> = {
-  root: { zh: '問題發現', en: 'Problem' },
-  trait: { zh: '問題特性', en: 'Traits' },
-  algorithm: { zh: '可用的演算法', en: 'Algorithms' },
-  gain: { zh: '得到了什麼', en: 'What you gain' },
-  outcome: { zh: '繼續或解決', en: 'Continue / Solved' },
+  desktop: { w: 176, h: 64, gapCross: 18, gapLayerV: 120, gapLayerH: 190, pad: 70 },
+  mobile: { w: 132, h: 58, gapCross: 10, gapLayerV: 96, gapLayerH: 120, pad: 56 },
 };
 
 // ── Colours (literal class strings so Tailwind keeps them) ──
 interface CatStyle { box: string; text: string; dot: string; label: string }
-const KIND_STYLES: Partial<Record<AlgoNodeKind, CatStyle>> = {
-  root:    { box: 'bg-gradient-to-br from-emerald-500 to-cyan-500 border-emerald-400', text: 'text-white', dot: 'bg-gradient-to-r from-emerald-500 to-cyan-500', label: '問題發現' },
-  trait:   { box: 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 border-dashed', text: 'text-slate-700 dark:text-slate-200', dot: 'bg-slate-400', label: '問題特性' },
-  gain:    { box: 'bg-yellow-50 dark:bg-yellow-950/40 border-yellow-300 dark:border-yellow-700', text: 'text-yellow-900 dark:text-yellow-200', dot: 'bg-yellow-400', label: '得到了什麼' },
-  outcome: { box: 'bg-gradient-to-br from-amber-400 to-rose-500 border-amber-300', text: 'text-white', dot: 'bg-gradient-to-r from-amber-400 to-rose-500', label: '繼續或解決' },
-};
+const ROOT_STYLE: CatStyle = { box: 'bg-gradient-to-br from-emerald-500 to-cyan-500 border-emerald-400', text: 'text-white', dot: 'bg-gradient-to-r from-emerald-500 to-cyan-500', label: '問題發現' };
+const YESNO_STYLE: CatStyle = { box: 'bg-white dark:bg-slate-800 border-slate-400 dark:border-slate-500', text: 'text-slate-800 dark:text-slate-100', dot: 'bg-white dark:bg-slate-800', label: '是非題' };
+const CHOICE_STYLE: CatStyle = { box: 'bg-slate-700 dark:bg-slate-200 border-slate-700 dark:border-slate-200', text: 'text-white dark:text-slate-900', dot: 'bg-slate-700 dark:bg-slate-200', label: '選擇題' };
+const GAIN_STYLE: CatStyle = { box: 'bg-yellow-50 dark:bg-yellow-950/40 border-yellow-300 dark:border-yellow-700', text: 'text-yellow-900 dark:text-yellow-200', dot: 'bg-yellow-400', label: '得到了什麼' };
+const OUTCOME_STYLE: CatStyle = { box: 'bg-gradient-to-br from-amber-400 to-rose-500 border-amber-300', text: 'text-white', dot: 'bg-gradient-to-r from-amber-400 to-rose-500', label: '繼續或解決' };
 const CATEGORY_STYLES: Record<string, CatStyle> = {
   '搜尋':     { box: 'bg-cyan-50 dark:bg-cyan-950/60 border-cyan-300 dark:border-cyan-700', text: 'text-cyan-800 dark:text-cyan-200', dot: 'bg-cyan-400', label: '搜尋' },
   '排序':     { box: 'bg-sky-50 dark:bg-sky-950/60 border-sky-300 dark:border-sky-700', text: 'text-sky-800 dark:text-sky-200', dot: 'bg-sky-400', label: '排序' },
@@ -66,17 +53,27 @@ const CATEGORY_STYLES: Record<string, CatStyle> = {
   '圖論':     { box: 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700', text: 'text-emerald-800 dark:text-emerald-200', dot: 'bg-emerald-400', label: '圖論' },
   '最短路徑': { box: 'bg-lime-50 dark:bg-lime-950/60 border-lime-300 dark:border-lime-700', text: 'text-lime-800 dark:text-lime-200', dot: 'bg-lime-400', label: '最短路徑' },
   '最小生成樹': { box: 'bg-green-50 dark:bg-green-950/60 border-green-300 dark:border-green-700', text: 'text-green-800 dark:text-green-200', dot: 'bg-green-400', label: '最小生成樹' },
+  '字串':     { box: 'bg-rose-50 dark:bg-rose-950/60 border-rose-300 dark:border-rose-700', text: 'text-rose-800 dark:text-rose-200', dot: 'bg-rose-400', label: '字串' },
   '資料結構': { box: 'bg-orange-50 dark:bg-orange-950/60 border-orange-300 dark:border-orange-700', text: 'text-orange-800 dark:text-orange-200', dot: 'bg-orange-400', label: '資料結構' },
 };
 const FALLBACK_STYLE: CatStyle = { box: 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600', text: 'text-slate-800 dark:text-slate-200', dot: 'bg-slate-400', label: '其他' };
-const styleFor = (n: AlgoNode) => KIND_STYLES[n.kind] ?? CATEGORY_STYLES[n.category] ?? FALLBACK_STYLE;
+
+function styleFor(n: AlgoNode): CatStyle {
+  switch (n.kind) {
+    case 'root': return ROOT_STYLE;
+    case 'question': return n.qtype === 'choice' ? CHOICE_STYLE : YESNO_STYLE;
+    case 'gain': return GAIN_STYLE;
+    case 'outcome': return OUTCOME_STYLE;
+    default: return CATEGORY_STYLES[n.category] ?? FALLBACK_STYLE;
+  }
+}
 
 const EDGE_STYLES: Record<AlgoNodeKind, { cls: string; marker: string; width: number; base: number; dash?: string }> = {
-  root:      { cls: 'stroke-slate-300 dark:stroke-slate-600', marker: 'fill-slate-300 dark:fill-slate-600', width: 1.5, base: 0.5 },
-  trait:     { cls: 'stroke-slate-300 dark:stroke-slate-600', marker: 'fill-slate-300 dark:fill-slate-600', width: 1.5, base: 0.6 },
-  algorithm: { cls: 'stroke-emerald-400 dark:stroke-emerald-500', marker: 'fill-emerald-400 dark:fill-emerald-500', width: 1.75, base: 0.55 },
-  gain:      { cls: 'stroke-yellow-400 dark:stroke-yellow-500', marker: 'fill-yellow-400 dark:fill-yellow-500', width: 1.75, base: 0.6 },
-  outcome:   { cls: 'stroke-amber-400 dark:stroke-amber-500', marker: 'fill-amber-400 dark:fill-amber-500', width: 1.75, base: 0.7, dash: '6 5' },
+  root:      { cls: 'stroke-slate-400 dark:stroke-slate-500', marker: 'fill-slate-400 dark:fill-slate-500', width: 1.75, base: 0.7 },
+  question:  { cls: 'stroke-slate-400 dark:stroke-slate-500', marker: 'fill-slate-400 dark:fill-slate-500', width: 1.75, base: 0.7 },
+  algorithm: { cls: 'stroke-emerald-400 dark:stroke-emerald-500', marker: 'fill-emerald-400 dark:fill-emerald-500', width: 2, base: 0.8 },
+  gain:      { cls: 'stroke-yellow-400 dark:stroke-yellow-500', marker: 'fill-yellow-400 dark:fill-yellow-500', width: 1.5, base: 0.5 },
+  outcome:   { cls: 'stroke-amber-400 dark:stroke-amber-500', marker: 'fill-amber-400 dark:fill-amber-500', width: 1.5, base: 0.6, dash: '6 5' },
 };
 
 // ── Graph helpers ──
@@ -86,133 +83,160 @@ const incoming = new Map<string, AlgoEdge[]>();
 for (const n of algoNodes) { outgoing.set(n.id, []); incoming.set(n.id, []); }
 for (const e of algoEdges) { outgoing.get(e.from)!.push(e); incoming.get(e.to)!.push(e); }
 
-/** Fixed layers by kind, ordered with barycenter sweeps to reduce edge crossings. */
-function computeLayers(): string[][] {
-  const layers: string[][] = LAYER_ORDER.map(k => algoNodes.filter(n => n.kind === k).map(n => n.id));
-  const pos = new Map<string, number>();
-  const reindex = () => layers.forEach(l => l.forEach((id, i) => pos.set(id, (i + 0.5) / l.length)));
-  reindex();
-  const avg = (xs: number[], fallback: number) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : fallback);
+const isTreeNode = (id: string) => {
+  const k = nodeById.get(id)!.kind;
+  return k === 'root' || k === 'question' || k === 'algorithm';
+};
+/** children inside the decision tree (questions / algorithms), in answer order */
+const treeChildren = (id: string) =>
+  nodeById.get(id)!.kind === 'algorithm' ? [] : outgoing.get(id)!.filter(e => isTreeNode(e.to));
+const treeParent = (id: string) => incoming.get(id)!.find(e => isTreeNode(e.from));
 
-  for (let pass = 0; pass < 8; pass++) {
-    // downward: order by parents
-    for (let d = 2; d <= 3; d++) {
-      const b = (id: string) => avg(incoming.get(id)!.map(e => pos.get(e.from)!), pos.get(id)!);
-      layers[d] = [...layers[d]].sort((x, y) => b(x) - b(y));
-      reindex();
-    }
-    // upward: order by children
-    for (let d = 2; d >= 1; d--) {
-      const b = (id: string) => avg(outgoing.get(id)!.map(e => pos.get(e.to)!), pos.get(id)!);
-      layers[d] = [...layers[d]].sort((x, y) => b(x) - b(y));
-      reindex();
-    }
-  }
-  return layers;
+const depthOf = new Map<string, number>();
+(function walk(id: string, d: number) {
+  depthOf.set(id, d);
+  treeChildren(id).forEach(e => walk(e.to, d + 1));
+})(ALGO_ROOT_ID, 0);
+
+/** The question → answer steps from the root down to `id`. */
+function pathTo(id: string): AlgoEdge[] {
+  const steps: AlgoEdge[] = [];
+  let cur = treeParent(id);
+  while (cur) { steps.unshift(cur); cur = treeParent(cur.from); }
+  return steps;
 }
-const FULL_LAYERS = computeLayers();
 
-// ── Auto-collapse ──
+// ── Visibility (auto-collapse) ──
 /**
- * Which nodes are shown.
- * With auto-collapse on, a column only gets as many nodes as fit on screen (`capacity`).
- * Parents are opened in order while their children still fit; a parent whose children
- * don't fit stays folded (shows "+N") until the user clicks it (`expanded`).
+ * With auto-collapse on, the tree only shows as many leaves as fit on screen (`capacity`).
+ * Questions are opened shallow-first while the leaves still fit; others stay folded ("+N")
+ * until clicked (`expanded`). The root is always open.
  */
 function computeVisible(autoCollapse: boolean, expanded: Set<string>, capacity: number): Set<string> {
-  if (!autoCollapse) return new Set(algoNodes.map(n => n.id));
   const visible = new Set<string>([ALGO_ROOT_ID]);
-  for (let d = 0; d < FULL_LAYERS.length - 1; d++) {
-    const parents = FULL_LAYERS[d].filter(id => visible.has(id));
-    const nextLayer = new Set(FULL_LAYERS[d + 1]);
-    const countNext = () => FULL_LAYERS[d + 1].filter(id => visible.has(id)).length;
-    const open = (id: string) => outgoing.get(id)!.forEach(e => { if (nextLayer.has(e.to)) visible.add(e.to); });
-    // 1) parents the user opened (and the root) always show their children
-    parents.filter(id => id === ALGO_ROOT_ID || expanded.has(id)).forEach(open);
-    // 2) other parents open only while their children still fit
-    for (const id of parents) {
-      if (id === ALGO_ROOT_ID || expanded.has(id)) continue;
-      const newKids = outgoing.get(id)!.filter(e => !visible.has(e.to)).length;
-      if (countNext() + newKids <= capacity) open(id);
+  if (!autoCollapse) {
+    algoNodes.forEach(n => visible.add(n.id));
+    return visible;
+  }
+  let leaves = 1;
+  const queue = [ALGO_ROOT_ID];
+  // BFS so shallow questions open first
+  while (queue.length) {
+    const id = queue.shift()!;
+    const kids = treeChildren(id);
+    if (!kids.length) continue;
+    const forced = id === ALGO_ROOT_ID || expanded.has(id);
+    if (forced || leaves + kids.length - 1 <= capacity) {
+      kids.forEach(e => { visible.add(e.to); queue.push(e.to); });
+      leaves += kids.length - 1;
     }
   }
+  // gains of visible algorithms, and the outcome
+  algoEdges.forEach(e => {
+    if (visible.has(e.from) && nodeById.get(e.from)!.kind === 'algorithm') visible.add(e.to);
+  });
+  if (algoNodes.some(n => n.kind === 'gain' && visible.has(n.id))) visible.add(ALGO_OUTCOME_ID);
   return visible;
 }
 
-/** Open the parents needed to make `id` visible (used when jumping from the detail panel). */
-function revealPath(id: string, expanded: Set<string>, capacity: number): Set<string> {
+/** Open every question on the path to `id`. */
+function revealPath(id: string, expanded: Set<string>): Set<string> {
   const next = new Set(expanded);
-  const visit = (target: string, depth = 0) => {
-    const vis = computeVisible(true, next, capacity);
-    if (vis.has(target) || depth > 8) return;
-    const parents = incoming.get(target)!.map(e => e.from);
-    const parent = parents.find(p => vis.has(p)) ?? parents[0];
-    if (!parent) return;
-    visit(parent, depth + 1);
-    next.add(parent);
-  };
-  visit(id);
+  const kind = nodeById.get(id)!.kind;
+  if (kind === 'gain' || kind === 'outcome') return next;
+  pathTo(id).forEach(step => next.add(step.from));
   return next;
 }
 
+// ── Layout ──
 function calculateLayout(layout: LayoutMode, isMobile: boolean, visible: Set<string>) {
-  // keep the full-graph order so nodes don't jump around when parents open/close
-  const LAYERS = FULL_LAYERS.map(l => l.filter(id => visible.has(id)));
   const s = isMobile ? SIZE.mobile : SIZE.desktop;
   const positions = new Map<string, NodePosition>();
   const crossSize = layout === 'vertical' ? s.w : s.h;
+  const crossStep = crossSize + s.gapCross;
   const layerStep = layout === 'vertical' ? s.h + s.gapLayerV : s.w + s.gapLayerH;
-  const widest = Math.max(1, ...LAYERS.map(l => l.length));
-  const fullSpan = widest * crossSize + (widest - 1) * s.gapCross;
-  const layerStarts: number[] = [];
+  const place = (id: string, along: number, cross: number) =>
+    positions.set(id, layout === 'vertical'
+      ? { x: cross, y: along, width: s.w, height: s.h }
+      : { x: along, y: cross, width: s.w, height: s.h });
 
-  LAYERS.forEach((layer, d) => {
-    // spread smaller layers across the full span so edges stay gentle
-    const slot = fullSpan / Math.max(1, layer.length);
-    const along = s.pad + d * layerStep;
-    layerStarts.push(along);
-    layer.forEach((id, i) => {
-      const cross = s.pad + i * slot + (slot - crossSize) / 2;
-      positions.set(id, layout === 'vertical'
-        ? { x: cross, y: along, width: s.w, height: s.h }
-        : { x: along, y: cross, width: s.w, height: s.h });
-    });
+  // tidy tree: leaves take consecutive slots, parents sit centred over their children
+  let slot = 0;
+  let maxDepth = 0;
+  const crossOf = new Map<string, number>();
+  (function lay(id: string) {
+    const d = depthOf.get(id)!;
+    maxDepth = Math.max(maxDepth, d);
+    const kids = treeChildren(id).filter(e => visible.has(e.to));
+    let c: number;
+    if (!kids.length) {
+      c = s.pad + slot * crossStep;
+      slot++;
+    } else {
+      kids.forEach(e => lay(e.to));
+      c = (crossOf.get(kids[0].to)! + crossOf.get(kids[kids.length - 1].to)!) / 2;
+    }
+    crossOf.set(id, c);
+    place(id, s.pad + d * layerStep, c);
+  })(ALGO_ROOT_ID);
+
+  // gains: one column after the deepest visible node, near the algorithms that lead to them
+  const gainAlong = s.pad + (maxDepth + 1) * layerStep;
+  const gains = algoNodes
+    .filter(n => n.kind === 'gain' && visible.has(n.id))
+    .map(n => {
+      const from = incoming.get(n.id)!.map(e => crossOf.get(e.from)).filter((v): v is number => v !== undefined);
+      return { id: n.id, want: from.length ? from.reduce((a, b) => a + b, 0) / from.length : s.pad };
+    })
+    .sort((a, b) => a.want - b.want);
+  let last = -Infinity;
+  gains.forEach(g => {
+    const c = Math.max(g.want, last + crossStep);
+    last = c;
+    crossOf.set(g.id, c);
+    place(g.id, gainAlong, c);
   });
 
-  const alongEnd = s.pad + (LAYERS.length - 1) * layerStep + (layout === 'vertical' ? s.h : s.w);
-  const crossEnd = s.pad + fullSpan;
+  const outcomeAlong = gainAlong + layerStep;
+  if (visible.has(ALGO_OUTCOME_ID) && gains.length) {
+    const c = (crossOf.get(gains[0].id)! + crossOf.get(gains[gains.length - 1].id)!) / 2;
+    crossOf.set(ALGO_OUTCOME_ID, c);
+    place(ALGO_OUTCOME_ID, outcomeAlong, c);
+  }
+
+  let maxCross = 0;
+  crossOf.forEach(c => { maxCross = Math.max(maxCross, c + crossSize); });
+  const alongEnd = outcomeAlong + (layout === 'vertical' ? s.h : s.w);
   const bounds = layout === 'vertical'
-    ? { width: crossEnd + 24, height: alongEnd + 24 }
-    : { width: alongEnd + 24, height: crossEnd + 24 };
-  return { positions, bounds, layerStarts, pad: s.pad };
+    ? { width: maxCross + 40, height: alongEnd + 24 }
+    : { width: alongEnd + 24, height: maxCross + 40 };
+  return { positions, bounds, pad: s.pad, gainAlong, outcomeAlong };
 }
 
 function edgePath(from: NodePosition, to: NodePosition, layout: LayoutMode) {
   if (layout === 'vertical') {
     const sx = from.x + from.width / 2, sy = from.y + from.height;
     const ex = to.x + to.width / 2, ey = to.y;
-    const my = (sy + ey) / 2;
+    const my = sy + Math.min(60, (ey - sy) / 2);
     return `M ${sx} ${sy} C ${sx} ${my}, ${ex} ${my}, ${ex} ${ey}`;
   }
   const sx = from.x + from.width, sy = from.y + from.height / 2;
   const ex = to.x, ey = to.y + to.height / 2;
-  const mx = (sx + ex) / 2;
+  const mx = sx + Math.min(70, (ex - sx) / 2);
   return `M ${sx} ${sy} C ${mx} ${sy}, ${mx} ${ey}, ${ex} ${ey}`;
 }
 
 /** The loop from 「繼續」 back to 「問題發現」, drawn around the outside of the tree. */
-function loopPath(outcome: NodePosition, root: NodePosition, layout: LayoutMode, pad: number) {
-  const r = 24;
+function loopPath(outcome: NodePosition, root: NodePosition, layout: LayoutMode) {
+  const r = 24, edge = 22;
   if (layout === 'horizontal') {
     const sx = outcome.x + outcome.width / 2, sy = outcome.y;
     const ex = root.x + root.width / 2, ey = root.y;
-    const top = 22;
-    return `M ${sx} ${sy} L ${sx} ${top + r} Q ${sx} ${top} ${sx - r} ${top} L ${ex + r} ${top} Q ${ex} ${top} ${ex} ${top + r} L ${ex} ${ey}`;
+    return `M ${sx} ${sy} L ${sx} ${edge + r} Q ${sx} ${edge} ${sx - r} ${edge} L ${ex + r} ${edge} Q ${ex} ${edge} ${ex} ${edge + r} L ${ex} ${ey}`;
   }
   const sx = outcome.x, sy = outcome.y + outcome.height / 2;
   const ex = root.x, ey = root.y + root.height / 2;
-  const left = 22;
-  return `M ${sx} ${sy} L ${left + r} ${sy} Q ${left} ${sy} ${left} ${sy - r} L ${left} ${ey + r} Q ${left} ${ey} ${left + r} ${ey} L ${ex} ${ey}`;
+  return `M ${sx} ${sy} L ${edge + r} ${sy} Q ${edge} ${sy} ${edge} ${sy - r} L ${edge} ${ey + r} Q ${edge} ${ey} ${edge + r} ${ey} L ${ex} ${ey}`;
 }
 
 // ── Edge ──
@@ -222,7 +246,7 @@ function AlgoEdgePath({ edge, from, to, layout, state }: {
   state: 'normal' | 'active' | 'dim';
 }) {
   const st = EDGE_STYLES[edge.kind];
-  const opacity = state === 'active' ? 1 : state === 'dim' ? 0.06 : st.base;
+  const opacity = state === 'active' ? 1 : state === 'dim' ? 0.07 : st.base;
   return (
     <motion.path
       d={edgePath(from, to, layout)}
@@ -233,9 +257,30 @@ function AlgoEdgePath({ edge, from, to, layout, state }: {
       className={st.cls}
       initial={{ pathLength: 0, opacity: 0 }}
       animate={{ pathLength: 1, opacity }}
-      transition={{ pathLength: { duration: 0.7, ease: 'easeOut' }, opacity: { duration: 0.2 } }}
+      transition={{ pathLength: { duration: 0.6, ease: 'easeOut' }, opacity: { duration: 0.2 } }}
     />
   );
+}
+
+/** The answer written on a branch: 是 / 否 / option text. */
+function AnswerLabel({ edge, to, layout, isMobile, dim }: {
+  key?: string;
+  edge: AlgoEdge; to: NodePosition; layout: LayoutMode; isMobile: boolean; dim: boolean;
+}) {
+  if (!edge.answer) return null;
+  const cls =
+    edge.answer === '是' ? 'fill-emerald-600 dark:fill-emerald-400' :
+    edge.answer === '否' ? 'fill-rose-600 dark:fill-rose-400' :
+    'fill-sky-800 dark:fill-sky-200';
+  const common = {
+    className: `${cls} stroke-[#f7f9fb] dark:stroke-slate-950 font-bold`,
+    strokeWidth: 5,
+    style: { fontSize: isMobile ? 10 : 12, paintOrder: 'stroke' as const, transition: 'opacity 0.2s' },
+    opacity: dim ? 0.15 : 1,
+  };
+  return layout === 'horizontal'
+    ? <text x={to.x - 10} y={to.y + to.height / 2 - 7} textAnchor="end" {...common}>{edge.answer}</text>
+    : <text x={to.x + to.width / 2} y={to.y - 10} textAnchor="middle" {...common}>{edge.answer}</text>;
 }
 
 // ── Node ──
@@ -244,27 +289,24 @@ function AlgoNodeBox({ node, pos, isMobile, state, onClick, onHover, onLeave, hi
   node: AlgoNode; pos: NodePosition; isMobile: boolean;
   state: 'normal' | 'active' | 'selected' | 'dim';
   onClick: () => void; onHover: () => void; onLeave: () => void;
-  /** children still hidden (folded) */
-  hiddenCount: number;
-  /** this node was opened and can be folded again */
-  canFold: boolean;
-  onToggleFold: () => void;
+  hiddenCount: number; canFold: boolean; onToggleFold: () => void;
 }) {
   const st = styleFor(node);
+  const isQ = node.kind === 'question';
   const special = node.kind === 'root' || node.kind === 'outcome';
-  const Icon = node.kind === 'outcome' ? Flag : node.kind === 'gain' ? Gift : node.kind === 'trait' ? Lightbulb : null;
+  const Icon = node.kind === 'outcome' ? Flag : node.kind === 'gain' ? Gift : null;
   return (
     <motion.g
       initial={{ opacity: 0, scale: 0.7 }}
       animate={{ opacity: state === 'dim' ? 0.22 : 1, scale: 1 }}
-      transition={{ duration: 0.35, ease: 'backOut' }}
+      transition={{ duration: 0.3, ease: 'backOut' }}
     >
       <foreignObject x={pos.x} y={pos.y} width={pos.width} height={pos.height} style={{ overflow: 'visible' }}>
         <div
           onClick={onClick}
           onMouseEnter={onHover}
           onMouseLeave={onLeave}
-          className={`relative w-full h-full rounded-2xl border-2 cursor-pointer px-2 flex flex-col items-center justify-center text-center leading-tight select-none
+          className={`relative w-full h-full ${isQ ? 'rounded-xl' : 'rounded-2xl'} border-2 cursor-pointer px-2 flex flex-col items-center justify-center text-center leading-tight select-none
             ${st.box} ${special ? 'shadow-lg' : 'shadow-sm'}
             ${state === 'selected' ? 'ring-4 ring-emerald-400/60 dark:ring-emerald-500/50' : ''}
             ${state === 'active' || state === 'selected' ? 'shadow-xl' : ''}`}
@@ -273,25 +315,33 @@ function AlgoNodeBox({ node, pos, isMobile, state, onClick, onHover, onLeave, hi
             transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }}
         >
+          {isQ && (
+            <span className={`absolute -top-2.5 left-2 px-1.5 rounded-md text-[9px] font-bold tracking-wider border
+              ${node.qtype === 'choice'
+                ? 'bg-sky-100 text-sky-700 border-sky-300 dark:bg-sky-900 dark:text-sky-200 dark:border-sky-700'
+                : 'bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900 dark:text-emerald-200 dark:border-emerald-700'}`}>
+              {node.qtype === 'choice' ? '選擇題' : '是非題'}
+            </span>
+          )}
           <span className={`flex items-center gap-1 font-headline font-bold ${isMobile ? 'text-[11px]' : 'text-[13px]'} ${st.text} max-w-full`}>
             {Icon && <Icon className="w-3 h-3 flex-shrink-0 opacity-80" />}
-            <span className="truncate">{node.labelZh}</span>
+            <span className={isQ ? 'line-clamp-2' : 'truncate'}>{node.labelZh}</span>
           </span>
-          <span className={`${isMobile ? 'text-[9px]' : 'text-[10px]'} font-medium opacity-75 ${st.text} truncate max-w-full`}>
-            {node.label}
-          </span>
+          {!(isQ && isMobile) && (
+            <span className={`${isMobile ? 'text-[9px]' : 'text-[10px]'} font-medium opacity-70 ${st.text} truncate max-w-full`}>
+              {node.label}
+            </span>
+          )}
           {node.time && !isMobile && (
             <span className={`font-mono text-[9px] mt-0.5 opacity-70 ${st.text} truncate max-w-full`}>{node.time}</span>
           )}
           {(hiddenCount > 0 || canFold) && (
             <button
               onClick={e => { e.stopPropagation(); onToggleFold(); }}
-              title={hiddenCount > 0 ? `展開 ${hiddenCount} 個子節點` : '收合子節點'}
-              aria-label={hiddenCount > 0 ? `Expand ${hiddenCount} hidden children` : 'Collapse children'}
+              title={hiddenCount > 0 ? `展開 ${hiddenCount} 個答案` : '收合'}
+              aria-label={hiddenCount > 0 ? `Expand ${hiddenCount} hidden answers` : 'Collapse answers'}
               className={`absolute -top-2.5 -right-2.5 min-w-[26px] h-[22px] px-1.5 rounded-full text-[11px] font-bold font-mono shadow-md border-2 border-white dark:border-slate-900 transition-transform hover:scale-110
-                ${hiddenCount > 0
-                  ? 'bg-emerald-500 text-white animate-pulse'
-                  : 'bg-slate-400 dark:bg-slate-600 text-white'}`}
+                ${hiddenCount > 0 ? 'bg-emerald-500 text-white animate-pulse' : 'bg-slate-400 dark:bg-slate-600 text-white'}`}
             >
               {hiddenCount > 0 ? `+${hiddenCount}` : '−'}
             </button>
@@ -323,9 +373,17 @@ function SectionTitle({ icon: Icon, children }: { icon: React.ComponentType<{ cl
   );
 }
 
-function LinkCard({ id, reason, tone, onSelect, prefix = '' }: {
+function AnswerChip({ answer }: { answer: string }) {
+  const cls =
+    answer === '是' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300' :
+    answer === '否' ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300' :
+    'bg-sky-100 text-sky-800 dark:bg-sky-900/60 dark:text-sky-200';
+  return <span className={`inline-block px-2 py-0.5 rounded-md text-[11px] font-bold whitespace-nowrap ${cls}`}>{answer}</span>;
+}
+
+function LinkCard({ id, reason, tone, onSelect, answer }: {
   key?: string;
-  id: string; reason: string; tone: 'slate' | 'emerald' | 'yellow' | 'amber'; onSelect: (id: string) => void; prefix?: string;
+  id: string; reason: string; tone: 'slate' | 'emerald' | 'yellow' | 'amber'; onSelect: (id: string) => void; answer?: string;
 }) {
   const n = nodeById.get(id)!;
   const tones = {
@@ -336,10 +394,11 @@ function LinkCard({ id, reason, tone, onSelect, prefix = '' }: {
   };
   return (
     <div className={`rounded-xl border p-3 ${tones[tone]}`}>
+      {answer && <div className="mb-1.5"><AnswerChip answer={answer} /></div>}
       <button onClick={() => onSelect(id)} className="text-[12px] font-bold text-slate-800 dark:text-slate-100 hover:underline text-left">
-        {prefix}{n.labelZh} <span className="font-normal text-slate-400">· {n.label}</span>
+        {n.kind === 'question' ? '→ ' : n.kind === 'algorithm' ? '✓ ' : ''}{n.labelZh} <span className="font-normal text-slate-400">· {n.label}</span>
       </button>
-      <Lines text={reason} />
+      {reason && reason !== answer && <Lines text={reason} />}
     </div>
   );
 }
@@ -351,6 +410,14 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
   const outs = outgoing.get(nodeId)!;
   const nexts = algoNext.filter(x => x.from === nodeId);
   const comesFrom = algoNext.filter(x => x.to === nodeId);
+  const path = node.kind === 'question' || node.kind === 'algorithm'
+    ? pathTo(nodeId).filter(step => step.from !== ALGO_ROOT_ID)
+    : [];
+  const kindLabel =
+    node.kind === 'root' ? '問題發現' :
+    node.kind === 'question' ? (node.qtype === 'choice' ? '選擇題（選項互斥）' : '是非題') :
+    node.kind === 'algorithm' ? `可用的演算法 · ${node.category}` :
+    node.kind === 'gain' ? '得到了什麼' : '繼續或解決';
 
   return (
     <motion.aside
@@ -364,10 +431,8 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className={`w-2.5 h-2.5 rounded-full ${st.dot}`} />
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
-                {LAYER_TITLES[node.kind].zh}{node.kind === 'algorithm' ? ` · ${node.category}` : ''}
-              </span>
+              <span className={`w-2.5 h-2.5 rounded-full border border-slate-300 dark:border-slate-600 ${st.dot}`} />
+              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">{kindLabel}</span>
             </div>
             <h2 className="font-headline text-xl font-bold text-slate-900 dark:text-white">{node.labelZh}</h2>
             <p className="text-sm text-slate-500 dark:text-slate-400">{node.label}</p>
@@ -395,33 +460,51 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
         {node.desc && (
           <div className="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3">
             <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              {node.kind === 'algorithm' ? '什麼時候使用' : '說明'}
+              {node.kind === 'algorithm' ? '什麼時候使用' : node.kind === 'question' ? '怎麼判斷' : '說明'}
             </div>
             <Lines text={node.desc} bullet="text-slate-400" />
           </div>
         )}
 
+        {/* The unique sequence of answers from the root */}
+        {path.length > 0 && (
+          <section>
+            <SectionTitle icon={Route}>判斷路徑（唯一）</SectionTitle>
+            <ol className="mt-2 space-y-1.5">
+              {path.map((step, i) => (
+                <li key={step.from} className="flex items-start gap-2 text-xs">
+                  <span className="font-mono text-slate-400 w-4 text-right">{i + 1}.</span>
+                  <button onClick={() => onSelect(step.from)} className="text-left text-slate-700 dark:text-slate-200 hover:underline flex-1">
+                    {nodeById.get(step.from)!.labelZh}
+                  </button>
+                  <AnswerChip answer={step.answer} />
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
+
         {/* ROOT */}
         {node.kind === 'root' && (
           <section>
-            <SectionTitle icon={Lightbulb}>先觀察：問題有哪些特性？ · {outs.length}</SectionTitle>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {outs.map(e => (
-                <button key={e.to} onClick={() => onSelect(e.to)}
-                  className="text-xs px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700">
-                  {nodeById.get(e.to)!.labelZh}
-                </button>
-              ))}
+            <SectionTitle icon={HelpCircle}>從第一個問題開始</SectionTitle>
+            <div className="mt-2 space-y-2.5">
+              {outs.map(e => <LinkCard key={e.to} id={e.to} reason={e.reason} tone="slate" onSelect={onSelect} />)}
             </div>
           </section>
         )}
 
-        {/* TRAIT */}
-        {node.kind === 'trait' && (
+        {/* QUESTION */}
+        {node.kind === 'question' && (
           <section>
-            <SectionTitle icon={ArrowRight}>這個特性讓這些演算法可用 · {outs.length}</SectionTitle>
+            <SectionTitle icon={ListChecks}>
+              {node.qtype === 'choice' ? `選項（只會符合一個） · ${outs.length}` : '答案'}
+            </SectionTitle>
             <div className="mt-2 space-y-2.5">
-              {outs.map(e => <LinkCard key={e.to} id={e.to} reason={e.reason} tone="emerald" onSelect={onSelect} />)}
+              {outs.map(e => (
+                <LinkCard key={e.to} id={e.to} reason={e.reason} answer={e.answer}
+                  tone={nodeById.get(e.to)!.kind === 'algorithm' ? 'emerald' : 'slate'} onSelect={onSelect} />
+              ))}
             </div>
           </section>
         )}
@@ -429,12 +512,6 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
         {/* ALGORITHM */}
         {node.kind === 'algorithm' && (
           <>
-            <section>
-              <SectionTitle icon={Lightbulb}>因為問題有這些特性</SectionTitle>
-              <div className="mt-2 space-y-2.5">
-                {ins.map(e => <LinkCard key={e.from} id={e.from} reason={e.reason} tone="slate" onSelect={onSelect} />)}
-              </div>
-            </section>
             <section>
               <SectionTitle icon={Gift}>得到了什麼</SectionTitle>
               <div className="mt-2 space-y-2.5">
@@ -445,7 +522,7 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
               <section>
                 <SectionTitle icon={RotateCcw}>遇到新限制 → 繼續</SectionTitle>
                 <div className="mt-2 space-y-2.5">
-                  {nexts.map(x => <LinkCard key={x.to} id={x.to} reason={x.reason} tone="amber" onSelect={onSelect} prefix="→ " />)}
+                  {nexts.map(x => <LinkCard key={x.to} id={x.to} reason={x.reason} tone="amber" onSelect={onSelect} />)}
                 </div>
               </section>
             )}
@@ -523,26 +600,21 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
   const [zoom, setZoom] = useState(1);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 640);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
-
   const [autoCollapse, setAutoCollapse] = useState(true);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
-
   const [viewport, setViewport] = useState({ w: 1280, h: 800 });
+
   useEffect(() => {
-    const read = () => setViewport({ w: window.innerWidth, h: window.innerHeight });
+    const read = () => {
+      setIsMobile(window.innerWidth < 640);
+      setViewport({ w: window.innerWidth, h: window.innerHeight });
+    };
     read();
     window.addEventListener('resize', read);
     return () => window.removeEventListener('resize', read);
   }, []);
 
-  // How many nodes fit in one column (Left → Right) or row (Top → Down) at the current zoom
+  // How many leaves fit across the screen at the current zoom
   const capacity = useMemo(() => {
     const sz = isMobile ? SIZE.mobile : SIZE.desktop;
     const room = layout === 'horizontal' ? viewport.h - 170 - sz.pad : viewport.w - 48 - sz.pad;
@@ -551,19 +623,20 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
   }, [layout, isMobile, viewport, zoom]);
 
   const visible = useMemo(() => computeVisible(autoCollapse, expanded, capacity), [autoCollapse, expanded, capacity]);
-  const { positions, bounds, layerStarts, pad } = useMemo(
+  const { positions, bounds, pad, gainAlong, outcomeAlong } = useMemo(
     () => calculateLayout(layout, isMobile, visible),
     [layout, isMobile, visible]
   );
 
   const hiddenChildren = (id: string) =>
-    autoCollapse ? outgoing.get(id)!.filter(e => !visible.has(e.to)).length : 0;
+    autoCollapse ? treeChildren(id).filter(e => !visible.has(e.to)).length : 0;
   const toggleFold = (id: string) => setExpanded(prev => {
     const next = new Set(prev);
-    if (hiddenChildren(id) > 0) next.add(id); else next.delete(id);
-    // folding a parent also folds what was opened below it
-    if (!next.has(id)) {
-      const drop = (x: string) => outgoing.get(x)!.forEach(e => { if (next.delete(e.to)) drop(e.to); });
+    if (hiddenChildren(id) > 0) next.add(id);
+    else {
+      next.delete(id);
+      // folding a question also folds everything opened below it
+      const drop = (x: string) => treeChildren(x).forEach(e => { next.delete(e.to); drop(e.to); });
       drop(id);
     }
     return next;
@@ -575,11 +648,10 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
   /** Jump from the detail panel: make sure the target is on screen. */
   const jumpTo = (id: string) => {
     setSelectedId(id);
-    if (autoCollapse && !visible.has(id)) setExpanded(prev => revealPath(id, prev, capacity));
+    if (autoCollapse && !visible.has(id)) setExpanded(prev => revealPath(id, prev));
   };
 
-  // Focus = hovered node, otherwise the selected one.
-  // Highlight the whole path through it: upstream to the root, downstream to the outcome.
+  // Highlight the whole path through the focused node: up to the root, down to the outcome.
   const focusId = hoveredId ?? selectedId;
   const focus = useMemo(() => {
     if (!focusId) return null;
@@ -603,14 +675,25 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
     []
   );
 
-  const rootPos = positions.get(ALGO_ROOT_ID)!;
-  const outcomePos = positions.get(ALGO_OUTCOME_ID)!;
+  const rootPos = positions.get(ALGO_ROOT_ID);
+  const outcomePos = positions.get(ALGO_OUTCOME_ID);
   const s = isMobile ? SIZE.mobile : SIZE.desktop;
 
   const fit = () => {
     const vw = window.innerWidth - 48, vh = window.innerHeight - 170;
     setZoom(Math.max(0.25, Math.min(1, +(Math.min(vw / bounds.width, vh / bounds.height)).toFixed(2))));
   };
+
+  const visibleEdges = algoEdges.filter(e => positions.has(e.from) && positions.has(e.to));
+  const titleStyle = { fontSize: isMobile ? 11 : 13, letterSpacing: '0.05em', paintOrder: 'stroke' as const };
+  const titleCls = 'fill-slate-400 dark:fill-slate-500 stroke-[#f7f9fb] dark:stroke-slate-950 font-headline font-bold';
+  const firstQ = pad + (layout === 'horizontal' ? s.w + s.gapLayerH : s.h + s.gapLayerV);
+  const stageTitles = [
+    { label: '1. 問題發現', along: pad },
+    { label: '2. 判斷（是非題／選擇題）→ 3. 演算法', along: firstQ },
+    { label: '4. 得到了什麼', along: gainAlong },
+    { label: '5. 繼續或解決', along: outcomeAlong },
+  ];
 
   return (
     <div className="h-screen bg-surface dark:bg-slate-950 flex flex-col transition-colors duration-500 overflow-hidden">
@@ -634,13 +717,13 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
           {/* Auto-collapse switch */}
           <label
             className="flex items-center gap-2 cursor-pointer select-none px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
-            title="畫面放不下的子節點先收合，點擊父節點後才展開（關閉則顯示全部）"
+            title="畫面放不下的分支先收合，點擊問題後才展開（關閉則顯示全部）"
           >
             <span className="hidden lg:inline text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300">自動收合</span>
             <button
               role="switch"
               aria-checked={autoCollapse}
-              aria-label="Auto-collapse crowded parents"
+              aria-label="Auto-collapse crowded branches"
               onClick={() => { setAutoCollapse(v => !v); setExpanded(new Set()); }}
               className={`relative w-9 h-5 rounded-full transition-colors ${autoCollapse ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'}`}
             >
@@ -703,7 +786,7 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
               viewBox={`0 0 ${bounds.width} ${bounds.height}`}
               style={{ overflow: 'visible' }}
               onClick={e => e.stopPropagation()}
-              aria-label="Algorithm tree: problem, traits, algorithms, gains, continue or solved"
+              aria-label="Algorithm decision tree"
             >
               <defs>
                 {(Object.keys(EDGE_STYLES) as AlgoNodeKind[]).map(k => (
@@ -713,28 +796,18 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
                 ))}
               </defs>
 
-              {/* Column / row titles for each stage */}
-              {LAYER_ORDER.map((k, d) => {
-                const along = layerStarts[d];
-                const center = along + (layout === 'horizontal' ? s.w : s.h) / 2;
-                return layout === 'horizontal' ? (
-                  <text key={k} x={center} y={pad - 12} textAnchor="middle"
-                    className="fill-slate-400 dark:fill-slate-500 stroke-[#f7f9fb] dark:stroke-slate-950 font-headline font-bold" strokeWidth={5} style={{ fontSize: isMobile ? 11 : 13, letterSpacing: '0.05em', paintOrder: 'stroke' }}>
-                    {`${d + 1}. ${LAYER_TITLES[k].zh}`}
-                  </text>
-                ) : (
-                  <text key={k} x={34} y={along - 12}
-                    className="fill-slate-400 dark:fill-slate-500 stroke-[#f7f9fb] dark:stroke-slate-950 font-headline font-bold" strokeWidth={5} style={{ fontSize: isMobile ? 11 : 13, letterSpacing: '0.05em', paintOrder: 'stroke' }}>
-                    {`${d + 1}. ${LAYER_TITLES[k].zh}`}
-                  </text>
-                );
-              })}
+              {/* Stage titles */}
+              {stageTitles.map(t => layout === 'horizontal' ? (
+                <text key={t.label} x={t.along} y={pad - 18} className={titleCls} strokeWidth={5} style={titleStyle}>{t.label}</text>
+              ) : (
+                <text key={t.label} x={34} y={t.along - 18} className={titleCls} strokeWidth={5} style={titleStyle}>{t.label}</text>
+              ))}
 
               {/* Loop: 繼續 → 回到問題發現 */}
               {rootPos && outcomePos && (
                 <g opacity={focus && !focus.nodes.has(ALGO_OUTCOME_ID) ? 0.15 : 1}>
                   <path
-                    d={loopPath(outcomePos, rootPos, layout, pad)}
+                    d={loopPath(outcomePos, rootPos, layout)}
                     fill="none" strokeWidth={2} strokeDasharray="6 5"
                     markerEnd="url(#arrow-outcome)"
                     className="stroke-amber-400 dark:stroke-amber-500"
@@ -755,18 +828,22 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
               )}
 
               {/* Edges — highlighted ones last so they draw on top */}
-              {[...algoEdges]
+              {[...visibleEdges]
                 .sort((a, b) => {
                   if (!focus) return 0;
                   return (focus.edges.has(`${a.from}->${a.to}`) ? 1 : 0) - (focus.edges.has(`${b.from}->${b.to}`) ? 1 : 0);
                 })
                 .map(e => {
-                  const from = positions.get(e.from), to = positions.get(e.to);
-                  if (!from || !to) return null;
                   const key = `${e.from}->${e.to}`;
                   const state = !focus ? 'normal' : focus.edges.has(key) ? 'active' : 'dim';
-                  return <AlgoEdgePath key={key} edge={e} from={from} to={to} layout={layout} state={state} />;
+                  return <AlgoEdgePath key={key} edge={e} from={positions.get(e.from)!} to={positions.get(e.to)!} layout={layout} state={state} />;
                 })}
+
+              {/* Answers on the branches */}
+              {visibleEdges.filter(e => e.answer).map(e => (
+                <AnswerLabel key={`a-${e.from}->${e.to}`} edge={e} to={positions.get(e.to)!} layout={layout} isMobile={isMobile}
+                  dim={!!focus && !focus.edges.has(`${e.from}->${e.to}`)} />
+              ))}
 
               {algoNodes.map(n => {
                 const pos = positions.get(n.id);
@@ -783,11 +860,11 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
                     isMobile={isMobile}
                     state={state}
                     onClick={() => openNode(n.id)}
+                    onHover={() => !isMobile && setHoveredId(n.id)}
+                    onLeave={() => setHoveredId(null)}
                     hiddenCount={hiddenChildren(n.id)}
                     canFold={autoCollapse && expanded.has(n.id) && n.id !== ALGO_ROOT_ID}
                     onToggleFold={() => toggleFold(n.id)}
-                    onHover={() => !isMobile && setHoveredId(n.id)}
-                    onLeave={() => setHoveredId(null)}
                   />
                 );
               })}
@@ -804,10 +881,10 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
 
       {/* Legend */}
       <div className="flex-shrink-0 px-3 sm:px-6 py-2 sm:py-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex items-center justify-center gap-x-3 sm:gap-x-4 gap-y-1.5 flex-wrap">
-        {(['root', 'trait', 'gain', 'outcome'] as AlgoNodeKind[]).map(k => (
-          <div key={k} className="flex items-center gap-1.5">
-            <div className={`w-2.5 h-2.5 rounded-full ${KIND_STYLES[k]!.dot}`} />
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300">{KIND_STYLES[k]!.label}</span>
+        {[ROOT_STYLE, CHOICE_STYLE, YESNO_STYLE, GAIN_STYLE, OUTCOME_STYLE].map(st => (
+          <div key={st.label} className="flex items-center gap-1.5">
+            <div className={`w-2.5 h-2.5 rounded-full border border-slate-300 dark:border-slate-600 ${st.dot}`} />
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300">{st.label}</span>
           </div>
         ))}
         <div className="flex items-center gap-x-3 gap-y-1 flex-wrap pl-3 sm:pl-4 border-l border-slate-200 dark:border-slate-700">
