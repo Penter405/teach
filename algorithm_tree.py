@@ -15,6 +15,7 @@
 
 解題流程（網頁上的互動步驟分頁）的選項與比對條件在檔案後段的 WIZARD_GROUPS 與 RULES。
 Python 沒有內建、要自己寫的資料結構（樹狀陣列、線段樹…）在 CUSTOM_DS，哪些演算法用到它們在 USES_DS。
+任務樹（依照「要做什麼」分類）在 GOAL_TREE；葉子可以是演算法或資料結構（DATA_STRUCTURES）。
 
 修改後執行 `python algorithm_tree.py`，會重新產生 web_src/src/algoTreeData.ts
 """
@@ -879,6 +880,208 @@ USES_DS = {
 }
 
 
+# 資料結構清單（任務樹的葉子可以是演算法，也可以是資料結構）
+#   (id, 名稱, 是否內建, 怎麼用／一句話說明, [(操作, 複雜度), ...], 對應的演算法節點或 None)
+#   內建的附「用法」範例；要自己寫的模板在上面的 CUSTOM_DS（用同一個 id）。
+BUILTIN_DS_CODE = {
+    "list": r'''
+a = [5, 2, 8]
+a.append(3)          # 尾端加入：平均 O(1)
+print(a[1])          # 用索引拿：O(1) → 2
+a[1] = 7             # 用索引改：O(1)
+print(a.pop())       # 尾端移除：O(1) → 3
+print(8 in a)        # 搜尋：O(n) → True
+a.insert(0, 1)       # 開頭插入：O(n)，要整排搬
+print(a)             # [1, 5, 7, 8]
+''',
+    "dict": r'''
+score = {}
+score["amy"] = 90                  # 新增／修改：平均 O(1)
+score["bob"] = 75
+print(score["amy"])                # 用鍵拿值：平均 O(1) → 90
+print(score.get("cat", 0))         # 鍵不存在時給預設值 → 0
+print("bob" in score)              # 鍵在不在：平均 O(1) → True
+for name, s in score.items():      # 走過所有鍵值對
+    print(name, s)
+''',
+    "set": r'''
+seen = set()
+for x in [3, 1, 3, 2, 1]:
+    if x in seen:                  # 判斷存不存在：平均 O(1)
+        print("重複:", x)
+    seen.add(x)                    # 加入：平均 O(1)
+print(sorted(seen))                # 去掉重複 → [1, 2, 3]
+print({1, 2, 3} & {2, 3, 4})       # 交集 → {2, 3}
+''',
+    "deque": r'''
+from collections import deque
+
+q = deque()
+q.append(1)          # 右邊加入：O(1)
+q.append(2)
+q.appendleft(0)      # 左邊加入：O(1)（list.insert(0) 是 O(n)）
+print(q.popleft())   # 左邊取出：O(1) → 0（佇列：先進先出）
+print(q.pop())       # 右邊取出：O(1) → 2
+print(q)             # deque([1])
+''',
+    "stack": r'''
+stack = []
+stack.append("(")    # 放進去（push）：O(1)
+stack.append("[")
+print(stack[-1])     # 看最上面（peek）：O(1) → [
+print(stack.pop())   # 拿出最上面（pop）：O(1) → [（後進先出）
+print(len(stack) == 0)   # 是不是空的 → False
+''',
+    "heapq": r'''
+import heapq
+
+h = []
+for x in [5, 1, 8, 3]:
+    heapq.heappush(h, x)        # 加入：O(log n)
+print(h[0])                     # 看最小值：O(1) → 1
+print(heapq.heappop(h))         # 取出最小值：O(log n) → 1
+print(heapq.heappop(h))         # → 3
+
+# 要最大值：存負數
+mx = []
+for x in [5, 1, 8]:
+    heapq.heappush(mx, -x)
+print(-heapq.heappop(mx))       # → 8
+
+# 依第一個欄位排序：存 tuple，例如 (距離, 節點)
+pq = [(7, "B"), (2, "C")]
+heapq.heapify(pq)               # 把 list 變成 heap：O(n)
+print(heapq.heappop(pq))        # → (2, 'C')
+''',
+}
+
+DATA_STRUCTURES = [
+    # ── Python 內建 ──
+    ("list",  "串列 list (Dynamic Array)", True, "依序存放，用索引直接拿第 i 個。",
+     [("索引讀寫", "O(1)"), ("尾端 append / pop", "O(1)"), ("開頭 insert / pop(0)", "O(n)"), ("x in list", "O(n)")], None),
+    ("dict",  "字典 dict (Hash Map)", True, "用鍵找值，例如名字 → 分數。",
+     [("讀 / 寫 / 鍵在不在", "平均 O(1)")], hash_lookup),
+    ("set",   "集合 set (Hash Set)", True, "判斷存不存在、去掉重複。",
+     [("加入 / 刪除 / 在不在", "平均 O(1)")], hash_lookup),
+    ("deque", "雙端佇列 deque (Queue)", True, "from collections import deque：兩端都能 O(1) 加入、取出。BFS 用它當佇列。",
+     [("兩端加入 / 取出", "O(1)"), ("用索引拿中間", "O(n)")], None),
+    ("stack", "堆疊 Stack（用 list）", True, "後進先出：用 list 的 append / pop 就好。括號配對、運算式轉換會用到。",
+     [("push / pop / 看最上面", "O(1)")], None),
+    ("heapq", "優先佇列 heapq (Min Heap)", True, "import heapq：反覆取出最小值。要最大值就存負數。",
+     [("加入 heappush", "O(log n)"), ("取出最小 heappop", "O(log n)"), ("看最小 h[0]", "O(1)"), ("heapify", "O(n)")], heap),
+    # ── 要自己寫（模板在 CUSTOM_DS） ──
+    ("fenwick", "樹狀陣列 (Fenwick Tree / BIT)", False, "單點加值、前綴和。",
+     [("單點加值", "O(log n)"), ("前綴和 / 區間和", "O(log n)")], fenwick),
+    ("segment", "線段樹 (Segment Tree)", False, "單點修改、區間查詢（min / max / sum）。",
+     [("單點修改", "O(log n)"), ("區間查詢", "O(log n)")], segment),
+    ("dsu", "並查集 (Disjoint Set Union)", False, "合併群組、問是否同一組。",
+     [("find", "近乎 O(1)"), ("union", "近乎 O(1)")], dsu),
+    ("trie", "字典樹 (Trie)", False, "共用前綴的字串存在同一條路上。",
+     [("插入 / 查詢 / 數前綴", "O(字串長度)")], trie),
+    ("binary_tree", "二元樹 (Binary Tree)", False, "每個節點最多兩個孩子，要自己定義節點 class。",
+     [("走訪全部節點", "O(n)")], tree_traversal),
+    ("graph", "圖：鄰接串列 (Adjacency List)", False, "每個點記下它連到哪些點。",
+     [("建圖", "O(V + E)"), ("走過一個點的鄰居", "O(鄰居數)")], None),
+]
+
+def DS(ds_id):
+    """任務樹的葉子：資料結構"""
+    return {"ds": ds_id}
+
+
+# ════════════════════════════════════════════
+# 任務樹 (Goal Tree) —— 依照「我們要做什麼」分類
+#
+# 和判斷樹不同：這裡是分類，不是是非題。同一個演算法可以出現在不同的任務下。
+# 問題發現 → [任務] → [條件] → 演算法 或 資料結構
+# G("[條件]", 子節點...)；子節點可以是 G(...)、演算法 Node，或 DS("資料結構 id")。
+# ════════════════════════════════════════════
+def G(label, *children):
+    return {"label": label, "children": list(children)}
+
+GOAL_TREE = [
+    G("需要在資料中尋找特定元素",
+      linear,
+      G("資料已排序，且支援隨機存取", binary),
+      G("需要大量精確查找，允許額外記憶體", hash_lookup),
+      G("資料已排序，且數值分布近似均勻", interpolation),
+      G("要找的是「最小（最大）可行的答案」，而且能檢查一個答案可不可行", binary_answer)),
+    G("需要存放資料（選擇資料結構）",
+      G("依序存放，用索引拿", DS("list")),
+      G("用鍵找值（例如名字 → 分數）", DS("dict")),
+      G("判斷存不存在、去掉重複", DS("set")),
+      G("先進先出（佇列），或兩端都要進出", DS("deque")),
+      G("後進先出（堆疊），例如括號配對", DS("stack")),
+      G("反覆取出最小（最大）值", DS("heapq"))),
+    G("需要排序資料",
+      bubble,
+      insertion,
+      G("需要穩定排序及 O(n log n) 最壞時間", merge),
+      G("重視平均速度，接受 O(n²) 最壞情況", quick),
+      G("需要 O(n log n) 最壞時間及 O(1) 輔助空間", heap_sort),
+      G("整數鍵值範圍有限且適合計數", counting),
+      G("只需要知道每個元素的名次", rank_compress)),
+    G("需要處理兩個或多個元素之間的關係",
+      G("資料有序或可以排序，且具有單調性", two_pointers),
+      G("需要處理連續區間，且可以增量更新", sliding),
+      G("需要快速判斷元素是否存在", DS("set")),
+      G("每個元素要找左右最近的較大／較小值", monotonic_stack),
+      G("要固定長度視窗內的最大／最小值", monotonic_queue)),
+    G("需要重複計算相同的內容",
+      G("需要大量查詢靜態區間總和", prefix),
+      G("存在重複子問題 → 動態規劃 (DP)",
+        memo,
+        tabulation,
+        G("常見題型",
+          G("背包：每個物品最多選一次", knap01),
+          G("背包：物品可以重複選", knap_unb),
+          G("兩個序列的共同部分", lcs),
+          G("最長遞增子序列", lis),
+          G("切成幾段／合併區間", interval_dp))),
+      G("需要大量動態區間查詢與更新",
+        G("單點更新及前綴／區間和查詢", DS("fenwick")),
+        G("需要更一般的區間操作", DS("segment"))),
+      G("區間查詢無法用前綴相減，而且可以離線", mo)),
+    G("需要搜尋大量可能的解答",
+      G("先寫出一定正確的版本", brute),
+      G("可以逐步產生候選解", backtracking),
+      G("存在重複狀態", memo),
+      G("可以計算上下界並排除不可能更好的解", branch_bound),
+      G("能證明每步選最好就是最佳", greedy)),
+    G("需要把問題拆成更小的同型問題",
+      G("每次縮小一點", recursion),
+      G("切成互不重疊的子問題，解完再合併", divide_conquer)),
+    G("需要遍歷圖形或尋找路徑",
+      G("先把圖存起來", DS("graph")),
+      G("需要按距離層級遍歷", bfs),
+      G("需要深入探索、連通性或環偵測", dfs),
+      G("需要最短路徑",
+        G("所有邊權重相同", bfs),
+        G("所有邊權重非負", dijkstra),
+        G("允許負權重", bellman),
+        G("需要所有點對，且點很少", floyd)),
+      G("需要依照依賴關係排出先後順序", topo),
+      G("需要把點分成兩組（相鄰不同組）", bipartite),
+      G("樹：依照前序／中序／後序拜訪節點", DS("binary_tree"), tree_traversal),
+      G("樹：每個點的最遠距離", tree_diameter),
+      G("每個點只有一條出去的邊：從每點出發能走多遠", func_graph)),
+    G("需要用最小成本連接所有點（最小生成樹）",
+      G("邊不多：把邊排序，逐一加入", kruskal),
+      G("圖很稠密：從一點往外長", prim)),
+    G("需要反覆取得最大值或最小值",
+      G("需要動態插入及移除元素", DS("heapq"))),
+    G("需要維護動態群組與連通性",
+      G("群組會不斷合併，需要快速查詢是否同組", DS("dsu"))),
+    G("需要處理字串",
+      G("在長文字中找模式字串", kmp),
+      G("大量字串、依前綴查詢", DS("trie")),
+      G("運算式轉換或計算（括號、優先順序）", shunting)),
+    G("需要處理質數與因數",
+      G("只判斷一個數", trial_div),
+      G("要判斷很多個數或一整個範圍", sieve)),
+]
+
+
 # ════════════════════════════════════════════
 # 解題流程 (Solve Wizard) —— 網頁上的「互動步驟」分頁
 #
@@ -1153,6 +1356,35 @@ def export(path):
             assert u in ds_ids, f"{n.name} 用到不存在的資料結構 {u}"
     structures = [{"id": c[0], "name": c[1], "desc": c[2], "code": c[3].strip()} for c in CUSTOM_DS]
 
+    # 任務樹：每個演算法至少要出現一次
+    in_goal = set()
+    ds_by_id = {d[0]: d for d in DATA_STRUCTURES}
+    custom_code = {c[0]: c[3].strip() for c in CUSTOM_DS}
+    for d in DATA_STRUCTURES:
+        assert d[0] in (BUILTIN_DS_CODE if d[2] else custom_code), f"資料結構 {d[0]} 沒有{'用法範例' if d[2] else '模板'}"
+    def goal_json(item):
+        if isinstance(item, dict) and "ds" in item:
+            assert item["ds"] in ds_by_id, f"任務樹用到不存在的資料結構 {item['ds']}"
+            algo = ds_by_id[item["ds"]][5]
+            if algo is not None:
+                in_goal.add(id(algo))           # 這個資料結構就代表那個演算法節點
+            return {"ds": item["ds"]}
+        if isinstance(item, dict):
+            assert item["children"], f"任務樹的「{item['label']}」底下沒有東西"
+            return {"label": item["label"], "children": [goal_json(c) for c in item["children"]]}
+        assert id(item) in algo_first, f"任務樹裡的 {item.name} 不在判斷樹裡"
+        in_goal.add(id(item))
+        return {"algo": algo_first[id(item)]}
+    goal_tree = [goal_json(g) for g in GOAL_TREE]
+    data_structures = [{
+        "id": d[0], "name": d[1], "builtin": d[2], "desc": d[3],
+        "ops": [{"op": o, "cost": c} for o, c in d[4]],
+        "algo": algo_first[id(d[5])] if d[5] is not None else "",
+        "code": (BUILTIN_DS_CODE[d[0]] if d[2] else custom_code[d[0]]).strip(),
+    } for d in DATA_STRUCTURES]
+    for n in all_algos:
+        assert id(n) in in_goal, f"{n.name} 沒有出現在任務樹裡"
+
     ids = {k: v for k, v in algo_first.items()}
     order = [n for n in RULES]
 
@@ -1201,7 +1433,14 @@ def export(path):
             f"export const algoRules: AlgoRule[] = {json.dumps(rules, ensure_ascii=False, indent=2)};\n\n"
             "// ── 非內建的資料結構：要自己寫 ──\n"
             "export interface CustomStructure {\n  id: string;\n  name: string;\n  desc: string;\n  code: string;\n}\n\n"
-            f"export const customStructures: CustomStructure[] = {json.dumps(structures, ensure_ascii=False, indent=2)};\n")
+            f"export const customStructures: CustomStructure[] = {json.dumps(structures, ensure_ascii=False, indent=2)};\n\n"
+            "// ── 任務樹：依照「要做什麼」分類（同一個演算法可以出現在不同任務下） ──\n"
+            "export type GoalItem = { label: string; children: GoalItem[] } | { algo: string } | { ds: string };\n\n"
+            "// ── 資料結構：Python 內建的附用法，要自己寫的附模板 ──\n"
+            "export interface DataStructure {\n  id: string;\n  name: string;\n  builtin: boolean;\n  desc: string;\n"
+            "  ops: { op: string; cost: string }[];\n  /** algorithm node this structure stands for in the trees ('' if none) */\n  algo: string;\n  code: string;\n}\n\n"
+            f"export const dataStructures: DataStructure[] = {json.dumps(data_structures, ensure_ascii=False, indent=2)};\n\n"
+            f"export const goalTree: GoalItem[] = {json.dumps(goal_tree, ensure_ascii=False, indent=2)};\n")
     with open(path, "w", encoding="utf-8") as f:
         f.write(body)
     count = lambda k: sum(1 for x in nodes if x["kind"] == k)
