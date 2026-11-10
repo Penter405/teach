@@ -4645,3 +4645,795 @@ export const customStructures: CustomStructure[] = [
     "code": "from collections import defaultdict, deque\n\n# 圖：用「鄰接串列」存 —— 每個點記下它連到哪些點\nedges = [(1, 2), (1, 3), (3, 4), (3, 5)]\n\ngraph = defaultdict(list)\nfor a, b in edges:\n    graph[a].append(b)\n    graph[b].append(a)          # 無向圖：兩個方向都要加（有向圖只加 a → b）\n\n# 有權重的圖：存 (鄰居, 權重)\nweighted = defaultdict(list)\nfor a, b, w in [(1, 2, 7), (1, 3, 2), (3, 2, 1)]:\n    weighted[a].append((b, w))\n    weighted[b].append((a, w))\n\n# 用 BFS 走過整張圖\ndef bfs(start):\n    dist = {start: 0}\n    q = deque([start])\n    while q:\n        u = q.popleft()\n        for v in graph[u]:\n            if v not in dist:\n                dist[v] = dist[u] + 1\n                q.append(v)\n    return dist\n\nprint(dict(graph))     # {1: [2, 3], 2: [1], 3: [1, 4, 5], 4: [3], 5: [3]}\nprint(bfs(1))          # {1: 0, 2: 1, 3: 1, 4: 2, 5: 2}\nprint(weighted[3])     # [(1, 2), (2, 1)]"
   }
 ];
+
+// ── 任務樹：依照「要做什麼」分類（同一個演算法可以出現在不同任務下） ──
+export type GoalItem = { label: string; children: GoalItem[] } | { algo: string } | { ds: string };
+
+// ── 資料結構：Python 內建的附用法，要自己寫的附模板 ──
+export interface DataStructure {
+  id: string;
+  name: string;
+  builtin: boolean;
+  desc: string;
+  ops: { op: string; cost: string }[];
+  /** algorithm node this structure stands for in the trees ('' if none) */
+  algo: string;
+  code: string;
+}
+
+export const dataStructures: DataStructure[] = [
+  {
+    "id": "list",
+    "name": "串列 list (Dynamic Array)",
+    "builtin": true,
+    "desc": "依序存放，用索引直接拿第 i 個。",
+    "ops": [
+      {
+        "op": "索引讀寫",
+        "cost": "O(1)"
+      },
+      {
+        "op": "尾端 append / pop",
+        "cost": "O(1)"
+      },
+      {
+        "op": "開頭 insert / pop(0)",
+        "cost": "O(n)"
+      },
+      {
+        "op": "x in list",
+        "cost": "O(n)"
+      }
+    ],
+    "algo": "",
+    "code": "a = [5, 2, 8]\na.append(3)          # 尾端加入：平均 O(1)\nprint(a[1])          # 用索引拿：O(1) → 2\na[1] = 7             # 用索引改：O(1)\nprint(a.pop())       # 尾端移除：O(1) → 3\nprint(8 in a)        # 搜尋：O(n) → True\na.insert(0, 1)       # 開頭插入：O(n)，要整排搬\nprint(a)             # [1, 5, 7, 8]"
+  },
+  {
+    "id": "dict",
+    "name": "字典 dict (Hash Map)",
+    "builtin": true,
+    "desc": "用鍵找值，例如名字 → 分數。",
+    "ops": [
+      {
+        "op": "讀 / 寫 / 鍵在不在",
+        "cost": "平均 O(1)"
+      }
+    ],
+    "algo": "hash-lookup",
+    "code": "score = {}\nscore[\"amy\"] = 90                  # 新增／修改：平均 O(1)\nscore[\"bob\"] = 75\nprint(score[\"amy\"])                # 用鍵拿值：平均 O(1) → 90\nprint(score.get(\"cat\", 0))         # 鍵不存在時給預設值 → 0\nprint(\"bob\" in score)              # 鍵在不在：平均 O(1) → True\nfor name, s in score.items():      # 走過所有鍵值對\n    print(name, s)"
+  },
+  {
+    "id": "set",
+    "name": "集合 set (Hash Set)",
+    "builtin": true,
+    "desc": "判斷存不存在、去掉重複。",
+    "ops": [
+      {
+        "op": "加入 / 刪除 / 在不在",
+        "cost": "平均 O(1)"
+      }
+    ],
+    "algo": "hash-lookup",
+    "code": "seen = set()\nfor x in [3, 1, 3, 2, 1]:\n    if x in seen:                  # 判斷存不存在：平均 O(1)\n        print(\"重複:\", x)\n    seen.add(x)                    # 加入：平均 O(1)\nprint(sorted(seen))                # 去掉重複 → [1, 2, 3]\nprint({1, 2, 3} & {2, 3, 4})       # 交集 → {2, 3}"
+  },
+  {
+    "id": "deque",
+    "name": "雙端佇列 deque (Queue)",
+    "builtin": true,
+    "desc": "from collections import deque：兩端都能 O(1) 加入、取出。BFS 用它當佇列。",
+    "ops": [
+      {
+        "op": "兩端加入 / 取出",
+        "cost": "O(1)"
+      },
+      {
+        "op": "用索引拿中間",
+        "cost": "O(n)"
+      }
+    ],
+    "algo": "",
+    "code": "from collections import deque\n\nq = deque()\nq.append(1)          # 右邊加入：O(1)\nq.append(2)\nq.appendleft(0)      # 左邊加入：O(1)（list.insert(0) 是 O(n)）\nprint(q.popleft())   # 左邊取出：O(1) → 0（佇列：先進先出）\nprint(q.pop())       # 右邊取出：O(1) → 2\nprint(q)             # deque([1])"
+  },
+  {
+    "id": "stack",
+    "name": "堆疊 Stack（用 list）",
+    "builtin": true,
+    "desc": "後進先出：用 list 的 append / pop 就好。括號配對、運算式轉換會用到。",
+    "ops": [
+      {
+        "op": "push / pop / 看最上面",
+        "cost": "O(1)"
+      }
+    ],
+    "algo": "",
+    "code": "stack = []\nstack.append(\"(\")    # 放進去（push）：O(1)\nstack.append(\"[\")\nprint(stack[-1])     # 看最上面（peek）：O(1) → [\nprint(stack.pop())   # 拿出最上面（pop）：O(1) → [（後進先出）\nprint(len(stack) == 0)   # 是不是空的 → False"
+  },
+  {
+    "id": "heapq",
+    "name": "優先佇列 heapq (Min Heap)",
+    "builtin": true,
+    "desc": "import heapq：反覆取出最小值。要最大值就存負數。",
+    "ops": [
+      {
+        "op": "加入 heappush",
+        "cost": "O(log n)"
+      },
+      {
+        "op": "取出最小 heappop",
+        "cost": "O(log n)"
+      },
+      {
+        "op": "看最小 h[0]",
+        "cost": "O(1)"
+      },
+      {
+        "op": "heapify",
+        "cost": "O(n)"
+      }
+    ],
+    "algo": "heap-priority-queue",
+    "code": "import heapq\n\nh = []\nfor x in [5, 1, 8, 3]:\n    heapq.heappush(h, x)        # 加入：O(log n)\nprint(h[0])                     # 看最小值：O(1) → 1\nprint(heapq.heappop(h))         # 取出最小值：O(log n) → 1\nprint(heapq.heappop(h))         # → 3\n\n# 要最大值：存負數\nmx = []\nfor x in [5, 1, 8]:\n    heapq.heappush(mx, -x)\nprint(-heapq.heappop(mx))       # → 8\n\n# 依第一個欄位排序：存 tuple，例如 (距離, 節點)\npq = [(7, \"B\"), (2, \"C\")]\nheapq.heapify(pq)               # 把 list 變成 heap：O(n)\nprint(heapq.heappop(pq))        # → (2, 'C')"
+  },
+  {
+    "id": "fenwick",
+    "name": "樹狀陣列 (Fenwick Tree / BIT)",
+    "builtin": false,
+    "desc": "單點加值、前綴和。",
+    "ops": [
+      {
+        "op": "單點加值",
+        "cost": "O(log n)"
+      },
+      {
+        "op": "前綴和 / 區間和",
+        "cost": "O(log n)"
+      }
+    ],
+    "algo": "fenwick-tree",
+    "code": "class Fenwick:\n    \"\"\"樹狀陣列：單點加值、前綴和，都是 O(log n)。索引從 1 開始。\"\"\"\n    def __init__(self, n):\n        self.n = n\n        self.tree = [0] * (n + 1)\n\n    def add(self, i, v):              # a[i] += v\n        while i <= self.n:\n            self.tree[i] += v\n            i += i & -i               # 跳到下一個「管到 i」的格子\n\n    def prefix(self, i):              # a[1] + … + a[i]\n        s = 0\n        while i > 0:\n            s += self.tree[i]\n            i -= i & -i               # 去掉最低位的 1\n        return s\n\n    def range_sum(self, l, r):        # a[l] + … + a[r]\n        return self.prefix(r) - self.prefix(l - 1)\n\n\nfw = Fenwick(5)\nfor i, x in enumerate([3, 2, 3, 1, 2], start=1):\n    fw.add(i, x)\nprint(fw.range_sum(2, 4))   # 2 + 3 + 1 = 6\nfw.add(3, 10)               # a[3] 變成 13\nprint(fw.range_sum(2, 4))   # 16"
+  },
+  {
+    "id": "segment",
+    "name": "線段樹 (Segment Tree)",
+    "builtin": false,
+    "desc": "單點修改、區間查詢（min / max / sum）。",
+    "ops": [
+      {
+        "op": "單點修改",
+        "cost": "O(log n)"
+      },
+      {
+        "op": "區間查詢",
+        "cost": "O(log n)"
+      }
+    ],
+    "algo": "segment-tree",
+    "code": "class SegmentTree:\n    \"\"\"線段樹（區間最小值）：單點修改、區間查詢，都是 O(log n)。索引從 0 開始。\"\"\"\n    def __init__(self, data):\n        self.n = 1\n        while self.n < len(data):\n            self.n *= 2\n        INF = float(\"inf\")\n        self.t = [INF] * (2 * self.n)\n        self.t[self.n:self.n + len(data)] = data          # 葉子放原始資料\n        for i in range(self.n - 1, 0, -1):                # 由下往上建\n            self.t[i] = min(self.t[2 * i], self.t[2 * i + 1])\n\n    def update(self, i, v):                               # a[i] = v\n        i += self.n\n        self.t[i] = v\n        while i > 1:\n            i //= 2\n            self.t[i] = min(self.t[2 * i], self.t[2 * i + 1])\n\n    def query(self, l, r):                                # min(a[l..r])\n        res = float(\"inf\")\n        l += self.n\n        r += self.n + 1\n        while l < r:\n            if l & 1:\n                res = min(res, self.t[l]); l += 1\n            if r & 1:\n                r -= 1; res = min(res, self.t[r])\n            l //= 2\n            r //= 2\n        return res\n\n\nst = SegmentTree([5, 2, 8, 6, 3])\nprint(st.query(0, 2))   # min(5, 2, 8) = 2\nst.update(1, 9)\nprint(st.query(0, 2))   # min(5, 9, 8) = 5\nprint(st.query(2, 4))   # min(8, 6, 3) = 3"
+  },
+  {
+    "id": "dsu",
+    "name": "並查集 (Disjoint Set Union)",
+    "builtin": false,
+    "desc": "合併群組、問是否同一組。",
+    "ops": [
+      {
+        "op": "find",
+        "cost": "近乎 O(1)"
+      },
+      {
+        "op": "union",
+        "cost": "近乎 O(1)"
+      }
+    ],
+    "algo": "disjoint-set-union",
+    "code": "class DSU:\n    \"\"\"並查集：合併兩個集合、問兩個元素是否同一組，近乎 O(1)。\"\"\"\n    def __init__(self, n):\n        self.parent = list(range(n))   # 一開始每個人自己一組\n        self.size = [1] * n\n\n    def find(self, x):                 # 找 x 這一組的代表（順便路徑壓縮）\n        root = x\n        while self.parent[root] != root:\n            root = self.parent[root]\n        while self.parent[x] != root:\n            self.parent[x], x = root, self.parent[x]\n        return root\n\n    def union(self, a, b):             # 合併 a、b 兩組；已經同一組就回傳 False\n        a, b = self.find(a), self.find(b)\n        if a == b:\n            return False\n        if self.size[a] < self.size[b]:\n            a, b = b, a\n        self.parent[b] = a             # 小的接到大的下面\n        self.size[a] += self.size[b]\n        return True\n\n\ndsu = DSU(5)\ndsu.union(0, 1)\ndsu.union(3, 4)\nprint(dsu.find(0) == dsu.find(1))   # True\nprint(dsu.find(1) == dsu.find(3))   # False\nprint(dsu.union(0, 1))              # False：已經同一組（Kruskal 用這個判斷會不會成環）"
+  },
+  {
+    "id": "trie",
+    "name": "字典樹 (Trie)",
+    "builtin": false,
+    "desc": "共用前綴的字串存在同一條路上。",
+    "ops": [
+      {
+        "op": "插入 / 查詢 / 數前綴",
+        "cost": "O(字串長度)"
+      }
+    ],
+    "algo": "trie",
+    "code": "class Trie:\n    \"\"\"字典樹：插入、查詢、數前綴，都是 O(字串長度)。\"\"\"\n    def __init__(self):\n        self.root = {}                 # 每個節點是一個 dict：字母 → 下一個節點\n        self.END = \"$\"                 # 記「有字串在這裡結束」\n\n    def insert(self, word):\n        node = self.root\n        for ch in word:\n            node = node.setdefault(ch, {\"#\": 0})\n            node[\"#\"] += 1             # 有幾個字串經過這個節點\n        node[self.END] = True\n\n    def contains(self, word):\n        node = self._walk(word)\n        return node is not None and self.END in node\n\n    def count_prefix(self, prefix):    # 有幾個字串以 prefix 開頭\n        node = self._walk(prefix)\n        return node[\"#\"] if node else 0\n\n    def _walk(self, s):\n        node = self.root\n        for ch in s:\n            if ch not in node:\n                return None\n            node = node[ch]\n        return node\n\n\nt = Trie()\nfor w in [\"apple\", \"app\", \"apply\", \"bat\"]:\n    t.insert(w)\nprint(t.contains(\"app\"), t.contains(\"ap\"))   # True False\nprint(t.count_prefix(\"app\"))                 # 3"
+  },
+  {
+    "id": "binary_tree",
+    "name": "二元樹 (Binary Tree)",
+    "builtin": false,
+    "desc": "每個節點最多兩個孩子，要自己定義節點 class。",
+    "ops": [
+      {
+        "op": "走訪全部節點",
+        "cost": "O(n)"
+      }
+    ],
+    "algo": "tree-traversal",
+    "code": "class TreeNode:\n    \"\"\"二元樹的節點：每個節點最多兩個孩子。\"\"\"\n    def __init__(self, val):\n        self.val = val\n        self.left = None\n        self.right = None\n\n\ndef preorder(node, out):     # node → left → right\n    if node:\n        out.append(node.val)\n        preorder(node.left, out)\n        preorder(node.right, out)\n\ndef inorder(node, out):      # left → node → right\n    if node:\n        inorder(node.left, out)\n        out.append(node.val)\n        inorder(node.right, out)\n\ndef postorder(node, out):    # left → right → node\n    if node:\n        postorder(node.left, out)\n        postorder(node.right, out)\n        out.append(node.val)\n\n\n#     1\n#    / \\\n#   2   3\n#      / \\\n#     4   5\nroot = TreeNode(1)\nroot.left = TreeNode(2)\nroot.right = TreeNode(3)\nroot.right.left = TreeNode(4)\nroot.right.right = TreeNode(5)\n\nfor f in (preorder, inorder, postorder):\n    out = []\n    f(root, out)\n    print(f.__name__, out)\n# preorder [1, 2, 3, 4, 5]\n# inorder [2, 1, 4, 3, 5]\n# postorder [2, 4, 5, 3, 1]"
+  },
+  {
+    "id": "graph",
+    "name": "圖：鄰接串列 (Adjacency List)",
+    "builtin": false,
+    "desc": "每個點記下它連到哪些點。",
+    "ops": [
+      {
+        "op": "建圖",
+        "cost": "O(V + E)"
+      },
+      {
+        "op": "走過一個點的鄰居",
+        "cost": "O(鄰居數)"
+      }
+    ],
+    "algo": "",
+    "code": "from collections import defaultdict, deque\n\n# 圖：用「鄰接串列」存 —— 每個點記下它連到哪些點\nedges = [(1, 2), (1, 3), (3, 4), (3, 5)]\n\ngraph = defaultdict(list)\nfor a, b in edges:\n    graph[a].append(b)\n    graph[b].append(a)          # 無向圖：兩個方向都要加（有向圖只加 a → b）\n\n# 有權重的圖：存 (鄰居, 權重)\nweighted = defaultdict(list)\nfor a, b, w in [(1, 2, 7), (1, 3, 2), (3, 2, 1)]:\n    weighted[a].append((b, w))\n    weighted[b].append((a, w))\n\n# 用 BFS 走過整張圖\ndef bfs(start):\n    dist = {start: 0}\n    q = deque([start])\n    while q:\n        u = q.popleft()\n        for v in graph[u]:\n            if v not in dist:\n                dist[v] = dist[u] + 1\n                q.append(v)\n    return dist\n\nprint(dict(graph))     # {1: [2, 3], 2: [1], 3: [1, 4, 5], 4: [3], 5: [3]}\nprint(bfs(1))          # {1: 0, 2: 1, 3: 1, 4: 2, 5: 2}\nprint(weighted[3])     # [(1, 2), (2, 1)]"
+  }
+];
+
+export const goalTree: GoalItem[] = [
+  {
+    "label": "需要在資料中尋找特定元素",
+    "children": [
+      {
+        "algo": "linear-search"
+      },
+      {
+        "label": "資料已排序，且支援隨機存取",
+        "children": [
+          {
+            "algo": "binary-search"
+          }
+        ]
+      },
+      {
+        "label": "需要大量精確查找，允許額外記憶體",
+        "children": [
+          {
+            "algo": "hash-lookup"
+          }
+        ]
+      },
+      {
+        "label": "資料已排序，且數值分布近似均勻",
+        "children": [
+          {
+            "algo": "interpolation-search"
+          }
+        ]
+      },
+      {
+        "label": "要找的是「最小（最大）可行的答案」，而且能檢查一個答案可不可行",
+        "children": [
+          {
+            "algo": "binary-search-on-answer"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "需要存放資料（選擇資料結構）",
+    "children": [
+      {
+        "label": "依序存放，用索引拿",
+        "children": [
+          {
+            "ds": "list"
+          }
+        ]
+      },
+      {
+        "label": "用鍵找值（例如名字 → 分數）",
+        "children": [
+          {
+            "ds": "dict"
+          }
+        ]
+      },
+      {
+        "label": "判斷存不存在、去掉重複",
+        "children": [
+          {
+            "ds": "set"
+          }
+        ]
+      },
+      {
+        "label": "先進先出（佇列），或兩端都要進出",
+        "children": [
+          {
+            "ds": "deque"
+          }
+        ]
+      },
+      {
+        "label": "後進先出（堆疊），例如括號配對",
+        "children": [
+          {
+            "ds": "stack"
+          }
+        ]
+      },
+      {
+        "label": "反覆取出最小（最大）值",
+        "children": [
+          {
+            "ds": "heapq"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "需要排序資料",
+    "children": [
+      {
+        "algo": "bubble-sort"
+      },
+      {
+        "algo": "insertion-sort"
+      },
+      {
+        "label": "需要穩定排序及 O(n log n) 最壞時間",
+        "children": [
+          {
+            "algo": "merge-sort"
+          }
+        ]
+      },
+      {
+        "label": "重視平均速度，接受 O(n²) 最壞情況",
+        "children": [
+          {
+            "algo": "quick-sort"
+          }
+        ]
+      },
+      {
+        "label": "需要 O(n log n) 最壞時間及 O(1) 輔助空間",
+        "children": [
+          {
+            "algo": "heap-sort"
+          }
+        ]
+      },
+      {
+        "label": "整數鍵值範圍有限且適合計數",
+        "children": [
+          {
+            "algo": "counting-sort"
+          }
+        ]
+      },
+      {
+        "label": "只需要知道每個元素的名次",
+        "children": [
+          {
+            "algo": "coordinate-compression"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "需要處理兩個或多個元素之間的關係",
+    "children": [
+      {
+        "label": "資料有序或可以排序，且具有單調性",
+        "children": [
+          {
+            "algo": "two-pointers"
+          }
+        ]
+      },
+      {
+        "label": "需要處理連續區間，且可以增量更新",
+        "children": [
+          {
+            "algo": "sliding-window"
+          }
+        ]
+      },
+      {
+        "label": "需要快速判斷元素是否存在",
+        "children": [
+          {
+            "ds": "set"
+          }
+        ]
+      },
+      {
+        "label": "每個元素要找左右最近的較大／較小值",
+        "children": [
+          {
+            "algo": "monotonic-stack"
+          }
+        ]
+      },
+      {
+        "label": "要固定長度視窗內的最大／最小值",
+        "children": [
+          {
+            "algo": "monotonic-queue"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "需要重複計算相同的內容",
+    "children": [
+      {
+        "label": "需要大量查詢靜態區間總和",
+        "children": [
+          {
+            "algo": "prefix-sum"
+          }
+        ]
+      },
+      {
+        "label": "存在重複子問題 → 動態規劃 (DP)",
+        "children": [
+          {
+            "algo": "dp-memoization"
+          },
+          {
+            "algo": "dp-tabulation"
+          },
+          {
+            "label": "常見題型",
+            "children": [
+              {
+                "label": "背包：每個物品最多選一次",
+                "children": [
+                  {
+                    "algo": "0-1-knapsack"
+                  }
+                ]
+              },
+              {
+                "label": "背包：物品可以重複選",
+                "children": [
+                  {
+                    "algo": "unbounded-knapsack"
+                  }
+                ]
+              },
+              {
+                "label": "兩個序列的共同部分",
+                "children": [
+                  {
+                    "algo": "lcs"
+                  }
+                ]
+              },
+              {
+                "label": "最長遞增子序列",
+                "children": [
+                  {
+                    "algo": "lis"
+                  }
+                ]
+              },
+              {
+                "label": "切成幾段／合併區間",
+                "children": [
+                  {
+                    "algo": "interval-dp"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "label": "需要大量動態區間查詢與更新",
+        "children": [
+          {
+            "label": "單點更新及前綴／區間和查詢",
+            "children": [
+              {
+                "ds": "fenwick"
+              }
+            ]
+          },
+          {
+            "label": "需要更一般的區間操作",
+            "children": [
+              {
+                "ds": "segment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "label": "區間查詢無法用前綴相減，而且可以離線",
+        "children": [
+          {
+            "algo": "mo-s-algorithm"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "需要搜尋大量可能的解答",
+    "children": [
+      {
+        "label": "先寫出一定正確的版本",
+        "children": [
+          {
+            "algo": "brute-force"
+          }
+        ]
+      },
+      {
+        "label": "可以逐步產生候選解",
+        "children": [
+          {
+            "algo": "backtracking"
+          }
+        ]
+      },
+      {
+        "label": "存在重複狀態",
+        "children": [
+          {
+            "algo": "dp-memoization"
+          }
+        ]
+      },
+      {
+        "label": "可以計算上下界並排除不可能更好的解",
+        "children": [
+          {
+            "algo": "branch-and-bound"
+          }
+        ]
+      },
+      {
+        "label": "能證明每步選最好就是最佳",
+        "children": [
+          {
+            "algo": "greedy"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "需要把問題拆成更小的同型問題",
+    "children": [
+      {
+        "label": "每次縮小一點",
+        "children": [
+          {
+            "algo": "recursion"
+          }
+        ]
+      },
+      {
+        "label": "切成互不重疊的子問題，解完再合併",
+        "children": [
+          {
+            "algo": "divide-and-conquer"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "需要遍歷圖形或尋找路徑",
+    "children": [
+      {
+        "label": "先把圖存起來",
+        "children": [
+          {
+            "ds": "graph"
+          }
+        ]
+      },
+      {
+        "label": "需要按距離層級遍歷",
+        "children": [
+          {
+            "algo": "bfs"
+          }
+        ]
+      },
+      {
+        "label": "需要深入探索、連通性或環偵測",
+        "children": [
+          {
+            "algo": "dfs"
+          }
+        ]
+      },
+      {
+        "label": "需要最短路徑",
+        "children": [
+          {
+            "label": "所有邊權重相同",
+            "children": [
+              {
+                "algo": "bfs"
+              }
+            ]
+          },
+          {
+            "label": "所有邊權重非負",
+            "children": [
+              {
+                "algo": "dijkstra"
+              }
+            ]
+          },
+          {
+            "label": "允許負權重",
+            "children": [
+              {
+                "algo": "bellman-ford"
+              }
+            ]
+          },
+          {
+            "label": "需要所有點對，且點很少",
+            "children": [
+              {
+                "algo": "floyd-warshall"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "label": "需要依照依賴關係排出先後順序",
+        "children": [
+          {
+            "algo": "topological-sort"
+          }
+        ]
+      },
+      {
+        "label": "需要把點分成兩組（相鄰不同組）",
+        "children": [
+          {
+            "algo": "bipartite-check"
+          }
+        ]
+      },
+      {
+        "label": "樹：依照前序／中序／後序拜訪節點",
+        "children": [
+          {
+            "ds": "binary_tree"
+          },
+          {
+            "algo": "tree-traversal"
+          }
+        ]
+      },
+      {
+        "label": "樹：每個點的最遠距離",
+        "children": [
+          {
+            "algo": "tree-diameter"
+          }
+        ]
+      },
+      {
+        "label": "每個點只有一條出去的邊：從每點出發能走多遠",
+        "children": [
+          {
+            "algo": "functional-graph"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "需要用最小成本連接所有點（最小生成樹）",
+    "children": [
+      {
+        "label": "邊不多：把邊排序，逐一加入",
+        "children": [
+          {
+            "algo": "kruskal"
+          }
+        ]
+      },
+      {
+        "label": "圖很稠密：從一點往外長",
+        "children": [
+          {
+            "algo": "prim"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "需要反覆取得最大值或最小值",
+    "children": [
+      {
+        "label": "需要動態插入及移除元素",
+        "children": [
+          {
+            "ds": "heapq"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "需要維護動態群組與連通性",
+    "children": [
+      {
+        "label": "群組會不斷合併，需要快速查詢是否同組",
+        "children": [
+          {
+            "ds": "dsu"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "需要處理字串",
+    "children": [
+      {
+        "label": "在長文字中找模式字串",
+        "children": [
+          {
+            "algo": "kmp"
+          }
+        ]
+      },
+      {
+        "label": "大量字串、依前綴查詢",
+        "children": [
+          {
+            "ds": "trie"
+          }
+        ]
+      },
+      {
+        "label": "運算式轉換或計算（括號、優先順序）",
+        "children": [
+          {
+            "algo": "shunting-yard"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "需要處理質數與因數",
+    "children": [
+      {
+        "label": "只判斷一個數",
+        "children": [
+          {
+            "algo": "trial-division"
+          }
+        ]
+      },
+      {
+        "label": "要判斷很多個數或一整個範圍",
+        "children": [
+          {
+            "algo": "sieve-of-eratosthenes"
+          }
+        ]
+      }
+    ]
+  }
+];

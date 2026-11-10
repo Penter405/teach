@@ -23,6 +23,7 @@ import {
   AlgoNode, AlgoEdge, AlgoNodeKind,
 } from './algoTreeData';
 import { SolveWizard } from './SolveWizard';
+import { GoalTree } from './GoalTree';
 
 // Flow: 問題發現 → 判斷樹（是非題／選擇題）→ 可用的演算法 → 得到了什麼 → 繼續或解決
 // The decision part is a real tree: every answer is exclusive, so a problem has exactly one path.
@@ -674,7 +675,7 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
 
 // ── Main Page ──
 export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
-  const [tab, setTab] = useState<'wizard' | 'tree'>('wizard');
+  const [tab, setTab] = useState<'wizard' | 'goal' | 'tree'>('wizard');
   const [layout, setLayout] = useState<LayoutMode>('horizontal');
   const [isMobile, setIsMobile] = useState(false);
   const [zoom, setZoom] = useState(1);
@@ -792,7 +793,7 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
             <span className="hidden sm:inline font-headline font-bold text-xs sm:text-base tracking-tight truncate">Algorithm Tree</span>
           </div>
           <div className="flex items-center rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-0.5" role="tablist">
-            {([['wizard', '解題流程'], ['tree', '判斷樹']] as const).map(([id, label]) => (
+            {([['wizard', '解題流程'], ['goal', '任務樹'], ['tree', '判斷樹']] as const).map(([id, label]) => (
               <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}
                 className={`px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all
                   ${tab === id
@@ -864,6 +865,12 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
       {tab === 'wizard' && (
         <div className="flex-1 min-h-0">
           <SolveWizard onOpenInTree={id => { setTab('tree'); jumpTo(id); }} />
+        </div>
+      )}
+
+      {tab === 'goal' && (
+        <div className="flex-1 min-h-0">
+          <GoalTree onOpenInTree={id => { setTab('tree'); jumpTo(id); }} />
         </div>
       )}
 
