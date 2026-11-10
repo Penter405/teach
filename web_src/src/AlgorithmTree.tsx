@@ -59,6 +59,14 @@ const CATEGORY_STYLES: Record<string, CatStyle> = {
 };
 const FALLBACK_STYLE: CatStyle = { box: 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600', text: 'text-slate-800 dark:text-slate-200', dot: 'bg-slate-400', label: '其他' };
 
+const STAGES: Record<number, { label: string; tag: string; dot: string }> = {
+  1: { label: '步驟 1 需要優化嗎', tag: 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900 dark:text-amber-200 dark:border-amber-700', dot: 'bg-amber-400' },
+  2: { label: '步驟 2 了解資料', tag: 'bg-sky-100 text-sky-800 border-sky-300 dark:bg-sky-900 dark:text-sky-200 dark:border-sky-700', dot: 'bg-sky-400' },
+  3: { label: '步驟 3 問題要什麼', tag: 'bg-violet-100 text-violet-800 border-violet-300 dark:bg-violet-900 dark:text-violet-200 dark:border-violet-700', dot: 'bg-violet-400' },
+};
+/** an algorithm can be several leaves; `ref` is the id of the algorithm itself */
+const algoIdOf = (n: AlgoNode) => n.ref || n.id;
+
 function styleFor(n: AlgoNode): CatStyle {
   switch (n.kind) {
     case 'root': return ROOT_STYLE;
@@ -317,11 +325,9 @@ function AlgoNodeBox({ node, pos, isMobile, state, onClick, onHover, onLeave, hi
           }}
         >
           {isQ && (
-            <span className={`absolute -top-2.5 left-2 px-1.5 rounded-md text-[9px] font-bold tracking-wider border
-              ${node.qtype === 'choice'
-                ? 'bg-sky-100 text-sky-700 border-sky-300 dark:bg-sky-900 dark:text-sky-200 dark:border-sky-700'
-                : 'bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900 dark:text-emerald-200 dark:border-emerald-700'}`}>
-              {node.qtype === 'choice' ? '選擇題' : '是非題'}
+            <span className={`absolute -top-2.5 left-2 px-1.5 rounded-md text-[9px] font-bold tracking-wider border whitespace-nowrap
+              ${STAGES[node.stage]?.tag ?? STAGES[3].tag}`}>
+              {`步驟${node.stage} · ${node.qtype === 'choice' ? '選擇題' : '是非題'}`}
             </span>
           )}
           <span className={`flex items-center gap-1 font-headline font-bold ${isMobile ? 'text-[11px]' : 'text-[13px]'} ${st.text} max-w-full`}>
@@ -409,14 +415,15 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
   const st = styleFor(node);
   const ins = incoming.get(nodeId)!;
   const outs = outgoing.get(nodeId)!;
-  const nexts = algoNext.filter(x => x.from === nodeId);
-  const comesFrom = algoNext.filter(x => x.to === nodeId);
+  const nexts = algoNext.filter(x => x.from === algoIdOf(node));
+  const comesFrom = algoNext.filter(x => x.to === algoIdOf(node));
+  const sameAlgoLeaves = node.kind === 'algorithm' ? algoNodes.filter(n => algoIdOf(n) === algoIdOf(node) && n.id !== nodeId) : [];
   const path = node.kind === 'question' || node.kind === 'algorithm'
     ? pathTo(nodeId).filter(step => step.from !== ALGO_ROOT_ID)
     : [];
   const kindLabel =
     node.kind === 'root' ? '問題發現' :
-    node.kind === 'question' ? (node.qtype === 'choice' ? '選擇題（選項互斥）' : '是非題') :
+    node.kind === 'question' ? `${STAGES[node.stage]?.label ?? ''} · ${node.qtype === 'choice' ? '選擇題（選項互斥）' : '是非題'}` :
     node.kind === 'algorithm' ? `可用的演算法 · ${node.category}` :
     node.kind === 'gain' ? '得到了什麼' : '繼續或解決';
 
@@ -485,6 +492,22 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
           </section>
         )}
 
+        {sameAlgoLeaves.length > 0 && (
+          <section>
+            <SectionTitle icon={Route}>也可以從其他路徑走到 · {sameAlgoLeaves.length}</SectionTitle>
+            <div className="mt-2 space-y-2">
+              {sameAlgoLeaves.map(leaf => (
+                <button key={leaf.id} onClick={() => onSelect(leaf.id)}
+                  className="w-full text-left rounded-xl border border-slate-200 dark:border-slate-700 p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800">
+                  <div className="flex flex-wrap gap-1">
+                    {pathTo(leaf.id).filter(st => st.from !== ALGO_ROOT_ID).map(st => <AnswerChip key={st.from} answer={st.answer} />)}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* ROOT */}
         {node.kind === 'root' && (
           <section>
@@ -547,9 +570,10 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
         {node.kind === 'gain' && (
           <>
             <section>
-              <SectionTitle icon={ArrowRight}>由這些演算法得到 · {ins.length}</SectionTitle>
+              <SectionTitle icon={ArrowRight}>由這些演算法得到 · {new Set(ins.map(e => algoIdOf(nodeById.get(e.from)!))).size}</SectionTitle>
               <div className="mt-2 space-y-2.5">
-                {ins.map(e => <LinkCard key={e.from} id={e.from} reason={e.reason} tone="emerald" onSelect={onSelect} />)}
+                {ins.filter((e, i) => ins.findIndex(x => algoIdOf(nodeById.get(x.from)!) === algoIdOf(nodeById.get(e.from)!)) === i)
+                  .map(e => <LinkCard key={e.from} id={algoIdOf(nodeById.get(e.from)!)} reason={e.reason} tone="emerald" onSelect={onSelect} />)}
               </div>
             </section>
             <button onClick={() => onSelect(ALGO_OUTCOME_ID)}
@@ -691,10 +715,10 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
   const titleCls = 'fill-slate-400 dark:fill-slate-500 stroke-[#f7f9fb] dark:stroke-slate-950 font-headline font-bold';
   const firstQ = pad + (layout === 'horizontal' ? s.w + s.gapLayerH : s.h + s.gapLayerV);
   const stageTitles = [
-    { label: '1. 問題發現', along: pad },
-    { label: '2. 判斷（是非題／選擇題）→ 3. 演算法', along: firstQ },
-    { label: '4. 得到了什麼', along: gainAlong },
-    { label: '5. 繼續或解決', along: outcomeAlong },
+    { label: '問題發現', along: pad },
+    { label: '步驟 1～3：判斷（是非題／選擇題）→ 步驟 4：演算法', along: firstQ },
+    { label: '得到了什麼', along: gainAlong },
+    { label: '繼續或解決', along: outcomeAlong },
   ];
 
   return (
@@ -902,6 +926,12 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
 
       {/* Legend */}
       <div className="flex-shrink-0 px-3 sm:px-6 py-2 sm:py-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex items-center justify-center gap-x-3 sm:gap-x-4 gap-y-1.5 flex-wrap">
+        {[1, 2, 3].map(k => (
+          <div key={k} className="flex items-center gap-1.5">
+            <div className={`w-2.5 h-2.5 rounded-sm ${STAGES[k].dot}`} />
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300">{STAGES[k].label}</span>
+          </div>
+        ))}
         {[ROOT_STYLE, CHOICE_STYLE, YESNO_STYLE, GAIN_STYLE, OUTCOME_STYLE].map(st => (
           <div key={st.label} className="flex items-center gap-1.5">
             <div className={`w-2.5 h-2.5 rounded-full border border-slate-300 dark:border-slate-600 ${st.dot}`} />
