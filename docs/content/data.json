@@ -6035,6 +6035,251 @@
           ]
         }
       ]
+    },
+    {
+      "id": "module-1794287400000",
+      "title": "語法的成本",
+      "titleEn": "Cost of Syntax",
+      "icon": "⏱️",
+      "lessons": [
+        {
+          "id": "lesson-1794287400000",
+          "title": "每個操作都有成本",
+          "titleEn": "Every Operation Has a Cost",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "為什麼要知道語法的成本"
+            },
+            {
+              "type": "paragraph",
+              "text": "Big-O 只告訴我們「步數會怎麼隨 n 成長」，但沒有說每一步要花多少時間。同樣是 O(n) 的程式，如果每一步用的語法比較貴，實際上可能慢好幾倍。"
+            },
+            {
+              "type": "paragraph",
+              "text": "所以寫程式時要有兩層思考："
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "演算法",
+                  "definition": "總共要做幾步？（Big-O）"
+                },
+                {
+                  "term": "語法",
+                  "definition": "每一步用的操作貴不貴？（常數）"
+                }
+              ]
+            },
+            {
+              "type": "callout",
+              "label": "重點",
+              "text": "Big-O 一樣，不代表一樣快。真正跑出來的時間 ≈ 步數 × 每一步的成本。"
+            },
+            {
+              "type": "heading",
+              "text": "讀取、修改、新增：成本不一樣"
+            },
+            {
+              "type": "paragraph",
+              "text": "用 House Analogy 來想：讀取 a[i] 就是走到門牌 i 看一眼裡面住誰；修改 a[i] = x 是把住在裡面的人換掉；append 是在街尾蓋一間新房子（街道滿了還要整條街搬家）；insert(0, x) 是在街頭插一間房子，後面每一間都要往後搬一格。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "讀取 a[i]",
+                  "definition": "O(1)。直接算出位址去拿，最便宜。"
+                },
+                {
+                  "term": "原地修改 a[i] = x",
+                  "definition": "O(1)。和讀取差不多，只多了更新參考。"
+                },
+                {
+                  "term": "尾端新增 a.append(x)",
+                  "definition": "平均 O(1)。偶爾空間不夠，要配置更大的空間並整個搬過去。"
+                },
+                {
+                  "term": "開頭插入／刪除 a.insert(0, x)、a.pop(0)",
+                  "definition": "O(n)。後面每個元素都要搬一格。"
+                },
+                {
+                  "term": "搜尋 x in a（list）",
+                  "definition": "O(n)。要一個一個比。"
+                },
+                {
+                  "term": "dict 讀取 d[k]",
+                  "definition": "平均 O(1)，但要先算 hash，比 list 用索引貴。"
+                },
+                {
+                  "term": "dict 新增 d[k] = v",
+                  "definition": "平均 O(1)，但要算 hash、找位置、可能擴容，比讀取更貴。"
+                },
+                {
+                  "term": "函式呼叫 f(x)",
+                  "definition": "O(1)，但常數不小：要建立呼叫框架（frame）、傳參數、回傳。遞迴就是大量的函式呼叫。"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "在你的電腦上跑跑看（數字會因電腦而不同，看的是「倍數」）："
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import timeit\n\nn = 10_000\nsetup = \"a = list(range(10_000))\"\n\ntests = {\n    \"讀取   a[5000]\":          \"x = a[5000]\",\n    \"修改   a[5000] = 1\":      \"a[5000] = 1\",\n    \"新增尾端 a.append(1)\":     \"a.append(1)\",\n    \"新增開頭 a.insert(0, 1)\":  \"a.insert(0, 1)\",\n    \"搜尋   5000 in a\":        \"5000 in a\",\n}\n\nfor name, stmt in tests.items():\n    t = timeit.timeit(stmt, setup=setup, number=n)\n    print(f\"{name:<20} {t / n * 1e9:10.1f} 奈秒／次\")"
+            },
+            {
+              "type": "callout",
+              "label": "觀察",
+              "text": "讀取、原地修改、append 差不多快；insert(0, ...) 和 in 慢上百倍到上千倍，因為它們是 O(n)。"
+            },
+            {
+              "type": "heading",
+              "text": "list 和 dict：同樣 O(1)，常數不同"
+            },
+            {
+              "type": "paragraph",
+              "text": "list 用索引存取，dict 用鍵存取。兩者平均都是 O(1)，但 dict 每次都要先算 hash，所以比 list 慢；而新增一個鍵又比讀取一個鍵更貴。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import timeit\n\nN = 100_000\n\ndef build_list():           # 新增：list 尾端 append\n    a = []\n    for i in range(N):\n        a.append(i)\n    return a\n\ndef build_dict():           # 新增：dict 新的鍵（要算 hash、可能擴容）\n    d = {}\n    for i in range(N):\n        d[i] = i\n    return d\n\na, d = build_list(), build_dict()\n\ndef read_list():            # 讀取：list 用索引\n    for i in range(N):\n        a[i]\n\ndef read_dict():            # 讀取：dict 用鍵（要先算 hash）\n    for i in range(N):\n        d[i]\n\nfor name, fn in [(\"list 新增 append\", build_list), (\"dict 新增鍵\", build_dict),\n                 (\"list 讀取 a[i]\", read_list), (\"dict 讀取 d[i]\", read_dict)]:\n    t = timeit.timeit(fn, number=20) / 20\n    print(f\"{name:<16} {t * 1000:7.2f} 毫秒（{N:,} 次）\")"
+            },
+            {
+              "type": "callout",
+              "label": "觀察",
+              "text": "通常會看到：list 讀取 < dict 讀取，list 新增 < dict 新增；而且不管 list 還是 dict，新增都比讀取貴。"
+            },
+            {
+              "type": "heading",
+              "text": "記憶化（Memoization）不一定比較快"
+            },
+            {
+              "type": "paragraph",
+              "text": "記憶化是「用空間換時間」：把每個狀態的答案存進 dict，下次直接查。它能把指數時間降到多項式，這一點很重要。"
+            },
+            {
+              "type": "paragraph",
+              "text": "但是存下來不是免費的。每個新狀態都要：一次 dict 新增（算 hash、可能擴容）、好幾次 dict 讀取、加上遞迴的函式呼叫。當狀態很多、而每個狀態本身的計算很便宜時（例如只是 a + b），這些額外成本會比計算本身還貴。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import sys\nimport timeit\nfrom functools import lru_cache\n\nsys.setrecursionlimit(10_000)\n\n# 1. 記憶化（Top-down）：遞迴 + dict 快取\nmemo = {}\ndef fib_memo(n):\n    if n < 2:\n        return n\n    if n in memo:                 # 讀 dict：要先算 hash\n        return memo[n]\n    memo[n] = fib_memo(n - 1) + fib_memo(n - 2)   # 寫 dict + 兩次函式呼叫\n    return memo[n]\n\n# 2. 表格化（Bottom-up）：用 list，依序填表\ndef fib_table(n):\n    dp = [0] * (n + 1)\n    if n >= 1:\n        dp[1] = 1\n    for i in range(2, n + 1):\n        dp[i] = dp[i - 1] + dp[i - 2]   # 讀 list：直接用索引\n    return dp[n]\n\n# 3. 滾動變數：答案只依賴前兩個狀態 → O(1) 空間\ndef fib_rolling(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n\nN = 5000\nassert fib_memo(N) == fib_table(N) == fib_rolling(N)\n\nfor name, fn in [(\"記憶化 dict\", \"memo.clear(); fib_memo(N)\"),\n                 (\"表格化 list\", \"fib_table(N)\"),\n                 (\"滾動變數  \", \"fib_rolling(N)\")]:\n    t = timeit.timeit(fn, globals=globals(), number=20)\n    print(f\"{name}  {t / 20 * 1000:8.2f} 毫秒\")"
+            },
+            {
+              "type": "callout",
+              "label": "觀察",
+              "text": "三種寫法都是 O(n)，答案也一樣，但通常記憶化（dict＋遞迴）最慢，表格化（list）較快，只保留兩個變數的滾動寫法最快、空間也只要 O(1)。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "狀態可以排成 0, 1, 2, … 的索引",
+                  "definition": "用 list 表格化，不要用 dict。"
+                },
+                {
+                  "term": "答案只依賴前幾個狀態",
+                  "definition": "只保留幾個變數（滾動陣列），空間變 O(1)。"
+                },
+                {
+                  "term": "狀態很多，但很少重複",
+                  "definition": "快取幾乎用不到，只是白白付出 dict 的成本。"
+                },
+                {
+                  "term": "遞迴很深",
+                  "definition": "函式呼叫很貴，還可能遇到 RecursionError；改成 Bottom-up。"
+                },
+                {
+                  "term": "什麼時候記憶化最划算",
+                  "definition": "狀態不好排出計算順序，或只會用到全部狀態中的一小部分。"
+                }
+              ]
+            },
+            {
+              "type": "callout",
+              "label": "和 Algorithm Tree 的關係",
+              "text": "Algorithm Tree「解題流程」第 1 步用「Python 每秒約 10⁷ 次簡單運算」來估算。這裡的「簡單運算」是像讀取 list 這種便宜的操作；dict 新增、函式呼叫這些較貴的操作，一次可能要算好幾步。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "下面哪一個操作在 list 上是 O(n)？",
+                  "options": [
+                    "a[i]",
+                    "a.append(x)",
+                    "a.insert(0, x)",
+                    "a[i] = x"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "為什麼 dict 讀取 d[k] 通常比 list 讀取 a[i] 慢？",
+                  "options": [
+                    "dict 是 O(n)",
+                    "dict 要先算 hash 才知道去哪裡找",
+                    "list 存在硬碟上",
+                    "兩者一樣快"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "費氏數列 f(i) = f(i−1) + f(i−2)，哪一種寫法通常最快？",
+                  "options": [
+                    "記憶化：遞迴＋dict",
+                    "表格化：list",
+                    "只保留兩個變數的滾動寫法",
+                    "都一樣快"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "什麼情況下，記憶化最可能「沒有比較快」？",
+                  "options": [
+                    "狀態很少、但每個狀態計算很貴",
+                    "狀態很多、很少重複，而且每個狀態的計算很便宜",
+                    "子問題大量重複",
+                    "不用記憶化會是指數時間"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "練習題：哪個比較快？",
+              "coursePrompt": "學生正在學習「語法的成本」：Big-O 相同時，每一步操作的成本（常數）也會影響速度。例如 list 讀取 < list 新增 < dict 新增、insert(0) 與 x in list 是 O(n)、函式呼叫有成本、記憶化（dict＋遞迴）在狀態很多且每個狀態計算很便宜時不一定比較快。請出一題比較兩段 Python 程式碼速度的題目，讓學生先預測哪個比較快並說明原因（從「步數」和「每一步的成本」兩個角度），再引導學生用 timeit 驗證。用友善的方式回饋，不要直接給答案。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Fibonacci Number",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/fibonacci-number/",
+                  "description": "用記憶化、表格化、滾動變數三種寫法完成，並用 timeit 比較速度"
+                },
+                {
+                  "title": "Climbing Stairs",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/climbing-stairs/",
+                  "description": "答案只依賴前兩個狀態：試著寫出 O(1) 空間的版本"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }
