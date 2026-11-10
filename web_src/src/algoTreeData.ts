@@ -1937,3 +1937,793 @@ export const algoNext: AlgoNext[] = [
     "reason": "子問題互不重疊，可以各自解完再合併。"
   }
 ];
+
+// ── 解題流程 (Solve Wizard) ──
+export interface WizardOption {
+  id: string;
+  label: string;
+  desc: string;
+}
+
+export interface WizardGroup {
+  id: string;
+  step: number;
+  title: string;
+  type: 'single' | 'multi';
+  options: WizardOption[];
+}
+
+export interface AlgoRule {
+  algo: string;
+  all: string[];
+  any: string[];
+  none: string[];
+  bonus: string[];
+  note: string;
+}
+
+export const wizardGroups: WizardGroup[] = [
+  {
+    "id": "shape",
+    "step": 2,
+    "title": "資料的形狀",
+    "type": "single",
+    "options": [
+      {
+        "id": "shape_const",
+        "label": "常數",
+        "desc": "單一值或固定大小（例如：一個整數 n、固定 3×3 的盤面）。"
+      },
+      {
+        "id": "shape_linear",
+        "label": "線性",
+        "desc": "一串元素：陣列、字串、串列。"
+      },
+      {
+        "id": "shape_rel",
+        "label": "關聯",
+        "desc": "元素之間有關係：圖、樹、鍵值對應。"
+      }
+    ]
+  },
+  {
+    "id": "access",
+    "step": 2,
+    "title": "存取方式",
+    "type": "single",
+    "options": [
+      {
+        "id": "acc_random",
+        "label": "隨機存取 O(1)",
+        "desc": "可以用索引直接拿到第 i 個元素（list、陣列）。"
+      },
+      {
+        "id": "acc_seq",
+        "label": "只能依序走過",
+        "desc": "只能從頭一個一個讀（串流、linked list、檔案）。"
+      },
+      {
+        "id": "acc_link",
+        "label": "透過關係找",
+        "desc": "透過鍵、指標或邊找到下一個（dict、樹、圖）。"
+      }
+    ]
+  },
+  {
+    "id": "traits",
+    "step": 2,
+    "title": "資料特性（可多選）",
+    "type": "multi",
+    "options": [
+      {
+        "id": "tr_sorted",
+        "label": "已排序／單調",
+        "desc": "資料已排序，或答案隨位置單調變化。"
+      },
+      {
+        "id": "tr_uniform",
+        "label": "數值分布均勻",
+        "desc": "排序後的數值大致平均分布。"
+      },
+      {
+        "id": "tr_smallint",
+        "label": "整數且範圍小",
+        "desc": "鍵值是整數，範圍 k 不比 n 大太多。"
+      },
+      {
+        "id": "tr_small",
+        "label": "資料量很小",
+        "desc": "n 很小（例如 ≤ 20～50）。"
+      },
+      {
+        "id": "tr_nearly",
+        "label": "幾乎已排好",
+        "desc": "大部分元素已在正確位置。"
+      },
+      {
+        "id": "tr_dynamic",
+        "label": "會動態修改",
+        "desc": "查詢之間資料會被插入、刪除或修改。"
+      },
+      {
+        "id": "tr_weighted",
+        "label": "邊有權重",
+        "desc": "圖的每條邊有不同成本。"
+      },
+      {
+        "id": "tr_negative",
+        "label": "有負權重",
+        "desc": "有些邊的成本是負的。"
+      },
+      {
+        "id": "tr_dag",
+        "label": "有依賴且無環",
+        "desc": "A 必須在 B 之前，而且依賴沒有環（DAG）。"
+      },
+      {
+        "id": "tr_dense",
+        "label": "圖很稠密",
+        "desc": "邊數接近 V²。"
+      }
+    ]
+  },
+  {
+    "id": "output",
+    "step": 3,
+    "title": "要輸出什麼",
+    "type": "single",
+    "options": [
+      {
+        "id": "out_find",
+        "label": "找某個值",
+        "desc": "某個值在不在、在哪裡。"
+      },
+      {
+        "id": "out_sort",
+        "label": "排序後的資料",
+        "desc": "把資料排好。"
+      },
+      {
+        "id": "out_range",
+        "label": "區間（子陣列）答案",
+        "desc": "和一段連續子陣列有關的答案。"
+      },
+      {
+        "id": "out_extreme",
+        "label": "反覆取最大／最小",
+        "desc": "過程中一再要目前的極值。"
+      },
+      {
+        "id": "out_nearest",
+        "label": "最近的較大／較小",
+        "desc": "每個元素左右第一個更大（小）的元素。"
+      },
+      {
+        "id": "out_pair",
+        "label": "一對元素",
+        "desc": "找兩個（一組）元素滿足條件。"
+      },
+      {
+        "id": "out_minfeas",
+        "label": "最小（大）可行答案",
+        "desc": "能檢查「答案 x 可不可行」。"
+      },
+      {
+        "id": "out_path",
+        "label": "最短路徑",
+        "desc": "點與點之間的最短距離。"
+      },
+      {
+        "id": "out_mst",
+        "label": "最小生成樹",
+        "desc": "用最小成本連接所有點。"
+      },
+      {
+        "id": "out_order",
+        "label": "先後順序",
+        "desc": "排出滿足依賴的順序。"
+      },
+      {
+        "id": "out_connect",
+        "label": "連通／走訪",
+        "desc": "哪些點相連、有沒有環。"
+      },
+      {
+        "id": "out_optimal",
+        "label": "一個最佳值",
+        "desc": "最大值、最小值、方法數。"
+      },
+      {
+        "id": "out_all",
+        "label": "所有可行解",
+        "desc": "列出所有組合／排列／方案。"
+      },
+      {
+        "id": "out_match",
+        "label": "字串比對",
+        "desc": "在文字中找模式。"
+      },
+      {
+        "id": "out_prefix",
+        "label": "前綴查詢",
+        "desc": "依前綴查很多字串。"
+      }
+    ]
+  },
+  {
+    "id": "queries",
+    "step": 3,
+    "title": "要查詢幾次",
+    "type": "single",
+    "options": [
+      {
+        "id": "q_once",
+        "label": "一次",
+        "desc": "只需要回答一次。"
+      },
+      {
+        "id": "q_many",
+        "label": "很多次",
+        "desc": "同一份資料要回答很多次 → 值得先做前處理。"
+      }
+    ]
+  },
+  {
+    "id": "o1",
+    "step": 3,
+    "title": "答案可以只用 O(1) 空間嗎？",
+    "type": "single",
+    "options": [
+      {
+        "id": "o1_yes",
+        "label": "可以",
+        "desc": "不需要儲存所有中間答案，只要保留目前需要的幾個值。"
+      },
+      {
+        "id": "o1_no",
+        "label": "不行",
+        "desc": "需要記住很多中間結果。"
+      }
+    ]
+  },
+  {
+    "id": "detail",
+    "step": 3,
+    "title": "問題的結構與細節（可多選）",
+    "type": "multi",
+    "options": [
+      {
+        "id": "st_divide",
+        "label": "可拆成子問題",
+        "desc": "大問題可以切成形式相同的小問題。"
+      },
+      {
+        "id": "st_overlap",
+        "label": "子問題會重複",
+        "desc": "同一個狀態會被算很多次。"
+      },
+      {
+        "id": "st_greedy",
+        "label": "每步選最好就是最佳",
+        "desc": "能證明貪婪選擇是對的。"
+      },
+      {
+        "id": "st_bound",
+        "label": "能估計上下界",
+        "desc": "對部分解能算出「最好也只能到多少」。"
+      },
+      {
+        "id": "need_allpairs",
+        "label": "要所有點對",
+        "desc": "最短路徑要每一對點之間的距離。"
+      },
+      {
+        "id": "need_stable",
+        "label": "排序要穩定",
+        "desc": "相同鍵值要保持原本順序。"
+      },
+      {
+        "id": "need_worst",
+        "label": "要最壞情況保證",
+        "desc": "不能接受偶爾變成 O(n²)。"
+      },
+      {
+        "id": "range_window",
+        "label": "固定長度視窗",
+        "desc": "區間是一個往前滑動、長度固定的視窗。"
+      },
+      {
+        "id": "range_sumonly",
+        "label": "只需要區間和",
+        "desc": "不需要 min / max 等其他運算。"
+      }
+    ]
+  }
+];
+
+export const algoRules: AlgoRule[] = [
+  {
+    "algo": "linear-search",
+    "all": [
+      "out_find"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [
+      "q_once",
+      "acc_seq"
+    ],
+    "note": ""
+  },
+  {
+    "algo": "binary-search",
+    "all": [
+      "out_find",
+      "tr_sorted",
+      "acc_random"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "interpolation-search",
+    "all": [
+      "out_find",
+      "tr_sorted",
+      "tr_uniform",
+      "acc_random"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "hash-lookup",
+    "all": [
+      "out_find",
+      "q_many"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [
+      "o1_no"
+    ],
+    "note": "需要 O(n) 額外空間；建表本身也要 O(n) 時間，只查一次時不划算。"
+  },
+  {
+    "algo": "bubble-sort",
+    "all": [
+      "out_sort",
+      "tr_small"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "insertion-sort",
+    "all": [
+      "out_sort"
+    ],
+    "any": [
+      "tr_nearly",
+      "tr_small"
+    ],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "merge-sort",
+    "all": [
+      "out_sort"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [
+      "need_stable",
+      "need_worst",
+      "acc_seq"
+    ],
+    "note": ""
+  },
+  {
+    "algo": "quick-sort",
+    "all": [
+      "out_sort",
+      "acc_random"
+    ],
+    "any": [],
+    "none": [
+      "need_worst",
+      "need_stable"
+    ],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "heap-sort",
+    "all": [
+      "out_sort",
+      "acc_random"
+    ],
+    "any": [],
+    "none": [
+      "need_stable"
+    ],
+    "bonus": [
+      "need_worst",
+      "o1_yes"
+    ],
+    "note": ""
+  },
+  {
+    "algo": "counting-sort",
+    "all": [
+      "out_sort",
+      "tr_smallint"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "two-pointers",
+    "all": [
+      "out_pair",
+      "tr_sorted"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [
+      "o1_yes",
+      "acc_random"
+    ],
+    "note": ""
+  },
+  {
+    "algo": "sliding-window",
+    "all": [
+      "out_range"
+    ],
+    "any": [],
+    "none": [
+      "q_many",
+      "range_window"
+    ],
+    "bonus": [
+      "o1_yes"
+    ],
+    "note": ""
+  },
+  {
+    "algo": "monotonic-queue",
+    "all": [
+      "range_window"
+    ],
+    "any": [
+      "out_range",
+      "out_extreme"
+    ],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "prefix-sum",
+    "all": [
+      "out_range",
+      "q_many"
+    ],
+    "any": [],
+    "none": [
+      "tr_dynamic"
+    ],
+    "bonus": [],
+    "note": "前處理 O(n) 時間與空間，之後每次 O(1)。"
+  },
+  {
+    "algo": "fenwick-tree",
+    "all": [
+      "out_range",
+      "q_many",
+      "tr_dynamic",
+      "range_sumonly"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "segment-tree",
+    "all": [
+      "out_range",
+      "q_many",
+      "tr_dynamic"
+    ],
+    "any": [],
+    "none": [
+      "range_sumonly"
+    ],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "heap-priority-queue",
+    "all": [
+      "out_extreme"
+    ],
+    "any": [],
+    "none": [
+      "range_window"
+    ],
+    "bonus": [
+      "tr_dynamic"
+    ],
+    "note": ""
+  },
+  {
+    "algo": "monotonic-stack",
+    "all": [
+      "out_nearest"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "binary-search-on-answer",
+    "all": [
+      "out_minfeas"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "bfs",
+    "all": [
+      "shape_rel",
+      "out_path"
+    ],
+    "any": [],
+    "none": [
+      "tr_weighted",
+      "need_allpairs"
+    ],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "dijkstra",
+    "all": [
+      "shape_rel",
+      "out_path",
+      "tr_weighted"
+    ],
+    "any": [],
+    "none": [
+      "tr_negative",
+      "need_allpairs"
+    ],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "bellman-ford",
+    "all": [
+      "shape_rel",
+      "out_path",
+      "tr_negative"
+    ],
+    "any": [],
+    "none": [
+      "need_allpairs"
+    ],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "floyd-warshall",
+    "all": [
+      "shape_rel",
+      "out_path",
+      "need_allpairs"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [
+      "tr_small"
+    ],
+    "note": "O(V³)：V = 500 時約 1.25 億次運算，Python 會太慢。"
+  },
+  {
+    "algo": "kruskal",
+    "all": [
+      "shape_rel",
+      "out_mst"
+    ],
+    "any": [],
+    "none": [
+      "tr_dense"
+    ],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "prim",
+    "all": [
+      "shape_rel",
+      "out_mst",
+      "tr_dense"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "topological-sort",
+    "all": [
+      "shape_rel",
+      "out_order",
+      "tr_dag"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "disjoint-set-union",
+    "all": [
+      "out_connect",
+      "tr_dynamic"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "dfs",
+    "all": [
+      "shape_rel",
+      "out_connect"
+    ],
+    "any": [],
+    "none": [
+      "tr_dynamic"
+    ],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "kmp",
+    "all": [
+      "out_match"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "trie",
+    "all": [
+      "out_prefix"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [
+      "q_many"
+    ],
+    "note": ""
+  },
+  {
+    "algo": "greedy",
+    "all": [
+      "st_greedy"
+    ],
+    "any": [
+      "out_optimal",
+      "out_mst",
+      "out_path"
+    ],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "dp-tabulation",
+    "all": [
+      "st_overlap",
+      "out_optimal"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [
+      "o1_yes"
+    ],
+    "note": "只依賴前幾個狀態時，可以只保留幾個變數（滾動陣列），空間變 O(1)。"
+  },
+  {
+    "algo": "dp-memoization",
+    "all": [
+      "st_overlap",
+      "out_optimal"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [
+      "o1_no"
+    ],
+    "note": "狀態很多時要小心：每個狀態都要寫進 dict（雜湊＋配置記憶體），也要付出遞迴呼叫的成本，不一定比表格化或暴力快。"
+  },
+  {
+    "algo": "backtracking",
+    "all": [
+      "out_all"
+    ],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "branch-and-bound",
+    "all": [
+      "out_optimal",
+      "st_bound"
+    ],
+    "any": [],
+    "none": [
+      "st_overlap",
+      "st_greedy"
+    ],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "divide-and-conquer",
+    "all": [
+      "st_divide"
+    ],
+    "any": [],
+    "none": [
+      "st_overlap"
+    ],
+    "bonus": [],
+    "note": ""
+  },
+  {
+    "algo": "recursion",
+    "all": [
+      "st_divide"
+    ],
+    "any": [],
+    "none": [
+      "st_overlap"
+    ],
+    "bonus": [
+      "tr_small"
+    ],
+    "note": ""
+  },
+  {
+    "algo": "brute-force",
+    "all": [],
+    "any": [],
+    "none": [],
+    "bonus": [],
+    "note": "永遠可行的基準解：先寫出來驗證答案，再用第 1 步算算看夠不夠快。"
+  }
+];

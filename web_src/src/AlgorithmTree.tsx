@@ -21,6 +21,7 @@ import {
   algoNodes, algoEdges, algoNext, ALGO_ROOT_ID, ALGO_OUTCOME_ID,
   AlgoNode, AlgoEdge, AlgoNodeKind,
 } from './algoTreeData';
+import { SolveWizard } from './SolveWizard';
 
 // Flow: 問題發現 → 判斷樹（是非題／選擇題）→ 可用的演算法 → 得到了什麼 → 繼續或解決
 // The decision part is a real tree: every answer is exclusive, so a problem has exactly one path.
@@ -595,6 +596,7 @@ function DetailPanel({ nodeId, onClose, onSelect }: { nodeId: string; onClose: (
 
 // ── Main Page ──
 export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
+  const [tab, setTab] = useState<'wizard' | 'tree'>('wizard');
   const [layout, setLayout] = useState<LayoutMode>('horizontal');
   const [isMobile, setIsMobile] = useState(false);
   const [zoom, setZoom] = useState(1);
@@ -709,11 +711,22 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
           </button>
           <div className="flex items-center gap-1.5 sm:gap-2 text-emerald-600 dark:text-emerald-400 min-w-0">
             <Network className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-            <span className="font-headline font-bold text-xs sm:text-base tracking-tight truncate">Algorithm Tree</span>
+            <span className="hidden sm:inline font-headline font-bold text-xs sm:text-base tracking-tight truncate">Algorithm Tree</span>
+          </div>
+          <div className="flex items-center rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-0.5" role="tablist">
+            {([['wizard', '解題流程'], ['tree', '判斷樹']] as const).map(([id, label]) => (
+              <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}
+                className={`px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all
+                  ${tab === id
+                    ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-300 shadow-sm'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}`}>
+                {label}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+        {tab === 'tree' && <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           {/* Auto-collapse switch */}
           <label
             className="flex items-center gap-2 cursor-pointer select-none px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
@@ -767,8 +780,16 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
               </button>
             ))}
           </div>
-        </div>
+        </div>}
       </nav>
+
+      {tab === 'wizard' && (
+        <div className="flex-1 min-h-0">
+          <SolveWizard onOpenInTree={id => { setTab('tree'); jumpTo(id); }} />
+        </div>
+      )}
+
+      {tab === 'tree' && <>
 
       {/* Canvas */}
       <div className="flex-1 relative overflow-hidden">
@@ -899,6 +920,7 @@ export function AlgorithmTreePage({ onBack }: { onBack: () => void }) {
           })}
         </div>
       </div>
+      </>}
     </div>
   );
 }

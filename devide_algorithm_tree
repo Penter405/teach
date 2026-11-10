@@ -1,0 +1,15 @@
+我們需要一個another篇章,寫一個 lesson 在最後面(根據C:\Users\user\Desktop\github\teach_manager\system_generating_prompt.txt 來寫):  語法cost  講解操作的cost 例如read data 可能比 edit or append 快很多,所以 memorization 如果面對很多狀態可能不會比較快
+
+拆解問題
+1. 真的需要優化嗎
+算算看暴力處理能不能通過
+
+2首先要先非常了解資料
+data structure -choose one of them-> 常數 , 線性 , 關聯
+資料特性  有沒有單調性...(可以是多選題)
+
+3.找出問題要什麼# 可以是2 完全選完後再出現3 tree 或是2 3 並列出現  也就是稍微比較好的多路徑aviliable tree, 不過2 跟 3確實是完全不同的東西 所以問題不大
+答案是否可以為o(1)? 例如不需要儲存所有答案
+
+
+4 根據資料與問題找到演算法們
