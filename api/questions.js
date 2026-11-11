@@ -11,7 +11,7 @@ const cors = require('cors')({
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID || process.env.Client_ID;
 const oauth2Client = new OAuth2Client(CLIENT_ID);
 
-const TEACHER_EMAILS = (process.env.TEACHER_EMAILS || '').split(',').map(e => e.trim().toLowerCase());
+const TEACHER_EMAILS = (process.env.TEACHER_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
 
 function runMiddleware(req, res, fn) {
   return new Promise((resolve, reject) => {
@@ -48,6 +48,8 @@ async function verifyAuth(req) {
             audience: CLIENT_ID,
         });
         const payload = ticket.getPayload();
+        // Teacher permission is decided by email, so only trust verified emails
+        if (!payload || !payload.email || payload.email_verified !== true) return null;
         return { email: payload.email, name: payload.name || '' };
     } catch (err) {
         console.error('Token verification failed:', err.message);
