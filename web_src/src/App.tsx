@@ -24,6 +24,7 @@ import { NodeExplainPage } from './NodeExplainPage';
 import { AlgorithmTreePage } from './AlgorithmTree';
 import { codeTree } from './codeTreeData';
 import { TeacherQuestionPanel } from './TeacherQuestionPanel';
+import { setIdToken } from './auth';
 
 // --- Types ---
 type Page = 'login' | 'path' | 'lesson' | 'tree' | 'tree-node' | 'algo-tree';
@@ -72,6 +73,7 @@ const LoginPage = ({ onLogin }: { onLogin: (user: StudentUser) => void }) => {
       });
       const data = await res.json();
       if (data.success) {
+        setIdToken(response.credential);
         onLogin(data.user || {});
       } else {
         alert("Login failed! Reason: " + (data.errorDetials || data.message));
@@ -146,6 +148,7 @@ const LoginPage = ({ onLogin }: { onLogin: (user: StudentUser) => void }) => {
                         alert('Please accept the Terms of Service and Privacy Policy first.');
                         return;
                       }
+                      setIdToken(null);
                       onLogin({ isGuest: true, name: 'Guest User' });
                     }}
                     className={`px-6 py-2 rounded-full font-bold text-sm transition-all shadow-md ${acceptedTos ? 'bg-slate-100 dark:bg-slate-800 hover:scale-105 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 opacity-50 cursor-not-allowed'}`}

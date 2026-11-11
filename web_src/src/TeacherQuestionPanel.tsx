@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { CheckCircle2, Loader2, MessageCircle, RefreshCw, Send, XCircle } from 'lucide-react';
+import { authHeaders, SESSION_EXPIRED_MESSAGE } from './auth';
 
 interface StudentUser {
   name?: string;
@@ -84,11 +85,12 @@ export function TeacherQuestionPanel({
 
     try {
       const params = new URLSearchParams({ studentEmail, lessonId });
-      const response = await fetch(`${API_BASE}/api/questions?${params.toString()}`);
+      const response = await fetch(`${API_BASE}/api/questions?${params.toString()}`, { headers: authHeaders() });
+      if (response.status === 401) throw new Error(SESSION_EXPIRED_MESSAGE);
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Unable to load questions.');
+        throw new Error(data.message || data.error || 'Unable to load questions.');
       }
 
       const nextQuestions = data.questions || [];
@@ -136,7 +138,7 @@ export function TeacherQuestionPanel({
         isNewThread ? `${API_BASE}/api/questions` : `${API_BASE}/api/questions?id=${encodeURIComponent(selectedQuestion._id)}`,
         {
           method: isNewThread ? 'POST' : 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...authHeaders() },
           body: JSON.stringify(
             isNewThread
               ? {
@@ -155,10 +157,11 @@ export function TeacherQuestionPanel({
           ),
         },
       );
+      if (response.status === 401) throw new Error(SESSION_EXPIRED_MESSAGE);
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Unable to send message.');
+        throw new Error(data.message || data.error || 'Unable to send message.');
       }
 
       setInputText('');
@@ -179,13 +182,14 @@ export function TeacherQuestionPanel({
     try {
       const response = await fetch(`${API_BASE}/api/questions?id=${encodeURIComponent(selectedQuestion._id)}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify({ action: 'close', closedBy: 'student' }),
       });
+      if (response.status === 401) throw new Error(SESSION_EXPIRED_MESSAGE);
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Unable to close chat.');
+        throw new Error(data.message || data.error || 'Unable to close chat.');
       }
 
       updateQuestion(data.question);

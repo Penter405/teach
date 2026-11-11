@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Bot, Loader2, RotateCcw, Send, Sparkles, User } from 'lucide-react';
+import { Bot, Loader2, Lock, RotateCcw, Send, Sparkles, User } from 'lucide-react';
+import { authHeaders, getIdToken, SESSION_EXPIRED_MESSAGE } from './auth';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -81,6 +82,10 @@ export function AIChat({
   const handleSend = async () => {
     const userText = input.trim();
     if (!userText || loading) return;
+    if (!getIdToken()) {
+      setError('訪客模式無法使用 AI 助教，請使用 Google 帳號登入。');
+      return;
+    }
 
     setInput('');
     setError(null);
@@ -92,13 +97,17 @@ export function AIChat({
     try {
       const res = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify({
           model,
           prompt: buildFullPrompt(userText),
           coursePrompt,
         }),
       });
+
+      if (res.status === 401) {
+        throw new Error(SESSION_EXPIRED_MESSAGE);
+      }
 
       const data = await res.json();
 
@@ -129,6 +138,16 @@ export function AIChat({
     setInput('');
     inputRef.current?.focus();
   };
+
+  if (!getIdToken()) {
+    return (
+      <div className="w-full h-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 p-6 flex flex-col items-center justify-center text-center">
+        <Lock className="w-6 h-6 text-slate-400 mb-2" />
+        <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-2">{title}</h3>
+        <p className="text-slate-500 dark:text-slate-400 text-sm">訪客模式無法使用 AI 助教功能，請使用 Google 帳號登入。</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full rounded-2xl border border-slate-200 dark:border-slate-700/60 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-xl overflow-hidden flex flex-col">
