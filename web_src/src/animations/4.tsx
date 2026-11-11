@@ -1,7 +1,7 @@
 // Animation 4: ClassWorldAnim
 import React from 'react';
 import { motion } from 'motion/react';
-import { Box } from './shared';
+import { Box } from '../animation_kit/shared';
 
 export default function Animation({ step }: { step: number }) {
   const examples = [

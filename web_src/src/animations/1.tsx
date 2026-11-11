@@ -1,7 +1,7 @@
 // Animation 1: DataFlowAnim (data-flow-animation)
 import React from 'react';
 import { motion } from 'motion/react';
-import { Box, AnimArrow } from './shared';
+import { Box, AnimArrow } from '../animation_kit/shared';
 
 export default function Animation({ step }: { step: number }) {
   return (

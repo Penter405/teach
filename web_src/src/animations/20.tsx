@@ -1,7 +1,7 @@
 // Animation 20: ComboAssignAddAnim
 import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { DynamicArrows } from './DynamicArrows';
+import { DynamicArrows } from '../animation_kit/DynamicArrows';
 
 export default function Animation({ step }: { step: number }) {
   const assignContainerRef = useRef<HTMLDivElement>(null);

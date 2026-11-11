@@ -4,7 +4,7 @@ import { CheckCircle2, ChevronRight, Play, SkipBack, ExternalLink, XCircle, Trop
 import { ContentBlock, QuizQuestion, PracticeProblem } from './courseData';
 import { AIChat } from './AIChat';
 import { MatchingExercise } from './MatchingExercise';
-import { getAnimationRenderer } from './animations';
+import { getAnimationRenderer } from './animation_kit/registry';
 
 interface LessonContentProps {
   key?: React.Key;
