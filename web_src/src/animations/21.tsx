@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { DynamicArrows } from './DynamicArrows';
+import { DynamicArrows } from '../animation_kit/DynamicArrows';
 
 export default function LenFunctionAnim({ step }: { step: number }) {
     // step 0: Show len('ABC'), mark len() as Function (Verb) and 'ABC' as Object (Noun)

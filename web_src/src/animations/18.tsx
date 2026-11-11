@@ -1,7 +1,7 @@
 // Animation 18: AssignX2Anim
 import React, { useRef } from 'react';
 import { motion } from 'motion/react';
-import { DynamicArrows } from './DynamicArrows';
+import { DynamicArrows } from '../animation_kit/DynamicArrows';
 
 export default function Animation({ step }: { step: number }) {
   const containerRef = useRef<HTMLDivElement>(null);

@@ -1,7 +1,7 @@
 // Animation 12: MutableRefAnim
 import React from 'react';
 import { motion } from 'motion/react';
-import { Box } from './shared';
+import { Box } from '../animation_kit/shared';
 
 export default function Animation({ step }: { step: number }) {
   const listContent = step >= 2 ? '[1,2,3,4]' : '[1,2,3]';
