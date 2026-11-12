@@ -49,24 +49,66 @@ const ThemeToggle = ({ isDark, onToggle }: { isDark: boolean; onToggle: () => vo
   </button>
 );
 
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { GoogleOAuthProvider, GoogleLogin, useGoogleOAuth } from '@react-oauth/google';
+
+const API_BASE = import.meta.env.VITE_API_URL || 'https://teach-beige.vercel.app';
+const CLIENT_ID_CACHE_KEY = 'teach_google_client_id';
+
+// The Google client ID is public and almost never changes, so remember it:
+// later visits show the Google button immediately instead of waiting for /api/config.
+function readCachedClientId(): string | null {
+  const baked = (import.meta.env as Record<string, string | undefined>).Client_ID;
+  if (baked) return baked;
+  try { return localStorage.getItem(CLIENT_ID_CACHE_KEY); } catch { return null; }
+}
+
+// Shows a placeholder until Google's sign-in script has loaded.
+const GoogleButtonSlot = ({ children }: { children: React.ReactNode }) => {
+  const { scriptLoadedSuccessfully } = useGoogleOAuth();
+  return (
+    <div className="relative min-h-[44px] min-w-[200px] flex items-center justify-center">
+      {!scriptLoadedSuccessfully && (
+        <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800 text-sm text-slate-500 dark:text-slate-400">
+          <span className="w-4 h-4 rounded-full border-2 border-slate-300 border-t-cyan-500 animate-spin" />
+          正在載入 Google 登入…
+        </div>
+      )}
+      {children}
+    </div>
+  );
+};
 
 const LoginPage = ({ onLogin }: { onLogin: (user: StudentUser) => void }) => {
-  const [clientId, setClientId] = useState<string | null>(null);
+  const [clientId, setClientId] = useState<string | null>(readCachedClientId);
   const [acceptedTos, setAcceptedTos] = useState(false);
+  const [signingIn, setSigningIn] = useState(false);
+  const [slowHint, setSlowHint] = useState(false);
 
   useEffect(() => {
-    const apiBase = import.meta.env.VITE_API_URL || 'https://teach-beige.vercel.app';
-    fetch(`${apiBase}/api/config`)
+    // Wake the login server (and its database connection) while the user is still
+    // reading this page, so the real sign-in request does not pay the cold-start cost.
+    fetch(`${API_BASE}/api/login`, { method: 'GET' }).catch(() => {});
+
+    fetch(`${API_BASE}/api/config`)
       .then(r => r.json())
-      .then(data => setClientId(data.clientId || ''))
-      .catch(() => setClientId(''));
+      .then(data => {
+        const id = data.clientId || '';
+        if (id) { try { localStorage.setItem(CLIENT_ID_CACHE_KEY, id); } catch { /* ignore */ } }
+        setClientId(prev => (prev && prev === id ? prev : id || prev || ''));
+      })
+      .catch(() => setClientId(prev => prev ?? ''));
   }, []);
 
+  useEffect(() => {
+    if (!signingIn) { setSlowHint(false); return; }
+    const t = setTimeout(() => setSlowHint(true), 4000);
+    return () => clearTimeout(t);
+  }, [signingIn]);
+
   const handleGoogleSuccess = async (response: any) => {
+    setSigningIn(true);
     try {
-      const apiBase = import.meta.env.VITE_API_URL || 'https://teach-beige.vercel.app';
-      const res = await fetch(`${apiBase}/api/login`, {
+      const res = await fetch(`${API_BASE}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ credential: response.credential }),
@@ -76,10 +118,12 @@ const LoginPage = ({ onLogin }: { onLogin: (user: StudentUser) => void }) => {
         setIdToken(response.credential);
         onLogin(data.user || {});
       } else {
-        alert("Login failed! Reason: " + (data.errorDetials || data.message));
+        setSigningIn(false);
+        alert("Login failed! Reason: " + (data.errorDetials || data.message || data.error));
       }
     } catch (e) {
       console.error(e);
+      setSigningIn(false);
       alert("Verification error.");
     }
   };
@@ -87,7 +131,10 @@ const LoginPage = ({ onLogin }: { onLogin: (user: StudentUser) => void }) => {
   if (clientId === null) {
     return (
       <div className="min-h-screen bg-surface dark:bg-slate-950 flex items-center justify-center">
-        <div className="animate-pulse text-slate-400 font-headline text-lg">Loading...</div>
+        <div className="flex items-center gap-3 text-slate-400 font-headline text-lg">
+          <span className="w-5 h-5 rounded-full border-2 border-slate-600 border-t-cyan-400 animate-spin" />
+          Loading...
+        </div>
       </div>
     );
   }
@@ -133,13 +180,15 @@ const LoginPage = ({ onLogin }: { onLogin: (user: StudentUser) => void }) => {
                 
                 <div className="relative flex flex-col items-center gap-3">
                   <div className={!acceptedTos ? 'pointer-events-none opacity-50' : ''} onClick={() => { if (!acceptedTos) alert('Please accept the Terms of Service and Privacy Policy first.'); }}>
-                    <GoogleLogin
-                      onSuccess={handleGoogleSuccess}
-                      onError={() => console.log('Login Failed')}
-                      useOneTap={false}
-                      theme="filled_black"
-                      shape="pill"
-                    />
+                    <GoogleButtonSlot>
+                      <GoogleLogin
+                        onSuccess={handleGoogleSuccess}
+                        onError={() => { setSigningIn(false); console.log('Login Failed'); }}
+                        useOneTap={false}
+                        theme="filled_black"
+                        shape="pill"
+                      />
+                    </GoogleButtonSlot>
                   </div>
 
                   <button
@@ -161,6 +210,19 @@ const LoginPage = ({ onLogin }: { onLogin: (user: StudentUser) => void }) => {
             </div>
           </div>
         </main>
+
+        {signingIn && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 backdrop-blur-sm" role="status" aria-live="polite">
+            <div className="flex flex-col items-center gap-4 px-8 py-7 rounded-2xl bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-800 max-w-xs text-center">
+              <span className="w-10 h-10 rounded-full border-4 border-slate-200 dark:border-slate-700 border-t-cyan-500 animate-spin" />
+              <p className="font-headline font-bold text-slate-800 dark:text-white">登入中…</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">正在驗證你的 Google 帳號</p>
+              {slowHint && (
+                <p className="text-xs text-amber-600 dark:text-amber-400">伺服器剛啟動，第一次登入可能需要多等幾秒。</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </GoogleOAuthProvider>
   );
@@ -494,7 +556,7 @@ const LessonPage = ({ lessonId, student, onBack, onLessonChange, onOpenCodeTree,
         </aside>
 
         <main ref={mainRef} className="flex-1 overflow-y-auto bg-surface dark:bg-[#0B1015]">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-20 lg:px-16 min-h-full flex flex-col relative">
+          <div className="w-full px-4 sm:px-6 py-8 sm:py-12 md:py-16 lg:px-10 xl:px-14 min-h-full flex flex-col relative">
             
             <motion.header 
               initial={{ opacity: 0, y: 10 }}
