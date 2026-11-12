@@ -1,21 +1,26 @@
 const mongoose = require('mongoose');
 
-let isConnected = false;
+let connecting = null;
 
+// Reuses one connection per warm serverless instance. Concurrent callers share the
+// same in-flight connect, and a dropped connection is re-opened.
 async function connectToDatabase() {
-    if (isConnected) {
+    if (mongoose.connection.readyState === 1) {
         return;
     }
-    try {
+    if (!connecting) {
         const uri = process.env.MongoDB;
         if (!uri) throw new Error("Missing MongoDB connection string");
-        
-        await mongoose.connect(uri);
-        isConnected = true;
-    } catch (error) {
-        console.error("Database connection failed", error);
-        throw error;
+        connecting = mongoose.connect(uri, { serverSelectionTimeoutMS: 8000 })
+            .catch((error) => {
+                console.error("Database connection failed", error);
+                throw error;
+            })
+            .finally(() => {
+                connecting = null;
+            });
     }
+    await connecting;
 }
 
 const UserSchema = new mongoose.Schema({

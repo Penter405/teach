@@ -5232,12 +5232,68 @@
           "content": [
             {
               "type": "image",
-              "caption": "G111_advenced  B3",
-              "text": "New Lesson"
+              "imageId": 21,
+              "caption": "G111_advenced  B3"
+            },
+            {
+              "type": "image",
+              "imageId": 22,
+              "caption": "題目說什麼?"
+            },
+            {
+              "type": "heading",
+              "text": "題目在問什麼"
             },
             {
               "type": "paragraph",
-              "text": "Add content here..."
+              "text": "給平行四邊形的兩個相鄰邊，每個邊用兩個端點 (x, y) 表示，所以一行有 8 個數字。兩個邊一定有一個共用的頂點，要求出第四個頂點。"
+            },
+            {
+              "type": "heading",
+              "text": "關鍵性質：對角線互相平分"
+            },
+            {
+              "type": "paragraph",
+              "text": "平行四邊形兩條對角線的中點是同一點。共用頂點 S 的對角是我們要找的 D，另外兩個頂點 A、B 互為對角。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "(S + D) / 2 == (A + B) / 2\n=> D = A + B - S\n\nDx = Ax + Bx - Sx\nDy = Ay + By - Sy"
+            },
+            {
+              "type": "heading",
+              "text": "步驟"
+            },
+            {
+              "type": "paragraph",
+              "text": "1. 讀一行 8 個數，拆成 4 個點：前兩個點是 edge1，後兩個點是 edge2\n2. 找出兩個邊都有的點 = 共用頂點 S\n3. edge1 剩下的點是 A，edge2 剩下的點是 B\n4. D = A + B - S，用 \"%.3f\" 輸出"
+            },
+            {
+              "type": "heading",
+              "text": "陷阱：浮點數比較"
+            },
+            {
+              "type": "paragraph",
+              "text": "找共用頂點要比較兩個點是否相等。直接用 float 比較 (==) 可能因為誤差判斷錯誤。題目說精確到小數點後 3 位，所以先 *1000 再 round 轉成整數（單位：毫米）。用整數相加減完全沒有誤差，最後輸出時再 /1000。\n\n另外：多組測資、沒有給組數，要一直讀到 EOF → for line in sys.stdin"
+            },
+            {
+              "type": "heading",
+              "text": "code"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import sys\n\nfor line in sys.stdin:\n    if not line.strip():\n        continue\n    # 轉成整數（單位：千分之一），避免浮點數比較誤差\n    n = [round(float(x) * 1000) for x in line.split()]\n    p = [(n[0], n[1]), (n[2], n[3]), (n[4], n[5]), (n[6], n[7])]\n    edge1, edge2 = p[:2], p[2:]\n\n    # 找出兩個邊共用的頂點 S\n    for a in edge1:\n        if a in edge2:\n            shared = a\n            break\n\n    # 另外兩個頂點 A、B（S 的對角線另一端是第四點 D）\n    A = edge1[0] if edge1[1] == shared else edge1[1]\n    B = edge2[0] if edge2[1] == shared else edge2[1]\n\n    # 對角線中點相同：A + B = S + D  ->  D = A + B - S\n    dx = A[0] + B[0] - shared[0]\n    dy = A[1] + B[1] - shared[1]\n    print(f\"{dx / 1000:.3f} {dy / 1000:.3f}\")"
+            },
+            {
+              "type": "heading",
+              "text": "驗證 Sample 1 第 3 行"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "edge1: (1.866, 0.000) (3.127, 3.543)\nedge2: (3.127, 3.543) (1.412, 3.145)\nS = (3.127, 3.543)   A = (1.866, 0.000)   B = (1.412, 3.145)\nDx = 1.866 + 1.412 - 3.127 = 0.151\nDy = 0.000 + 3.145 - 3.543 = -0.398"
             }
           ]
         }

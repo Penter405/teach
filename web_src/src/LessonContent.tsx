@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle2, ChevronRight, Play, SkipBack, ExternalLink, XCircle, Trophy, Code2 } from 'lucide-react';
+import { CheckCircle2, ChevronRight, Play, SkipBack, ExternalLink, XCircle, Trophy, Code2, Maximize2, ZoomIn } from 'lucide-react';
+import { ZoomViewer } from './ZoomViewer';
 import { ContentBlock, QuizQuestion, PracticeProblem } from './courseData';
 import { AIChat } from './AIChat';
 import { MatchingExercise } from './MatchingExercise';
@@ -481,6 +482,7 @@ const CBPDiagram = () => (
 function RenderImage({ block }: { block: ContentBlock }) {
   const id = block.imageId;
   const [imgError, setImgError] = React.useState(false);
+  const [zoomOpen, setZoomOpen] = React.useState(false);
 
   if (!id && id !== 0) {
     return (
@@ -504,12 +506,22 @@ function RenderImage({ block }: { block: ContentBlock }) {
             <p className="text-xs text-slate-400 dark:text-slate-500">Image not found: content/image/{id}.png</p>
           </div>
         ) : (
-          <img
-            src={src}
-            alt={block.caption || `Image ${id}`}
-            className="max-w-full h-auto rounded-xl"
-            onError={() => setImgError(true)}
-          />
+          <button
+            type="button"
+            onClick={() => setZoomOpen(true)}
+            className="group relative block max-w-full rounded-xl cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
+            aria-label="放大圖片"
+          >
+            <img
+              src={src}
+              alt={block.caption || `Image ${id}`}
+              className="max-w-full h-auto rounded-xl"
+              onError={() => setImgError(true)}
+            />
+            <span className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-900/70 text-white text-xs font-medium opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
+              <ZoomIn size={14} /> 點擊放大
+            </span>
+          </button>
         )}
       </div>
 
@@ -518,6 +530,10 @@ function RenderImage({ block }: { block: ContentBlock }) {
           {block.caption}
         </div>
       )}
+
+      <ZoomViewer open={zoomOpen} onClose={() => setZoomOpen(false)} title={block.caption || `Image ${id}`}>
+        <img src={src} alt={block.caption || `Image ${id}`} draggable={false} className="block max-w-none rounded-lg bg-white" />
+      </ZoomViewer>
     </div>
   );
 }
@@ -525,31 +541,94 @@ function RenderImage({ block }: { block: ContentBlock }) {
 // ═══════════════════════════════════════════════
 // ── ANIMATIONS ──
 // ═══════════════════════════════════════════════
-function AnimationStepper({ steps, children }: { steps: string[]; children: (step: number) => React.ReactNode }) {
+function AnimationStepper({ steps, children, title }: { steps: string[]; children: (step: number) => React.ReactNode; title?: string }) {
   const safeSteps = steps?.length ? steps : [''];
   const total = safeSteps.length;
   const [step, setStep] = useState(0);
+  const [expanded, setExpanded] = useState(false);
+  const [baseWidth, setBaseWidth] = useState(900);
+  const stageRef = React.useRef<HTMLDivElement>(null);
+
+  const prev = () => setStep(s => Math.max(0, s - 1));
+  const next = () => setStep(s => Math.min(total - 1, s + 1));
+
+  const openExpanded = () => {
+    // Keep the same layout as on the page, just scaled up: render at the inline width.
+    const w = stageRef.current?.clientWidth;
+    if (w) setBaseWidth(Math.max(w, 640));
+    setExpanded(true);
+  };
+
+  const onKey = React.useCallback((e: KeyboardEvent) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { setStep(s => Math.min(total - 1, s + 1)); return true; }
+    if (e.key === 'ArrowLeft') { setStep(s => Math.max(0, s - 1)); return true; }
+    if (e.key === 'Home') { setStep(0); return true; }
+    return false;
+  }, [total]);
+
+  const progress = (
+    <div className="flex items-center gap-1 mb-3">
+      {safeSteps.map((_, i) => (
+        <button
+          key={i}
+          onClick={() => setStep(i)}
+          aria-label={`Step ${i + 1}`}
+          className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${i <= step ? 'bg-cyan-500' : 'bg-slate-200 dark:bg-slate-700'}`}
+        />
+      ))}
+    </div>
+  );
+
+  const controls = (
+    <div className="flex justify-center gap-3">
+      <button onClick={() => setStep(0)} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Reset"><SkipBack size={16} /></button>
+      <button onClick={prev} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Previous"><ChevronRight size={16} className="rotate-180" /></button>
+      <button onClick={next} className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 transition-colors font-medium text-sm flex items-center gap-1"><Play size={14} /> Next</button>
+    </div>
+  );
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800 mb-8 w-full">
-      <div className="flex justify-center w-full min-h-[200px] items-center py-4">
+    <div className="relative bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800 mb-8 w-full">
+      <button
+        onClick={openExpanded}
+        className="absolute top-3 right-3 z-10 flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-800/80 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+        aria-label="全螢幕放大"
+        title="全螢幕放大"
+      >
+        <Maximize2 size={14} /> 放大
+      </button>
+      <div ref={stageRef} className="flex justify-center w-full min-h-[200px] items-center py-4">
         {children(step)}
       </div>
       <div className="mt-4 px-2">
-        <div className="flex items-center gap-1 mb-3">
-          {safeSteps.map((_, i) => (
-            <div key={i} className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${i <= step ? 'bg-cyan-500' : 'bg-slate-200 dark:bg-slate-700'}`} />
-          ))}
-        </div>
+        {progress}
         <p className="text-sm text-slate-600 dark:text-slate-400 font-medium text-center mb-4 min-h-[40px]">
           Step {step + 1}: {safeSteps[step]}
         </p>
-        <div className="flex justify-center gap-3">
-          <button onClick={() => setStep(0)} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Reset"><SkipBack size={16} /></button>
-          <button onClick={() => setStep(Math.max(0, step - 1))} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Previous"><ChevronRight size={16} className="rotate-180" /></button>
-          <button onClick={() => setStep(Math.min(total - 1, step + 1))} className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 transition-colors font-medium text-sm flex items-center gap-1"><Play size={14} /> Next</button>
-        </div>
+        {controls}
       </div>
+
+      <ZoomViewer
+        open={expanded}
+        onClose={() => setExpanded(false)}
+        onKey={onKey}
+        maxFit={2.5}
+        title={title}
+        footer={
+          <div className="mx-auto w-full max-w-4xl px-4 pb-5 pt-3 text-slate-200">
+            {progress}
+            <p className="text-base font-medium text-center mb-3 min-h-[28px]">
+              Step {step + 1} / {total}: {safeSteps[step]}
+            </p>
+            {controls}
+            <p className="hidden md:block mt-2 text-center text-xs text-slate-500">← → 切換步驟</p>
+          </div>
+        }
+      >
+        <div className="flex justify-center items-center p-4 rounded-2xl bg-white dark:bg-slate-900" style={{ width: baseWidth }}>
+          {children(step)}
+        </div>
+      </ZoomViewer>
     </div>
   );
 }
@@ -562,7 +641,7 @@ function RenderAnimation({ block }: { block: ContentBlock }) {
 
   return (
     <div>
-      <AnimationStepper steps={steps}>
+      <AnimationStepper steps={steps} title={block.caption}>
         {renderer || (() => <div className="text-slate-400">🎬 {block.caption || String(id)}</div>)}
       </AnimationStepper>
       {block.caption && (

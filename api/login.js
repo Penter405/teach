@@ -36,6 +36,17 @@ function isAllowedGoogleEmail(email) {
 module.exports = async (req, res) => {
   await runMiddleware(req, res, cors);
 
+  // GET = warm-up ping sent when the login page opens. It starts this function and
+  // opens the database connection early, so the real POST sign-in is fast.
+  if (req.method === 'GET') {
+    try {
+      await connectToDatabase();
+    } catch (e) {
+      // ignore – the POST will report real errors
+    }
+    return res.status(204).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
@@ -46,10 +57,14 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const ticket = await client.verifyIdToken({
+    // Verify the Google token and connect to the database at the same time.
+    const [ticket] = await Promise.all([
+      client.verifyIdToken({
         idToken: credential,
         audience: process.env.Client_ID,
-    });
+      }),
+      connectToDatabase(),
+    ]);
     const payload = ticket.getPayload();
     const { sub: googleId, email, name } = payload;
 
@@ -61,18 +76,15 @@ module.exports = async (req, res) => {
       });
     }
 
-    await connectToDatabase();
+    // Create the user or update lastLoginAt in a single database round trip.
+    await User.updateOne(
+      { googleId },
+      { $set: { lastLoginAt: new Date() }, $setOnInsert: { email, name } },
+      { upsert: true }
+    );
 
-    // Check if user exists or update
-    let user = await User.findOne({ googleId });
-    if (!user) {
-        user = await User.create({ googleId, email, name });
-    } else {
-        user.lastLoginAt = new Date();
-        await user.save();
-    }
-
-    const totalVisits = await User.countDocuments();
+    // Reads collection metadata instead of counting every document.
+    const totalVisits = await User.estimatedDocumentCount();
 
     return res.status(200).json({ 
       success: true, 
