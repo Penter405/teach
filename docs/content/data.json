@@ -5963,38 +5963,6 @@
           ]
         },
         {
-          "id": "module-1794532873928",
-          "title": "bit",
-          "titleEn": "bit",
-          "icon": "📖",
-          "lessons": [
-            {
-              "id": "lesson-1794532873928",
-              "title": "bit",
-              "titleEn": "Lesson 1",
-              "pdfPages": [],
-              "content": [
-                {
-                  "type": "heading",
-                  "text": "why use bit"
-                },
-                {
-                  "type": "paragraph",
-                  "text": "you got a data, like 1101101 ( integer) , it looks like one data"
-                },
-                {
-                  "type": "paragraph",
-                  "text": "why solve problems with separate data to bits first?"
-                },
-                {
-                  "type": "paragraph",
-                  "text": "one popular algorithm is divide and conquer, as we divide data to bits, first thing we need to confirm is that can bit of bits(data) be a sub problem of that data problem?"
-                }
-              ]
-            }
-          ]
-        },
-        {
           "id": "lesson-1789380294802",
           "title": "1d DP",
           "titleEn": "1d DP",
@@ -6321,6 +6289,38 @@
               "type": "image",
               "caption": "New image",
               "imageId": 8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "module-1794532873928",
+      "title": "bit",
+      "titleEn": "bit",
+      "icon": "📖",
+      "lessons": [
+        {
+          "id": "lesson-1794532873928",
+          "title": "bit",
+          "titleEn": "Lesson 1",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "why use bit"
+            },
+            {
+              "type": "paragraph",
+              "text": "you got a data, like 1101101 ( integer) , it looks like one data"
+            },
+            {
+              "type": "paragraph",
+              "text": "why solve problems with separate data to bits first?"
+            },
+            {
+              "type": "paragraph",
+              "text": "one popular algorithm is divide and conquer, as we divide data to bits, first thing we need to confirm is that can bit of bits(data) be a sub problem of that data problem?"
             }
           ]
         }
