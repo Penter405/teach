@@ -712,7 +712,7 @@ function AnimationStepper({ steps, results, children, title }: { steps: string[]
         <Maximize2 size={14} /> 放大
       </button>
       <div ref={stageRef} className="relative flex justify-center items-start w-full py-4" style={{ minHeight: Math.max(200, maxH + 32) }}>
-        <div ref={visibleRef} className="flex justify-center w-full" style={{ minHeight: maxH || undefined }}>
+        <div ref={visibleRef} data-previewing={previewing ? '1' : '0'} className="flex justify-center w-full" style={{ minHeight: maxH || undefined }}>
           <StepSizeProvider value={{ mode: 'show', layout }}>{children(step)}</StepSizeProvider>
         </div>
         {previewing && step < total - 1 && (
@@ -754,7 +754,7 @@ function AnimationStepper({ steps, results, children, title }: { steps: string[]
           </div>
         }
       >
-        <div ref={zoomContentRef} className="flex justify-center items-start p-4 rounded-2xl bg-white dark:bg-slate-900" style={{ width: baseWidth, minHeight: maxH ? maxH + 32 : undefined }}>
+        <div ref={zoomContentRef} data-previewing={previewing ? '1' : '0'} className="flex justify-center items-start p-4 rounded-2xl bg-white dark:bg-slate-900" style={{ width: baseWidth, minHeight: maxH ? maxH + 32 : undefined }}>
           <StepSizeProvider value={{ mode: 'show', layout }}>{children(step)}</StepSizeProvider>
         </div>
       </ZoomViewer>

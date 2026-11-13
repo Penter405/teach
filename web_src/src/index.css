@@ -60,3 +60,16 @@
   0%, 100% { outline-color: rgba(251, 191, 36, 1); }
   50% { outline-color: rgba(251, 191, 36, 0.35); }
 }
+
+/* The code only shows what a step processes after 預告; otherwise "active" tokens look plain.
+   Results (done) still pop in after 執行. */
+[data-previewing] [data-tok-state='active']:not([data-preview='1']) {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  transform: none !important;
+}
+[data-previewing] [data-preview='1'] {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fde68a;
+}
