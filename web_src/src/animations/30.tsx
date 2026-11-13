@@ -23,13 +23,13 @@ export default function BranchPCAnim({ step }: { step: number }) {
     { header: 'code (指令也住在 DRAM)' },
     { addr: '0x00–0x24', value: '9 條指令', note: `PC 正在讀 ${pc}`, hot: s === 2 || s === 4 || s === 5 },
     { header: 'names' },
-    { addr: '0x0F00', label: 'age', value: '→ 0x2000', ptr: true, hot: s === 1 },
-    { addr: '0x0F08', label: 'has_id', value: '→ 0x2040', ptr: true, hot: s === 3 },
+    { addr: '0x40', label: 'age', value: '→ 0x48', ptr: true, hot: s === 1 },
+    { addr: '0x42', label: 'has_id', value: '→ 0x4A', ptr: true, hot: s === 3 },
     { header: 'objects' },
-    { addr: '0x2000', value: '20', note: 'int', hot: s === 1 },
-    { addr: '0x2020', value: '18', note: 'int 常數', hot: s === 1 },
-    { addr: '0x2040', value: '"n"', note: '0x6E', hot: s === 3 },
-    { addr: '0x2060', value: '"y"', note: '0x79', hot: s === 3 },
+    { addr: '0x48', value: '20', note: 'int', hot: s === 1 },
+    { addr: '0x49', value: '18', note: 'int 常數', hot: s === 1 },
+    { addr: '0x4A', value: '"n"', note: '0x6E', hot: s === 3 },
+    { addr: '0x4B', value: '"y"', note: '0x79', hot: s === 3 },
   ];
 
   const bus =

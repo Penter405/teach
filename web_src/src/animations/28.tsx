@@ -27,13 +27,13 @@ export default function IOHardwareAnim({ step }: { step: number }) {
 
   const cells: Cell[] = [
     { header: 'names (symbol table)' },
-    ...(s >= 4 ? [{ addr: '0x0F00', label: 'age', value: '→ 0x1080', ptr: true, hot: s === 4 } as Cell] : []),
+    ...(s >= 4 ? [{ addr: '0x40', label: 'age', value: '→ 0x58', ptr: true, hot: s === 4 } as Cell] : []),
     { header: 'objects' },
-    { addr: '0x1000', value: '"Age: "', note: 'str 常數' },
-    ...(s >= 2 ? [{ addr: '0x1040', value: '"25"', note: '0x32 0x35 (字元碼)', hot: s === 2 || s === 3 } as Cell] : []),
-    ...(s >= 4 ? [{ addr: '0x1080', value: '25', note: 'int 00011001', hot: s === 4 || s === 5 } as Cell] : []),
-    ...(s >= 5 ? [{ addr: '0x10C0', value: '26', note: 'int (暫時結果)', hot: s === 5 } as Cell] : []),
-    ...(s >= 6 ? [{ addr: '0x1100', value: '"明年 26 歲"', note: 'str (f-string)', hot: s === 6 } as Cell] : []),
+    { addr: '0x48', value: '"Age: "', note: 'str 常數' },
+    ...(s >= 2 ? [{ addr: '0x50', value: '"25"', note: '0x32 0x35 (字元碼)', hot: s === 2 || s === 3 } as Cell] : []),
+    ...(s >= 4 ? [{ addr: '0x58', value: '25', note: 'int 00011001', hot: s === 4 || s === 5 } as Cell] : []),
+    ...(s >= 5 ? [{ addr: '0x59', value: '26', note: 'int (暫時結果)', hot: s === 5 } as Cell] : []),
+    ...(s >= 6 ? [{ addr: '0x60', value: '"明年 26 歲"', note: 'str (f-string)', hot: s === 6 } as Cell] : []),
   ];
 
   const bus =

@@ -13,7 +13,7 @@ export default function LoopPCAnim({ step }: { step: number }) {
 
   const regs: Reg[] = [
     { name: 'PC', value: pc, hot: s === 3 || s === 4 || s === 6 },
-    { name: 'i', value: I[s], hot: s === 0 || s === 3 || s === 6 },
+    { name: 'CNT', value: I[s], hot: s === 0 || s === 3 || s === 6 },
     { name: 'R2', value: s === 2 ? '0 → 1' : s === 5 ? '1 → 4' : TOTAL[s], hot: s === 2 || s === 5 },
   ];
   const alu =
@@ -29,10 +29,14 @@ export default function LoopPCAnim({ step }: { step: number }) {
     { header: 'code' },
     { addr: '0x00–0x18', value: '7 條指令', note: `PC → ${pc}`, hot: s === 3 || s === 4 || s === 6 },
     { header: 'names' },
-    { addr: '0x0F00', label: 'total', value: `→ ${TOTAL[s]}`, ptr: true, hot: s === 2 || s === 5 },
-    { addr: '0x0F08', label: 'i', value: `→ ${s === 6 ? '3' : I[s]}`, ptr: true, hot: s === 0 || s === 3 },
-    { header: 'objects' },
-    { addr: '0x3000', value: 'range(1, 4)', note: '只存 start / stop / step 三個數', hot: s === 0 || s === 6 },
+    { addr: '0x40', label: 'total', value: `→ 0x5${TOTAL[s]}`, ptr: true, hot: s === 2 || s === 5, note: s === 2 || s === 5 ? 'total 改指向新的 int 物件' : undefined },
+    { addr: '0x42', label: 'i', value: `→ 0x5${s === 6 ? '3' : I[s]}`, ptr: true, hot: s === 0 || s === 3 },
+    { header: 'range(1, 4) 物件：只存 3 個數' },
+    { addr: '0x48', label: 'start', value: '1', hot: s === 0, note: s === 0 ? '不會先做出 [1, 2, 3]' : undefined },
+    { addr: '0x49', label: 'stop', value: '4', hot: s === 6 },
+    { addr: '0x4A', label: 'step', value: '1', hot: s === 0 },
+    { header: 'int 物件 0~4（小整數 Python 事先建好，大家共用）' },
+    ...['0', '1', '2', '3', '4'].map((v) => ({ addr: '0x5' + v, value: v } as Cell)),
   ];
 
   const bus =

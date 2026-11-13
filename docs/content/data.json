@@ -3582,11 +3582,11 @@
                 "3、5、3 都已經是 DRAM 裡的 int 物件；先算 3 + 5，- 3 和 x = 半透明等待",
                 "3、5 經過 bus 載入 R1、R2 → ALU ADD → R3 = 8，- 3 還在等",
                 "輪到 8 - 3：ALU SUB → 5",
-                "x =：把 R3 的 5 寫回 DRAM，名稱 x 指向它",
+                "x =：結果是 5，小整數 Python 早就建好了，不用再寫一個新的 → 名稱 x 直接存那個 5 的位址",
                 "第二行先算 x > 4：比較其實是 ALU 做減法 5−4，再設定 FLAGS（Z=0, N=0）→ True",
                 "x % 2：一次除法指令同時得到「商 2」和「餘數 1」，// 拿商、% 拿餘數",
                 "1 == 1：減法結果 0 → Z flag = 1 → True",
-                "True and True：送進 AND 邏輯閘，兩條線都有電才輸出 1 → ok = True 存回 DRAM"
+                "True and True：送進 AND 邏輯閘，兩條線都有電才輸出 1 → 名稱 ok 指向 True 物件"
               ]
             },
             {
@@ -3852,12 +3852,12 @@
               "animationId": 31,
               "caption": "🔁 迴圈 = PC 往回跳：for 裡面包著 if / continue",
               "steps": [
-                "total = 0 存在 DRAM；range(1, 4) 只記住 start / stop / step 三個數；i = 1",
+                "名稱 total 存的是 int 物件 0 的位址；range(1, 4) 只記住 start / stop / step 三個數；i 指向 1",
                 "i = 1：i == 2 不成立 → 跳過 continue",
-                "total += i：讀取 → 相加 → 寫回（read-modify-write），total 變 1",
+                "total += i：讀取 → 相加 → 得到 1；int 是 immutable，所以不是改掉 0，而是 total 改存 int 物件 1 的位址",
                 "到了迴圈底，PC 往回跳到 0x04，i 變成 2",
                 "i == 2 成立 → continue：PC 直接跳回開頭，total += i 被跳過",
-                "i = 3：total += 3 → total 變 4",
+                "i = 3：total += 3 → total 改指向 int 物件 4",
                 "i 到 4 碰到 stop → 迴圈結束，PC 跳到 print(total)，螢幕顯示 4"
               ]
             },
@@ -3994,12 +3994,12 @@
               "caption": "📚 Call Stack：result = double(add(1, 2)) 由內而外",
               "steps": [
                 "最內層 add(1, 2) 先執行；double( ) 和 result = 半透明等待",
-                "呼叫 add：在 stack 推入一個 frame（回去的位址 0x10、a=1、b=2），PC 跳到 add 的程式碼",
+                "呼叫 add：在 stack 推入一個 frame（回去的位址 0x10，參數 a、b 存的是 1、2 這兩個 int 物件的位址），PC 跳到 add 的程式碼",
                 "a + b 在 ALU 算出 3 → 放進 RET register；frame 彈出（資料還在 DRAM，只是不再使用），PC 回到 0x10",
-                "呼叫 double(3)：新的 frame 蓋在同一塊位址上（n=3），PC 跳到 double",
+                "呼叫 double(3)：新的 frame 蓋在同一塊位址上（n 存 int 物件 3 的位址），PC 跳到 double",
                 "double 裡又呼叫 add(n, n)：第二個 frame 疊在上面，stack 往下長",
                 "add 回傳 6 → frame 彈出 → double 回傳 6 → frame 彈出，PC 回到 0x10",
-                "result = 6 寫進 DRAM"
+                "名稱 result 存進 symbol table，內容是 int 物件 6 的位址 0x4E"
               ]
             },
             {
@@ -4122,7 +4122,7 @@
               "caption": "🔤 字串在 DRAM 裡是一排連續的 bytes：print(\"hello\"[1:4].upper())",
               "steps": [
                 "\"hello\" 是 5 個連續的 bytes，每格都有 index 和位址；先算最內層 \"hello\"[1:4]",
-                "index → 位址：BASE 0x2000 + IDX 1 = 0x2001 → 'e'，直接算出位址，不用從頭找",
+                "index → 位址：BASE 0x48 + IDX 1 = 0x49 → 'e'，直接算出位址，不用從頭找",
                 "切片 [1:4]：把 3 個 bytes 複製到新區塊 → \"ell\"，原本的 \"hello\" 不變",
                 ".upper()：str 是 immutable，所以配置新區塊，每個字元碼 −0x20（0x6C 'l' → 0x4C 'L'）",
                 "method 是物件自己的動作；\"ELL\" 交給 print → 螢幕顯示 ELL，三個字串都還在 DRAM"
@@ -4440,7 +4440,7 @@
               "animationId": 35,
               "caption": "#️⃣ Dictionary = Hash Table：print(scores.get(\"amy\", 0) + 10)",
               "steps": [
-                "dict 在 DRAM 是一張 8 格的 hash table，每格存 hash、key、value；先算最內層的 get",
+                "dict 在 DRAM 是一張 8 格的 hash table，每格存 hash、key 的位址、value 的位址；先算最內層的 get",
                 "\"amy\" 送進 hash 電路 → 得到一個大數字（示意 9157）",
                 "9157 % 8 = 5 → 直接跳到第 5 格，不用從頭一格一格找",
                 "第 5 格放的是 \"bob\"，key 不同（碰撞）→ 往下一格探測",

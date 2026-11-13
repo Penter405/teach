@@ -1,21 +1,44 @@
 // Turns the values animations already pass to CPU/RAM (mostly strings like '26', '"F"',
 // '→ 0x2120', 'True') into typed data with real bits, so the hardware view can show
-// them in easy / medium / hard mode without changing every animation.
+// them as values or as binary without changing every animation.
 import { useSyncExternalStore } from 'react';
 
 /* ───────────────────────── view setting (shared by every board) ───────────────────────── */
 
-export type HwMode = 'easy' | 'medium' | 'hard';
+/** Layout of the non-table memory view and of the registers: plain values, or binary + type. */
+export type HwMode = 'easy' | 'medium';
 export type BitStyle = 'digits' | 'lights';
-export type HwView = { mode: HwMode; bitStyle: BitStyle };
+export type HwView = {
+  /** memory shows binary */
+  memBinary: boolean;
+  /** registers show binary */
+  cpuBinary: boolean;
+  /** memory drawn as one big table of byte squares (off = list layout) */
+  memTable: boolean;
+  /** binary drawn as 0/1 or as lights */
+  bitStyle: BitStyle;
+  /** show IR / MAR / MDR (and the OS input/output buffers) */
+  moreRegs: boolean;
+  /** "現在在做什麼" at assembly level instead of Python level */
+  asmLevel: boolean;
+  /** CPU | DRAM | Python in three columns */
+  threeCol: boolean;
+  /** keyboard / screen in a strip under the board instead of next to input() / print */
+  ioBar: boolean;
+};
 
-const KEY = 'teach_hw_view';
-const DEFAULT_VIEW: HwView = { mode: 'easy', bitStyle: 'digits' };
+const KEY = 'teach_hw_view_v2';
+const OLD_KEY = 'teach_hw_view';
+const DEFAULT_VIEW: HwView = { memBinary: false, cpuBinary: false, memTable: false, bitStyle: 'digits', moreRegs: false, asmLevel: false, threeCol: false, ioBar: false };
 
 function load(): HwView {
   try {
     const v = JSON.parse(localStorage.getItem(KEY) || 'null');
-    if (v && ['easy', 'medium', 'hard'].includes(v.mode) && ['digits', 'lights'].includes(v.bitStyle)) return v;
+    if (v && typeof v.memBinary === 'boolean') return { ...DEFAULT_VIEW, ...v };
+    // carry over the old easy / medium / hard choice
+    const old = JSON.parse(localStorage.getItem(OLD_KEY) || 'null');
+    if (old?.mode === 'medium') return { ...DEFAULT_VIEW, memBinary: true, cpuBinary: true };
+    if (old?.mode === 'hard') return { ...DEFAULT_VIEW, memBinary: true, cpuBinary: true, memTable: true, bitStyle: old.bitStyle === 'lights' ? 'lights' : 'digits' };
   } catch { /* storage unavailable */ }
   return DEFAULT_VIEW;
 }
