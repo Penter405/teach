@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, ChevronRight, Play, SkipBack, ExternalLink, XCircle, Trophy, Code2, Maximize2, ZoomIn, Eye } from 'lucide-react';
 import { ZoomViewer } from './ZoomViewer';
 import { useHwView } from './animation_kit/bits';
 import { StepSizeProvider, measureLayout, type StepLayout } from './animation_kit/stepSize';
 import { markPreview, clearPreview } from './animation_kit/preview';
+import { CpuBridge, CpuBridgeProvider } from './animation_kit/HardwareKit';
 import { ContentBlock, QuizQuestion, PracticeProblem } from './courseData';
 import { AIChat } from './AIChat';
 import { MatchingExercise } from './MatchingExercise';
@@ -550,6 +551,10 @@ function AnimationStepper({ steps, results, children, title }: { steps: string[]
   const [step, setStepRaw] = useState(0);
   // 預告: show what the next step will process, without doing it yet. Cleared by any step change.
   const [previewing, setPreviewing] = useState(false);
+  // 預告: the next step's CPU / bus are shown on the visible board through this bridge
+  const [cpuBridge] = useState(() => new CpuBridge());
+  const sinkCtx = useMemo(() => ({ role: 'sink' as const, bridge: cpuBridge }), [cpuBridge]);
+  const sourceCtx = useMemo(() => ({ role: 'source' as const, bridge: cpuBridge }), [cpuBridge]);
   const setStep = React.useCallback((v: number | ((s: number) => number)) => { setPreviewing(false); setStepRaw(v); }, []);
   const [expanded, setExpanded] = useState(false);
   const visibleRef = React.useRef<HTMLDivElement>(null);
@@ -713,12 +718,12 @@ function AnimationStepper({ steps, results, children, title }: { steps: string[]
       </button>
       <div ref={stageRef} className="relative flex justify-center items-start w-full py-4" style={{ minHeight: Math.max(200, maxH + 32) }}>
         <div ref={visibleRef} data-previewing={previewing ? '1' : '0'} className="flex justify-center w-full" style={{ minHeight: maxH || undefined }}>
-          <StepSizeProvider value={{ mode: 'show', layout }}>{children(step)}</StepSizeProvider>
+          <CpuBridgeProvider value={sinkCtx}><StepSizeProvider value={{ mode: 'show', layout }}>{children(step)}</StepSizeProvider></CpuBridgeProvider>
         </div>
         {previewing && step < total - 1 && (
           // the next step, rendered invisibly, only to find out what it will process
           <div ref={previewGhostRef} aria-hidden className="absolute inset-x-0 top-4 invisible pointer-events-none flex justify-center w-full">
-            <StepSizeProvider value={{ mode: 'show', layout }}>{children(step + 1)}</StepSizeProvider>
+            <CpuBridgeProvider value={sourceCtx}><StepSizeProvider value={{ mode: 'show', layout }}>{children(step + 1)}</StepSizeProvider></CpuBridgeProvider>
           </div>
         )}
         {measuring && (
@@ -755,7 +760,7 @@ function AnimationStepper({ steps, results, children, title }: { steps: string[]
         }
       >
         <div ref={zoomContentRef} data-previewing={previewing ? '1' : '0'} className="flex justify-center items-start p-4 rounded-2xl bg-white dark:bg-slate-900" style={{ width: baseWidth, minHeight: maxH ? maxH + 32 : undefined }}>
-          <StepSizeProvider value={{ mode: 'show', layout }}>{children(step)}</StepSizeProvider>
+          <CpuBridgeProvider value={sinkCtx}><StepSizeProvider value={{ mode: 'show', layout }}>{children(step)}</StepSizeProvider></CpuBridgeProvider>
         </div>
       </ZoomViewer>
     </div>

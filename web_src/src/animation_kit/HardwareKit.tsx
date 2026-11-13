@@ -298,7 +298,7 @@ const InBadge = ({ kb, bufs, more, echo }: { kb?: El; bufs: El[]; more: boolean;
   <span className="ml-1 inline-flex flex-wrap items-center gap-1.5 rounded-lg border border-sky-400/60 bg-sky-500/15 px-2 py-0.5 font-sans text-[11px] text-sky-100 whitespace-normal">
     <span className="text-base font-bold leading-none">⟵</span> ⌨
     {kb && <KeyCaps keys={(kb.props.keys as string[]) ?? []} pressed={(kb.props.pressed as string[]) ?? []} />}
-    {more && bufs.map((b, i) => <BufBytes key={i} el={b} />)}
+    {bufs.map((b, i) => <BufBytes key={i} el={b} />)}
     {echo && ((echo.props.lines as React.ReactNode[]) ?? []).slice(-1).map((l, i) => (
       <span key={i} className="inline-flex items-center gap-1 text-slate-300">🖥 <span className="rounded bg-black px-1.5 font-mono text-[12px] text-green-400">{l}</span></span>
     ))}
@@ -321,11 +321,34 @@ const OutBadge = ({ scr, bufs, more }: { scr?: El; bufs: El[]; more: boolean }) 
   );
 };
 
+/* 預告: the CPU (and bus) already show the NEXT step while code / memory / screen wait for 執行.
+   The stepper renders the next step invisibly as a "source"; its Board hands its CPU and bus
+   to the visible Board ("sink") through this bridge. */
+export class CpuBridge {
+  cpu: React.ReactNode = null;
+  bus: El | null = null;
+  version = 0;
+  private ls = new Set<() => void>();
+  set(cpu: React.ReactNode, bus: El | null) { this.cpu = cpu; this.bus = bus; this.version++; this.ls.forEach((l) => l()); }
+  clear() { if (this.cpu || this.bus) this.set(null, null); }
+  sub = (l: () => void) => { this.ls.add(l); return () => { this.ls.delete(l); }; };
+}
+type BridgeCtx = { role: 'source' | 'sink'; bridge: CpuBridge } | null;
+const CpuBridgeCtx = React.createContext<BridgeCtx>(null);
+export const CpuBridgeProvider = ({ value, children }: { value: BridgeCtx; children: React.ReactNode }) => (
+  <CpuBridgeCtx.Provider value={value}>{children}</CpuBridgeCtx.Provider>
+);
+const noSub = () => () => {};
+
 /* Board: CPU top-left, Python top-right, memory full width below.
    三欄排列: CPU | DRAM | Python.  Phones: one column. */
 /** `now`: what this step did, in Python terms (shown as 現在在做什麼). Derived from the code if left out. */
 export const Board = ({ children, now }: { children: React.ReactNode; now?: string }) => {
   const view = useHwView();
+  const bridgeCtx = React.useContext(CpuBridgeCtx);
+  const sink = bridgeCtx?.role === 'sink' ? bridgeCtx.bridge : null;
+  const source = bridgeCtx?.role === 'source' ? bridgeCtx.bridge : null;
+  React.useSyncExternalStore(sink ? sink.sub : noSub, () => sink?.version ?? 0, () => 0);
   // rows that some step uses keep their space on every step
   const stepSize = useStepSize();
   const reserved = (col: string) => stepSize.mode === 'show' && (stepSize.layout?.order[col]?.length ?? 0) > 0;
@@ -359,14 +382,20 @@ export const Board = ({ children, now }: { children: React.ReactNode; now?: stri
   const hw = hwIdx >= 0 ? (rest[hwIdx] as El) : undefined;
   const parts = hw ? React.Children.toArray(kids(hw)) : [];
   const cpuEl = parts.find((c) => isEl(c) && c.type === CPU) as El | undefined;
-  const busEl = parts.find((c) => isEl(c) && c.type === Bus) as El | undefined;
+  const ownBusEl = parts.find((c) => isEl(c) && c.type === Bus) as El | undefined;
   const ramEl = parts.find((c) => isEl(c) && c.type === RAM) as El | undefined;
-  const others = parts.filter((c) => c !== cpuEl && c !== busEl && c !== ramEl);
+  const others = parts.filter((c) => c !== cpuEl && c !== ownBusEl && c !== ramEl);
   const restOthers = rest.filter((_, i) => i !== hwIdx);
 
-  const derivedRaw = deriveCpu(codeEls, cpuEl, busEl, ramEl);
+  const derivedRaw = deriveCpu(codeEls, cpuEl, ownBusEl, ramEl);
   const derived = now ? { ...derivedRaw, python: now } : derivedRaw;
-  const cpu = cpuEl ? React.cloneElement(cpuEl, { derived, fill: true }) : null;
+  const ownCpu = cpuEl ? React.cloneElement(cpuEl, { derived, fill: true }) : null;
+  // the invisible next step hands over its CPU / bus; the visible board shows them while previewing
+  React.useLayoutEffect(() => { source?.set(ownCpu, ownBusEl ?? null); });
+  React.useEffect(() => () => { source?.clear(); }, [source]);
+  const previewing = !!(sink && (sink.cpu || sink.bus));
+  const cpu = previewing && sink!.cpu ? sink!.cpu : ownCpu;
+  const busEl = previewing && sink!.bus ? sink!.bus : ownBusEl;
 
   // 3) I/O next to input() / print (unless the strip under the board is chosen)
   const showInline = !view.ioBar && (screen || keyboard);
@@ -401,7 +430,8 @@ export const Board = ({ children, now }: { children: React.ReactNode; now?: stri
   const ioStrip = (screen || keyboard) && view.ioBar ? (
     <div className="flex flex-wrap items-stretch gap-2">
       {keyboard && <div className="min-w-[12rem] flex-1">{keyboard}</div>}
-      {view.moreRegs && buffers.map((b, i) => <div key={i} className="min-w-[12rem] flex-1">{b}</div>)}
+      {/* the OS input buffer is always shown; the stdout buffer only with 更多暫存器 */}
+      {(view.moreRegs ? buffers : inBufs).map((b, i) => <div key={i} className="min-w-[12rem] flex-1">{b}</div>)}
       {screen && <div className="min-w-[12rem] flex-[2]">{screen}</div>}
     </div>
   ) : null;
