@@ -5263,63 +5263,491 @@
       "lessons": [
         {
           "id": "lesson-1792648168328",
-          "title": "prime",
-          "titleEn": "prime",
+          "title": "質數 (Prime)",
+          "titleEn": "Prime",
           "pdfPages": [],
           "content": [
             {
               "type": "heading",
-              "text": "what is prime"
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "prime=1*prime"
-            },
-            {
-              "type": "heading",
-              "text": "what is not prime"
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "not_prime = a*b"
-            },
-            {
-              "type": "heading",
-              "text": "找質因數"
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "not_prime=a*b...*z\na or b or zmore than not_prime**0.5\nif z is more, a*b... will under not_prime**0.5\nwe can for loop every prime under not_prime**0.5\nand in the end take z as its member of result"
-            },
-            {
-              "type": "heading",
-              "text": "cheaking if i am prime"
+              "text": "什麼是質數"
             },
             {
               "type": "paragraph",
-              "text": "1. create prime table include the number  -> o(n**2)\n2. create a n**0.5 prime table and cheak if any prime is its devision -> o( 2(n**0.5)-- put cheak if devisionable in loop, no extra time)"
-            },
-            {
-              "type": "heading",
-              "text": "recommand way"
+              "text": "質數只有一種拆法：1 × 自己。不是質數的數（合數）可以拆成兩個都大於 1 的數相乘。0 和 1 不是質數，也不是合數。"
             },
             {
               "type": "code",
               "language": "python",
-              "code": "def cheak(cheak_prime=False,get_only_devisoin=False,get_devision=False):\n    want=int(input())\n    devision=[]\n    single=[]\n    prime=[False,False]+[True]*( (int(want**0.5)+1)  -1)\n    for i in range(2, len(prime)):\n        if prime[i]:\n            if want%i==0:\n                if cheak_prime:\n                    return False\n                single.append(i)\n                while want%i==0:\n                    want//=i\n                    devision.append(i)\n\n            for not_prime in range(i*2,len(prime),i):\n                prime[not_prime]=False\n        \n\n    if cheak_prime:\n        return True\n    if get_only_devisoin:\n        return single\n    if get_devision:\n        return devision\n    return -1",
-              "text": "New paragraph"
+              "code": "prime     = 1 * prime     # 只有這一種拆法\nnot_prime = a * b         # 1 < a ≤ b < not_prime\n\n# 2, 3, 5, 7, 11, 13 … 是質數\n# 4 = 2*2, 6 = 2*3, 91 = 7*13 是合數"
+            },
+            {
+              "type": "heading",
+              "text": "判斷一個數：試除法"
+            },
+            {
+              "type": "paragraph",
+              "text": "最直接的方法：從 2 試到 n − 1，看有沒有數能整除 n，要試 O(n) 次。\n\n但是因數一定成對出現：如果 n = a × b 而且 a ≤ b，那 a ≤ √n ≤ b。所以只要在 2 ～ √n 裡找不到因數，√n 右邊也一定找不到。"
+            },
+            {
+              "type": "animation",
+              "animationId": 38,
+              "caption": "試除法：is_prime(91)，只試到 √n",
+              "steps": [
+                "開始（還沒執行）",
+                "檢查 n < 2：91 < 2 是 False，繼續",
+                "試 d = 2：91 % 2 = 1，不整除",
+                "試 d = 3：91 % 3 = 1，不整除",
+                "試 d = 4：91 % 4 = 3，不整除",
+                "試 d = 5：91 % 5 = 1，不整除",
+                "試 d = 6：91 % 6 = 1，不整除",
+                "試 d = 7：91 % 7 = 0 → 找到因數，return False",
+                "為什麼只試到 √n：因數一定成對出現",
+                "換成 n = 97：2～9 都不整除 → return True"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def is_prime(n):\n    if n < 2:\n        return False\n    d = 2\n    while d * d <= n:      # d ≤ √n\n        if n % d == 0:\n            return False\n        d += 1\n    return True\n\nprint(is_prime(91))   # False（7 * 13）\nprint(is_prime(97))   # True"
+            },
+            {
+              "type": "callout",
+              "label": "重點",
+              "text": "條件寫 d * d <= n，不要寫 d <= n ** 0.5：整數相乘沒有浮點誤差。時間 O(√n)，n = 10¹² 也只要試 10⁶ 次。"
+            },
+            {
+              "type": "heading",
+              "text": "找出 1 ～ n 所有的質數：埃氏篩"
+            },
+            {
+              "type": "paragraph",
+              "text": "如果要判斷很多個數，每個都試除要 O(n√n)。埃氏篩反過來做：不是拿每個數去找因數，而是拿每個質數去劃掉它的倍數。沒被劃掉的就是質數。"
+            },
+            {
+              "type": "animation",
+              "animationId": 39,
+              "caption": "埃氏篩：sieve(30)，從 p² 開始劃掉倍數",
+              "steps": [
+                "開始（還沒執行）",
+                "is_p[0] = is_p[1] = False：0 和 1 不是質數",
+                "p = 2：is_p[2] 是 True → 2 是質數",
+                "劃掉 2 的倍數：從 2² = 4 開始，4, 6, 8, …, 30",
+                "p = 3：is_p[3] 是 True → 3 是質數",
+                "劃掉 3 的倍數：從 3² = 9 開始，9, 12, 15, …, 30",
+                "p = 4：is_p[4] 是 False（已經被 2 劃掉）→ 跳過",
+                "p = 5：is_p[5] 是 True → 5 是質數",
+                "劃掉 5 的倍數：從 5² = 25 開始，25, 30",
+                "p = 6：6 × 6 = 36 > 30 → 離開迴圈",
+                "沒被劃掉的就是質數"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def sieve(n):\n    is_p = [True] * (n + 1)\n    is_p[0] = is_p[1] = False\n    p = 2\n    while p * p <= n:\n        if is_p[p]:\n            for m in range(p * p, n + 1, p):\n                is_p[m] = False\n        p += 1\n    return is_p\n\nis_p = sieve(30)\nprint([i for i in range(31) if is_p[i]])\n# [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]\n\nprint(is_p[29])   # 篩一次之後，每次查詢都是 O(1)"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "為什麼從 p × p 開始劃",
+                  "definition": "比 p² 小的倍數 p × k（k < p）一定有更小的質因數，早就被劃掉了。"
+                },
+                {
+                  "term": "為什麼 p × p > n 就可以停",
+                  "definition": "剩下沒被劃的合數，一定有一個 ≤ √n 的質因數，早就被劃過了。"
+                },
+                {
+                  "term": "時間",
+                  "definition": "O(n log log n)，幾乎是線性；空間 O(n)。"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "質因數分解"
+            },
+            {
+              "type": "paragraph",
+              "text": "把合數一直拆下去：not_prime = a × b × … × z，每一個都是質數。\n\n關鍵：大於 √n 的質因數最多只有一個（兩個都大於 √n，乘起來就超過 n 了）。所以用 2 ～ √n 一個一個把 n 除乾淨，最後剩下的數如果大於 1，它就是那個大質因數。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def factorize(n):\n    factors = []\n    d = 2\n    while d * d <= n:\n        while n % d == 0:      # 把 d 除乾淨\n            factors.append(d)\n            n //= d\n        d += 1\n    if n > 1:                  # 剩下的是 > √n 的那個質因數\n        factors.append(n)\n    return factors\n\nprint(factorize(360))   # [2, 2, 2, 3, 3, 5]\nprint(factorize(91))    # [7, 13]\nprint(factorize(97))    # [97]"
+            },
+            {
+              "type": "callout",
+              "label": "為什麼 d 不用只試質數",
+              "text": "d 是合數時（例如 4），它的質因數 2 已經被除乾淨了，所以 n % 4 一定不是 0，不會被誤加進答案。而且 n 每除一次就變小，while d * d <= n 的上限也跟著變小。"
+            },
+            {
+              "type": "paragraph",
+              "text": "下面是一開始的筆記版本：先篩出 √n 以內的質數，一邊篩一邊拿質數去除，所以只會用質數去除。和上面的 factorize 結果一樣。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def cheak(cheak_prime=False,get_only_devisoin=False,get_devision=False):\n    want=int(input())\n    devision=[]\n    single=[]\n    prime=[False,False]+[True]*( (int(want**0.5)+1)  -1)\n    for i in range(2, len(prime)):\n        if prime[i]:\n            if want%i==0:\n                if cheak_prime:\n                    return False\n                single.append(i)\n                while want%i==0:\n                    want//=i\n                    devision.append(i)\n\n            for not_prime in range(i*2,len(prime),i):\n                prime[not_prime]=False\n        \n\n    if cheak_prime:\n        return True\n    if get_only_devisoin:\n        return single\n    if get_devision:\n        return devision\n    return -1"
+            },
+            {
+              "type": "heading",
+              "text": "怎麼選"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "只判斷一個數是不是質數",
+                  "definition": "試除法，O(√n)。"
+                },
+                {
+                  "term": "判斷 1 ～ n 裡很多個數、或要列出所有質數",
+                  "definition": "埃氏篩，O(n log log n)，篩完之後每次查詢 O(1)。"
+                },
+                {
+                  "term": "分解一個數",
+                  "definition": "試除到 √n，最後剩下大於 1 的也要算進去。"
+                },
+                {
+                  "term": "分解很多個數",
+                  "definition": "篩的時候順便記下每個數的最小質因數 spf，之後每次分解只要 O(log n)。"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "N = 100\nspf = list(range(N + 1))          # smallest prime factor\nfor p in range(2, int(N ** 0.5) + 1):\n    if spf[p] == p:                # p 是質數\n        for m in range(p * p, N + 1, p):\n            if spf[m] == m:\n                spf[m] = p\n\ndef factorize(x):\n    res = []\n    while x > 1:\n        res.append(spf[x])\n        x //= spf[x]\n    return res\n\nprint(factorize(84))   # [2, 2, 3, 7]"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "判斷 n 是不是質數時，d 只要試到哪裡？",
+                  "options": [
+                    "n − 1",
+                    "n / 2",
+                    "√n",
+                    "log n"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "91 是質數嗎？",
+                  "options": [
+                    "是",
+                    "不是，91 = 7 × 13",
+                    "不是，91 = 3 × 31",
+                    "不是，91 = 9 × 11"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "埃氏篩劃掉 p 的倍數時，為什麼從 p × p 開始？",
+                  "options": [
+                    "比較好寫",
+                    "比 p² 小的倍數已經被更小的質數劃掉了",
+                    "p² 一定是質數",
+                    "從 2p 開始會出錯"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "factorize 迴圈結束後，剩下的 n 大於 1，代表什麼？",
+                  "options": [
+                    "程式有錯",
+                    "n 是一個大於 √原數 的質因數",
+                    "n 一定是 1",
+                    "n 是合數"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "要回答 10⁵ 次「x 是不是質數」，x ≤ 10⁶，哪個比較好？",
+                  "options": [
+                    "每次都試除",
+                    "先用埃氏篩篩到 10⁶，再直接查表",
+                    "每次都從 2 試到 x − 1",
+                    "都一樣"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：質因數分解",
+              "subtitle": "用試除法輸出分解結果",
+              "difficulty": "Medium",
+              "coursePrompt": "請讓學生完成 Python Coding 題：輸入一個正整數 N（2 ≤ N ≤ 10¹²），輸出它的質因數分解，格式例如 360 = 2^3 * 3^2 * 5（指數 1 不寫）。重點是只試到 √N、把每個因數除乾淨、最後剩下大於 1 的數也要輸出。如果學生從 2 試到 N，提醒他 N = 10¹² 會太慢，引導他想「因數成對出現」。不要直接給答案。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Count Primes",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/count-primes/",
+                  "description": "埃氏篩：小於 n 的質數有幾個"
+                },
+                {
+                  "title": "Ugly Number",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/ugly-number/",
+                  "description": "把 2、3、5 除乾淨，看最後剩下什麼"
+                },
+                {
+                  "title": "Distinct Prime Factors of Product of Array",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/distinct-prime-factors-of-product-of-array/",
+                  "description": "對每個數做質因數分解，用 set 收集"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-1794560000000",
+          "title": "GCD 與快速冪",
+          "titleEn": "GCD and Fast Power",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "最大公因數 GCD：輾轉相除法"
+            },
+            {
+              "type": "paragraph",
+              "text": "a 和 b 的公因數，一定也能整除 a % b（因為 a % b = a − k × b）。所以 gcd(a, b) = gcd(b, a % b)。數字一直變小，直到 b = 0，這時的 a 就是答案。"
+            },
+            {
+              "type": "animation",
+              "animationId": 91,
+              "caption": "輾轉相除：gcd(48, 18)，用正方形切長方形",
+              "steps": [
+                "開始：48 × 18 的長方形",
+                "48 % 18 = 12：切掉 2 個 18 × 18 的正方形，剩下 18 × 12 → gcd(18, 12)",
+                "18 % 12 = 6：切掉 1 個 12 × 12，剩下 12 × 6 → gcd(12, 6)",
+                "12 % 6 = 0：剛好切成 2 個 6 × 6，沒有剩 → gcd(6, 0)",
+                "b = 0 → 答案是 6：6 × 6 的正方形可以鋪滿整個 48 × 18"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def gcd(a, b):\n    while b:\n        a, b = b, a % b\n    return a\n\nprint(gcd(48, 18))   # 6\n\nimport math\nprint(math.gcd(48, 18))   # 6，內建\nprint(math.lcm(4, 6))     # 12（Python 3.9+）"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "時間",
+                  "definition": "O(log min(a, b))：每做兩次，a 至少變成一半。"
+                },
+                {
+                  "term": "最小公倍數 LCM",
+                  "definition": "lcm(a, b) = a // gcd(a, b) * b。先除再乘，數字不會變太大（寫 C++ 時可以避免溢位）。"
+                },
+                {
+                  "term": "很多個數的 GCD",
+                  "definition": "gcd(a, b, c) = gcd(gcd(a, b), c)，一個一個併進去。"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "快速冪：把指數砍一半"
+            },
+            {
+              "type": "paragraph",
+              "text": "算 xⁿ 直接乘 n 次是 O(n)，n = 10⁹ 就太慢了。\n\n利用 x¹⁰ = (x⁵)²、x⁵ = (x²)² × x：n 是偶數時，先算一半再平方；n 是奇數時，平方完再多乘一個 x。每次 n 變成一半，只要 O(log n) 次乘法。這就是分治：大問題拆成「一半大小的同樣問題」。"
+            },
+            {
+              "type": "animation",
+              "animationId": 60,
+              "caption": "快速冪：fast_pow(2, 10)，10 → 5 → 2 → 1 → 0",
+              "steps": [
+                "開始（還沒執行）",
+                "fast_pow(2, 10)：要先算 fast_pow(2, 5)",
+                "fast_pow(2, 5)：要先算 fast_pow(2, 2)",
+                "fast_pow(2, 2)：要先算 fast_pow(2, 1)",
+                "fast_pow(2, 1)：要先算 fast_pow(2, 0) = 1",
+                "回到 fast_pow(2, 1)：1 是奇數 → 1² × 2 = 2",
+                "回到 fast_pow(2, 2)：2 是偶數 → 2² = 4",
+                "回到 fast_pow(2, 5)：5 是奇數 → 4² × 2 = 32",
+                "回到 fast_pow(2, 10)：10 是偶數 → 32² = 1024",
+                "只乘了 6 次，不是 9 次；n = 10⁹ 時大約 60 次"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def fast_pow(x, n):\n    if n == 0:\n        return 1\n    half = fast_pow(x, n // 2)   # 一半大小的同樣問題\n    if n % 2 == 0:\n        return half * half\n    return half * half * x\n\nprint(fast_pow(2, 10))   # 1024"
+            },
+            {
+              "type": "paragraph",
+              "text": "不用遞迴的寫法：把 n 看成二進位。10 = 1010₂，所以 2¹⁰ = 2⁸ × 2²：x 一直平方（x、x²、x⁴、x⁸ …），遇到 n 那一位是 1 就乘進答案。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def fast_pow(x, n, mod):\n    result = 1\n    x %= mod\n    while n > 0:\n        if n & 1:                    # 這一位是 1 → 乘進答案\n            result = result * x % mod\n        x = x * x % mod              # x, x², x⁴, x⁸ …\n        n >>= 1                      # 看下一位\n    return result\n\nprint(fast_pow(2, 10, 1000))   # 24\nprint(pow(2, 10, 1000))        # 24：內建三個參數的 pow 就是快速冪"
+            },
+            {
+              "type": "callout",
+              "label": "重點",
+              "text": "題目說「答案 mod 10⁹ + 7」時，每乘一次就 mod 一次，數字永遠不會變大。Python 直接用 pow(x, n, mod)。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "gcd(48, 18) 的下一步是什麼？",
+                  "options": [
+                    "gcd(18, 12)",
+                    "gcd(30, 18)",
+                    "gcd(18, 6)",
+                    "gcd(48, 6)"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "輾轉相除法什麼時候停？",
+                  "options": [
+                    "a = 0",
+                    "b = 0",
+                    "a = b",
+                    "a % b = 1"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "lcm(4, 6) 怎麼算？",
+                  "options": [
+                    "4 * 6",
+                    "4 // gcd(4, 6) * 6",
+                    "gcd(4, 6) * 6",
+                    "4 + 6"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "快速冪算 xⁿ 要幾次乘法？",
+                  "options": [
+                    "O(n)",
+                    "O(√n)",
+                    "O(log n)",
+                    "O(1)"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "用二進位寫法算 3¹³（13 = 1101₂），答案是哪幾個相乘？",
+                  "options": [
+                    "3⁸ × 3⁴ × 3¹",
+                    "3⁸ × 3² × 3¹",
+                    "3⁴ × 3² × 3¹",
+                    "3⁸ × 3⁴ × 3²"
+                  ],
+                  "answer": 0
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：分數化簡",
+              "subtitle": "用 GCD 把分數約到最簡",
+              "difficulty": "Easy",
+              "coursePrompt": "請讓學生完成 Python Coding 題：輸入兩個分數 a/b 和 c/d（格式如 1/6 1/3），輸出相加後的最簡分數（例如 1/2）。重點是通分（可以用 lcm）和用 gcd 約分。可以自己寫輾轉相除，也可以用 math.gcd，但要能說明 gcd(a, b) = gcd(b, a % b) 的原因。不要直接給答案。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Find Greatest Common Divisor of Array",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/find-greatest-common-divisor-of-array/",
+                  "description": "最小值和最大值的 GCD"
+                },
+                {
+                  "title": "Pow(x, n)",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/powx-n/",
+                  "description": "快速冪；注意 n 可能是負數"
+                },
+                {
+                  "title": "Super Pow",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/super-pow/",
+                  "description": "指數很大時的快速冪 + mod"
+                }
+              ]
             }
           ]
         },
         {
           "id": "lesson-1794182485993",
-          "title": "四捨五入",
-          "titleEn": "4/5",
+          "title": "四捨五入 (Decimal)",
+          "titleEn": "Rounding with Decimal",
           "pdfPages": [],
           "content": [
+            {
+              "type": "heading",
+              "text": "為什麼不用 round()"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "print(round(2.5))       # 2   ← 不是 3！\nprint(round(3.5))       # 4\nprint(round(2.675, 2))  # 2.67 ← 不是 2.68\nprint(0.1 + 0.2)        # 0.30000000000000004"
+            },
+            {
+              "type": "paragraph",
+              "text": "有兩個原因：\n1. round() 用的是「銀行家捨入」：剛好一半時取偶數（ROUND_HALF_EVEN），所以 2.5 → 2、3.5 → 4。\n2. float 是用二進位存的，2.675 實際上是 2.67499999…，已經在一半的左邊，所以就算規則是四捨五入也會捨掉。\n\n題目說的「四捨五入」通常是 ROUND_HALF_UP（剛好一半時遠離 0），要用 decimal 模組才準。"
+            },
+            {
+              "type": "animation",
+              "animationId": 90,
+              "caption": "捨入規則：數線上的 2.5 要往哪邊走",
+              "steps": [
+                "開始：數線上的 2.5，剛好在 2 和 3 的正中間",
+                "ROUND_HALF_UP：剛好一半 → 遠離 0 → 3",
+                "ROUND_HALF_EVEN（round() 用的）：剛好一半 → 取偶數 → 2",
+                "-2.5 用 ROUND_HALF_UP：遠離 0 → -3（不是 -2）",
+                "ROUND_FLOOR 往負無限大 → -3；ROUND_CEILING 往正無限大 → -2",
+                "float 的 2.675 其實是 2.67499999…，在一半的左邊 → 2.67"
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "Decimal 要用字串建立"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from decimal import Decimal\n\nprint(Decimal(2.675))     # 2.67499999999999982236431605997495353221893310546875\nprint(Decimal(\"2.675\"))   # 2.675"
+            },
+            {
+              "type": "callout",
+              "label": "重點",
+              "text": "Decimal(2.675) 會把 float 的誤差一起帶進來。input() 讀進來本來就是字串，直接 Decimal(input()) 剛好正確，不要先轉成 float。"
+            },
+            {
+              "type": "heading",
+              "text": "最常用：保留小數 2 位"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from decimal import Decimal, ROUND_HALF_UP\n\nx = Decimal(input())                                  # 輸入 2.675\nans = x.quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\nprint(ans)                                            # 2.68"
+            },
+            {
+              "type": "paragraph",
+              "text": "quantize(格式, 規則)：格式是另一個 Decimal，用它的「最後一位在哪裡」決定要留到哪一位；規則決定剛好一半時怎麼走。下面是原本的筆記，有更多格式和規則。"
+            },
             {
               "type": "code",
               "language": "python",
@@ -5362,10 +5790,66 @@
               "text": "強制顯示normal 十進位 "
             },
             {
+              "type": "paragraph",
+              "text": "用 \"1E1\"、\"1E2\" 這種格式量化後，print 會印出 1.23E+3 這種科學記號。要印成 1230，就用 format(…, \"f\")。"
+            },
+            {
               "type": "code",
               "language": "python",
               "code": "print(format( processed_Decimal_object , \"f\"))",
               "text": "New heading"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "round(2.5) 的結果是？",
+                  "options": [
+                    "2",
+                    "3",
+                    "2.5",
+                    "會出錯"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "為什麼 round(2.675, 2) 是 2.67？",
+                  "options": [
+                    "round 有 bug",
+                    "float 的 2.675 實際上比 2.675 小一點",
+                    "round 只看整數",
+                    "Python 會無條件捨去"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "要把 2.675 準確地四捨五入到小數 2 位，應該怎麼建立 Decimal？",
+                  "options": [
+                    "Decimal(2.675)",
+                    "Decimal(\"2.675\")",
+                    "Decimal(float(\"2.675\"))",
+                    "都一樣"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "-2.5 用 ROUND_HALF_UP 會變成？",
+                  "options": [
+                    "-2",
+                    "-3",
+                    "-2.5",
+                    "2"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：成績四捨五入",
+              "subtitle": "用 Decimal 算平均並四捨五入",
+              "difficulty": "Easy",
+              "coursePrompt": "請讓學生完成 Python Coding 題：第一行輸入 N，接著 N 行每行一個成績（可能有小數，例如 89.5），輸出平均分數，四捨五入到小數第 1 位（ROUND_HALF_UP）。要用 decimal 模組，並且用字串建立 Decimal。如果學生用 round()，請他用 round(0.25, 1) 和 round(2.675, 2) 自己試試看結果，再引導他想為什麼。不要直接給答案。"
             }
           ]
         },
@@ -5457,6 +5941,48 @@
               "type": "code",
               "language": "python",
               "code": "edge1: (1.866, 0.000) (3.127, 3.543)\nedge2: (3.127, 3.543) (1.412, 3.145)\nS = (3.127, 3.543)   A = (1.866, 0.000)   B = (1.412, 3.145)\nDx = 1.866 + 1.412 - 3.127 = 0.151\nDy = 0.000 + 3.145 - 3.543 = -0.398"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "平行四邊形的哪個性質讓我們能算出第四個頂點？",
+                  "options": [
+                    "對邊等長",
+                    "兩條對角線互相平分（中點相同）",
+                    "對角相等",
+                    "面積 = 底 × 高"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "共用頂點 S，另外兩個頂點 A、B，第四個頂點 D 是？",
+                  "options": [
+                    "A + B + S",
+                    "A − B + S",
+                    "A + B − S",
+                    "(A + B) / 2"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "為什麼先 * 1000 再 round 成整數？",
+                  "options": [
+                    "讓數字變大比較好看",
+                    "整數比較和加減沒有浮點誤差",
+                    "題目規定",
+                    "Python 不能算小數"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：三角形的第三點",
+              "subtitle": "用向量加減求頂點",
+              "difficulty": "Medium",
+              "coursePrompt": "請讓學生完成 Python Coding 題：給正方形的兩個相鄰頂點 A(x1, y1)、B(x2, y2)（整數），輸出另外兩個頂點（取 A→B 逆時針旋轉 90 度的那一邊）。引導學生想：向量 AB = (dx, dy)，逆時針轉 90 度是 (−dy, dx)，C = B + (−dy, dx)、D = A + (−dy, dx)。和平行四邊形那題一樣，是用點的加減來算。不要直接給答案。"
             }
           ]
         }
@@ -5470,7 +5996,7 @@
       "lessons": [
         {
           "id": "lesson-1789018579718",
-          "title": "binary tree",
+          "title": "binary tree 二元樹",
           "titleEn": "binary tree",
           "pdfPages": [],
           "content": [
@@ -5489,28 +6015,361 @@
             {
               "type": "paragraph",
               "text": "B tree is a data structure that a tree can have at most 2 child."
+            },
+            {
+              "type": "paragraph",
+              "text": "每個節點最多有兩個子節點：left 和 right。最上面沒有父節點的叫 root，沒有子節點的叫 leaf（葉子）。"
+            },
+            {
+              "type": "heading",
+              "text": "用 class 做節點"
+            },
+            {
+              "type": "paragraph",
+              "text": "Python 沒有 pointer，但變數存的本來就是物件的位址（參考），所以 node.left = other 就等於 C++ 的指標：left 指向另一個節點物件。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "class Node:\n    def __init__(self, value):\n        self.value = value\n        self.left = None     # 指向左子節點（沒有就是 None）\n        self.right = None    # 指向右子節點\n\n#     1\n#    / \\\n#   2   3\nroot = Node(1)\nroot.left = Node(2)\nroot.right = Node(3)\n\ndef depth(node):\n    if node is None:\n        return 0\n    return 1 + max(depth(node.left), depth(node.right))\n\nprint(depth(root))   # 2"
+            },
+            {
+              "type": "heading",
+              "text": "用 list 存：不用指標"
+            },
+            {
+              "type": "paragraph",
+              "text": "如果樹很「滿」（例如 heap），可以把節點一層一層由左到右放進 list。不用存指標，用 index 就能算出父子關係。"
+            },
+            {
+              "type": "animation",
+              "animationId": 92,
+              "caption": "二元樹 ↔ list：index i 的子節點是 2i+1、2i+2",
+              "steps": [
+                "一層一層、由左到右放進 list",
+                "index 0 的子節點：2×0+1 = 1、2×0+2 = 2",
+                "index 1 的子節點：2×1+1 = 3、2×1+2 = 4",
+                "index 5 的父節點：(5−1) // 2 = 2",
+                "少了一個節點：list 要留 None 空格，位置才不會亂"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "tree = [1, 2, 3, 4, 5, 6, 7]\n\ndef left(i):   return 2 * i + 1\ndef right(i):  return 2 * i + 2\ndef parent(i): return (i - 1) // 2\n\nprint(tree[left(1)], tree[right(1)])   # 4 5：節點 2 的兩個子節點\nprint(tree[parent(5)])                 # 3：節點 6 的父節點"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "完全二元樹",
+                  "definition": "除了最後一層，每一層都是滿的，最後一層從左邊開始放。用 list 存不會浪費空間（heap 就是這種）。"
+                },
+                {
+                  "term": "二元搜尋樹 BST",
+                  "definition": "左子樹都比自己小、右子樹都比自己大。中序走訪會得到排序好的結果。"
+                },
+                {
+                  "term": "歪掉的樹",
+                  "definition": "如果每個節點只有一個子節點，樹就變成一條鏈，深度是 n，用 list 存會浪費很多空間 → 用 Node class。"
+                }
+              ]
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "用 list 存二元樹，index 3 的左子節點在哪裡？",
+                  "options": [
+                    "4",
+                    "6",
+                    "7",
+                    "8"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "index 6 的父節點是？",
+                  "options": [
+                    "2",
+                    "3",
+                    "5",
+                    "12"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "Python 裡 node.left = other 做的事最像 C++ 的什麼？",
+                  "options": [
+                    "複製整個物件",
+                    "指標指向另一個物件",
+                    "建立新的 class",
+                    "刪除 other"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Maximum Depth of Binary Tree",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/maximum-depth-of-binary-tree/",
+                  "description": "遞迴：1 + max(左邊深度, 右邊深度)"
+                },
+                {
+                  "title": "Invert Binary Tree",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/invert-binary-tree/",
+                  "description": "把每個節點的 left、right 交換"
+                }
+              ]
             }
           ]
         },
         {
           "id": "lesson-1789018604406",
-          "title": "tree",
+          "title": "tree 一般的樹",
           "titleEn": "tree",
           "pdfPages": [],
           "content": [
             {
               "type": "heading",
-              "text": "New Lesson"
+              "text": "一般的樹：子節點不限兩個"
             },
             {
               "type": "paragraph",
-              "text": "Add content here..."
+              "text": "樹是「n 個點、n − 1 條邊、全部連在一起、沒有環」的圖。題目通常給 n − 1 條邊，不會告訴你誰是父、誰是子，要自己從 root 走出來。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "root",
+                  "definition": "自己選一個點當起點（題目沒說就選 0 或 1）。"
+                },
+                {
+                  "term": "parent / child",
+                  "definition": "從 root 往外走，先走到的是 parent。"
+                },
+                {
+                  "term": "leaf",
+                  "definition": "除了 parent 以外沒有其他鄰居的點（連接數為 1）。"
+                },
+                {
+                  "term": "depth",
+                  "definition": "離 root 幾條邊。"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "模板：用鄰接串列存，從 root 走出 parent 和 depth"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import deque\n\nn = 6\nedges = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5)]\n\nadj = [[] for _ in range(n)]          # adj[u] = u 的鄰居\nfor u, v in edges:\n    adj[u].append(v)\n    adj[v].append(u)                  # 無向：兩邊都要加\n\nparent = [-1] * n\ndepth = [0] * n\nseen = [False] * n\nq = deque([0]); seen[0] = True\nwhile q:\n    u = q.popleft()\n    for v in adj[u]:\n        if not seen[v]:\n            seen[v] = True\n            parent[v] = u\n            depth[v] = depth[u] + 1\n            q.append(v)\n\nprint(parent)                                        # [-1, 0, 0, 1, 1, 2]\nprint(depth)                                         # [0, 1, 1, 2, 2, 2]\nprint([u for u in range(n) if len(adj[u]) == 1])     # 葉子：[3, 4, 5]"
+            },
+            {
+              "type": "callout",
+              "label": "重點",
+              "text": "樹沒有環，所以其實只要記「從哪裡來」（parent）就不會走回頭；用 seen 也可以，寫法和圖一樣。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "一棵有 10 個點的樹有幾條邊？",
+                  "options": [
+                    "9",
+                    "10",
+                    "11",
+                    "不一定"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "無向邊 (u, v) 存進鄰接串列時要怎麼做？",
+                  "options": [
+                    "只加 adj[u].append(v)",
+                    "adj[u] 和 adj[v] 都要加",
+                    "只加 adj[v].append(u)",
+                    "存成矩陣"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "在樹裡，哪些點是葉子？",
+                  "options": [
+                    "depth 最大的點",
+                    "除了 parent 沒有其他鄰居的點",
+                    "root",
+                    "編號最大的點"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Find Center of Star Graph",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/find-center-of-star-graph/",
+                  "description": "誰的連接數是 n − 1"
+                },
+                {
+                  "title": "N-ary Tree Level Order Traversal",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/n-ary-tree-level-order-traversal/",
+                  "description": "子節點不只兩個的 BFS"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-1794560000001",
+          "title": "heap 優先佇列",
+          "titleEn": "Heap / Priority Queue",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "每次都要拿最小的"
+            },
+            {
+              "type": "paragraph",
+              "text": "如果每次都要從一堆資料裡拿出最小的，用 list 每次 min() 要 O(n)；排序後再插入新資料也要 O(n)。heap 可以做到放進去 O(log n)、拿最小 O(log n)。"
+            },
+            {
+              "type": "paragraph",
+              "text": "heap 是一棵存在 list 裡的完全二元樹（上一課的 2i+1、2i+2），規則只有一條：父節點 ≤ 子節點。所以最小的一定在 index 0。"
+            },
+            {
+              "type": "animation",
+              "animationId": 54,
+              "caption": "heap：push 5, 3, 8, 1 再 pop",
+              "steps": [
+                "開始：heap 是空的",
+                "push 5：放在最後（index 0）",
+                "push 3：放在 index 1，比父節點 5 小 → 上浮交換",
+                "push 8：放在 index 2，比父節點 3 大 → 不用動",
+                "push 1：先放在最後（index 3）",
+                "上浮：1 比父節點 5 小 → 交換",
+                "上浮：1 比父節點 3 小 → 交換，1 到頂端",
+                "pop：拿走頂端的 1，最後一個 5 搬到頂端",
+                "下沉：5 比子節點 3 大 → 和比較小的子節點 3 交換，完成"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import heapq\n\nh = []\nfor x in [5, 3, 8, 1]:\n    heapq.heappush(h, x)     # 放在最後，往上換（上浮）\nprint(h)                     # [1, 3, 8, 5]：不是排序好的，只保證 h[0] 最小\n\nprint(heapq.heappop(h))      # 1：拿走頂端，最後一個補上去，往下換（下沉）\nprint(h)                     # [3, 5, 8]\n\n# 想要最大的：存負數\nh2 = []\nfor x in [5, 3, 8, 1]:\n    heapq.heappush(h2, -x)\nprint(-heapq.heappop(h2))    # 8\n\n# 存 tuple：先比第一個，一樣再比第二個\ntasks = []\nheapq.heappush(tasks, (2, \"寫作業\"))\nheapq.heappush(tasks, (1, \"吃飯\"))\nprint(heapq.heappop(tasks))  # (1, '吃飯')"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "heappush",
+                  "definition": "O(log n)：放在最後，比父節點小就交換，一路往上。"
+                },
+                {
+                  "term": "heappop",
+                  "definition": "O(log n)：拿走 h[0]，最後一個搬到頂端，和比較小的子節點交換，一路往下。"
+                },
+                {
+                  "term": "h[0]",
+                  "definition": "O(1)：看最小的，不拿走。"
+                },
+                {
+                  "term": "heapify(list)",
+                  "definition": "O(n)：把現有的 list 原地變成 heap。"
+                }
+              ]
+            },
+            {
+              "type": "callout",
+              "label": "什麼時候用",
+              "text": "「一直拿目前最小／最大」的題目：Dijkstra、合併 k 個排序好的 list、第 k 大、排程。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "heap 裡一定成立的是？",
+                  "options": [
+                    "h 是排序好的",
+                    "h[0] 是最小的",
+                    "h[-1] 是最大的",
+                    "左子節點 < 右子節點"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "heapq 要拿最大值，最常見的做法是？",
+                  "options": [
+                    "用 heapq.max",
+                    "存負數",
+                    "排序後拿最後一個",
+                    "沒辦法"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "heappush 的時間是？",
+                  "options": [
+                    "O(1)",
+                    "O(log n)",
+                    "O(n)",
+                    "O(n log n)"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：第 k 大",
+              "subtitle": "用 heap 保留最大的 k 個",
+              "difficulty": "Medium",
+              "coursePrompt": "請讓學生完成 Python Coding 題：輸入 n、k 和 n 個整數，輸出第 k 大的數。要求使用 heapq，並維持一個大小為 k 的 min-heap（超過 k 個就 pop 掉最小的），最後 h[0] 就是答案。引導學生說明為什麼時間是 O(n log k)。不要直接給答案。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Kth Largest Element in an Array",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/kth-largest-element-in-an-array/",
+                  "description": "大小為 k 的 min-heap"
+                },
+                {
+                  "title": "Last Stone Weight",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/last-stone-weight/",
+                  "description": "每次拿最大的兩個：存負數"
+                },
+                {
+                  "title": "Merge k Sorted Lists",
+                  "difficulty": "Hard",
+                  "url": "https://leetcode.com/problems/merge-k-sorted-lists/",
+                  "description": "heap 裡放每個 list 目前的頭"
+                }
+              ]
             }
           ]
         },
         {
           "id": "lesson-1789013303759",
-          "title": "union_find",
+          "title": "union_find 並查集",
           "titleEn": "union_find",
           "pdfPages": [],
           "content": [
@@ -5521,6 +6380,10 @@
             {
               "type": "paragraph",
               "text": "union_find, also known as marge nodes and find root of tree"
+            },
+            {
+              "type": "paragraph",
+              "text": "用途：一直有「把兩群合併」和「這兩個點是不是同一群」的問題。每一群是一棵樹，用 root 當這一群的代表；兩個點的 root 一樣，就是同一群。"
             },
             {
               "type": "paragraph",
@@ -5540,7 +6403,21 @@
             },
             {
               "type": "paragraph",
-              "text": "New paragraph"
+              "text": "整棵樹只用一個 list 存：parent[i] 是 i 的父節點，root 的 parent 是自己。合併 = 把一棵樹的 root 接到另一棵的 root 底下。"
+            },
+            {
+              "type": "animation",
+              "animationId": 57,
+              "caption": "並查集：union 與 find（路徑壓縮）",
+              "steps": [
+                "開始：每個點自己一群，parent[i] = i",
+                "union(0, 1)：root 0 和 root 1 不同 → parent[1] = 0",
+                "union(2, 3)：parent[3] = 2",
+                "union(1, 3)：find(1) = 0、find(3) = 2，不同群 → parent[2] = 0",
+                "union(4, 5)：parent[5] = 4",
+                "find(3)：3 → 2 → 0，root 是 0",
+                "路徑壓縮：parent[3] 直接改成 0，下次 find(3) 只要一步"
+              ]
             },
             {
               "type": "heading",
@@ -5549,33 +6426,233 @@
             {
               "type": "code",
               "language": "python",
-              "code": "def get(self, isConnected: list[list[int]]) -> int:\n    parent=[a for a in range(len(isConnected))]\n    rank=[1 for _ in range(len(isConnected))]#may not be used\n    result=len(isConnected)\n    def find(me):#get root of that tree\n        if parent[me]==me:\n            return me\n        return find(parent[me])\n    def union(a,b):#return value = whether can be marged\n        nonlocal result\n        root_a=find(a)\n        root_b=find(b)\n        print(a,b,\"  \",root_a,root_b)\n        if root_a==root_b:\n            return False\n        \n        parent[root_b]=root_a#wrote parent[b]=a \n        result-=1\n\n\n        return True\n    \n\n    for dad in range(len(isConnected)):\n        for child in range(len(isConnected)):\n            if isConnected[dad][child] ==0:\n                continue\n            union(dad,child)\n    return result\n\n\na=[[1,0,0,1],[0,1,1,0],[0,1,1,1],[1,0,1,1]]\n#input\n\nget(a)",
-              "text": "Add content here..."
+              "code": "n = 6\nparent = list(range(n))   # 一開始每個點自己一群\nsize = [1] * n\n\ndef find(x):\n    if parent[x] != x:\n        parent[x] = find(parent[x])   # 路徑壓縮：直接接到 root\n    return parent[x]\n\ndef union(a, b):\n    ra, rb = find(a), find(b)\n    if ra == rb:\n        return False                  # 本來就同一群（再連就會有環）\n    if size[ra] < size[rb]:\n        ra, rb = rb, ra               # 小的接到大的底下，樹比較矮\n    parent[rb] = ra\n    size[ra] += size[rb]\n    return True\n\nunion(0, 1); union(2, 3); union(1, 3); union(4, 5)\nprint(find(3) == find(0))   # True\nprint(find(4) == find(0))   # False\nprint(len({find(i) for i in range(n)}))   # 2 群"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "路徑壓縮",
+                  "definition": "find 走過的點全部直接接到 root，下次 find 只要一步。"
+                },
+                {
+                  "term": "小的接到大的",
+                  "definition": "避免樹長成一條長鏈。"
+                },
+                {
+                  "term": "時間",
+                  "definition": "兩個一起用，每次操作幾乎是 O(1)。"
+                },
+                {
+                  "term": "union 回傳 False",
+                  "definition": "a、b 已經在同一群：這條邊會造成環（Kruskal 會用到）。"
+                }
+              ]
+            },
+            {
+              "type": "callout",
+              "label": "小心",
+              "text": "遞迴版 find 在樹很深時可能 RecursionError。先 union 很多次才 find 的題目，可以改成迴圈版本，或一開始就把小的接到大的。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "怎麼判斷 a、b 是不是同一群？",
+                  "options": [
+                    "parent[a] == parent[b]",
+                    "find(a) == find(b)",
+                    "a == b",
+                    "size[a] == size[b]"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "路徑壓縮做了什麼？",
+                  "options": [
+                    "刪掉多餘的點",
+                    "把 find 走過的點直接接到 root",
+                    "把兩棵樹合併",
+                    "把 parent 排序"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "union(a, b) 時 find(a) == find(b)，代表？",
+                  "options": [
+                    "要合併",
+                    "已經同一群，加這條邊會形成環",
+                    "程式有錯",
+                    "a 是 root"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：朋友圈",
+              "subtitle": "用並查集數有幾群",
+              "difficulty": "Medium",
+              "coursePrompt": "請讓學生完成 Python Coding 題：第一行 n、m，接著 m 行每行 a b 表示 a、b 是朋友（朋友的朋友也是朋友），輸出總共有幾個朋友圈。要求自己寫 find（含路徑壓縮）和 union，最後數有幾個不同的 root。不要直接給答案。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Number of Provinces",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/number-of-provinces/",
+                  "description": "最後數有幾個 root"
+                },
+                {
+                  "title": "Redundant Connection",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/redundant-connection/",
+                  "description": "union 回傳 False 的那條邊就是答案"
+                }
+              ]
             }
           ]
         },
         {
           "id": "lesson-1789018613894",
-          "title": "graph",
+          "title": "graph 圖",
           "titleEn": "graph",
           "pdfPages": [],
           "content": [
             {
               "type": "heading",
-              "text": "New Lesson"
+              "text": "圖 = 點 + 邊"
             },
             {
               "type": "paragraph",
-              "text": "Add content here..."
+              "text": "樹是圖的特例。一般的圖可以有環、可以不連通、邊可以有方向（有向圖）或有權重（加權圖）。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "無向圖",
+                  "definition": "a — b：a 可以到 b，b 也可以到 a。"
+                },
+                {
+                  "term": "有向圖",
+                  "definition": "a → b：只能從 a 到 b，例如「先修課」。"
+                },
+                {
+                  "term": "加權圖",
+                  "definition": "每條邊有一個數字（距離、花費）。"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "怎麼存"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "n = 4\nedges = [(0, 1, 5), (0, 2, 3), (2, 3, 1)]   # (u, v, 權重)\n\n# 1. 鄰接矩陣：mat[u][v] = 權重，查「u、v 有沒有邊」O(1)，空間 O(n²)\nINF = float(\"inf\")\nmat = [[INF] * n for _ in range(n)]\nfor u, v, w in edges:\n    mat[u][v] = mat[v][u] = w\n\n# 2. 鄰接串列：adj[u] = [(v, w), …]，走訪所有鄰居快，空間 O(n + m)\nadj = [[] for _ in range(n)]\nfor u, v, w in edges:\n    adj[u].append((v, w))\n    adj[v].append((u, w))     # 有向圖就不要加這行\n\nprint(adj[0])     # [(1, 5), (2, 3)]\nprint(mat[2][3])  # 1"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "n 小（≤ 500）、常常問兩點有沒有邊",
+                  "definition": "鄰接矩陣，例如 Floyd-Warshall。"
+                },
+                {
+                  "term": "n 大、邊不多（大部分題目）",
+                  "definition": "鄰接串列。n = 10⁵ 時矩陣要 10¹⁰ 格，放不下。"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "點的名字不是數字"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import defaultdict\n\nadj = defaultdict(list)\nfor a, b in [(\"台北\", \"台中\"), (\"台中\", \"高雄\")]:\n    adj[a].append(b)\n    adj[b].append(a)\nprint(adj[\"台中\"])   # ['台北', '高雄']"
+            },
+            {
+              "type": "callout",
+              "label": "接下來",
+              "text": "存好之後，幾乎所有圖的題目都從 BFS 或 DFS 開始（graph 演算法模組）。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "n = 10⁵ 個點、2 × 10⁵ 條邊，要用哪一種存法？",
+                  "options": [
+                    "鄰接矩陣",
+                    "鄰接串列",
+                    "都可以",
+                    "都不行"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "無向圖的邊 (u, v) 在鄰接串列要加幾次？",
+                  "options": [
+                    "1 次",
+                    "2 次",
+                    "看權重",
+                    "不用加"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "「先修課」關係最適合哪種圖？",
+                  "options": [
+                    "無向圖",
+                    "有向圖",
+                    "完全圖",
+                    "樹"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Find the Town Judge",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/find-the-town-judge/",
+                  "description": "數每個點的入度、出度"
+                },
+                {
+                  "title": "Find if Path Exists in Graph",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/find-if-path-exists-in-graph/",
+                  "description": "存成鄰接串列再走走看"
+                }
+              ]
             }
           ]
         },
         {
           "id": "lesson-1793318837668",
-          "title": "Fenwick tree(binary indexed tree)",
+          "title": "Fenwick tree (binary indexed tree)",
           "titleEn": "Fenwick tree(binary indexed tree)",
           "pdfPages": [],
           "content": [
+            {
+              "type": "heading",
+              "text": "為什麼要 Fenwick tree"
+            },
+            {
+              "type": "paragraph",
+              "text": "前綴和可以 O(1) 算區間和，但只要改一個數，後面的前綴和全部要重算，O(n)。Fenwick tree 讓「改一個數」和「算前綴和」都變成 O(log n)。"
+            },
             {
               "type": "heading",
               "text": "code example"
@@ -5590,19 +6667,241 @@
               "text": "what is (i & -i)"
             },
             {
+              "type": "paragraph",
+              "text": "-i 在電腦裡是「i 的每一位反過來再加 1」（二補數）。這樣 i & -i 只會留下 i 最右邊的那個 1：\n12 = 1100₂，-12 = …0100₂，12 & -12 = 0100₂ = 4。\n\n在 Fenwick tree 裡，tree[i] 負責「i 往左數 lowbit(i) 個」的總和：tree[12] 負責 a[9..12] 共 4 個，tree[7] 只負責 a[7]。"
+            },
+            {
+              "type": "animation",
+              "animationId": 73,
+              "caption": "Fenwick tree：查詢往下跳 i -= i&-i，更新往上跳 i += i&-i",
+              "steps": [
+                "a[1..8]；tree[i] 負責「i 往左數 lowbit(i) 個」的總和",
+                "lowbit：1、3、5、7 管 1 個；2、6 管 2 個；4 管 4 個；8 管 8 個",
+                "prefix_sum(7)：i = 7 (111₂)，先加 tree[7]（a[7]）",
+                "7 − lowbit(7) = 6 (110₂)：加 tree[6]（a[5..6]）",
+                "6 − lowbit(6) = 4 (100₂)：加 tree[4]（a[1..4]）",
+                "4 − lowbit(4) = 0：停。a[1..7] 的總和 = 8 + 9 + 17 = 34",
+                "update(3, +2)：i = 3 (011₂)，tree[3] 加 2",
+                "3 + lowbit(3) = 4 (100₂)：tree[4] 加 2",
+                "4 + lowbit(4) = 8 (1000₂)：tree[8] 加 2",
+                "8 + 8 = 16 > 8：停。只改了 3 格"
+              ]
+            },
+            {
               "type": "code",
               "language": "python",
-              "code": " i  =  00001100   (12)\n-i  =  11110100   (-12, in two's complement)\n      --------\n &  =  00000100   (4)\nfrom every 1 get rightest one\nresult of ( i& -i) represent the length of this node  , index diff for child and parent",
-              "text": "New paragraph"
+              "code": "for i in [1, 2, 3, 4, 6, 7, 8, 12]:\n    print(i, bin(i), i & -i)\n# 1  0b1     1\n# 2  0b10    2\n# 3  0b11    1\n# 4  0b100   4\n# 6  0b110   2\n# 7  0b111   1\n# 8  0b1000  8\n# 12 0b1100  4"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "prefix_sum(i)：i -= i & -i",
+                  "definition": "每次去掉最右邊的 1，最多 log n 次。7 → 6 → 4 → 0。"
+                },
+                {
+                  "term": "update(i)：i += i & -i",
+                  "definition": "往上找所有「範圍包含 i」的格子。3 → 4 → 8。"
+                },
+                {
+                  "term": "1-indexed",
+                  "definition": "index 0 的 lowbit 是 0，會無限迴圈，所以從 1 開始。"
+                }
+              ]
             },
             {
               "type": "heading",
               "text": "code sample 2"
             },
             {
+              "type": "paragraph",
+              "text": "第二種寫法用一般的 list（0-indexed 存、1-indexed 算），而且建樹只要 O(n)：每一格算好之後，把自己加到 parent = now + lowbit(now) 那一格。update 傳的是「新的值」而不是「增加多少」。"
+            },
+            {
               "type": "code",
               "language": "python",
               "code": "d=list(map(int,input().split()))\ntree=d.copy()\nfor now in range(1,len(tree)+1):\n    while True:\n        parent=now+(now&-now)\n        if parent-1<len(tree)-1:\n            tree[parent-1]+=tree[now-1]\n        else:\n            break\n        now=parent\ndef find(n):#n=1 indexed\n    res=tree[n-1]\n    while True:\n        my_range=( n & -n)\n        n-=my_range\n        if n==0:\n            break\n        res+=tree[n-1]\n    return res\ndef update(n,value):#n=1 indexed\n    diff=value-tree[n-1]\n    tree[n-1]+=diff\n    while True:\n        my_range=(n & -n)\n        n+=my_range\n        if n-1>len(tree)-1:\n            break\n        tree[n-1]+=diff\n    return 0"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "12 & -12 是多少？",
+                  "options": [
+                    "1",
+                    "2",
+                    "4",
+                    "12"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "prefix_sum(7) 會依序看哪些格子？",
+                  "options": [
+                    "7, 6, 4",
+                    "7, 8",
+                    "1, 2, 4",
+                    "7, 3, 1"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "為什麼 Fenwick tree 要 1-indexed？",
+                  "options": [
+                    "比較好看",
+                    "0 & -0 = 0，i 不會變，會無限迴圈",
+                    "Python 規定",
+                    "省記憶體"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Range Sum Query - Mutable",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/range-sum-query-mutable/",
+                  "description": "update + 區間和"
+                },
+                {
+                  "title": "Count of Smaller Numbers After Self",
+                  "difficulty": "Hard",
+                  "url": "https://leetcode.com/problems/count-of-smaller-numbers-after-self/",
+                  "description": "座標壓縮 + Fenwick tree 計數"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-1794560000002",
+          "title": "單調堆疊與單調佇列",
+          "titleEn": "Monotonic Stack & Queue",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "單調堆疊：下一個更大的元素"
+            },
+            {
+              "type": "paragraph",
+              "text": "問題：每個數右邊第一個比它大的數是誰？暴力往右找是 O(n²)。\n\n單調堆疊的想法：堆疊裡放「還沒找到答案的數」，從下到上越來越小。新的數 x 進來時，堆疊頂端比 x 小的數，答案就是 x，彈出去；然後 x 自己進堆疊等答案。每個數最多進一次、出一次，O(n)。"
+            },
+            {
+              "type": "animation",
+              "animationId": 55,
+              "caption": "單調堆疊：[2,1,5,3,6,4] 的下一個更大元素",
+              "steps": [
+                "開始：a = [2, 1, 5, 3, 6, 4]",
+                "i=0, x=2：堆疊是空的 → 2 進堆疊等答案",
+                "i=1, x=1：1 沒有比 2 大 → 1 進堆疊",
+                "i=2, x=5：彈出 1、2，它們的答案都是 5；5 進堆疊",
+                "i=3, x=3：3 沒有比 5 大 → 3 進堆疊",
+                "i=4, x=6：彈出 3、5，答案是 6；6 進堆疊",
+                "i=5, x=4：4 沒有比 6 大 → 4 進堆疊",
+                "結束：堆疊裡剩下的 6、4 右邊沒有更大的 → -1"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def next_greater(a):\n    ans = [-1] * len(a)\n    stack = []                      # 放 index，對應的值由下到上遞減\n    for i, x in enumerate(a):\n        while stack and a[stack[-1]] < x:\n            ans[stack.pop()] = x    # 找到答案了\n        stack.append(i)             # x 自己等答案\n    return ans\n\nprint(next_greater([2, 1, 5, 3, 6, 4]))   # [5, 5, 6, 6, -1, -1]"
+            },
+            {
+              "type": "heading",
+              "text": "單調佇列：滑動視窗最大值"
+            },
+            {
+              "type": "paragraph",
+              "text": "問題：長度 k 的視窗一路往右滑，每次的最大值是多少？\n\ndeque 裡放「可能成為最大值的數」，從前到後遞減：新的數進來，把後面比它小的都踢掉（它們以後不可能是最大）；最前面的如果已經滑出視窗也踢掉。最前面就是目前的最大值。"
+            },
+            {
+              "type": "animation",
+              "animationId": 56,
+              "caption": "單調佇列：[1,3,-1,-3,5,3,6,7]，k = 3 的視窗最大值",
+              "steps": [
+                "開始：a = [1, 3, -1, -3, 5, 3, 6, 7]，k = 3",
+                "i=0, x=1：放進 deque",
+                "i=1, x=3：1 比 3 小，以後不可能是最大 → 從後面踢掉；3 放進去",
+                "i=2, x=-1：放進去；第一個視窗 [1, 3, -1] 的最大 = 最前面的 3",
+                "i=3, x=-3：放進去；視窗 [3, -1, -3] 最大 = 3",
+                "i=4, x=5：-3、-1、3 都比 5 小 → 從後面踢掉；最大 = 5",
+                "i=5, x=3：放進去；視窗 [-3, 5, 3] 最大 = 5",
+                "i=6, x=6：3、5 比 6 小 → 踢掉；最大 = 6",
+                "i=7, x=7：6 比 7 小 → 踢掉；最大 = 7"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import deque\n\ndef window_max(a, k):\n    dq = deque()                     # 放 index，對應的值由前到後遞減\n    res = []\n    for i, x in enumerate(a):\n        while dq and a[dq[-1]] <= x:\n            dq.pop()                 # 比 x 小的以後都不可能是最大\n        dq.append(i)\n        if dq[0] <= i - k:\n            dq.popleft()             # 滑出視窗了\n        if i >= k - 1:\n            res.append(a[dq[0]])\n    return res\n\nprint(window_max([1, 3, -1, -3, 5, 3, 6, 7], 3))   # [3, 3, 5, 5, 6, 7]"
+            },
+            {
+              "type": "callout",
+              "label": "重點",
+              "text": "兩個都是「新來的比較好，舊的就沒用了，直接丟掉」。存 index 而不是值，才知道誰滑出視窗、答案要填在哪裡。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "單調堆疊找「下一個更大」，堆疊裡的值由下到上是？",
+                  "options": [
+                    "遞增",
+                    "遞減",
+                    "隨便",
+                    "全部一樣"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "為什麼單調堆疊是 O(n)？",
+                  "options": [
+                    "每個數最多進一次出一次",
+                    "堆疊很小",
+                    "只看相鄰的數",
+                    "用了二分搜尋"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "滑動視窗最大值，deque 最前面的元素什麼時候要丟掉？",
+                  "options": [
+                    "比新的數小",
+                    "index ≤ i − k，已經滑出視窗",
+                    "每次都丟",
+                    "deque 滿了"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Daily Temperatures",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/daily-temperatures/",
+                  "description": "下一個更高溫在幾天後"
+                },
+                {
+                  "title": "Sliding Window Maximum",
+                  "difficulty": "Hard",
+                  "url": "https://leetcode.com/problems/sliding-window-maximum/",
+                  "description": "單調佇列"
+                },
+                {
+                  "title": "Largest Rectangle in Histogram",
+                  "difficulty": "Hard",
+                  "url": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
+                  "description": "單調堆疊找左右第一個更矮的"
+                }
+              ]
             }
           ]
         }
@@ -5616,8 +6915,8 @@
       "lessons": [
         {
           "id": "lesson-1792483941223",
-          "title": "Lesson 1",
-          "titleEn": "Lesson 1",
+          "title": "二分搜尋：最左與最右",
+          "titleEn": "Binary Search: Leftmost & Rightmost",
           "pdfPages": [],
           "content": [
             {
@@ -5625,10 +6924,13 @@
               "text": "definition"
             },
             {
+              "type": "paragraph",
+              "text": "資料已經排好序時，看中間那一個就能丟掉一半：中間的比目標小，答案只可能在右半邊。每次砍一半，n = 10⁶ 也只要 20 次。"
+            },
+            {
               "type": "code",
               "language": "python",
-              "code": "every time looping will cut about half element until a situation",
-              "text": "Add your content here..."
+              "code": "from bisect import bisect_left, bisect_right\n\na = [1, 3, 4, 4, 4, 7, 9, 12]\nprint(bisect_left(a, 4))    # 2：第一個 >= 4 的位置（最左邊的 4）\nprint(bisect_right(a, 4))   # 5：第一個 > 4 的位置（最右邊的 4 再右邊一格）\nprint(bisect_right(a, 4) - bisect_left(a, 4))   # 3：4 出現幾次\nprint(bisect_left(a, 5))    # 5：找不到時，是 5 應該插入的位置"
             },
             {
               "type": "paragraph",
@@ -5649,6 +6951,242 @@
             {
               "type": "paragraph",
               "text": "    so what is the good stopping logical gate?"
+            },
+            {
+              "type": "heading",
+              "text": "回答這三個問題"
+            },
+            {
+              "type": "paragraph",
+              "text": "用「左閉右開」[lo, hi) 寫：答案一定在 lo ～ hi 之間（hi 也可能是答案，代表「全部都比 target 小」）。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "mid 靠左還是靠右",
+                  "definition": "mid = (lo + hi) // 2，靠左。因為 hi 不會被拿來當 mid，lo < hi 時 mid 一定 < hi。"
+                },
+                {
+                  "term": "a[mid] 等於 target 時",
+                  "definition": "找最左邊：a[mid] >= target 就 hi = mid（mid 自己可能就是答案，不能丟掉），否則 lo = mid + 1。"
+                },
+                {
+                  "term": "停止條件",
+                  "definition": "while lo < hi：lo == hi 時只剩一個可能，那就是答案。每次 lo 或 hi 至少動一格，不會無限迴圈。"
+                }
+              ]
+            },
+            {
+              "type": "animation",
+              "animationId": 41,
+              "caption": "二分搜尋：在 [1,3,4,4,4,7,9,12] 找最左邊的 4",
+              "steps": [
+                "開始：lo = 0，hi = 8（左閉右開 [0, 8)），找第一個 ≥ 4 的位置",
+                "mid = 4：a[4] = 4 ≥ 4 → 答案是 4 或更左 → hi = 4",
+                "mid = 2：a[2] = 4 ≥ 4 → hi = 2",
+                "mid = 1：a[1] = 3 < 4 → 太小，丟掉 → lo = 2",
+                "lo == hi == 2 → 停：最左邊的 4 在 index 2",
+                "upper_bound 把 ≥ 換成 >，會停在 5；4 出現 5 − 2 = 3 次"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def lower_bound(a, target):      # 第一個 >= target 的位置\n    lo, hi = 0, len(a)\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if a[mid] >= target:\n            hi = mid                # mid 可能是答案，留著\n        else:\n            lo = mid + 1            # mid 太小，丟掉\n    return lo\n\ndef upper_bound(a, target):      # 第一個 > target 的位置\n    lo, hi = 0, len(a)\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if a[mid] > target:         # 只差這裡：>= 變成 >\n            hi = mid\n        else:\n            lo = mid + 1\n    return lo\n\na = [1, 3, 4, 4, 4, 7, 9, 12]\nprint(lower_bound(a, 4), upper_bound(a, 4))   # 2 5\nprint(upper_bound(a, 4) - 1)                  # 4：最右邊的 4"
+            },
+            {
+              "type": "callout",
+              "label": "重點",
+              "text": "最右邊的 target = upper_bound − 1。兩個函式只差一個符號，背一個就好。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "a = [1, 3, 4, 4, 4, 7]，bisect_left(a, 4) 是？",
+                  "options": [
+                    "1",
+                    "2",
+                    "4",
+                    "5"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "左閉右開寫法，a[mid] >= target 時要怎麼做？",
+                  "options": [
+                    "hi = mid − 1",
+                    "hi = mid",
+                    "lo = mid",
+                    "lo = mid + 1"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "while lo < hi 結束時，答案是？",
+                  "options": [
+                    "mid",
+                    "lo（= hi）",
+                    "lo − 1",
+                    "hi + 1"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "n = 10⁶，二分搜尋最多大約要幾次？",
+                  "options": [
+                    "6",
+                    "20",
+                    "1000",
+                    "10⁶"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：成績排名",
+              "subtitle": "用二分搜尋算有幾個人比你低",
+              "difficulty": "Easy",
+              "coursePrompt": "請讓學生完成 Python Coding 題：輸入 n 個成績（未排序）和 q 個查詢，每個查詢 x 輸出「嚴格比 x 低的人數」和「x 出現幾次」。要求先排序，再自己寫 lower_bound / upper_bound（不能用 bisect），並說明 mid 為什麼要靠左、停止條件為什麼是 lo < hi。不要直接給答案。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Search Insert Position",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/search-insert-position/",
+                  "description": "就是 lower_bound"
+                },
+                {
+                  "title": "Find First and Last Position of Element in Sorted Array",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/",
+                  "description": "lower_bound 和 upper_bound − 1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-1794560000003",
+          "title": "二分答案",
+          "titleEn": "Binary Search on Answer",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "不是在陣列裡找，是在「答案」裡找"
+            },
+            {
+              "type": "paragraph",
+              "text": "有些題目問「最少要多少才夠」：例如每小時最少要吃幾根香蕉，才能在 h 小時內吃完。直接算很難，但「給一個速度 k，檢查能不能吃完」很簡單。\n\n關鍵是單調性：速度 k 可以，k + 1 一定也可以。所以把 1 ～ max 的每個速度排成一排，會長得像 ✗✗✗✗✓✓✓，要找的就是第一個 ✓，用二分搜尋。"
+            },
+            {
+              "type": "animation",
+              "animationId": 44,
+              "caption": "二分答案：piles = [30,11,23,4,20]，6 小時內吃完的最小速度",
+              "steps": [
+                "答案範圍：速度 1 ～ 30（最大的那堆是 30）",
+                "mid = 15：要 2+1+2+1+2 = 8 小時 > 6 ✗ → 太慢，lo = 16",
+                "mid = 23：要 2+1+1+1+1 = 6 小時 ≤ 6 ✓ → hi = 23",
+                "mid = 19：要 8 小時 ✗ → lo = 20",
+                "mid = 21：要 7 小時 ✗ → lo = 22",
+                "mid = 22：要 7 小時 ✗ → lo = 23",
+                "lo == hi == 23 → 答案 23：可以的速度排起來是 ✗✗…✗✓✓…✓"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def hours(piles, k):                # 速度 k 要吃幾小時\n    return sum((p + k - 1) // k for p in piles)   # 無條件進位\n\ndef min_speed(piles, h):\n    lo, hi = 1, max(piles)          # 答案一定在這個範圍\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if hours(piles, mid) <= h:  # ✓ 可以：答案是 mid 或更小\n            hi = mid\n        else:                       # ✗ 不行：要更快\n            lo = mid + 1\n    return lo\n\nprint(min_speed([30, 11, 23, 4, 20], 6))   # 23\nprint(min_speed([30, 11, 23, 4, 20], 5))   # 30"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "時間",
+                  "definition": "O(n log M)：檢查一次 O(n)，二分 log M 次（M 是答案範圍）。"
+                },
+                {
+                  "term": "怎麼認出來",
+                  "definition": "題目問「最小的最大值」「最大的最小值」「最少要多少才能…」，而且答案越大（或越小）越容易成立。"
+                },
+                {
+                  "term": "寫法",
+                  "definition": "就是上一課的 lower_bound，只是把 a[mid] >= target 換成 check(mid)。"
+                }
+              ]
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "二分答案一定要有什麼性質？",
+                  "options": [
+                    "資料已排序",
+                    "答案越大越容易成立（單調性）",
+                    "n 很小",
+                    "答案是整數"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "hours(piles, mid) <= h 時要怎麼做？",
+                  "options": [
+                    "lo = mid + 1",
+                    "hi = mid",
+                    "直接 return mid",
+                    "hi = mid − 1"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "(p + k − 1) // k 在算什麼？",
+                  "options": [
+                    "p / k 四捨五入",
+                    "p / k 無條件進位",
+                    "p / k 無條件捨去",
+                    "p % k"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：分配工作",
+              "subtitle": "二分答案：最小化最大值",
+              "difficulty": "Medium",
+              "coursePrompt": "請讓學生完成 Python Coding 題：n 個工作的時間依序排好，要分給 m 個人，每個人拿連續的一段，求「最累的人」最少要做多久。引導學生：先寫 check(limit)：每人最多做 limit，貪婪地分，看需要幾個人；再想 limit 越大越容易成立，所以對 limit 做二分搜尋。範圍是 max(工作) ～ sum(工作)。不要直接給答案。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Koko Eating Bananas",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/koko-eating-bananas/",
+                  "description": "動畫裡的題目"
+                },
+                {
+                  "title": "Capacity To Ship Packages Within D Days",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/",
+                  "description": "最小化最大值"
+                },
+                {
+                  "title": "Split Array Largest Sum",
+                  "difficulty": "Hard",
+                  "url": "https://leetcode.com/problems/split-array-largest-sum/",
+                  "description": "和上面的 AI 練習一樣"
+                }
+              ]
             }
           ]
         }
@@ -5661,8 +7199,135 @@
       "icon": "📖",
       "lessons": [
         {
+          "id": "lesson-1794560000004",
+          "title": "遞迴基本",
+          "titleEn": "Recursion Basics",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "函式呼叫自己"
+            },
+            {
+              "type": "paragraph",
+              "text": "遞迴 = 把大問題變成「一樣的、但小一點的問題」，直到小到可以直接回答（base case）。\n\nfact(4) = 4 × fact(3)，fact(3) = 3 × fact(2)……fact(1) = 1 直接回答。"
+            },
+            {
+              "type": "animation",
+              "animationId": 59,
+              "caption": "遞迴：fact(4) 的 call stack 堆高再回傳",
+              "steps": [
+                "開始（還沒執行）",
+                "呼叫 fact(4)：要先算 fact(3)",
+                "呼叫 fact(3)：要先算 fact(2)",
+                "呼叫 fact(2)：要先算 fact(1)",
+                "fact(1)：base case，直接 return 1",
+                "fact(2) 拿到 1：return 2 × 1 = 2",
+                "fact(3) 拿到 2：return 3 × 2 = 6",
+                "fact(4) 拿到 6：return 4 × 6 = 24"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def fact(n):\n    if n == 1:          # base case：小到可以直接回答\n        return 1\n    return n * fact(n - 1)   # 一樣的問題，但 n 小一點\n\nprint(fact(4))   # 24"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "base case",
+                  "definition": "一定要有，而且一定要走得到，不然會一直呼叫下去。"
+                },
+                {
+                  "term": "每次變小",
+                  "definition": "參數要往 base case 靠近（n − 1、一半、少一個元素）。"
+                },
+                {
+                  "term": "call stack",
+                  "definition": "還沒算完的呼叫會先存著（存在 stack 裡），等裡面的回傳才繼續。這也是為什麼遞迴要額外的記憶體。"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "RecursionError"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import sys\nsys.setrecursionlimit(10**6)   # Python 預設只能疊大約 1000 層\n\ndef count_down(n):\n    if n == 0:\n        return 0\n    return count_down(n - 1)\n\nprint(count_down(5000))   # 沒有調整上限的話會 RecursionError"
+            },
+            {
+              "type": "callout",
+              "label": "小心",
+              "text": "調高上限只是讓 Python 不擋，真的太深還是可能讓程式當掉。n 到 10⁵ 以上的題目，通常要改成迴圈（Bottom-up），DP 模組會再講。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "遞迴一定要有什麼？",
+                  "options": [
+                    "迴圈",
+                    "base case",
+                    "global 變數",
+                    "list"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "fact(4) 的呼叫順序是？",
+                  "options": [
+                    "fact(1) → fact(4)",
+                    "fact(4) → fact(3) → fact(2) → fact(1)",
+                    "只呼叫一次",
+                    "fact(4) → fact(2)"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "為什麼遞迴太深會出錯？",
+                  "options": [
+                    "CPU 太慢",
+                    "每一層呼叫都要存在 call stack，超過上限",
+                    "Python 不支援遞迴",
+                    "數字太大"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：數字和",
+              "subtitle": "用遞迴算每一位數字的和",
+              "difficulty": "Easy",
+              "coursePrompt": "請讓學生完成 Python Coding 題：輸入一個正整數 n，用遞迴（不能用迴圈和字串）算出每一位數字的和，例如 1234 → 10。引導學生找出 base case（n < 10）以及「變小的問題」（n // 10），並畫出 call stack。不要直接給答案。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Reverse String",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/reverse-string/",
+                  "description": "用遞迴交換頭尾"
+                },
+                {
+                  "title": "Merge Two Sorted Lists",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/merge-two-sorted-lists/",
+                  "description": "比較兩個頭，小的接上「剩下的合併結果」"
+                }
+              ]
+            }
+          ]
+        },
+        {
           "id": "lesson-1789462310053",
-          "title": "backtracking",
+          "title": "backtracking 回溯",
           "titleEn": "backtracking",
           "pdfPages": [],
           "content": [
@@ -5673,6 +7338,134 @@
             {
               "type": "paragraph",
               "text": "just a recursion that saving space in a way that edit out scope object in begin of recursion function , and MUST remove what you edited in every return of the recursion function. MAKE SURE be careful the Dram as when you using Pointer"
+            },
+            {
+              "type": "paragraph",
+              "text": "換句話說：大家共用同一個 path（或棋盤），進入下一層前「改它」，回來之後「改回去」。這樣不用每一層都複製一份新的，省空間；但只要忘了改回去，後面的分支就會看到錯的資料。"
+            },
+            {
+              "type": "heading",
+              "text": "模板：選 → 走下去 → 取消選"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def subsets(nums):\n    res = []\n    path = []                    # 所有遞迴共用同一個 list\n\n    def go(i):\n        if i == len(nums):\n            res.append(path[:])  # 存「複製」，不然之後 path 改了答案也會跟著變\n            return\n        go(i + 1)                # 不選 nums[i]\n        path.append(nums[i])     # 選\n        go(i + 1)                # 走下去\n        path.pop()               # 取消選：還原\n\n    go(0)\n    return res\n\nprint(subsets([1, 2, 3]))\n# [[], [3], [2], [2, 3], [1], [1, 3], [1, 2], [1, 2, 3]]"
+            },
+            {
+              "type": "callout",
+              "label": "像指標一樣小心",
+              "text": "res.append(path) 存的是同一個 list 的位址，最後全部都會變成空的 []。要存 path[:] 或 list(path)。"
+            },
+            {
+              "type": "heading",
+              "text": "4 皇后：放不下就退回"
+            },
+            {
+              "type": "paragraph",
+              "text": "每一列放一個皇后，同一行、同一條斜線不能有兩個。一列一列放，放不下就退回上一列換位置。退回時要把剛剛放的皇后拿掉（還原）。"
+            },
+            {
+              "type": "animation",
+              "animationId": 62,
+              "caption": "回溯：4 皇后",
+              "steps": [
+                "開始：4 × 4 棋盤，一列放一個皇后",
+                "第 0 列：放在 (0, 0)",
+                "第 1 列：第 0、1 行會被攻擊，放在 (1, 2)",
+                "第 2 列：每一格都會被攻擊 → 放不下，退回",
+                "拿掉 (1, 2)（還原），第 1 列改放 (1, 3)",
+                "第 2 列：放在 (2, 1)",
+                "第 3 列每一格都被攻擊 → 退回；第 2、1 列也沒有別的位置 → 一路退回，拿掉 (0, 0)",
+                "第 0 列改放 (0, 1)",
+                "第 1 列：放在 (1, 3)",
+                "第 2 列：放在 (2, 0)",
+                "第 3 列：放在 (3, 2) → 找到一個解 [1, 3, 0, 2]"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def n_queens(n):\n    cols, d1, d2 = set(), set(), set()   # 用過的行、兩種斜線\n    place = []\n    res = []\n\n    def go(r):\n        if r == n:\n            res.append(place[:])\n            return\n        for c in range(n):\n            if c in cols or r - c in d1 or r + c in d2:\n                continue                         # 衝突，換下一格\n            cols.add(c); d1.add(r - c); d2.add(r + c); place.append(c)\n            go(r + 1)\n            cols.remove(c); d1.remove(r - c); d2.remove(r + c); place.pop()   # 還原\n\n    go(0)\n    return res\n\nprint(n_queens(4))   # [[1, 3, 0, 2], [2, 0, 3, 1]]"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "剪枝",
+                  "definition": "一發現衝突就不往下走（continue），比列出全部 nⁿ 種再檢查快很多。"
+                },
+                {
+                  "term": "什麼時候用",
+                  "definition": "要列出「所有」組合、排列、放法；n 通常很小（≤ 20）。"
+                }
+              ]
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "回溯「改回去」的步驟在哪裡？",
+                  "options": [
+                    "進入遞迴之前",
+                    "遞迴回來之後",
+                    "程式最後",
+                    "不需要"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "res.append(path) 有什麼問題？",
+                  "options": [
+                    "沒問題",
+                    "存的是同一個 list，之後 path 改了答案也會變",
+                    "會變慢",
+                    "會 RecursionError"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "4 皇后為什麼用 r − c 和 r + c 記斜線？",
+                  "options": [
+                    "同一條斜線上 r − c（或 r + c）都一樣",
+                    "比較好看",
+                    "避免負數",
+                    "題目規定"
+                  ],
+                  "answer": 0
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：排列",
+              "subtitle": "用回溯列出所有排列",
+              "difficulty": "Medium",
+              "coursePrompt": "請讓學生完成 Python Coding 題：輸入 n（1 ≤ n ≤ 6），依字典序輸出 1 ～ n 的所有排列。要求使用回溯：共用一個 path 和一個 used 陣列，進入下一層前標記、回來之後還原，並在存答案時複製 path。若學生忘了還原，請他印出中間結果找問題。不要直接給答案。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Subsets",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/subsets/",
+                  "description": "選或不選"
+                },
+                {
+                  "title": "Permutations",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/permutations/",
+                  "description": "used 陣列 + 還原"
+                },
+                {
+                  "title": "N-Queens",
+                  "difficulty": "Hard",
+                  "url": "https://leetcode.com/problems/n-queens/",
+                  "description": "動畫裡的題目"
+                }
+              ]
             }
           ]
         }
@@ -5686,7 +7479,7 @@
       "lessons": [
         {
           "id": "lesson-1789822709120",
-          "title": "search",
+          "title": "tree search 樹的走訪",
           "titleEn": "search",
           "pdfPages": [],
           "content": [
@@ -5704,7 +7497,19 @@
             },
             {
               "type": "paragraph",
-              "text": "preorder :  pre + order,  order 前面的 英文 都代表 node的位置,向這個pre代表  node 優先於left right , 也就是 node -> left -> right\ninorder: left -> node -> right\npostorder : left -> node -> right"
+              "text": "preorder :  pre + order,  order 前面的 英文 都代表 node的位置,向這個pre代表  node 優先於left right , 也就是 node -> left -> right\ninorder: left -> node -> right\npostorder : left -> right -> node"
+            },
+            {
+              "type": "animation",
+              "animationId": 78,
+              "caption": "同一棵樹的前序、中序、後序、層序",
+              "steps": [
+                "同一棵樹，四種走訪順序",
+                "前序 node → left → right：1 2 4 5 3 6",
+                "中序 left → node → right：4 2 5 1 6 3",
+                "後序 left → right → node：4 5 2 6 3 1",
+                "層序 一層一層：1 2 3 4 5 6"
+              ]
             },
             {
               "type": "heading",
@@ -5713,13 +7518,21 @@
             {
               "type": "code",
               "language": "python",
-              "code": "class tree():\n    def __init__(self,value):\n        self.value=value\n        self.left=None\n        self.right=None\ndef build_tree():\n    #by avoid python garbadge collect your result of tree build, you need to make the table in global or return it and then save to a variable\n    root=None\n    object_of_nodes=dict()#a_dict_point_to_object_of_nodes\n    while True:\n        bot=input().split()\n        if bot[0]==\"done\":\n            break\n        if root==None:\n            root=tree(bot[0])\n            object_of_nodes[bot[0]]=root# now both root and a_dict_point_to_object_of_nodes[bot[0]] points to same object\n        for element in bot:\n            if element==\"not\":\n                continue\n            if element not in object_of_nodes:\n                object_of_nodes[element]=tree(element)\n        if bot[1]!=\"not\":\n            object_of_nodes[bot[0]].left=object_of_nodes[bot[1]]\n        if bot[2]!=\"not\":\n            object_of_nodes[bot[0]].left=object_of_nodes[bot[2]]\n    return root\nroot_of_tree=build_tree()\nprint(\"next\")\nsearch_result=[]\ndef preorder(root):\n    if root==None:\n        return 0\n    search_result.append(root.value)\n\n    preorder(root.left)\n    preorder(root.right)\npreorder(root_of_tree)\nprint(search_result)\n\"\"\"testcase\n   1\n /   \\\n2     3\n\"\"\"\n\"\"\"\npreorder(1)         --- preorder(3)\n    \\\n     preorder(2)\n\"\"\""
+              "code": "class tree():\n    def __init__(self,value):\n        self.value=value\n        self.left=None\n        self.right=None\ndef build_tree():\n    #by avoid python garbadge collect your result of tree build, you need to make the table in global or return it and then save to a variable\n    root=None\n    object_of_nodes=dict()#a_dict_point_to_object_of_nodes\n    while True:\n        bot=input().split()\n        if bot[0]==\"done\":\n            break\n        if root==None:\n            root=tree(bot[0])\n            object_of_nodes[bot[0]]=root# now both root and a_dict_point_to_object_of_nodes[bot[0]] points to same object\n        for element in bot:\n            if element==\"not\":\n                continue\n            if element not in object_of_nodes:\n                object_of_nodes[element]=tree(element)\n        if bot[1]!=\"not\":\n            object_of_nodes[bot[0]].left=object_of_nodes[bot[1]]\n        if bot[2]!=\"not\":\n            object_of_nodes[bot[0]].right=object_of_nodes[bot[2]]\n    return root\nroot_of_tree=build_tree()\nprint(\"next\")\nsearch_result=[]\ndef preorder(root):\n    if root==None:\n        return 0\n    search_result.append(root.value)\n\n    preorder(root.left)\n    preorder(root.right)\npreorder(root_of_tree)\nprint(search_result)\n\"\"\"testcase\n   1\n /   \\\n2     3\n\"\"\"\n\"\"\"\npreorder(1)         --- preorder(3)\n    \\\n     preorder(2)\n\"\"\""
+            },
+            {
+              "type": "callout",
+              "label": "注意",
+              "text": "輸入每行是「node left right」：第三個是右子節點，所以要接到 .right。"
+            },
+            {
+              "type": "heading",
+              "text": "四種走訪的程式"
             },
             {
               "type": "code",
-              "language": "recursion的執行順序",
-              "code": "#1 ->  2  然後 1 -> 3\npreorder(1)         --- preorder(3)\n    \\\n     preorder(2)\n\n",
-              "text": "New paragraph"
+              "language": "python",
+              "code": "from collections import deque\n\nclass Node:\n    def __init__(self, value, left=None, right=None):\n        self.value, self.left, self.right = value, left, right\n\n#       1\n#      / \\\n#     2   3\n#    / \\  /\n#   4  5 6\nroot = Node(1, Node(2, Node(4), Node(5)), Node(3, Node(6)))\n\ndef preorder(node, out):\n    if node is None: return\n    out.append(node.value)        # node\n    preorder(node.left, out)      # left\n    preorder(node.right, out)     # right\n\ndef inorder(node, out):\n    if node is None: return\n    inorder(node.left, out)\n    out.append(node.value)        # node 在中間\n    inorder(node.right, out)\n\ndef postorder(node, out):\n    if node is None: return\n    postorder(node.left, out)\n    postorder(node.right, out)\n    out.append(node.value)        # node 在最後\n\ndef levelorder(root):             # 一層一層：用 queue（BFS）\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        out.append(node.value)\n        for child in (node.left, node.right):\n            if child: q.append(child)\n    return out\n\nfor f in (preorder, inorder, postorder):\n    out = []; f(root, out); print(f.__name__, out)\nprint(\"levelorder\", levelorder(root))\n# preorder [1, 2, 4, 5, 3, 6]\n# inorder [4, 2, 5, 1, 6, 3]\n# postorder [4, 5, 2, 6, 3, 1]\n# levelorder [1, 2, 3, 4, 5, 6]"
             },
             {
               "type": "quiz",
@@ -5773,7 +7586,138 @@
             },
             {
               "type": "paragraph",
-              "text": "New paragraph"
+              "text": "所以 call stack 的順序就是走訪的順序：preorder 在「進入」node 時記下來，postorder 在「離開」node 時記下來。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "上面那棵樹的後序走訪是？",
+                  "options": [
+                    "4 5 2 6 3 1",
+                    "1 2 4 5 3 6",
+                    "4 2 5 1 6 3",
+                    "1 2 3 4 5 6"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "層序走訪要用什麼資料結構？",
+                  "options": [
+                    "stack",
+                    "queue",
+                    "set",
+                    "dict"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Binary Tree Inorder Traversal",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/binary-tree-inorder-traversal/",
+                  "description": "遞迴寫一次，再試試用 stack"
+                },
+                {
+                  "title": "Binary Tree Level Order Traversal",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/binary-tree-level-order-traversal/",
+                  "description": "每一層分開存"
+                },
+                {
+                  "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/",
+                  "description": "preorder 第一個是 root，在 inorder 裡切成左右"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-1794560000005",
+          "title": "樹的直徑",
+          "titleEn": "Tree Diameter",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "樹上最遠的兩個點"
+            },
+            {
+              "type": "paragraph",
+              "text": "樹的直徑 = 樹上距離最遠的兩個點之間的距離。暴力：每個點都 BFS 一次，O(n²)。\n\n只要兩次 BFS：從任何一個點出發，走到最遠的點 A；再從 A 出發，走到最遠的點 B。A 到 B 就是直徑。"
+            },
+            {
+              "type": "animation",
+              "animationId": 81,
+              "caption": "樹的直徑：兩次 BFS",
+              "steps": [
+                "一棵樹：哪兩個點離最遠？",
+                "第一次 BFS 從 0 出發：每個點標上距離，最遠的是 5（距離 4）→ A = 5",
+                "第二次 BFS 從 A = 5 出發：最遠的是 6（距離 5）→ B = 6",
+                "直徑 = 5：路徑 5 – 4 – 3 – 1 – 0 – 6"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import deque\n\ndef farthest(adj, start):\n    dist = [-1] * len(adj)\n    dist[start] = 0\n    q = deque([start])\n    while q:\n        u = q.popleft()\n        for v in adj[u]:\n            if dist[v] == -1:\n                dist[v] = dist[u] + 1\n                q.append(v)\n    far = max(range(len(adj)), key=lambda i: dist[i])\n    return far, dist[far]\n\nn = 7\nedges = [(0, 1), (1, 2), (1, 3), (3, 4), (4, 5), (0, 6)]\nadj = [[] for _ in range(n)]\nfor u, v in edges:\n    adj[u].append(v); adj[v].append(u)\n\nA, _ = farthest(adj, 0)\nB, d = farthest(adj, A)\nprint(A, B, d)   # 5 6 5"
+            },
+            {
+              "type": "callout",
+              "label": "為什麼第一次走到的 A 一定是直徑的一端",
+              "text": "如果 A 不是直徑的端點，就能把直徑接到 A 那邊，得到更長的路徑，矛盾。所以從任何點出發，最遠的點一定是某條直徑的一端。（邊有權重時，權重必須是正的。）"
+            },
+            {
+              "type": "paragraph",
+              "text": "錯題本裡的「樹的距離」也可以用這個想法：先找出直徑的兩端，很多「離最遠的點有多遠」的問題，答案一定是到這兩端之一。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "求樹的直徑最少需要幾次 BFS？",
+                  "options": [
+                    "1",
+                    "2",
+                    "n",
+                    "n²"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "第一次 BFS 可以從哪個點出發？",
+                  "options": [
+                    "一定要從葉子",
+                    "一定要從 root",
+                    "任何一個點",
+                    "編號最大的點"
+                  ],
+                  "answer": 2
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Diameter of Binary Tree",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/diameter-of-binary-tree/",
+                  "description": "二元樹版本：每個點算左深度 + 右深度"
+                },
+                {
+                  "title": "Minimum Height Trees",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/minimum-height-trees/",
+                  "description": "答案就是直徑的中點"
+                }
+              ]
             }
           ]
         }
@@ -5786,8 +7730,149 @@
       "icon": "📖",
       "lessons": [
         {
+          "id": "lesson-1794560000006",
+          "title": "BFS 與 DFS",
+          "titleEn": "BFS and DFS",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "走遍整張圖的兩種方法"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "BFS 廣度優先",
+                  "definition": "用 queue，一圈一圈往外走。先走到的一定是最近的 → 沒有權重時的最短路徑。"
+                },
+                {
+                  "term": "DFS 深度優先",
+                  "definition": "用遞迴（或 stack），一條路走到底，沒路了再退回。適合找連通塊、找環、回溯。"
+                }
+              ]
+            },
+            {
+              "type": "animation",
+              "animationId": 76,
+              "caption": "BFS：用 queue 一圈一圈往外走",
+              "steps": [
+                "開始：dist[0] = 0，queue = [0]",
+                "取出 0：鄰居 1、2 第一次走到 → 距離 1，放進 queue",
+                "取出 1：鄰居 3、4 → 距離 2",
+                "取出 2：鄰居 5 → 距離 2",
+                "取出 3：沒有新的鄰居",
+                "取出 4：鄰居 6 → 距離 3",
+                "取出 5：6 已經走過了 → 跳過",
+                "取出 6：queue 空了，結束"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import deque\n\nn = 7\nedges = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (4, 6), (5, 6)]\nadj = [[] for _ in range(n)]\nfor u, v in edges:\n    adj[u].append(v); adj[v].append(u)\n\ndef bfs(start):\n    dist = [-1] * n            # -1 = 還沒走到\n    dist[start] = 0\n    q = deque([start])\n    while q:\n        u = q.popleft()\n        for v in adj[u]:\n            if dist[v] == -1:  # 第一次走到就是最短\n                dist[v] = dist[u] + 1\n                q.append(v)\n    return dist\n\nprint(bfs(0))   # [0, 1, 1, 2, 2, 2, 3]"
+            },
+            {
+              "type": "callout",
+              "label": "小心",
+              "text": "放進 queue 的時候就要標記（dist[v] = …），不要等拿出來才標記，不然同一個點會被放進去很多次。"
+            },
+            {
+              "type": "animation",
+              "animationId": 77,
+              "caption": "DFS：一條路走到底，沒路了再退回",
+              "steps": [
+                "開始：dfs(0)",
+                "進入 0：標記走過，往第一個沒走過的鄰居 1",
+                "進入 1：往 3",
+                "進入 3：沒有沒走過的鄰居 → 退回 1",
+                "回到 1：往下一個鄰居 4",
+                "進入 4：往 6",
+                "進入 6：往 5",
+                "進入 5：往 2",
+                "進入 2：鄰居 0、5 都走過了 → 退回",
+                "一路退回 0，結束：順序 0 1 3 4 6 5 2"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import sys\nsys.setrecursionlimit(10**6)\n\nn = 7\nedges = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (4, 6), (5, 6)]\nadj = [[] for _ in range(n)]\nfor u, v in edges:\n    adj[u].append(v); adj[v].append(u)\n\nseen = [False] * n\norder = []\n\ndef dfs(u):\n    seen[u] = True\n    order.append(u)\n    for v in adj[u]:\n        if not seen[v]:\n            dfs(v)\n\ndfs(0)\nprint(order)   # [0, 1, 3, 4, 6, 5, 2]"
+            },
+            {
+              "type": "heading",
+              "text": "格子圖也是圖"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import deque\n\ngrid = [\"..#\",\n        \".#.\",\n        \"...\"]\nR, C = len(grid), len(grid[0])\ndist = [[-1] * C for _ in range(R)]\ndist[0][0] = 0\nq = deque([(0, 0)])\nwhile q:\n    r, c = q.popleft()\n    for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):   # 上下左右就是鄰居\n        nr, nc = r + dr, c + dc\n        if 0 <= nr < R and 0 <= nc < C and grid[nr][nc] == \".\" and dist[nr][nc] == -1:\n            dist[nr][nc] = dist[r][c] + 1\n            q.append((nr, nc))\nprint(dist[2][2])   # 4"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "沒有權重的最短路徑要用？",
+                  "options": [
+                    "DFS",
+                    "BFS",
+                    "都可以",
+                    "都不行"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "BFS 什麼時候標記一個點走過了？",
+                  "options": [
+                    "放進 queue 的時候",
+                    "從 queue 拿出來的時候",
+                    "最後",
+                    "不用標記"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "DFS 用遞迴寫，背後其實是哪種資料結構？",
+                  "options": [
+                    "queue",
+                    "stack（call stack）",
+                    "heap",
+                    "set"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：迷宮",
+              "subtitle": "格子 BFS 最短路徑",
+              "difficulty": "Medium",
+              "coursePrompt": "請讓學生完成 Python Coding 題：輸入 R、C 和一個 R × C 的迷宮（'.' 可以走、'#' 是牆），從左上走到右下（上下左右），輸出最少步數，走不到輸出 -1。要求用 BFS，放進 queue 時就標記，並說明為什麼 BFS 第一次走到的就是最短距離。不要直接給答案。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Number of Islands",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/number-of-islands/",
+                  "description": "每找到一塊新的陸地就 DFS / BFS 把整塊標起來"
+                },
+                {
+                  "title": "Shortest Path in Binary Matrix",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/shortest-path-in-binary-matrix/",
+                  "description": "格子 BFS（8 個方向）"
+                }
+              ]
+            }
+          ]
+        },
+        {
           "id": "lesson-1788428054338",
-          "title": "AOV括樸",
+          "title": "AOV 拓樸排序",
           "titleEn": "Lesson 1",
           "pdfPages": [],
           "content": [
@@ -5826,6 +7911,39 @@
               "text": "隨著任務的進行 ,others 的各個task 的 應該優先於我做清單就會減少，直到自己也變成 nothing need to do first"
             },
             {
+              "type": "paragraph",
+              "text": "「nothing need to do first」就是入度（有幾條邊指向我）= 0。做完一個 task，就把它指出去的邊拿掉，被指的 task 入度減 1；變成 0 就可以做了。這叫 Kahn 演算法。"
+            },
+            {
+              "type": "animation",
+              "animationId": 79,
+              "caption": "拓樸排序：入度變 0 就可以做",
+              "steps": [
+                "先數入度：0、1 沒有人要等（入度 0）",
+                "入度 0 的 0、1 放進 queue",
+                "取出 0：拿掉 0 → 2，2 的入度 2 → 1",
+                "取出 1：2 的入度 1 → 0、4 的入度 1 → 0，放進 queue",
+                "取出 2：3 的入度 2 → 1",
+                "取出 4：3 的入度 1 → 0，放進 queue",
+                "取出 3：全部做完，順序 0 1 2 4 3",
+                "如果有環（再加一條 3 → 1）：環上的點入度永遠不會變 0，order 少於 n 個"
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "模板"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import deque\n\ndef topo_sort(n, prereq):            # prereq: (a, b) = 先做 a 才能做 b\n    adj = [[] for _ in range(n)]\n    indeg = [0] * n\n    for a, b in prereq:\n        adj[a].append(b)\n        indeg[b] += 1\n\n    q = deque(i for i in range(n) if indeg[i] == 0)   # 現在就能做的\n    order = []\n    while q:\n        u = q.popleft()\n        order.append(u)\n        for v in adj[u]:\n            indeg[v] -= 1            # u 做完了，v 少一個要等的\n            if indeg[v] == 0:\n                q.append(v)\n\n    return order if len(order) == n else []   # 有環：有些 task 永遠等不到\n\nprint(topo_sort(5, [(0, 2), (1, 2), (2, 3), (1, 4), (4, 3)]))   # [0, 1, 2, 4, 3]\nprint(topo_sort(2, [(0, 1), (1, 0)]))                           # []"
+            },
+            {
+              "type": "callout",
+              "label": "重點",
+              "text": "如果最後 order 的數量 < n，代表有環：環上的 task 互相等，入度永遠不會變 0。"
+            },
+            {
               "type": "heading",
               "text": "leetcode 310"
             },
@@ -5839,20 +7957,67 @@
               "text": "某個node 可以用某種邏輯確定他是不是答案，邏輯跟邊有關係。每個點都是一次決策問題"
             },
             {
-              "type": "heading",
-              "text": "模板"
+              "type": "paragraph",
+              "text": "310 用同一個想法，只是把「入度 = 0」換成「連接數 = 1（葉子）」：一圈一圈把葉子剝掉，最後剩下的 1 ～ 2 個點就是答案（也就是直徑的中點）。"
             },
             {
               "type": "code",
               "language": "python",
-              "code": "from collections import defaultdict\n\"\"\"init\"\"\"\nresult=[]\nedge=[]\n#降低之後搜尋的 big o\npointed=defaultdict(int)\npoint=defaultdict(set)#set can lower big o, if you dont need order of iterable dont use list, use set\nfor okay, must in edge:\n    pointed[okay]+=1\n    point[must].add(okay)\n\nunsolve=set(range(n))\nwhile unsolve:\n    buffer=[]\n    #find what we want\n    for me in unsolve:\n        if \"\"\"match what we are finding\"\"\":#such as pointed[me]==0\n            buffer.append(me)\n            result.append(me)\n\n    #make it disappear on the graph because it is in result\n    for me in buffer:\n        for take in point[me]:\n            pointed[me]-=1\nprint(result)",
-              "text": "New paragraph"
+              "code": "def find_min_height_trees(n, edges):\n    if n == 1:\n        return [0]\n    adj = [set() for _ in range(n)]\n    for u, v in edges:\n        adj[u].add(v); adj[v].add(u)\n    leaves = [i for i in range(n) if len(adj[i]) == 1]\n    remain = n\n    while remain > 2:\n        remain -= len(leaves)\n        new_leaves = []\n        for leaf in leaves:\n            nb = adj[leaf].pop()\n            adj[nb].remove(leaf)\n            if len(adj[nb]) == 1:\n                new_leaves.append(nb)\n        leaves = new_leaves\n    return leaves\n\nprint(find_min_height_trees(6, [(3, 0), (3, 1), (3, 2), (3, 4), (5, 4)]))   # [3, 4]"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "Kahn 演算法一開始要把哪些點放進 queue？",
+                  "options": [
+                    "入度 = 0 的點",
+                    "出度 = 0 的點",
+                    "編號最小的點",
+                    "全部"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "拓樸排序結束後 order 的數量 < n，代表？",
+                  "options": [
+                    "程式錯了",
+                    "圖裡有環",
+                    "圖不連通",
+                    "答案不只一種"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Course Schedule",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/course-schedule/",
+                  "description": "能不能全部做完 = 有沒有環"
+                },
+                {
+                  "title": "Course Schedule II",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/course-schedule-ii/",
+                  "description": "輸出順序"
+                },
+                {
+                  "title": "Minimum Height Trees",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/minimum-height-trees/",
+                  "description": "一圈一圈剝葉子"
+                }
+              ]
             }
           ]
         },
         {
           "id": "lesson-1788830380136",
-          "title": "兩點間最短路徑 dijksta",
+          "title": "兩點間最短路徑 Dijkstra",
           "titleEn": "shortest path, dijksta",
           "pdfPages": [],
           "content": [
@@ -5862,15 +8027,19 @@
             },
             {
               "type": "paragraph",
-              "text": "在解決將所有node連起來，並且花費最少的問題時。可以用最小生成樹"
+              "text": "加權圖上，從起點到每個點的最短距離。（「把所有點連起來、花費最少」是最小生成樹，下一課。）"
             },
             {
               "type": "paragraph",
-              "text": "最小生成樹是一個greedy的解法:"
+              "text": "Dijkstra 是一個 greedy 的解法："
             },
             {
               "type": "paragraph",
               "text": "在所有目前的leave中(leave 指目前已經走過的node, 並且是從其他當前最快的node 跑來的) 選一個leave's child 路徑中最短的來走"
+            },
+            {
+              "type": "paragraph",
+              "text": "也就是：在還沒確定的點裡，挑目前距離最短的那個，它的距離就確定了（不會有更短的繞法，因為邊都是正的）；再用它去更新鄰居。"
             },
             {
               "type": "heading",
@@ -5879,8 +8048,22 @@
             {
               "type": "code",
               "language": "python",
-              "code": "# write code here\na_point's_shortest_path=min cost of (leaves) comes the point\nas a point become leave, we add all its child in (leaves)\nif the point in leaves already in result, that means already a min code added inside\ninside result:        min you chose\nnot inside result: not minimum, because we walk minimum way first, so only minimum puted in result",
-              "text": "New paragraph"
+              "code": "dist[起點] = 0\ndist[v] = min(dist[v], dist[u] + w(u, v))   # u 確定之後，更新每個鄰居 v（鬆弛）"
+            },
+            {
+              "type": "animation",
+              "animationId": 83,
+              "caption": "Dijkstra：每次確定最近的點，再鬆弛它的鄰居",
+              "steps": [
+                "開始：dist[A] = 0，其他 = ∞；heap = [(0, A)]",
+                "取出 (0, A) → A 確定。鬆弛：B = 4、C = 1",
+                "取出 (1, C) → C 確定。鬆弛：B 從 4 變 1 + 2 = 3、D = 1 + 5 = 6",
+                "取出 (3, B) → B 確定。鬆弛：D 從 6 變 3 + 1 = 4",
+                "取出 (4, B)：B 早就確定了（4 > dist[B] = 3）→ 跳過",
+                "取出 (4, D) → D 確定。鬆弛：E = 4 + 3 = 7",
+                "取出 (6, D)：舊的資料 → 跳過",
+                "取出 (7, E) → E 確定，heap 空了：A0 B3 C1 D4 E7"
+              ]
             },
             {
               "type": "heading",
@@ -5894,8 +8077,88 @@
             {
               "type": "code",
               "language": "python",
-              "code": "import heapq\nfrom collections import defaultdict\n\ntimes=[]\nk=int(input())\nn=int(input())\n#and then input data by some loop\n\n\n\"\"\"\nmain code below\n\"\"\"\npoint=defaultdict(list)    \nfor sub, obj,weight in times:\n    point[sub].append((weight,obj))\nwent={}\nnext_step=[(0,k)]#put went path weight in this queue, so heappop will compare all leave(the path that child has not been called) and get the minimum one\n#next_step means every leave possible to walk because we walked his parent\nwhile next_step:\n    weight,me=heapq.heappop(next_step)\n    if me in went:\n        continue\n    #minimum node walk first, from every path of leave found walk minimum one, therefore we can always get the minimum path: its a greedy\n    went[me]=weight#minimum one did not puted in, so we put\n    for weight,child in point[me]:#we shortest, try to add our leave in to queue\n        heapq.heappush(next_step,(went[me]+weight,child))",
-              "text": "New paragraph"
+              "code": "import heapq\n\ndef dijkstra(n, adj, s):           # adj[u] = [(v, w), …]\n    INF = float(\"inf\")\n    dist = [INF] * n\n    dist[s] = 0\n    pq = [(0, s)]                     # (目前距離, 點)\n    while pq:\n        d, u = heapq.heappop(pq)\n        if d > dist[u]:\n            continue                  # 舊的資料，u 早就確定了\n        for v, w in adj[u]:\n            if d + w < dist[v]:       # 鬆弛\n                dist[v] = d + w\n                heapq.heappush(pq, (dist[v], v))\n    return dist\n\n#   A=0 B=1 C=2 D=3 E=4\nedges = [(0, 1, 4), (0, 2, 1), (2, 1, 2), (1, 3, 1), (2, 3, 5), (3, 4, 3)]\nadj = [[] for _ in range(5)]\nfor u, v, w in edges:\n    adj[u].append((v, w)); adj[v].append((u, w))\nprint(dijkstra(5, adj, 0))   # [0, 3, 1, 4, 7]"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "時間",
+                  "definition": "O((n + m) log n)。"
+                },
+                {
+                  "term": "if d > dist[u]: continue",
+                  "definition": "同一個點可能被放進 heap 很多次（每次變短都放一次），只有最新的那個有用。"
+                },
+                {
+                  "term": "不能有負的邊",
+                  "definition": "負邊會讓「已經確定」的點之後又變短。有負邊用 Bellman-Ford（每條邊鬆弛 n − 1 輪，O(nm)）。"
+                },
+                {
+                  "term": "沒有權重",
+                  "definition": "直接 BFS 就好。"
+                }
+              ]
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "Dijkstra 每次從 heap 拿出的是？",
+                  "options": [
+                    "編號最小的點",
+                    "目前距離最短、還沒確定的點",
+                    "權重最小的邊",
+                    "隨便一個點"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "為什麼 Dijkstra 不能處理負的邊？",
+                  "options": [
+                    "heap 不能存負數",
+                    "已經確定的點之後可能又變得更短",
+                    "會無限迴圈",
+                    "可以處理"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "if d > dist[u]: continue 是在跳過什麼？",
+                  "options": [
+                    "起點",
+                    "heap 裡舊的、已經不是最短的資料",
+                    "負的邊",
+                    "走不到的點"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：最短路徑",
+              "subtitle": "實作 Dijkstra",
+              "difficulty": "Medium",
+              "coursePrompt": "請讓學生完成 Python Coding 題：輸入 n、m、起點 s，接著 m 行 u v w 表示無向邊（w > 0），輸出 s 到每個點的最短距離，走不到輸出 -1。要求用 heapq 實作 Dijkstra，並說明 if d > dist[u]: continue 的用途。不要直接給答案。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Network Delay Time",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/network-delay-time/",
+                  "description": "最遠的點要多久"
+                },
+                {
+                  "title": "Path with Maximum Probability",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/path-with-maximum-probability/",
+                  "description": "把「最短」換成「機率最大」"
+                }
+              ]
             }
           ]
         },
@@ -5959,6 +8222,20 @@
               "code": "connected edges= now shortest and no loop + others"
             },
             {
+              "type": "animation",
+              "animationId": 86,
+              "caption": "Kruskal：邊由短到長，會形成環的跳過",
+              "steps": [
+                "把邊由短到長排好；每個點自己一群",
+                "A–C (1)：A、C 不同群 → 連上",
+                "B–D (1)：不同群 → 連上",
+                "C–B (2)：{A, C} 和 {B, D} 不同群 → 連上",
+                "D–E (3)：不同群 → 連上，已經 4 條邊 = n − 1",
+                "A–B (4)：A、B 已經同一群，連上會形成環 → 跳過",
+                "C–D (5)：也會形成環 → 跳過。總權重 1 + 1 + 2 + 3 = 7"
+              ]
+            },
+            {
               "type": "heading",
               "text": "模板(Kruskal)"
             },
@@ -5976,14 +8253,103 @@
               "text": "2.(用 dict 檢查有沒有cycle)"
             },
             {
+              "type": "paragraph",
+              "text": "不用 union_find 的寫法：用 dict 記每個點屬於哪一組。連一條邊時，如果兩端同一組就是環；不同組就把其中一組的人全部改成另一組。比較好懂，但合併時要改一整組，最慢 O(n²)。"
+            },
+            {
               "type": "code",
               "language": "python",
-              "code": "import heapq\n\ndef get():\n    #input initialization\n    points=[]#list[list[int]]\n\n\n    #node=key  (time,friend) =value\n    queue=[]\n    for a in range(len(points)):\n        for b in  range(len(points)):\n            if a==b:\n                continue\n            way=abs(points[a][0]-points[b][0])+abs(points[a][1]-points[b][1])\n            heapq.heappush(queue,(way,a,b))\n    went={}\n    for i in range(len(points)):\n        went[i]=set([i])\n    count=0\n    result=0\n\n    while queue:\n        way,a,b=heapq.heappop(queue)\n        if count==len(points)-1:\n            return result\n        if a in went[b] or b in went[a]:#dont know that how to cheak if should connect\n            continue\n        #at most one connected now\n        mix=went[a].copy()\n        mix.update(went[b])\n        for teammate in mix:\n            went[teammate]=mix#make sure every member can fetch lastest object, thats why for loop for all object\n        result+=way\n        count+=1\n    return result\nprint(get())",
-              "text": "New paragraph"
+              "code": "def kruskal_dict(n, edges):          # edges: (w, u, v)\n    group = {i: i for i in range(n)}   # 點 → 組別\n    members = {i: [i] for i in range(n)}\n    total = 0\n    for w, u, v in sorted(edges):\n        gu, gv = group[u], group[v]\n        if gu == gv:\n            continue                   # 同一組：連上去會有環\n        for x in members[gv]:          # 把 gv 整組改成 gu\n            group[x] = gu\n        members[gu] += members.pop(gv)\n        total += w\n    return total\n\nedges = [(4, 0, 1), (1, 0, 2), (2, 2, 1), (1, 1, 3), (5, 2, 3), (3, 3, 4)]\nprint(kruskal_dict(5, edges))   # 7"
+            },
+            {
+              "type": "heading",
+              "text": "Prim"
             },
             {
               "type": "paragraph",
               "text": "Prim 這個用bfs的algorithm 還是要cheak cycle"
+            },
+            {
+              "type": "paragraph",
+              "text": "Prim 從一個點開始，像 Dijkstra 一樣用 heap：每次挑「一端在樹裡、另一端不在」最短的邊。用 in_tree 檢查另一端是不是已經在樹裡，就是在檢查 cycle。"
+            },
+            {
+              "type": "animation",
+              "animationId": 87,
+              "caption": "Prim：從 A 開始長出去",
+              "steps": [
+                "從 A 開始：樹裡只有 A；候選邊 A–C (1)、A–B (4)",
+                "最短的候選 A–C (1) → C 進樹；加入候選 C–B (2)、C–D (5)",
+                "最短的候選 C–B (2) → B 進樹；加入候選 B–D (1)",
+                "最短的候選 B–D (1) → D 進樹；加入候選 D–E (3)",
+                "最短的候選 D–E (3) → E 進樹（A–B、C–D 兩端都在樹裡，不能用）",
+                "5 個點都在樹裡：總權重 1 + 2 + 1 + 3 = 7"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import heapq\n\ndef prim(n, adj):                     # adj[u] = [(v, w), …]\n    in_tree = [False] * n\n    pq = [(0, 0)]                     # (邊的權重, 點)，從點 0 開始\n    total = 0\n    while pq:\n        w, u = heapq.heappop(pq)\n        if in_tree[u]:\n            continue                  # 已經在樹裡：這條邊會造成環\n        in_tree[u] = True\n        total += w\n        for v, wv in adj[u]:\n            if not in_tree[v]:\n                heapq.heappush(pq, (wv, v))\n    return total\n\nedges = [(4, 0, 1), (1, 0, 2), (2, 2, 1), (1, 1, 3), (5, 2, 3), (3, 3, 4)]\nadj = [[] for _ in range(5)]\nfor w, u, v in edges:\n    adj[u].append((v, w)); adj[v].append((u, w))\nprint(prim(5, adj))   # 7"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "Kruskal",
+                  "definition": "排序所有邊 O(m log m)。邊少（稀疏圖）時好寫好用。"
+                },
+                {
+                  "term": "Prim",
+                  "definition": "O(m log n)。邊很多（例如每兩點都有邊）時常用。"
+                }
+              ]
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "n 個點的最小生成樹有幾條邊？",
+                  "options": [
+                    "n",
+                    "n − 1",
+                    "m",
+                    "n + 1"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "Kruskal 用並查集是為了檢查什麼？",
+                  "options": [
+                    "邊的權重",
+                    "加這條邊會不會形成環",
+                    "點有沒有走過",
+                    "排序"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "Prim 和哪個演算法的寫法最像？",
+                  "options": [
+                    "BFS",
+                    "Dijkstra",
+                    "拓樸排序",
+                    "二分搜尋"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Min Cost to Connect All Points",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/min-cost-to-connect-all-points/",
+                  "description": "上面推薦寫法的題目"
+                }
+              ]
             }
           ]
         },
@@ -6002,14 +8368,72 @@
               "text": "from graph structure -> separate each node to two part -> in every edge between two node, they will not in same part"
             },
             {
+              "type": "paragraph",
+              "text": "換成塗色：每個點塗紅或藍，每條邊兩端顏色要不一樣。從一個點開始塗紅，鄰居就一定是藍，鄰居的鄰居一定是紅……塗到一半發現某條邊兩端同色，就不是二分圖。\n\n等價的說法：沒有奇數長度的環。"
+            },
+            {
+              "type": "animation",
+              "animationId": 80,
+              "caption": "二分圖：BFS 塗兩種顏色",
+              "steps": [
+                "開始：還沒塗色",
+                "0 塗紅",
+                "0 的鄰居 1、3 塗藍（和 0 相反）",
+                "1 的鄰居 2 塗紅；3 的鄰居 0、2 檢查過，顏色都不同",
+                "每條邊兩端顏色都不同 → 是二分圖（紅一組、藍一組）",
+                "加一條 0 – 2：兩端都是紅 → 0 – 1 – 2 是奇數長度的環，不是二分圖"
+              ]
+            },
+            {
               "type": "heading",
               "text": "example"
             },
             {
               "type": "code",
               "language": "python",
-              "code": "from collections import deque,defaultdict\ndef get():\n    #data input\n    \n    point=defaultdict(list)\n\n    for a,b in edge:\n        point[a].append(b)\n        point[b].append(a)\n    \n    state=[0]*(n+1)\n\n    cheaked=[0]*(n+1)\n    legal=True\n    def bfs(me):\n        nonlocal state,cheaked,legal\n        queue=deque()\n        queue.append(me)\n        if state[me]==0:\n            state[me]=1\n        while queue:\n            node=queue.popleft()\n            if cheaked[node]==1:\n                continue\n            cheaked[node]=1\n            for neighbor in point[node]:\n                if state[neighbor]==0:\n                    state[neighbor]=-state[node]\n                else:\n                    if state[neighbor]==state[node]:\n                        legal=False\n                        return False\n                if cheaked[neighbor]==0:\n                    queue.append(neighbor)\n        return True\n    for node in range(1,n+1):\n        if bfs(node)==False:\n            return False\n    return True",
-              "text": "New paragraph"
+              "code": "from collections import deque\n\ndef is_bipartite(n, adj):\n    color = [-1] * n                  # -1 = 還沒塗\n    for s in range(n):                # 圖可能不連通，每一塊都要塗\n        if color[s] != -1:\n            continue\n        color[s] = 0\n        q = deque([s])\n        while q:\n            u = q.popleft()\n            for v in adj[u]:\n                if color[v] == -1:\n                    color[v] = 1 - color[u]   # 塗相反的顏色\n                    q.append(v)\n                elif color[v] == color[u]:\n                    return False              # 兩端同色\n    return True\n\nsquare = [[1, 3], [0, 2], [1, 3], [0, 2]]          # 0-1-2-3-0\nprint(is_bipartite(4, square))                     # True\nsquare[0].append(2); square[2].append(0)           # 加一條 0-2\nprint(is_bipartite(4, square))                     # False：0-1-2 是奇環"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "二分圖等價於？",
+                  "options": [
+                    "沒有環",
+                    "沒有奇數長度的環",
+                    "是一棵樹",
+                    "每個點的度數一樣"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "為什麼外面要有 for s in range(n)？",
+                  "options": [
+                    "加速",
+                    "圖可能不連通，每一塊都要塗",
+                    "題目規定",
+                    "避免 RecursionError"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Is Graph Bipartite?",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/is-graph-bipartite/",
+                  "description": "BFS 塗色"
+                },
+                {
+                  "title": "Possible Bipartition",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/possible-bipartition/",
+                  "description": "討厭的人要分到不同組"
+                }
+              ]
             }
           ]
         }
@@ -6023,7 +8447,7 @@
       "lessons": [
         {
           "id": "lesson-1789461699493",
-          "title": "introduction",
+          "title": "DP introduction",
           "titleEn": "introduction",
           "pdfPages": [],
           "content": [
@@ -6046,6 +8470,25 @@
             {
               "type": "paragraph",
               "text": "big o will be (cuted recursion tree) instead of the while recursion tree"
+            },
+            {
+              "type": "animation",
+              "animationId": 65,
+              "caption": "記憶化：fib(5) 的遞迴樹被剪掉",
+              "steps": [
+                "沒有記憶化：fib(5) 要呼叫 15 次，紅色的都是算過的 argument 又算一次",
+                "有記憶化：一路往左算到 fib(2) = 1，存進 memo",
+                "fib(3) = fib(2) + fib(1) = 2，存進 memo",
+                "fib(4) 要 fib(2)：memo 裡有 → 直接拿，下面整枝剪掉",
+                "fib(4) = 2 + 1 = 3，存進 memo",
+                "fib(5) 要 fib(3)：memo 裡有 → 直接拿，下面整枝剪掉",
+                "fib(5) = 3 + 2 = 5：只呼叫 9 次（原本 15 次）"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 1. 遞迴：fib(5) 會呼叫 15 次，fib(n) 是指數時間\ndef fib(n):\n    if n < 2:\n        return n\n    return fib(n - 1) + fib(n - 2)\n\n# 2. 記憶化：同樣的 argument 只算一次\nmemo = {}\ndef fib_memo(n):\n    if n < 2:\n        return n\n    if n not in memo:\n        memo[n] = fib_memo(n - 1) + fib_memo(n - 2)\n    return memo[n]\n\n# 3. Bottom-up：不用遞迴，從小算到大\ndef fib_table(n):\n    dp = [0, 1] + [0] * max(0, n - 1)\n    for i in range(2, n + 1):\n        dp[i] = dp[i - 1] + dp[i - 2]\n    return dp[n]\n\nprint(fib(20), fib_memo(20), fib_table(20))   # 6765 6765 6765"
             },
             {
               "type": "heading",
@@ -6094,6 +8537,52 @@
             {
               "type": "paragraph",
               "text": "in some problem finding most, which child of node that we need to pick up is directly. BUT, in some not finding most, we cant confirm that each child must be part of result or not. so we still run it."
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "DP 是從哪裡來的？",
+                  "options": [
+                    "排序",
+                    "有重複參數的遞迴",
+                    "BFS",
+                    "貪婪"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "記憶化之後，時間複雜度大約是？",
+                  "options": [
+                    "整棵遞迴樹的節點數",
+                    "不同的狀態數 × 每個狀態的計算",
+                    "O(1)",
+                    "O(2ⁿ)"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "Bottom-up 最大的好處之一是？",
+                  "options": [
+                    "比較好寫",
+                    "不會 RecursionError",
+                    "一定比較省記憶體",
+                    "不用想方程式"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Fibonacci Number",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/fibonacci-number/",
+                  "description": "三種寫法都寫一次"
+                }
+              ]
             }
           ]
         },
@@ -6116,12 +8605,26 @@
               "text": "set: when you just want the leaves of tree"
             },
             {
+              "type": "code",
+              "language": "python",
+              "code": "# list：每個狀態都可能用到 → dp[i] 一格一格存\ndp = [0] * 10\n\n# set：只在乎「最後能到哪些狀態」（遞迴樹的葉子）\n# 例：nums 裡挑一些數，總和可能是哪些？\nnums = [2, 3, 7]\nsums = {0}\nfor x in nums:\n    sums |= {s + x for s in sums}   # 右邊先算完才合併，所以 x 不會被用兩次\nprint(sorted(sums))   # [0, 2, 3, 5, 7, 9, 10, 12]"
+            },
+            {
               "type": "heading",
               "text": "dp_list.begin() or dp_list.rbegin()"
             },
             {
               "type": "paragraph",
               "text": "no matter what you choose, make it have no loop ( loop:  update dp table with current status that you also using it to update dp table in same run with right now you are updating)"
+            },
+            {
+              "type": "paragraph",
+              "text": "例子：0/1 背包用一維 dp 時，c 要從大到小跑。如果從小到大，dp[c − w] 可能已經是「這一輪」更新過的值，等於同一個物品被拿了兩次，這就是上面說的 loop。（反過來，無限背包就是要它能拿很多次，所以從小到大。）"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "w, v = 2, 3             # 一個物品：重 2、價值 3\ndp = [0] * 7\nfor c in range(2, 7):   # 從小到大：錯！\n    dp[c] = max(dp[c], dp[c - w] + v)\nprint(dp)   # [0, 0, 3, 3, 6, 6, 9]：同一個物品被拿了好幾次\n\ndp = [0] * 7\nfor c in range(6, 1, -1):   # 從大到小：對\n    dp[c] = max(dp[c], dp[c - w] + v)\nprint(dp)   # [0, 0, 3, 3, 3, 3, 3]"
             }
           ]
         },
@@ -6165,12 +8668,101 @@
             },
             {
               "type": "heading",
-              "text": "example"
+              "text": "最簡單的例子：爬樓梯"
+            },
+            {
+              "type": "paragraph",
+              "text": "一次可以爬 1 階或 2 階，爬到第 n 階有幾種方法？最後一步不是從 n − 1 上來，就是從 n − 2 上來：dp[n] = dp[n − 1] + dp[n − 2]。"
+            },
+            {
+              "type": "animation",
+              "animationId": 66,
+              "caption": "1D DP：爬樓梯，dp[i] = dp[i-1] + dp[i-2]",
+              "steps": [
+                "開始：dp[i] = 爬到第 i 階有幾種方法（一次爬 1 或 2 階）",
+                "初始值：dp[0] = 1（站在地上）、dp[1] = 1",
+                "dp[2] = dp[1] + dp[0] = 1 + 1 = 2",
+                "dp[3] = dp[2] + dp[1] = 2 + 1 = 3",
+                "dp[4] = dp[3] + dp[2] = 3 + 2 = 5",
+                "dp[5] = dp[4] + dp[3] = 5 + 3 = 8",
+                "dp[6] = dp[5] + dp[4] = 8 + 5 = 13",
+                "每一格只用到前兩格 → 只留兩個變數就夠（O(1) 空間）"
+              ]
             },
             {
               "type": "code",
               "language": "python",
-              "code": "#data input\n\ndp=[0]*(size)\n\ndef get(n:int):\n    if n<0:\n        return 0\n    return dp[n]\n\nfor index in range(len(data)):\n    dp[index]= max(  \n        data[index]+get(index-1)#take\n        get(index-1)            #skip\n          )#usually take or skip\n\nprint(max(dp))"
+              "code": "def climb(n):\n    dp = [0] * (n + 1)\n    dp[0] = dp[1] = 1          # 初始值\n    for i in range(2, n + 1):\n        dp[i] = dp[i - 1] + dp[i - 2]\n    return dp[n]\n\ndef climb_rolling(n):          # 只依賴前兩個 → 兩個變數就夠\n    a, b = 1, 1\n    for _ in range(n - 1):\n        a, b = b, a + b\n    return b\n\nprint(climb(6), climb_rolling(6))   # 13 13"
+            },
+            {
+              "type": "heading",
+              "text": "example"
+            },
+            {
+              "type": "paragraph",
+              "text": "take or skip 的經典題：不能拿相鄰的（打家劫舍）。拿自己就不能拿 i − 1，所以要接 get(index − 2)。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "data = [2, 7, 9, 3, 1]\ndp = [0] * len(data)\n\ndef get(n):\n    if n < 0:\n        return 0\n    return dp[n]\n\nfor i in range(len(data)):\n    dp[i] = max(\n        data[i] + get(i - 2),   # take：拿自己，前一個不能拿\n        get(i - 1),             # skip\n    )\nprint(dp[-1])   # 12 = 2 + 9 + 1"
+            },
+            {
+              "type": "paragraph",
+              "text": "下面是原本的模板（take 接 get(index − 1)，代表可以拿相鄰的；題目不同，take 要接哪一格就不同）："
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "#data input\n\ndp=[0]*(size)\n\ndef get(n:int):\n    if n<0:\n        return 0\n    return dp[n]\n\nfor index in range(len(data)):\n    dp[index]= max(  \n        data[index]+get(index-1),#take\n        get(index-1)            #skip\n          )#usually take or skip\n\nprint(max(dp))"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "爬樓梯 dp[6] 是多少？",
+                  "options": [
+                    "8",
+                    "13",
+                    "21",
+                    "6"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "打家劫舍裡，拿了 data[i] 之後要接哪一格？",
+                  "options": [
+                    "dp[i − 1]",
+                    "dp[i − 2]",
+                    "dp[i + 1]",
+                    "dp[0]"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Climbing Stairs",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/climbing-stairs/",
+                  "description": "動畫裡的題目"
+                },
+                {
+                  "title": "House Robber",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/house-robber/",
+                  "description": "take or skip"
+                },
+                {
+                  "title": "Maximum Subarray",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/maximum-subarray/",
+                  "description": "dp[i] 一定要選自己"
+                }
+              ]
             }
           ]
         },
@@ -6190,7 +8782,52 @@
             },
             {
               "type": "paragraph",
-              "text": "dp"
+              "text": "求最大最小時，每一格只要選「最好的那個 child」。但如果問的是「有幾種方法」「可不可以」，每個 child 都可能是答案的一部分，不能只挑一個，要全部加起來（或全部 or 起來）。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "找最多 / 最少",
+                  "definition": "dp[i] = max(child) 或 min(child)"
+                },
+                {
+                  "term": "有幾種",
+                  "definition": "dp[i] = sum(child)"
+                },
+                {
+                  "term": "可不可以",
+                  "definition": "dp[i] = any(child)"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 從左上走到右下，只能往右或往下，有幾種走法？\ndef unique_paths(R, C):\n    dp = [[0] * C for _ in range(R)]\n    for r in range(R):\n        for c in range(C):\n            if r == 0 or c == 0:\n                dp[r][c] = 1                       # 邊上只有一種走法\n            else:\n                dp[r][c] = dp[r - 1][c] + dp[r][c - 1]   # 兩個 child 都要算\n    return dp[R - 1][C - 1]\n\nprint(unique_paths(3, 7))   # 28"
+            },
+            {
+              "type": "callout",
+              "label": "小心",
+              "text": "「有幾種」的答案常常很大，題目會要你 mod 10⁹ + 7，每次相加後就 mod。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Unique Paths",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/unique-paths/",
+                  "description": "全部加起來"
+                },
+                {
+                  "title": "Word Break",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/word-break/",
+                  "description": "可不可以：any"
+                }
+              ]
             }
           ]
         },
@@ -6206,13 +8843,43 @@
             },
             {
               "type": "paragraph",
-              "text": "just like the title, its just like"
+              "text": "就像標題：每一格都在問「要接哪一個 child」。把狀態排成表格，每一格看它的 child 們，挑最好的接上來。"
             },
             {
               "type": "code",
               "language": "python",
-              "code": "me =  a_value + my best child",
-              "text": "New paragraph"
+              "code": "# 從左上走到右下（只能往右、往下），經過的數字總和最小是多少？\ngrid = [[1, 3, 1],\n        [1, 5, 1],\n        [4, 2, 1]]\nR, C = len(grid), len(grid[0])\nINF = float(\"inf\")\ndp = [[INF] * C for _ in range(R)]\nfor r in range(R):\n    for c in range(C):\n        if r == 0 and c == 0:\n            dp[r][c] = grid[0][0]\n            continue\n        up = dp[r - 1][c] if r > 0 else INF\n        left = dp[r][c - 1] if c > 0 else INF\n        dp[r][c] = grid[r][c] + min(up, left)   # take which child\nprint(dp[R - 1][C - 1])   # 7：1 → 3 → 1 → 1 → 1"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "表格的方向",
+                  "definition": "child 要先算好：dp[r][c] 用到上和左，所以由上往下、由左往右填。"
+                },
+                {
+                  "term": "想知道走了哪條路",
+                  "definition": "從右下角往回看：dp[r][c] − grid[r][c] 等於上面還是左邊，就是從那裡來的。"
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Minimum Path Sum",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/minimum-path-sum/",
+                  "description": "上面的例子"
+                },
+                {
+                  "title": "Triangle",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/triangle/",
+                  "description": "每格的 child 是下面兩格"
+                }
+              ]
             }
           ]
         },
@@ -6231,18 +8898,85 @@
               "text": "there is a key point that why one option to define dp[i] means"
             },
             {
+              "type": "paragraph",
+              "text": "dp[i][c] = 只考慮前 i 個物品、容量是 c 時，最大的價值。每個物品只有兩個選擇：不拿（dp[i−1][c]），或拿（dp[i−1][c−w] + v）。兩個都只看「上一列」，所以同一個物品不會被拿兩次。"
+            },
+            {
+              "type": "animation",
+              "animationId": 67,
+              "caption": "0/1 背包：容量 5，物品 (1,6) (2,10) (3,12)",
+              "steps": [
+                "開始：dp[i][c] = 只看前 i 個物品、容量 c 時的最大價值",
+                "第 0 列：沒有物品 → 全部 0",
+                "物品 1（重 1、值 6）：容量 ≥ 1 都拿得下 → 6",
+                "物品 2（重 2、值 10）：例如 c = 3：不拿 = 6；拿 = dp[1][1] + 10 = 16 → 16",
+                "物品 3（重 3、值 12）：例如 c = 5：不拿 = 16；拿 = dp[2][2] + 12 = 22 → 22",
+                "回溯：22 ≠ 16 → 拿了物品 3；剩容量 2，10 ≠ 6 → 拿了物品 2。答案 22"
+              ]
+            },
+            {
               "type": "heading",
               "text": "math equation"
             },
             {
               "type": "code",
-              "language": "eqation",
-              "code": "me[cost]=how many money i got\nme[cost]+=me[cost-new item cost]+new item money getting (no loop problem)\nme[cost+new item cost] = me[cost]+ new item money getting(with loop problem)\n",
-              "text": "New paragraph"
+              "language": "python",
+              "code": "dp[i][c] = max(dp[i-1][c],                 # 不拿第 i 個\n               dp[i-1][c - w[i]] + v[i])    # 拿第 i 個（c >= w[i]）"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def knapsack(items, cap):\n    n = len(items)\n    dp = [[0] * (cap + 1) for _ in range(n + 1)]\n    for i in range(1, n + 1):\n        w, v = items[i - 1]\n        for c in range(cap + 1):\n            dp[i][c] = dp[i - 1][c]\n            if c >= w:\n                dp[i][c] = max(dp[i][c], dp[i - 1][c - w] + v)\n    return dp[n][cap]\n\ndef knapsack_1d(items, cap):\n    dp = [0] * (cap + 1)\n    for w, v in items:\n        for c in range(cap, w - 1, -1):   # 從大到小！\n            dp[c] = max(dp[c], dp[c - w] + v)\n    return dp[cap]\n\nitems = [(1, 6), (2, 10), (3, 12)]   # (重量, 價值)\nprint(knapsack(items, 5), knapsack_1d(items, 5))   # 22 22"
             },
             {
               "type": "paragraph",
               "text": "because each item we can only pick up once, therefore loop is a problem"
+            },
+            {
+              "type": "paragraph",
+              "text": "壓成一維時，dp[c − w] 必須還是「上一列」的值。c 從大到小跑，dp[c − w] 在這一輪還沒被改過；從小到大就會拿到這一輪改過的值，等於同一個物品拿兩次（tips 那一課的 loop）。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "0/1 背包壓成一維時，c 要怎麼跑？",
+                  "options": [
+                    "從小到大",
+                    "從大到小",
+                    "都可以",
+                    "隨機"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "dp[i][c] 的「拿」是從哪一格來的？",
+                  "options": [
+                    "dp[i][c − w]",
+                    "dp[i − 1][c − w]",
+                    "dp[i − 1][c]",
+                    "dp[i][c − 1]"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Partition Equal Subset Sum",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/partition-equal-subset-sum/",
+                  "description": "能不能湊出總和的一半"
+                },
+                {
+                  "title": "Target Sum",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/target-sum/",
+                  "description": "有幾種：0/1 背包計數"
+                }
+              ]
             }
           ]
         },
@@ -6266,9 +9000,8 @@
             },
             {
               "type": "code",
-              "language": "equation",
-              "code": "me[cost]=how many money i got\nme[cost]+=me[cost-new item cost]+new item money getting (no loop issue)\nme[cost+new item cost] = me[cost]+ new item money getting(with loop issue)\n",
-              "text": "New paragraph"
+              "language": "python",
+              "code": "for w, v in items:\n    for c in range(cap, w - 1, -1):   # 0/1：從大到小，每個只拿一次\n        dp[c] = max(dp[c], dp[c - w] + v)"
             },
             {
               "type": "paragraph",
@@ -6276,9 +9009,24 @@
             },
             {
               "type": "code",
-              "language": "equation",
-              "code": "me[cost]=how many money i got\nme[cost]+=me[cost-new item cost]+new item money getting (no loop issue)#which is no loop, but we can choose any times\nme[cost+new item cost] = me[cost]+ new item money getting(with loop issue, but its not matter in 0/n) # we can use this\n",
-              "text": "New paragraph"
+              "language": "python",
+              "code": "for w, v in items:\n    for c in range(w, cap + 1):       # 0/n：從小到大，dp[c - w] 可能已經拿過這個物品了，沒關係\n        dp[c] = max(dp[c], dp[c - w] + v)"
+            },
+            {
+              "type": "animation",
+              "animationId": 68,
+              "caption": "無限背包：硬幣 {1,3,4} 湊 6 最少幾枚",
+              "steps": [
+                "開始：dp[c] = 湊出 c 元最少要幾枚，硬幣 {1, 3, 4}",
+                "dp[0] = 0：湊 0 元不用硬幣",
+                "dp[1]：只能用 1 → dp[0] + 1 = 1",
+                "dp[2]：用 1 → dp[1] + 1 = 2",
+                "dp[3]：用 1 → dp[2] + 1 = 3；用 3 → dp[0] + 1 = 1 → 1",
+                "dp[4]：用 4 → dp[0] + 1 = 1",
+                "dp[5]：用 1 → dp[4] + 1 = 2；用 3 → dp[2] + 1 = 3；用 4 → dp[1] + 1 = 2 → 2",
+                "dp[6]：用 1 → 3；用 3 → dp[3] + 1 = 2（3 + 3）；用 4 → dp[2] + 1 = 3 → 2",
+                "同一枚硬幣可以一直用：dp[c − coin] 已經用過這枚也沒關係 → c 從小到大"
+              ]
             },
             {
               "type": "heading",
@@ -6286,9 +9034,55 @@
             },
             {
               "type": "code",
-              "language": "equation",
-              "code": "me[cost+new item cost] = me[cost]+ new item money getting",
-              "text": "New paragraph"
+              "language": "python",
+              "code": "dp[c] = max(dp[c], dp[c - w] + v)        # 同一列：拿了還可以再拿\n\n# 換成「最少幾枚硬幣湊出 c」：\ndp[c] = min(dp[c], dp[c - coin] + 1)"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def coin_change(coins, amount):\n    INF = float(\"inf\")\n    dp = [0] + [INF] * amount\n    for coin in coins:\n        for c in range(coin, amount + 1):\n            dp[c] = min(dp[c], dp[c - coin] + 1)\n    return dp[amount] if dp[amount] != INF else -1\n\nprint(coin_change([1, 3, 4], 6))   # 2：3 + 3（貪婪會拿 4 + 1 + 1）"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "無限背包壓成一維時，c 要怎麼跑？",
+                  "options": [
+                    "從小到大",
+                    "從大到小",
+                    "都可以",
+                    "只跑一次"
+                  ],
+                  "answer": 0
+                },
+                {
+                  "question": "硬幣 {1, 3, 4} 湊 6，最少幾枚？",
+                  "options": [
+                    "1",
+                    "2",
+                    "3",
+                    "4"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Coin Change",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/coin-change/",
+                  "description": "最少幾枚"
+                },
+                {
+                  "title": "Coin Change II",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/coin-change-ii/",
+                  "description": "有幾種組合（外層跑硬幣）"
+                }
+              ]
             }
           ]
         },
@@ -6321,9 +9115,30 @@
             },
             {
               "type": "code",
-              "language": "math equation",
-              "code": "# this is a graph style explain\nmy best= (if can choose me->1 ,  else->0 ) + biggest premax but dont touch currect line  || biggest premax",
-              "text": "New paragraph"
+              "language": "python",
+              "code": "dp[i][j] = A 的前 i 個字、B 的前 j 個字的 LCS 長度\n\nA[i-1] == B[j-1]:  dp[i][j] = dp[i-1][j-1] + 1          # 兩個字配成一對（斜的）\n否則:              dp[i][j] = max(dp[i-1][j], dp[i][j-1]) # 丟掉 A 的或 B 的最後一個字"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def lcs(A, B):\n    n, m = len(A), len(B)\n    dp = [[0] * (m + 1) for _ in range(n + 1)]\n    for i in range(1, n + 1):\n        for j in range(1, m + 1):\n            if A[i - 1] == B[j - 1]:\n                dp[i][j] = dp[i - 1][j - 1] + 1\n            else:\n                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])\n    # 從右下角往回走，找出是哪些字\n    i, j, res = n, m, []\n    while i and j:\n        if A[i - 1] == B[j - 1]:\n            res.append(A[i - 1]); i -= 1; j -= 1\n        elif dp[i - 1][j] >= dp[i][j - 1]:\n            i -= 1\n        else:\n            j -= 1\n    return dp[n][m], \"\".join(reversed(res))\n\nprint(lcs(\"ABCBDAB\", \"BDCABA\"))   # (4, 'BCBA')"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Longest Common Subsequence",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/longest-common-subsequence/",
+                  "description": "上面的模板"
+                },
+                {
+                  "title": "Delete Operation for Two Strings",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/delete-operation-for-two-strings/",
+                  "description": "答案 = n + m − 2 × LCS"
+                }
+              ]
             }
           ]
         },
@@ -6340,17 +9155,64 @@
             {
               "type": "code",
               "language": "python",
-              "code": "must choose me= from every smaller than me nodes, get max its value saved on dp(as we are finding longest, the dp[i] usually refer to total length he got)",
-              "text": "Add content here..."
+              "code": "dp[i] = 以 a[i] 結尾的最長遞增子序列長度（一定要選 a[i]）\ndp[i] = 1 + max(dp[j] for j < i if a[j] < a[i])   # 沒有就是 1\n答案 = max(dp)            # O(n²)"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def lis_n2(a):\n    dp = [1] * len(a)\n    for i in range(len(a)):\n        for j in range(i):\n            if a[j] < a[i]:\n                dp[i] = max(dp[i], dp[j] + 1)\n    return max(dp)\n\nprint(lis_n2([3, 1, 4, 1, 5, 9, 2, 6]))   # 4"
             },
             {
               "type": "heading",
               "text": "faster solution(binary search and greedy)"
             },
             {
+              "type": "animation",
+              "animationId": 70,
+              "caption": "LIS：memo（tails）陣列 + 二分搜尋",
+              "steps": [
+                "開始：memo[k] = 長度 k+1 的遞增子序列，結尾最小可以是多少",
+                "3：memo 是空的 → 接在最後 [3]",
+                "1：第一個 ≥ 1 的是 3 → 換掉 [1]（長度 1 的結尾變小了）",
+                "4：比全部都大 → 接在最後 [1, 4]",
+                "1：第一個 ≥ 1 的是 1 → 換掉（一樣）[1, 4]",
+                "5：接在最後 [1, 4, 5]",
+                "9：接在最後 [1, 4, 5, 9]",
+                "2：第一個 ≥ 2 的是 4 → 換掉 [1, 2, 5, 9]",
+                "6：第一個 ≥ 6 的是 9 → 換掉 [1, 2, 5, 6]",
+                "答案 = memo 的長度 = 4（例如 1 4 5 9）；但 [1, 2, 5, 6] 本身不是 a 的子序列"
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "memo[k] = 長度 k + 1 的遞增子序列，結尾最小可以是多少。新的數 x：比 memo 全部都大就接在最後（變長）；否則用二分搜尋找第一個 ≥ x 的位置換掉（同樣長度，結尾變小，以後更好接）。O(n log n)。\n\n下面原本的程式是「俄羅斯套娃信封」：先依寬度排序（寬度一樣時高度由大到小，避免同寬的套在一起），再對高度做 LIS。"
+            },
+            {
               "type": "code",
               "language": "python",
               "code": "def search_left(data,target):#if  no match element, find first bigger than us\n    left=0\n    right=len(data)-1\n    #find left-> near left\n    while left<=right:\n        mid=(left+right)//2\n        if data[mid]>=target:\n            right= mid-1\n        elif data[mid]<target:\n            left=mid+1\n    return left\n\n\"\"\"\narray=[1,7,2,6]\nsee 1  memo=[1] # we got 1 at last of subsequence of a length 1 array\nsee 7  memo=[1,7] # we find out 7 can be in front of 1 that 1 is a last occur element of subsequence\nsee 2  memo=[1,2] #we find 2 can be in front of 1, and 2 smaller than 7, \n means they both can be in front of 1, but 2 is better, \n so we saved 2, every >2 can be in front of 2, rather than >7. (so we have more chance if choosing 2)\nsee 6  memo=[1,2,6] # see, if we didnot pick up samller, 6 cant pick up memo=[1,7], but we can now let 6, (which is bigger than 2) be joined to this memo\n\"\"\"\n\n\nres=[]\nfor _ in range(int(input())):\n    d=eval(input())\n    d.sort(key= lambda item:(item[0],-item[1]))\n    #print(d)\n    memo=[]#index=size, value=best last occur integer in this length\n    for _,b in d:\n        good_place=search_left(memo,b)\n        if good_place>len(memo)-1:\n            memo.append(b)\n        else:\n            memo[good_place]=b\n    res.append(len(memo))\n\nfor rs in res:\n    print(rs)\n\n\"\"\"\n[[1,3],[1,4],[3,5],[3,4],[0,1]]\n\"\"\""
+            },
+            {
+              "type": "callout",
+              "label": "小心",
+              "text": "memo 的長度就是答案，但 memo 裡面的數字不一定是一個真的子序列。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Longest Increasing Subsequence",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/longest-increasing-subsequence/",
+                  "description": "O(n²) 和 O(n log n) 都寫"
+                },
+                {
+                  "title": "Russian Doll Envelopes",
+                  "difficulty": "Hard",
+                  "url": "https://leetcode.com/problems/russian-doll-envelopes/",
+                  "description": "原本那段程式的題目"
+                }
+              ]
             }
           ]
         },
@@ -6366,8 +9228,48 @@
               "text": "need to define meaning of dp , especially if inclide this index"
             },
             {
+              "type": "heading",
+              "text": "切割型 DP"
+            },
+            {
               "type": "paragraph",
-              "text": "Add content here..."
+              "text": "題目把一串東西切成好幾段，每一段要合法（或有分數）。最常見的定義：\n\ndp[i] = 「前 i 個」（a[0] ～ a[i−1]，不含 a[i]）切完的答案。\n\n多一格 dp[0] 代表「什麼都還沒切」，初始值很好設；最後一段是 a[j] ～ a[i−1]，枚舉切點 j 就好。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# Word Break：s 能不能切成字典裡的單字？\ndef word_break(s, words):\n    words = set(words)\n    n = len(s)\n    dp = [False] * (n + 1)\n    dp[0] = True                      # 前 0 個：空字串，可以\n    for i in range(1, n + 1):\n        for j in range(i):            # 最後一段是 s[j:i]\n            if dp[j] and s[j:i] in words:\n                dp[i] = True\n                break\n    return dp[n]\n\nprint(word_break(\"leetcode\", [\"leet\", \"code\"]))   # True\nprint(word_break(\"catsandog\", [\"cats\", \"dog\", \"sand\", \"and\", \"cat\"]))   # False"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "dp[i] 包含 a[i]",
+                  "definition": "「最後一段一定以 a[i] 結尾」，適合「選自己」的題目（像 LIS）。"
+                },
+                {
+                  "term": "dp[i] 不包含 a[i]（前 i 個）",
+                  "definition": "適合切割：最後一段是 [j, i)，切點 j 從 0 到 i − 1。"
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Word Break",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/word-break/",
+                  "description": "上面的例子"
+                },
+                {
+                  "title": "Decode Ways",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/decode-ways/",
+                  "description": "最後一段長度 1 或 2"
+                }
+              ]
             }
           ]
         },
@@ -6379,11 +9281,43 @@
           "content": [
             {
               "type": "heading",
-              "text": "New Lesson"
+              "text": "切成幾段，讓總分最大"
             },
             {
               "type": "paragraph",
-              "text": "Add content here..."
+              "text": "和上一課一樣是 dp[i] = 前 i 個的答案，只是每一段有分數，要挑最好的切法：\n\ndp[i] = max(dp[j] + score(j, i))，j 是最後一段的開頭。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 切木頭：長度 n 的木頭，切成長度 L 的一段可以賣 price[L]，最多賣多少？\ndef rod_cutting(price, n):\n    dp = [0] * (n + 1)\n    for i in range(1, n + 1):\n        for L in range(1, i + 1):       # 最後一段長度 L\n            dp[i] = max(dp[i], dp[i - L] + price[L])\n    return dp[n]\n\nprice = [0, 1, 5, 8, 9, 10, 17, 17, 20]   # price[L]\nprint(rod_cutting(price, 8))   # 22：2 + 6（5 + 17）"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 每段最長 k，每段的分數 = 這段最大值 × 長度，總分最大？（LeetCode 1043）\ndef max_sum_after_partitioning(a, k):\n    n = len(a)\n    dp = [0] * (n + 1)\n    for i in range(1, n + 1):\n        best = 0\n        for L in range(1, min(k, i) + 1):   # 最後一段 a[i-L : i]\n            best = max(best, a[i - L])\n            dp[i] = max(dp[i], dp[i - L] + best * L)\n    return dp[n]\n\nprint(max_sum_after_partitioning([1, 15, 7, 9, 2, 5, 10], 3))   # 84"
+            },
+            {
+              "type": "callout",
+              "label": "技巧",
+              "text": "最後一段往左延伸時，順便更新這段的最大值（best），就不用每次重算。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Partition Array for Maximum Sum",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/partition-array-for-maximum-sum/",
+                  "description": "上面第二個例子"
+                },
+                {
+                  "title": "Perfect Squares",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/perfect-squares/",
+                  "description": "最少切成幾段"
+                }
+              ]
             }
           ]
         },
@@ -6395,11 +9329,59 @@
           "content": [
             {
               "type": "heading",
-              "text": "New Lesson"
+              "text": "區間 DP：從中間切一刀"
             },
             {
               "type": "paragraph",
-              "text": "Add content here..."
+              "text": "有些題目不是「切最後一段」，而是一個區間 [l, r] 要從中間某個 k 切成兩半，兩半各自是更小的同一個問題：\n\ndp[l][r] = min(dp[l][k] + dp[k+1][r]) + 合併 [l, r] 的代價，k 從 l 到 r − 1。\n\n例：一排石頭，每次合併相鄰兩堆，代價是兩堆的總和，全部合併成一堆的最小代價？"
+            },
+            {
+              "type": "animation",
+              "animationId": 71,
+              "caption": "區間 DP：石頭合併 [3,4,5,6]，按區間長度填表",
+              "steps": [
+                "開始：dp[l][r] = 把第 l ～ r 堆合併成一堆的最小代價",
+                "長度 1：只有一堆，不用合併 → 0",
+                "長度 2：[0,1] = 3 + 4 = 7、[1,2] = 9、[2,3] = 11",
+                "長度 3：[0,2] = min(0 + 9, 7 + 0) + 12 = 19；[1,3] = min(0 + 11, 9 + 0) + 15 = 24",
+                "長度 4：[0,3] 試三個切點：0 + 24、7 + 11、19 + 0 → 最小 18（從 1、2 中間切），+ 18 = 36"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def merge_stones(a):\n    n = len(a)\n    pre = [0]\n    for x in a:\n        pre.append(pre[-1] + x)\n    INF = float(\"inf\")\n    dp = [[0] * n for _ in range(n)]       # 長度 1：不用合併 = 0\n    for length in range(2, n + 1):           # 由短到長：小的區間先算好\n        for l in range(n - length + 1):\n            r = l + length - 1\n            dp[l][r] = INF\n            for k in range(l, r):\n                dp[l][r] = min(dp[l][r], dp[l][k] + dp[k + 1][r])\n            dp[l][r] += pre[r + 1] - pre[l]   # 最後一次合併的代價 = 區間總和\n    return dp[0][n - 1]\n\nprint(merge_stones([3, 4, 5, 6]))   # 36"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "填表順序",
+                  "definition": "依區間長度由短到長，不是由上到下。"
+                },
+                {
+                  "term": "時間",
+                  "definition": "O(n³)：n² 個區間，每個試 n 個切點。n 通常 ≤ 500。"
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Minimum Score Triangulation of Polygon",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/minimum-score-triangulation-of-polygon/",
+                  "description": "切成兩個多邊形"
+                },
+                {
+                  "title": "Burst Balloons",
+                  "difficulty": "Hard",
+                  "url": "https://leetcode.com/problems/burst-balloons/",
+                  "description": "想成「最後一個戳破的是 k」"
+                }
+              ]
             }
           ]
         },
@@ -6411,11 +9393,99 @@
           "content": [
             {
               "type": "heading",
-              "text": "New Lesson"
+              "text": "DP 方程式整理"
             },
             {
               "type": "paragraph",
-              "text": "Add content here..."
+              "text": "寫 DP 時先寫出這三樣：dp[...] 的意思、方程式、初始值和填表順序。下面是這個模組出現過的方程式。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "爬樓梯（計數）",
+                  "definition": "dp[i] = dp[i−1] + dp[i−2]；dp[0] = dp[1] = 1"
+                },
+                {
+                  "term": "打家劫舍（take or skip）",
+                  "definition": "dp[i] = max(a[i] + dp[i−2], dp[i−1])"
+                },
+                {
+                  "term": "最大子陣列（一定選自己）",
+                  "definition": "dp[i] = a[i] + max(0, dp[i−1])；答案 max(dp)"
+                },
+                {
+                  "term": "格子路徑數",
+                  "definition": "dp[r][c] = dp[r−1][c] + dp[r][c−1]"
+                },
+                {
+                  "term": "格子最小路徑和（take which child）",
+                  "definition": "dp[r][c] = grid[r][c] + min(dp[r−1][c], dp[r][c−1])"
+                },
+                {
+                  "term": "0/1 背包",
+                  "definition": "dp[c] = max(dp[c], dp[c−w] + v)，c 從大到小"
+                },
+                {
+                  "term": "無限背包",
+                  "definition": "dp[c] = max(dp[c], dp[c−w] + v)，c 從小到大"
+                },
+                {
+                  "term": "最少硬幣",
+                  "definition": "dp[c] = min(dp[c], dp[c−coin] + 1)；dp[0] = 0"
+                },
+                {
+                  "term": "LCS",
+                  "definition": "相同：dp[i−1][j−1] + 1；不同：max(dp[i−1][j], dp[i][j−1])"
+                },
+                {
+                  "term": "LIS",
+                  "definition": "dp[i] = 1 + max(dp[j])，j < i 且 a[j] < a[i]"
+                },
+                {
+                  "term": "切割（前 i 個）",
+                  "definition": "dp[i] = best(dp[j] + score(j, i))；dp[0] 是空的"
+                },
+                {
+                  "term": "區間 DP",
+                  "definition": "dp[l][r] = min(dp[l][k] + dp[k+1][r]) + cost(l, r)，長度由短到長"
+                },
+                {
+                  "term": "環 DP（functional graph）",
+                  "definition": "環上的點 = 環長；其他點 = 1 + ans[next]"
+                }
+              ]
+            },
+            {
+              "type": "callout",
+              "label": "寫不出方程式時",
+              "text": "回到 introduction：先寫出遞迴，看參數有哪些（= dp 的維度），看每次呼叫了誰（= 方程式右邊）。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "0/1 背包和無限背包的一維寫法差在哪裡？",
+                  "options": [
+                    "方程式不同",
+                    "c 的迴圈方向不同",
+                    "初始值不同",
+                    "沒有差別"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "區間 DP 要依照什麼順序填表？",
+                  "options": [
+                    "由上到下",
+                    "區間長度由短到長",
+                    "由右到左",
+                    "隨便"
+                  ],
+                  "answer": 1
+                }
+              ]
             }
           ]
         },
@@ -6427,11 +9497,11 @@
           "content": [
             {
               "type": "heading",
-              "text": "New Lesson"
+              "text": "每個點只有一條出去的邊"
             },
             {
               "type": "paragraph",
-              "text": "Add content here..."
+              "text": "題目像「每個人都指定一個下一個人」「從 i 會跳到 next[i]」：每個點剛好一條出邊（functional graph）。從任何點一直走，最後一定會掉進一個環。\n\n問題：從每個點出發，總共會經過幾個不同的點？"
             },
             {
               "type": "image",
@@ -6452,6 +9522,50 @@
               "type": "image",
               "caption": "New image",
               "imageId": 8
+            },
+            {
+              "type": "paragraph",
+              "text": "圖裡：4 → 3 → 2 → 1 → 2，1 和 2 是一個長度 2 的環。\n• 環上的點：繞一圈就回來了，答案 = 環長 = 2。\n• 不在環上的點：答案 = 1 + 下一個點的答案。3 = 1 + 2 = 3，4 = 1 + 3 = 4（就是圖上的 1 + 1 + 2）。\n\n藍色的 0、1 是走訪狀態：走到一半（0，還在這條路上）的點如果又被走到，代表找到環了。"
+            },
+            {
+              "type": "animation",
+              "animationId": 82,
+              "caption": "環 DP：4 → 3 → 2 → 1 → 2，先找環再往回填答案",
+              "steps": [
+                "每個點只有一條出去的邊：4 → 3 → 2 → 1 → 2",
+                "從 4 出發，一路標「走到一半」：4、3、2、1，下一步又走到 2",
+                "2 還在這條路上 → 找到環 [2, 1]：環上的點答案 = 環長 = 2",
+                "往回填：3 的答案 = 1 + ans[2] = 3",
+                "4 的答案 = 1 + ans[3] = 4（= 1 + 1 + 2）",
+                "之後從別的點出發，碰到「完成」的點就直接用答案：每個點只算一次"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def count_visited(nxt):\n    n = len(nxt)\n    ans = [0] * n\n    state = [0] * n             # 0 沒走過, 1 走到一半（在目前的路上）, 2 完成\n    for s in range(n):\n        if state[s]:\n            continue\n        path = []\n        u = s\n        while state[u] == 0:    # 一直走，直到碰到走過的點\n            state[u] = 1\n            path.append(u)\n            u = nxt[u]\n        if state[u] == 1:       # 碰到這條路上的點：找到環\n            cyc = path[path.index(u):]\n            for x in cyc:\n                ans[x] = len(cyc)\n                state[x] = 2\n            path = path[:path.index(u)]\n        for x in reversed(path):   # 環外的點：1 + 下一個點的答案（記憶化）\n            ans[x] = 1 + ans[nxt[x]]\n            state[x] = 2\n    return ans\n\n# 點 0 不用；1→2, 2→1, 3→2, 4→3\nprint(count_visited([0, 2, 1, 2, 3]))   # [1, 2, 2, 3, 4]"
+            },
+            {
+              "type": "callout",
+              "label": "為什麼是 DP",
+              "text": "走到 state = 2 的點就直接用它的答案，不用再走一次，每個點只算一次，O(n)。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Count Visited Nodes in a Directed Graph",
+                  "difficulty": "Hard",
+                  "url": "https://leetcode.com/problems/count-visited-nodes-in-a-directed-graph/",
+                  "description": "就是這一課的題目"
+                },
+                {
+                  "title": "Longest Cycle in a Graph",
+                  "difficulty": "Hard",
+                  "url": "https://leetcode.com/problems/longest-cycle-in-a-graph/",
+                  "description": "找環的部分一樣"
+                }
+              ]
             }
           ]
         }
@@ -6465,7 +9579,7 @@
       "lessons": [
         {
           "id": "lesson-1794532873928",
-          "title": "bit",
+          "title": "bit 位元",
           "titleEn": "Lesson 1",
           "pdfPages": [],
           "content": [
@@ -6484,6 +9598,145 @@
             {
               "type": "paragraph",
               "text": "one popular algorithm is divide and conquer, as we divide data to bits, first thing we need to confirm is that can bit of bits(data) be a sub problem of that data problem?"
+            },
+            {
+              "type": "paragraph",
+              "text": "答案常常是可以的：很多運算在每一位上是各自獨立的（AND、OR、XOR 不會進位），所以可以「一位一位」分開算，最後再合起來。"
+            },
+            {
+              "type": "heading",
+              "text": "位元運算"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "a & b",
+                  "definition": "兩個都是 1 才是 1。x & 1 判斷奇偶。"
+                },
+                {
+                  "term": "a | b",
+                  "definition": "有一個是 1 就是 1。把某一位設成 1。"
+                },
+                {
+                  "term": "a ^ b",
+                  "definition": "不一樣才是 1。x ^ x = 0，可以找「只出現一次」的數。"
+                },
+                {
+                  "term": "x << k、x >> k",
+                  "definition": "乘以 2ᵏ、除以 2ᵏ（無條件捨去）。"
+                },
+                {
+                  "term": "x >> i & 1",
+                  "definition": "x 的第 i 位是 0 還是 1。"
+                },
+                {
+                  "term": "x & -x",
+                  "definition": "只留最右邊的 1（Fenwick tree 的 lowbit）。"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "x = 0b1101101\nprint(x, bin(x))          # 109 0b1101101\nprint(x >> 2 & 1)         # 1：第 2 位\nprint(x & -x)             # 1：最右邊的 1\nprint(bin(x).count(\"1\"))  # 5：有幾個 1\n\nnums = [4, 1, 2, 1, 2]\nr = 0\nfor v in nums:\n    r ^= v                # 成對的互相抵消\nprint(r)                  # 4"
+            },
+            {
+              "type": "heading",
+              "text": "用 bitmask 列舉子集"
+            },
+            {
+              "type": "paragraph",
+              "text": "n 個東西，每個「選或不選」= 一個 n 位的二進位數。0 ～ 2ⁿ − 1 每個數剛好對應一個子集，不用遞迴就能列出全部。"
+            },
+            {
+              "type": "animation",
+              "animationId": 61,
+              "caption": "bitmask：[3,5,2,7] 的 16 個子集，找總和 = 10",
+              "steps": [
+                "4 個數，每個「選或不選」→ 2⁴ = 16 個子集，正好是 0 ～ 15",
+                "mask = 0101₂ = 5：第 0、2 位是 1 → 選 nums[0]、nums[2] = {3, 2}",
+                "mask 從 0 跑到 15，每個 mask 對應一個子集",
+                "總和 = 10 的：0111₂ {3, 5, 2} 和 1001₂ {3, 7}",
+                "n = 20 時 2²⁰ ≈ 10⁶ 個還可以；n = 40 就太多了"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "nums = [3, 5, 2, 7]\nn = len(nums)\nfor mask in range(1 << n):                 # 0 ～ 15\n    pick = [nums[i] for i in range(n) if mask >> i & 1]\n    if sum(pick) == 10:\n        print(format(mask, \"04b\"), pick)\n# 0111 [3, 5, 2]\n# 1001 [3, 7]"
+            },
+            {
+              "type": "heading",
+              "text": "一位一位分開算"
+            },
+            {
+              "type": "paragraph",
+              "text": "例：所有數兩兩之間的漢明距離（有幾位不一樣）總和。暴力是 O(n²)。分開看每一位：這一位有 ones 個 1、n − ones 個 0，不一樣的配對就是 ones × (n − ones)。每一位各算一次，O(32n)。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def total_hamming(nums):\n    n = len(nums)\n    total = 0\n    for i in range(32):\n        ones = sum(v >> i & 1 for v in nums)   # 這一位是 1 的有幾個\n        total += ones * (n - ones)\n    return total\n\nprint(total_hamming([4, 14, 2]))   # 6"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "x >> 3 & 1 在算什麼？",
+                  "options": [
+                    "x 除以 3",
+                    "x 的第 3 位",
+                    "x 乘以 8",
+                    "x 有幾個 1"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "n 個元素的子集用 bitmask 列舉，mask 的範圍是？",
+                  "options": [
+                    "0 ～ n",
+                    "0 ～ 2ⁿ − 1",
+                    "1 ～ n²",
+                    "0 ～ n!"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "a ^ a 等於？",
+                  "options": [
+                    "a",
+                    "0",
+                    "1",
+                    "2a"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Single Number",
+                  "difficulty": "Easy",
+                  "url": "https://leetcode.com/problems/single-number/",
+                  "description": "全部 XOR 起來"
+                },
+                {
+                  "title": "Subsets",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/subsets/",
+                  "description": "用 bitmask 寫一次"
+                },
+                {
+                  "title": "Total Hamming Distance",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/total-hamming-distance/",
+                  "description": "一位一位分開算"
+                }
+              ]
             }
           ]
         }
