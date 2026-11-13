@@ -33,14 +33,17 @@ export default function DictHashAnim({ step }: { step: number }) {
   const cells: Cell[] = [
     { header: 'names' },
     { addr: '0x0F00', label: 'scores', value: '→ 0x6000', ptr: true },
-    { header: 'hash table（8 格，每格 = hash · key · value）' },
-    ...TABLE.map((e, i) => ({
-      addr: `0x60${(i * 0x18).toString(16).padStart(2, '0').toUpperCase()}`,
-      label: <span className="text-slate-400">[{i}]</span>,
-      value: e ? `${e.k}: ${e.v}` : '—',
-      note: e ? `hash ${e.h}` : '空',
-      hot: i === look,
-    } as Cell)),
+    { header: 'hash table（8 格 × 8 bytes：hash · key · value，空格子 = 沒用到的 bytes）' },
+    ...TABLE.flatMap((e, i) => {
+      if (!e) return [];
+      const base = 0x6000 + i * 8;
+      const a = (o: number) => '0x' + (base + o).toString(16).toUpperCase();
+      return [
+        { addr: a(0), label: `[${i}] hash`, value: String(e.h), hot: i === look, note: i === look ? `slot ${i} 從 0x${base.toString(16).toUpperCase()} 開始` : undefined },
+        { addr: a(2), label: 'key', value: e.k, hot: i === look },
+        { addr: a(5), label: 'value', value: e.v, hot: i === look },
+      ] as Cell[];
+    }),
   ];
 
   const bus =

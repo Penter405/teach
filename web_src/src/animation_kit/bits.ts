@@ -51,7 +51,7 @@ export type Data = {
   type: string;
 };
 
-const MAX_BYTES = 6;
+const MAX_BYTES = 24; // the memory grid wraps long strings onto the next row
 
 const byte = (n: number) => (n & 0xff).toString(2).padStart(8, '0');
 
@@ -86,6 +86,7 @@ export function encode(value: unknown): Data {
   if (v === '' || v === '—' || v === '-' || v === '(空)') return { kind: 'empty', bytes: ['00000000'], type: '空' };
   if (v === 'True' || v === 'False') return { kind: 'bool', bytes: [byte(v === 'True' ? 1 : 0)], type: 'bool' };
   if (v === 'None') return { kind: 'pointer', bytes: [byte(0), byte(0)], type: 'None' };
+  if (v === 'NULL') return { kind: 'pointer', bytes: [byte(0), byte(0)], type: 'NULL' };
 
   // 26  /  -3  /  2 (商)
   let m = v.match(/^(-?\d+)(\s*\(.*\))?$/);

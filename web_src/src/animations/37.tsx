@@ -47,8 +47,10 @@ export default function WholeMachineAnim({ step }: { step: number }) {
     { addr: '0x0F08', label: 'scores', value: '→ 0x6000', ptr: true, hot: s === 1 },
     { addr: '0x0F10', label: 'name', value: `→ "${name}"`, ptr: true, hot: s === 0 || s === 4 },
     { header: 'dict (hash table)' },
-    { addr: '0x6078', label: '[5]', value: '"amy": 90', hot: s === 1 },
-    { addr: '0x6090', label: '[6]', value: '"bob": 55', hot: s === 4 },
+    { addr: '0x6028', label: '[5] key', value: '"amy"', hot: s === 1 },
+    { addr: '0x602D', label: 'value', value: '90', hot: s === 1 },
+    { addr: '0x6030', label: '[6] key', value: '"bob"', hot: s === 4 },
+    { addr: '0x6035', label: 'value', value: '55', hot: s === 4 },
     { header: 'stack' },
     ...(s >= 2
       ? [

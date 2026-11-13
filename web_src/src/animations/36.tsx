@@ -3,20 +3,18 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Board, CodePanel, Line, Tok, CPU, Bus, RAM, HwRow, Screen, Gate, clampStep, type Cell, type Reg } from '../animation_kit/HardwareKit';
 
-const Table = ({ items, hot = [], miss = [] }: { items: number[]; hot?: number[]; miss?: number[] }) => (
-  <div className="flex gap-0.5">
-    {Array.from({ length: 8 }).map((_, i) => (
-      <motion.div
-        key={i}
-        animate={{ backgroundColor: hot.includes(i) ? '#b45309' : miss.includes(i) ? '#7f1d1d' : '#1e293b' }}
-        className="flex flex-col items-center rounded min-w-[21px] px-0.5 py-0.5 border border-slate-600"
-      >
-        <span className="text-[7px] text-slate-500">{i}</span>
-        <span className={`text-xs font-bold ${items.includes(i) ? 'text-emerald-200' : 'text-slate-600'}`}>{items.includes(i) ? i : '·'}</span>
-      </motion.div>
-    ))}
-  </div>
-);
+// One set = 8 one-byte slots; an int's hash is itself, so n lives in slot n % 8.
+const setCells = (base: number, label: string, items: number[], hot: number[] = [], miss: number[] = []): Cell[] =>
+  Array.from({ length: 8 }, (_, i) => i)
+    .filter((i) => items.includes(i) || miss.includes(i))
+    .map((i) => ({
+      addr: '0x' + (base + i).toString(16).toUpperCase(),
+      label: i === Math.min(...items) ? `${label}[${i}]` : `[${i}]`,
+      value: items.includes(i) ? String(i) : '(空)',
+      hot: hot.includes(i),
+      warn: miss.includes(i),
+      note: miss.includes(i) ? `slot ${i} 是空的 → ${i} 不在 a 裡` : undefined,
+    } as Cell));
 
 export default function SetHashAnim({ step }: { step: number }) {
   const s = clampStep(step, 6);
@@ -37,10 +35,10 @@ export default function SetHashAnim({ step }: { step: number }) {
   const cells: Cell[] = [
     { header: 'names' },
     { addr: '0x0F00', label: 'a', value: '→ 0x7000', ptr: true },
-    { header: 'set objects（int 的 hash 就是自己，% 8 決定格子）' },
-    { addr: '0x7000', label: 'a', value: <Table items={[1, 2, 3]} hot={s === 1 ? [2] : s === 3 ? [2, 3] : []} miss={s === 3 ? [4] : []} />, hot: s === 1 || s === 3 },
-    ...(s >= 2 ? [{ addr: '0x7100', label: 'b', value: <Table items={[2, 3, 4]} hot={s === 3 ? [2, 3, 4] : []} />, hot: s === 2 || s === 3 } as Cell] : []),
-    ...(s >= 3 ? [{ addr: '0x7200', label: 'a&b', value: <Table items={[2, 3]} />, hot: s >= 3 } as Cell] : []),
+    { header: 'set a（8 格；int 的 hash 就是自己，% 8 決定格子）' },
+    ...setCells(0x7000, 'a', [1, 2, 3], s === 1 ? [2] : s === 3 ? [2, 3] : [], s === 3 ? [4] : []),
+    ...(s >= 2 ? [{ header: '{2, 3, 4}（暫時的 set）' } as Cell, ...setCells(0x7100, 'b', [2, 3, 4], s === 3 ? [2, 3, 4] : [])] : []),
+    ...(s >= 3 ? [{ header: 'a & b（新的 set）' } as Cell, ...setCells(0x7200, 'a&b', [2, 3], s >= 3 ? [2, 3] : [])] : []),
   ];
 
   const bus =
