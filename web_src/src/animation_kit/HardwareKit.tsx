@@ -323,7 +323,8 @@ const OutBadge = ({ scr, bufs, more }: { scr?: El; bufs: El[]; more: boolean }) 
 
 /* Board: CPU top-left, Python top-right, memory full width below.
    三欄排列: CPU | DRAM | Python.  Phones: one column. */
-export const Board = ({ children }: { children: React.ReactNode }) => {
+/** `now`: what this step did, in Python terms (shown as 現在在做什麼). Derived from the code if left out. */
+export const Board = ({ children, now }: { children: React.ReactNode; now?: string }) => {
   const view = useHwView();
   // rows that some step uses keep their space on every step
   const stepSize = useStepSize();
@@ -363,7 +364,8 @@ export const Board = ({ children }: { children: React.ReactNode }) => {
   const others = parts.filter((c) => c !== cpuEl && c !== busEl && c !== ramEl);
   const restOthers = rest.filter((_, i) => i !== hwIdx);
 
-  const derived = deriveCpu(codeEls, cpuEl, busEl, ramEl);
+  const derivedRaw = deriveCpu(codeEls, cpuEl, busEl, ramEl);
+  const derived = now ? { ...derivedRaw, python: now } : derivedRaw;
   const cpu = cpuEl ? React.cloneElement(cpuEl, { derived, fill: true }) : null;
 
   // 3) I/O next to input() / print (unless the strip under the board is chosen)

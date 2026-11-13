@@ -8,8 +8,9 @@ const toks = (line: Element): Tk[] =>
     el, text: (el.textContent || '').replace(/\s+/g, ' ').trim(), state: el.dataset.tokState || 'normal',
   }));
 
-// A token is "untouched" by the next step if its text stays and it does not become active/done.
-const same = (a: Tk, b: Tk) => a.text === b.text && !(b.state !== a.state && (b.state === 'active' || b.state === 'done'));
+// A token is "untouched" if its text stays, it is not a new result (done) and it does not
+// become the part being worked on (active).
+const same = (a: Tk, b: Tk) => a.text === b.text && b.state !== 'done' && !(b.state === 'active' && a.state !== 'active');
 
 export function markPreview(current: HTMLElement, next: HTMLElement): number {
   clearPreview(current);
@@ -25,6 +26,10 @@ export function markPreview(current: HTMLElement, next: HTMLElement): number {
     while (pre < a.length && pre < b.length && same(a[pre], b[pre])) pre++;
     let suf = 0;
     while (suf < a.length - pre && suf < b.length - pre && same(a[a.length - 1 - suf], b[b.length - 1 - suf])) suf++;
+    // only mark what the next step works on or produces — not tokens that merely turn back
+    // into their original text (e.g. a used-up result going back to the expression)
+    const worked = b.slice(pre, b.length - suf).some((t) => t.state === 'done' || t.state === 'active');
+    if (!worked) return;
     for (let k = pre; k < a.length - suf; k++) { a[k].el.dataset.preview = '1'; marked++; }
   });
   return marked;
