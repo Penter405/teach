@@ -1,53 +1,38 @@
-// Animation 86: 最小生成樹 · Kruskal — shortest edges first, skip the ones that close a cycle
+// Animation 86: 最小生成樹 · Kruskal — one step = one action
 import React from 'react';
-import { clampStep } from '../animation_kit/HardwareKit';
-import { AlgoBoard, Stage, GraphView, Seq, VarRow, Note, type GNode, type GEdge, type CellTone } from '../animation_kit/AlgoKit';
-import { W_POS } from './83';
-
-export const STEPS = [
-  '把邊由短到長排好；每個點自己一群',
-  'A–C (1)：A、C 不同群 → 連上',
-  'B–D (1)：不同群 → 連上',
-  'C–B (2)：{A, C} 和 {B, D} 不同群 → 連上',
-  'D–E (3)：不同群 → 連上，已經 4 條邊 = n − 1',
-  'A–B (4)：A、B 已經同一群，連上會形成環 → 跳過',
-  'C–D (5)：也會形成環 → 跳過。總權重 1 + 1 + 2 + 3 = 7',
-];
-const SORTED: [string, string, number][] = [['A', 'C', 1], ['B', 'D', 1], ['C', 'B', 2], ['D', 'E', 3], ['A', 'B', 4], ['C', 'D', 5]];
-const GROUPS: Record<string, number>[] = [
-  { A: 0, B: 1, C: 2, D: 3, E: 4 }, { A: 0, B: 1, C: 0, D: 3, E: 4 }, { A: 0, B: 1, C: 0, D: 1, E: 4 },
-  { A: 0, B: 0, C: 0, D: 0, E: 4 }, { A: 0, B: 0, C: 0, D: 0, E: 0 }, { A: 0, B: 0, C: 0, D: 0, E: 0 }, { A: 0, B: 0, C: 0, D: 0, E: 0 },
-];
-const GTONE: CellTone[] = ['yes', 'blue', 'normal', 'normal', 'normal'];
+import T from './trace/86';
+import { TraceView, Stage, GraphView, Seq, type GNode, type GEdge } from '../animation_kit/AlgoKit';
+import { W_POS, NAME } from './83';
 
 export default function KruskalAnim({ step }: { step: number }) {
-  const s = clampStep(step, STEPS.length);
-  const g = GROUPS[s];
-  const taken = SORTED.slice(0, Math.min(s, 4));
-  const curE = s >= 1 ? SORTED[s - 1] : null;
-  const skip = s >= 5;
-  const size: Record<number, number> = {};
-  Object.values(g).forEach((x) => (size[x] = (size[x] ?? 0) + 1));
-  const nodes: GNode[] = Object.entries(W_POS).map(([k, [x, y]]) => ({
-    id: k, x, y, tone: curE && (curE[0] === k || curE[1] === k) ? (skip ? 'hit' : 'active') : size[g[k]] > 1 ? GTONE[g[k]] : 'normal', [k === 'B' ? 'above' : 'below']: `群 ${'ABCDE'[g[k]]}`,
-  }));
-  const isE = (e: [string, string, number], a: string, b: string) => (e[0] === a && e[1] === b) || (e[0] === b && e[1] === a);
-  const edges: GEdge[] = SORTED.map(([a, b, w]) => ({
-    a, b, w,
-    tone: curE && isE(curE, a, b) ? (skip ? 'hit' : 'active') : taken.some((e) => isE(e, a, b)) ? 'chosen' : SORTED.slice(4, Math.max(4, s - 1)).some((e) => isE(e, a, b)) ? 'dim' : 'normal',
-  }));
   return (
-    <div className="w-full flex flex-col items-center gap-3 font-sans">
-      <AlgoBoard now={STEPS[s]}>
-        <VarRow vars={[{ name: '已選幾條', value: taken.length, hot: s >= 1 && s <= 4 }, { name: '總權重', value: taken.reduce((a, e) => a + e[2], 0), hot: s >= 1 && s <= 4 }]} />
-        <Stage title="綠線 = 已選的邊；點下面是它屬於哪一群（並查集的 root）"><GraphView nodes={nodes} edges={edges} width={600} height={260} /></Stage>
-        <Stage title="邊（由短到長）">
-          <div className="flex justify-center">
-            <Seq items={SORTED.map(([a, b, w], i) => ({ v: w, top: `${a}–${b}`, tone: i === s - 1 ? (skip ? 'hit' : 'active') : i < Math.min(s, 4) ? 'yes' : i < s - 1 ? 'no' : 'normal', struck: i >= 4 && i < s, bottom: i < 4 && i < s ? '選' : i >= 4 && i < s ? '環' : undefined }))} />
-          </div>
-        </Stage>
-        {s === 5 && <Note tone="rose">find(A) == find(B)：已經連通了，再連就是環。這就是 union 回傳 False。</Note>}
-      </AlgoBoard>
-    </div>
+    <TraceView T={T} step={step} hide={['total']}>
+      {(st, s) => {
+        const edges: [number, number, number][] = st.vars.edges ?? [];
+        const par: number[] = st.vars.PARENT ?? [0, 1, 2, 3];
+        const { u, v } = st.vars;
+        const chosen: string[] = [];
+        T.steps.slice(0, s + 1).forEach((x) => { if (x.kind === 'assign' && x.ref?.[0] === 'PARENT') chosen.push(`${x.vars.u}-${x.vars.v}`); });
+        const skipped: string[] = [];
+        T.steps.slice(0, s + 1).forEach((x) => { if (x.kind === 'continue') skipped.push(`${x.vars.u}-${x.vars.v}`); });
+        const root = (x: number) => { while (par[x] !== x) x = par[x]; return x; };
+        const key = (a: number, b: number) => `${a}-${b}`;
+        const nodes: GNode[] = Object.entries(W_POS).map(([k, [x, y]]) => {
+          const n = +k;
+          return { id: n, x, y, label: NAME[n], tone: n === u || n === v ? 'active' : 'normal', [n === 1 ? 'above' : 'below']: `群 ${NAME[root(n)]}` } as GNode;
+        });
+        const gEdges: GEdge[] = edges.map(([w, a, b]) => ({ a, b, w, tone: a === u && b === v ? (skipped.includes(key(a, b)) ? 'hit' : 'active') : chosen.includes(key(a, b)) ? 'chosen' : skipped.includes(key(a, b)) ? 'dim' : 'normal' }));
+        return (
+          <>
+            <Stage title="綠線 = 選了；點下面 = 屬於哪一群（root）"><GraphView nodes={nodes} edges={gEdges} width={520} height={260} /></Stage>
+            <Stage title={`邊（由短到長）　總權重 total = ${st.vars.total ?? 0}`}>
+              <div className="flex justify-center">
+                <Seq items={edges.map(([w, a, b]) => ({ v: w, top: `${NAME[a]}–${NAME[b]}`, tone: a === u && b === v ? 'active' : chosen.includes(key(a, b)) ? 'yes' : skipped.includes(key(a, b)) ? 'no' : 'normal', struck: skipped.includes(key(a, b)), bottom: chosen.includes(key(a, b)) ? '選' : skipped.includes(key(a, b)) ? '環' : undefined }))} />
+              </div>
+            </Stage>
+          </>
+        );
+      }}
+    </TraceView>
   );
 }
