@@ -4,7 +4,7 @@ import { Board, CodePanel, Line, Tok, CPU, Bus, RAM, HwRow, Screen, clampStep, t
 
 type Slot = string | null;
 // int objects 10 / 20 / 30 / 40 / 5 each live at their own address
-const OBJ: Record<string, string> = { '10': '0x5000', '20': '0x5001', '30': '0x5002', '40': '0x5003', '5': '0x5004' };
+const OBJ: Record<string, string> = { '10': '0x60', '20': '0x61', '30': '0x62', '40': '0x63', '5': '0x64' };
 
 export default function ListMemoryAnim({ step }: { step: number }) {
   const s = clampStep(step, 7);
@@ -13,7 +13,7 @@ export default function ListMemoryAnim({ step }: { step: number }) {
   const CAP = [3, 3, 6, 6, 6, 6, 6][s];
   const writes = ['2', '1', '1 (原地擴充)', '4 次位移', '1', '0', '0'][s];
 
-  // The item array stays at 0x4100 the whole time: when it is full, it grows into the
+  // The item array stays at 0x50 the whole time: when it is full, it grows into the
   // free bytes right after it, so nums keeps pointing at the same list object.
   const slots: Slot[] =
     s === 0 ? ['10', '20', null]
@@ -39,14 +39,14 @@ export default function ListMemoryAnim({ step }: { step: number }) {
 
   const cells: Cell[] = [
     { header: 'names' },
-    { addr: '0x0F00', label: 'nums', value: '→ 0x4000', ptr: true, note: 'id(nums) 從頭到尾不變', hot: s === 2 },
+    { addr: '0x40', label: 'nums', value: '→ 0x48', ptr: true, note: 'id(nums) 從頭到尾不變', hot: s === 2 },
     { header: 'list object（mutable：位址不變，改的是裡面）' },
-    { addr: '0x4000', label: 'len', value: String(LEN), hot: s !== 3 && s !== 6 },
-    { addr: '0x4001', label: 'cap', value: String(CAP), hot: s === 2 },
-    { addr: '0x4002', label: 'items', value: '→ 0x4100' },
+    { addr: '0x48', label: 'len', value: String(LEN), hot: s !== 3 && s !== 6 },
+    { addr: '0x49', label: 'cap', value: String(CAP), hot: s === 2 },
+    { addr: '0x4A', label: 'items', value: '→ 0x50' },
     { header: s >= 2 ? '指標陣列（容量 3 → 6：後面沒人用，原地往後長）' : '指標陣列（容量 3）' },
     ...slots.map((v, i) => ({
-      addr: '0x' + (0x4100 + i * 2).toString(16).toUpperCase(),
+      addr: '0x' + (0x50 + i * 2).toString(16).toUpperCase(),
       label: `[${i}]`,
       value: v === null ? 'NULL' : '→ ' + OBJ[v],
       hot: hotSlots.includes(i),
@@ -87,7 +87,7 @@ export default function ListMemoryAnim({ step }: { step: number }) {
           <RAM cells={cells} wide />
         </HwRow>
         <div className="flex flex-col md:flex-row gap-2">
-          <div className="text-[10px] text-slate-400 md:w-1/2">容量數字為示意。list 是 mutable：nums 一直指向同一個 list 物件 (0x4000)。只有當後面的位址已經被別的物件占用時，指標陣列才需要整排搬到新位址（改的是 items，不是 nums）。</div>
+          <div className="text-[10px] text-slate-400 md:w-1/2">容量數字為示意。list 是 mutable：nums 一直指向同一個 list 物件 (0x48)。只有當後面的位址已經被別的物件占用時，指標陣列才需要整排搬到新位址（改的是 items，不是 nums）。</div>
           <div className="md:w-1/2"><Screen lines={s >= 6 ? ['40'] : []} active={s === 6} /></div>
         </div>
       </Board>

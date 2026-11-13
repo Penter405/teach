@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle2, ChevronRight, Play, SkipBack, ExternalLink, XCircle, Trophy, Code2, Maximize2, ZoomIn } from 'lucide-react';
+import { CheckCircle2, ChevronRight, Play, SkipBack, ExternalLink, XCircle, Trophy, Code2, Maximize2, ZoomIn, Eye } from 'lucide-react';
 import { ZoomViewer } from './ZoomViewer';
+import { useHwView } from './animation_kit/bits';
+import { StepSizeProvider, measureLayout, type StepLayout } from './animation_kit/stepSize';
+import { markPreview, clearPreview } from './animation_kit/preview';
 import { ContentBlock, QuizQuestion, PracticeProblem } from './courseData';
 import { AIChat } from './AIChat';
 import { MatchingExercise } from './MatchingExercise';
@@ -544,13 +547,94 @@ function RenderImage({ block }: { block: ContentBlock }) {
 function AnimationStepper({ steps, children, title }: { steps: string[]; children: (step: number) => React.ReactNode; title?: string }) {
   const safeSteps = steps?.length ? steps : [''];
   const total = safeSteps.length;
-  const [step, setStep] = useState(0);
+  const [step, setStepRaw] = useState(0);
+  // 預告: show what the next step will process, without doing it yet. Cleared by any step change.
+  const [previewing, setPreviewing] = useState(false);
+  const setStep = React.useCallback((v: number | ((s: number) => number)) => { setPreviewing(false); setStepRaw(v); }, []);
   const [expanded, setExpanded] = useState(false);
+  const visibleRef = React.useRef<HTMLDivElement>(null);
+  const zoomContentRef = React.useRef<HTMLDivElement>(null);
+  const previewGhostRef = React.useRef<HTMLDivElement>(null);
+  const [previewMarks, setPreviewMarks] = useState(0);
   const [baseWidth, setBaseWidth] = useState(900);
   const stageRef = React.useRef<HTMLDivElement>(null);
 
+  // ── Keep the box the same size on every step: as tall as the tallest step. ──
+  // Every step is rendered once, invisibly, to measure it; then those copies are removed.
+  // Re-measured when the width or the memory display mode changes (both change heights).
+  const [maxH, setMaxH] = useState(0);
+  const [layout, setLayout] = useState<StepLayout | undefined>(undefined);
+  const [measuring, setMeasuring] = useState(true);
+  // Fonts that finish loading later change text sizes → measure again.
+  React.useEffect(() => {
+    let alive = true;
+    document.fonts?.ready.then(() => { if (alive) setMeasuring(true); });
+    return () => { alive = false; };
+  }, []);
+  const ghostRefs = React.useRef<(HTMLDivElement | null)[]>([]);
+  const hwView = useHwView();
+  React.useEffect(() => { setMeasuring(true); }, [hwView.memBinary, hwView.cpuBinary, hwView.memTable, hwView.bitStyle, hwView.moreRegs, hwView.asmLevel, hwView.threeCol, hwView.ioBar, total]);
+  React.useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+    let lastW = el.clientWidth;
+    const ro = new ResizeObserver(() => {
+      const w = el.clientWidth;
+      if (Math.abs(w - lastW) > 1) { lastW = w; setMeasuring(true); }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  React.useLayoutEffect(() => {
+    if (!measuring) return;
+    let raf2 = 0;
+    // wait two frames so parts that size themselves (e.g. the memory grid) have settled
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        const ghosts = ghostRefs.current.slice(0, total);
+        const h = Math.max(0, ...ghosts.map(g => g?.offsetHeight ?? 0));
+        setLayout(measureLayout(ghosts));
+        if (h > 0) setMaxH(h);
+        setMeasuring(false);
+      });
+    });
+    return () => { cancelAnimationFrame(raf1); cancelAnimationFrame(raf2); };
+  }, [measuring, total]);
+
+  // All captions stacked in one cell, so the caption area is as tall as the longest one.
+  const captions = (className: string, withTotal: boolean) => (
+    <div className="grid">
+      {safeSteps.map((t, i) => (
+        <p
+          key={i}
+          aria-hidden={i !== step}
+          style={{ gridArea: '1 / 1' }}
+          className={`${className} ${i === step ? '' : 'invisible'}`}
+        >
+          Step {i + 1}{withTotal ? ` / ${total}` : ''}: {t}
+        </p>
+      ))}
+    </div>
+  );
+
   const prev = () => setStep(s => Math.max(0, s - 1));
   const next = () => setStep(s => Math.min(total - 1, s + 1));
+  const canPreview = !previewing && step < total - 1;
+  const preview = () => { if (canPreview) setPreviewing(true); };
+
+  // Mark the code the next step will process (on the page and in the full-screen view).
+  React.useLayoutEffect(() => {
+    const targets = [visibleRef.current, zoomContentRef.current].filter(Boolean) as HTMLElement[];
+    if (!previewing) { targets.forEach(clearPreview); setPreviewMarks(0); return; }
+    const raf = requestAnimationFrame(() => {
+      const ghost = previewGhostRef.current;
+      if (!ghost) return;
+      let n = 0;
+      targets.forEach((t) => { n = Math.max(n, markPreview(t, ghost)); });
+      setPreviewMarks(n);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [previewing, step, expanded, layout, hwView]);
 
   const openExpanded = () => {
     // Keep the same layout as on the page, just scaled up: render at the inline width.
@@ -561,10 +645,11 @@ function AnimationStepper({ steps, children, title }: { steps: string[]; childre
 
   const onKey = React.useCallback((e: KeyboardEvent) => {
     if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { setStep(s => Math.min(total - 1, s + 1)); return true; }
+    if (e.key === 'ArrowDown' || e.key.toLowerCase() === 'p') { setPreviewing(p => p || true); return true; }
     if (e.key === 'ArrowLeft') { setStep(s => Math.max(0, s - 1)); return true; }
     if (e.key === 'Home') { setStep(0); return true; }
     return false;
-  }, [total]);
+  }, [total, setStep]);
 
   const progress = (
     <div className="flex items-center gap-1 mb-3">
@@ -580,11 +665,26 @@ function AnimationStepper({ steps, children, title }: { steps: string[]; childre
   );
 
   const controls = (
-    <div className="flex justify-center gap-3">
+    <div className="flex flex-wrap justify-center gap-3">
       <button onClick={() => setStep(0)} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Reset"><SkipBack size={16} /></button>
       <button onClick={prev} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Previous"><ChevronRight size={16} className="rotate-180" /></button>
-      <button onClick={next} className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 transition-colors font-medium text-sm flex items-center gap-1"><Play size={14} /> Next</button>
+      <button
+        onClick={preview}
+        disabled={!canPreview}
+        title="先看下一步要處理什麼（不會真的執行）"
+        className="px-4 py-2 rounded-lg border-2 border-amber-400 text-amber-600 dark:text-amber-300 hover:bg-amber-400/10 transition-colors font-medium text-sm flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+      >
+        <Eye size={14} /> 預告
+      </button>
+      <button onClick={next} disabled={step >= total - 1} className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 transition-colors font-medium text-sm flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"><Play size={14} /> 執行</button>
     </div>
+  );
+
+  // What the next step will do (shown while previewing); the line is always reserved so nothing moves.
+  const previewNote = (className: string) => (
+    <p aria-live="polite" className={`${className} ${previewing ? '' : 'invisible'}`}>
+      預告 → Step {Math.min(step + 2, total)}：{safeSteps[step + 1] ?? ''}
+    </p>
   );
 
   return (
@@ -597,14 +697,30 @@ function AnimationStepper({ steps, children, title }: { steps: string[]; childre
       >
         <Maximize2 size={14} /> 放大
       </button>
-      <div ref={stageRef} className="flex justify-center w-full min-h-[200px] items-center py-4">
-        {children(step)}
+      <div ref={stageRef} className="relative flex justify-center items-start w-full py-4" style={{ minHeight: Math.max(200, maxH + 32) }}>
+        <div ref={visibleRef} className="flex justify-center w-full" style={{ minHeight: maxH || undefined }}>
+          <StepSizeProvider value={{ mode: 'show', layout }}>{children(step)}</StepSizeProvider>
+        </div>
+        {previewing && step < total - 1 && (
+          // the next step, rendered invisibly, only to find out what it will process
+          <div ref={previewGhostRef} aria-hidden className="absolute inset-x-0 top-4 invisible pointer-events-none flex justify-center w-full">
+            <StepSizeProvider value={{ mode: 'show', layout }}>{children(step + 1)}</StepSizeProvider>
+          </div>
+        )}
+        {measuring && (
+          <div aria-hidden className="absolute inset-x-0 top-4 invisible pointer-events-none">
+            {safeSteps.map((_, i) => (
+              <div key={i} ref={el => { ghostRefs.current[i] = el; }} className="absolute inset-x-0 top-0 flex justify-center w-full">
+                <StepSizeProvider value={{ mode: 'measure' }}>{children(i)}</StepSizeProvider>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       <div className="mt-4 px-2">
         {progress}
-        <p className="text-sm text-slate-600 dark:text-slate-400 font-medium text-center mb-4 min-h-[40px]">
-          Step {step + 1}: {safeSteps[step]}
-        </p>
+        {captions('text-sm text-slate-600 dark:text-slate-400 font-medium text-center mb-1 min-h-[40px]', false)}
+        {previewNote('text-sm font-bold text-amber-600 dark:text-amber-300 text-center mb-4 min-h-[20px]')}
         {controls}
       </div>
 
@@ -617,16 +733,15 @@ function AnimationStepper({ steps, children, title }: { steps: string[]; childre
         footer={
           <div className="mx-auto w-full max-w-4xl px-4 pb-5 pt-3 text-slate-200">
             {progress}
-            <p className="text-base font-medium text-center mb-3 min-h-[28px]">
-              Step {step + 1} / {total}: {safeSteps[step]}
-            </p>
+            {captions('text-base font-medium text-center mb-1 min-h-[28px]', true)}
+            {previewNote('text-sm font-bold text-amber-300 text-center mb-3 min-h-[20px]')}
             {controls}
-            <p className="hidden md:block mt-2 text-center text-xs text-slate-500">← → 切換步驟</p>
+            <p className="hidden md:block mt-2 text-center text-xs text-slate-500">→ 執行 · ↓ 預告 · ← 上一步</p>
           </div>
         }
       >
-        <div className="flex justify-center items-center p-4 rounded-2xl bg-white dark:bg-slate-900" style={{ width: baseWidth }}>
-          {children(step)}
+        <div ref={zoomContentRef} className="flex justify-center items-start p-4 rounded-2xl bg-white dark:bg-slate-900" style={{ width: baseWidth, minHeight: maxH ? maxH + 32 : undefined }}>
+          <StepSizeProvider value={{ mode: 'show', layout }}>{children(step)}</StepSizeProvider>
         </div>
       </ZoomViewer>
     </div>

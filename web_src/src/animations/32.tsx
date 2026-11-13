@@ -3,7 +3,7 @@ import React from 'react';
 import { Board, CodePanel, Line, Tok, CPU, Bus, RAM, HwRow, clampStep, type Cell, type Reg, type TokState } from '../animation_kit/HardwareKit';
 
 const PCS = ['0x10', '0x04', '0x10', '0x0C', '0x04', '0x10', '0x10'];
-const SP = ['0x7FE8', '0x7FD0', '0x7FE8', '0x7FD8', '0x7FB8', '0x7FE8', '0x7FE8'];
+const SP = ['0x80', '0x7A', '0x80', '0x7C', '0x74', '0x80', '0x80'];
 
 export default function CallStackAnim({ step }: { step: number }) {
   const s = clampStep(step, 7);
@@ -29,20 +29,20 @@ export default function CallStackAnim({ step }: { step: number }) {
   const frameA: Cell[] =
     s === 0 ? []
     : s <= 2 ? [
-        { addr: '0x7FE0', label: 'ret', value: '0x10', note: 'frame add #1', hot: s === 1, stale: s === 2 },
-        { addr: '0x7FD8', label: 'a', value: '1', hot: s === 1, stale: s === 2 },
-        { addr: '0x7FD0', label: 'b', value: '2', hot: s === 1, stale: s === 2 },
+        { addr: '0x7E', label: 'ret', value: '0x10', note: 'frame add #1', hot: s === 1, stale: s === 2 },
+        { addr: '0x7C', label: 'a', value: '→ 0x49', hot: s === 1, stale: s === 2 },
+        { addr: '0x7A', label: 'b', value: '→ 0x4A', hot: s === 1, stale: s === 2 },
       ]
     : [
-        { addr: '0x7FE0', label: 'ret', value: '0x10', note: 'frame double', hot: s === 3, stale: s >= 5 },
-        { addr: '0x7FD8', label: 'n', value: '3', hot: s === 3, stale: s >= 5 },
-        { addr: '0x7FD0', label: 'b', value: '2', note: '舊資料 (沒被覆蓋)', stale: true },
+        { addr: '0x7E', label: 'ret', value: '0x10', note: 'frame double', hot: s === 3, stale: s >= 5 },
+        { addr: '0x7C', label: 'n', value: '→ 0x4B', hot: s === 3, stale: s >= 5 },
+        { addr: '0x7A', label: 'b', value: '→ 0x4A', note: '舊資料 (沒被覆蓋)', stale: true },
       ];
   const frameB: Cell[] =
     s >= 4 ? [
-      { addr: '0x7FC8', label: 'ret', value: '0x0C', note: 'frame add #2', hot: s === 4, stale: s >= 5 },
-      { addr: '0x7FC0', label: 'a', value: '3', hot: s === 4, stale: s >= 5 },
-      { addr: '0x7FB8', label: 'b', value: '3', hot: s === 4, stale: s >= 5 },
+      { addr: '0x78', label: 'ret', value: '0x0C', note: 'frame add #2', hot: s === 4, stale: s >= 5 },
+      { addr: '0x76', label: 'a', value: '→ 0x4B', hot: s === 4, stale: s >= 5 },
+      { addr: '0x74', label: 'b', value: '→ 0x4B', hot: s === 4, stale: s >= 5 },
     ] : [];
 
   const cells: Cell[] = [
@@ -51,9 +51,11 @@ export default function CallStackAnim({ step }: { step: number }) {
     { addr: '0x08', label: 'double', value: 'def (0x08–0x0C)', hot: pc === '0x0C' },
     { addr: '0x10', label: 'main', value: 'result = …', hot: pc === '0x10' },
     { header: 'names' },
-    ...(s >= 6 ? [{ addr: '0x0F00', label: 'result', value: '→ 6', ptr: true, hot: true } as Cell] : []),
+    ...(s >= 6 ? [{ addr: '0x40', label: 'result', value: '→ 0x4E', ptr: true, hot: true } as Cell] : []),
+    { header: 'int 物件（小整數事先建好、共用；區域變數也只存位址）' },
+    ...['1', '2', '3', '6'].map((v) => ({ addr: '0x4' + (8 + Number(v)).toString(16).toUpperCase(), value: v, hot: (s === 2 && v === '3') || (s === 5 && v === '6') } as Cell)),
     { header: 'stack ↓ (由高位址往低位址長)' },
-    ...(frameA.length ? frameA : [{ addr: '0x7FE0', value: '(空)', stale: true } as Cell]),
+    ...(frameA.length ? frameA : [{ addr: '0x7E', value: '(空)', stale: true } as Cell]),
     ...frameB,
   ];
 

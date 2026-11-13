@@ -29,7 +29,7 @@ export default function WholeMachineAnim({ step }: { step: number }) {
 
   const regs: Reg[] = [
     { name: 'PC', value: pc, hot: true },
-    { name: 'SP', value: s === 2 || s === 4 ? '0x7FD8' : '0x7FE8', hot: s === 2 || s === 4 },
+    { name: 'SP', value: s === 2 || s === 4 ? '0x9C' : '0xA0', hot: s === 2 || s === 4 },
     { name: 'RET', value: s >= 4 ? '"F"' : s >= 2 ? '"P"' : '—', hot: s === 2 || s === 4 },
     { name: 'R1', value: s === 0 ? '"amy"' : s === 1 ? '90' : s === 2 ? '90' : s === 4 ? '55' : '—', hot: s <= 2 || s === 4 },
   ];
@@ -43,21 +43,28 @@ export default function WholeMachineAnim({ step }: { step: number }) {
   const frameStale = !(s === 2 || s === 4);
   const cells: Cell[] = [
     { header: 'names' },
-    { addr: '0x0F00', label: 'grade', value: '→ code 0x00', ptr: true, hot: s === 2 || s === 4 },
-    { addr: '0x0F08', label: 'scores', value: '→ 0x6000', ptr: true, hot: s === 1 },
-    { addr: '0x0F10', label: 'name', value: `→ "${name}"`, ptr: true, hot: s === 0 || s === 4 },
-    { header: 'dict (hash table)' },
-    { addr: '0x6028', label: '[5] key', value: '"amy"', hot: s === 1 },
-    { addr: '0x602D', label: 'value', value: '90', hot: s === 1 },
-    { addr: '0x6030', label: '[6] key', value: '"bob"', hot: s === 4 },
-    { addr: '0x6035', label: 'value', value: '55', hot: s === 4 },
+    { addr: '0x40', label: 'grade', value: '→ code 0x00', ptr: true, hot: s === 2 || s === 4 },
+    { addr: '0x42', label: 'scores', value: '→ 0x50', ptr: true, hot: s === 1 },
+    { addr: '0x44', label: 'name', value: s >= 4 ? '→ 0x4B' : '→ 0x48', ptr: true, hot: s === 0 || s === 4, note: s === 0 || s === 4 ? 'name 指向 dict 裡同一個 key 物件' : undefined },
+    { header: 'dict (hash table：hash · key 的位址 · value 的位址)' },
+    { addr: '0x78', label: '[5] hash', value: '9157', hot: s === 1 },
+    { addr: '0x7A', label: 'key', value: '→ 0x48', hot: s === 1 },
+    { addr: '0x7C', label: 'value', value: '→ 0x4E', hot: s === 1 },
+    { addr: '0x80', label: '[6] hash', value: '3045', hot: s === 4 },
+    { addr: '0x82', label: 'key', value: '→ 0x4B', hot: s === 4 },
+    { addr: '0x84', label: 'value', value: '→ 0x4F', hot: s === 4 },
+    { header: 'key / value 物件' },
+    { addr: '0x48', value: '"amy"' },
+    { addr: '0x4B', value: '"bob"' },
+    { addr: '0x4E', value: '90' },
+    { addr: '0x4F', value: '55' },
     { header: 'stack' },
     ...(s >= 2
       ? [
-          { addr: '0x7FE0', label: 'ret', value: '0x10', note: 'frame grade', hot: !frameStale, stale: frameStale } as Cell,
-          { addr: '0x7FD8', label: 's', value: s >= 4 ? '55' : '90', hot: !frameStale, stale: frameStale } as Cell,
+          { addr: '0x9E', label: 'ret', value: '0x10', note: 'frame grade', hot: !frameStale, stale: frameStale } as Cell,
+          { addr: '0x9C', label: 's', value: s >= 4 ? '→ 0x4F' : '→ 0x4E', hot: !frameStale, stale: frameStale, note: !frameStale ? '參數 s 也只存位址：和 dict 共用同一個 int 物件' : undefined } as Cell,
         ]
-      : [{ addr: '0x7FE0', value: '(空)', stale: true } as Cell]),
+      : [{ addr: '0x9E', value: '(空)', stale: true } as Cell]),
   ];
 
   const bus =

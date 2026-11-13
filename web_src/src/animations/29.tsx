@@ -56,17 +56,16 @@ export default function OperatorALUAnim({ step }: { step: number }) {
 
   const cells: Cell[] = [
     { header: 'names' },
-    ...(s >= 3 ? [{ addr: '0x0F00', label: 'x', value: '→ 0x2120', ptr: true, hot: s === 3 || s === 4 || s === 5 } as Cell] : []),
-    ...(s >= 7 ? [{ addr: '0x0F08', label: 'ok', value: '→ 0x2200', ptr: true, hot: true } as Cell] : []),
+    ...(s >= 3 ? [{ addr: '0x40', label: 'x', value: '→ 0x49', ptr: true, hot: s === 3 || s === 4 || s === 5, note: s === 3 ? '5 是小整數：Python 早就建好，x 直接指向它' : undefined } as Cell] : []),
+    ...(s >= 7 ? [{ addr: '0x42', label: 'ok', value: '→ 0x4F', ptr: true, hot: true } as Cell] : []),
     { header: 'objects' },
-    { addr: '0x2000', value: '3', note: '兩個 3 是同一個物件', hot: s === 1 || s === 2 },
-    { addr: '0x2020', value: '5', note: 'int 常數', hot: s === 1 },
-    { addr: '0x2040', value: '4', note: 'int 常數', hot: s === 4 },
-    { addr: '0x2060', value: '2', note: 'int 常數', hot: s === 5 },
-    { addr: '0x2080', value: '1', note: 'int 常數', hot: s === 6 },
-    ...(s >= 1 ? [{ addr: '0x2100', value: '8', note: '暫時結果', hot: s === 1 } as Cell] : []),
-    ...(s >= 2 ? [{ addr: '0x2120', value: '5', note: '00000101', hot: s === 2 || s === 3 } as Cell] : []),
-    ...(s >= 7 ? [{ addr: '0x2200', value: 'True', note: 'bool', hot: true } as Cell] : []),
+    { addr: '0x48', value: '3', note: '兩個 3 是同一個物件', hot: s === 1 || s === 2 },
+    { addr: '0x49', value: '5', note: 'int 常數', hot: s === 1 },
+    { addr: '0x4A', value: '4', note: 'int 常數', hot: s === 4 },
+    { addr: '0x4B', value: '2', note: 'int 常數', hot: s === 5 },
+    { addr: '0x4C', value: '1', note: 'int 常數', hot: s === 6 },
+    { addr: '0x4D', value: '8', note: '8 也是小整數，早就建好了', hot: s === 1 },
+    { addr: '0x4F', value: 'True', note: 'True 只有一個，大家共用', hot: s === 7 },
   ];
 
   const bus =

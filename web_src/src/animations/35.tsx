@@ -4,7 +4,8 @@ import { motion } from 'motion/react';
 import { Board, CodePanel, Line, Tok, CPU, Bus, RAM, HwRow, Screen, clampStep, type Cell, type Reg, type TokState } from '../animation_kit/HardwareKit';
 
 // hash 值為示意（真實 str hash 每次執行會不同）
-const TABLE: (null | { h: number; k: string; v: string })[] = [null, null, null, null, null, { h: 3045, k: '"bob"', v: '70' }, { h: 9157, k: '"amy"', v: '90' }, null];
+// Each slot stores hash + the ADDRESS of the key object + the ADDRESS of the value object.
+const TABLE: (null | { h: number; k: string; v: string })[] = [null, null, null, null, null, { h: 3045, k: '0x48', v: '0x4E' }, { h: 9157, k: '0x4B', v: '0x4F' }, null];
 
 export default function DictHashAnim({ step }: { step: number }) {
   const s = clampStep(step, 6);
@@ -32,18 +33,23 @@ export default function DictHashAnim({ step }: { step: number }) {
 
   const cells: Cell[] = [
     { header: 'names' },
-    { addr: '0x0F00', label: 'scores', value: '→ 0x6000', ptr: true },
-    { header: 'hash table（8 格 × 8 bytes：hash · key · value，空格子 = 沒用到的 bytes）' },
+    { addr: '0x40', label: 'scores', value: '→ 0x50', ptr: true },
+    { header: 'hash table（8 格 × 8 bytes：hash · key 的位址 · value 的位址）' },
     ...TABLE.flatMap((e, i) => {
       if (!e) return [];
-      const base = 0x6000 + i * 8;
+      const base = 0x50 + i * 8;
       const a = (o: number) => '0x' + (base + o).toString(16).toUpperCase();
       return [
         { addr: a(0), label: `[${i}] hash`, value: String(e.h), hot: i === look, note: i === look ? `slot ${i} 從 0x${base.toString(16).toUpperCase()} 開始` : undefined },
-        { addr: a(2), label: 'key', value: e.k, hot: i === look },
-        { addr: a(5), label: 'value', value: e.v, hot: i === look },
+        { addr: a(2), label: 'key', value: '→ ' + e.k, hot: i === look },
+        { addr: a(4), label: 'value', value: '→ ' + e.v, hot: i === look },
       ] as Cell[];
     }),
+    { header: 'key / value 物件' },
+    { addr: '0x48', value: '"bob"' },
+    { addr: '0x4B', value: '"amy"' },
+    { addr: '0x4E', value: '70' },
+    { addr: '0x4F', value: '90' },
   ];
 
   const bus =

@@ -12,22 +12,22 @@ export default function StringBytesAnim({ step }: { step: number }) {
   const printS: TokState = s === 4 ? 'active' : 'dim';
 
   const regs: Reg[] = [
-    { name: 'BASE', value: s >= 3 ? '0x2100' : '0x2000', hot: s === 1 || s === 3 },
+    { name: 'BASE', value: s >= 3 ? '0x50' : '0x48', hot: s === 1 || s === 3 },
     { name: 'IDX', value: s === 1 ? '1' : s === 2 ? '1 … 3' : s >= 3 ? '0 … 2' : '0', hot: s === 1 || s === 2 },
-    { name: 'ADDR', value: s === 1 ? '0x2001' : s === 2 ? '0x2001–0x2003' : s >= 3 ? '0x2200' : '—', hot: s === 1 || s === 2 },
+    { name: 'ADDR', value: s === 1 ? '0x49' : s === 2 ? '0x49–0x4B' : s >= 3 ? '0x58' : '—', hot: s === 1 || s === 2 },
     { name: 'R1', value: s === 1 ? "0x65 'e'" : s === 3 ? "0x6C → 0x4C" : s === 4 ? '"ELL"' : '0', hot: s === 1 || s === 3 },
   ];
-  const alu = s === 1 ? { op: 'ADD', a: 'BASE 0x2000', b: 'IDX 1', out: '0x2001' } : s === 3 ? { op: 'SUB', a: "0x6C 'l'", b: '0x20', out: "0x4C 'L'" } : null;
+  const alu = s === 1 ? { op: 'ADD', a: 'BASE 0x48', b: 'IDX 1', out: '0x49' } : s === 3 ? { op: 'SUB', a: "0x6C 'l'", b: '0x20', out: "0x4C 'L'" } : null;
 
   const cells: Cell[] = [
     { header: 'objects (str = 連續的 bytes)' },
-    { addr: '0x2000', value: '"hello"', hotBytes: s === 1 ? [1] : s === 2 ? [1, 2, 3] : undefined, hot: s <= 2, note: s === 1 ? '[1] = 0x2000 + 1' : undefined },
-    ...(s >= 2 ? [{ addr: '0x2100', value: '"ell"', hotBytes: s === 3 ? [0, 1, 2] : undefined, hot: s === 2 || s === 3, note: s === 2 ? '切片 = 複製到新區塊' : undefined } as Cell] : []),
-    ...(s >= 3 ? [{ addr: '0x2200', value: '"ELL"', hotBytes: s === 3 ? [0, 1, 2] : undefined, hot: s >= 3, note: s === 3 ? 'immutable：upper() 寫到新區塊' : undefined } as Cell] : []),
+    { addr: '0x48', value: '"hello"', hotBytes: s === 1 ? [1] : s === 2 ? [1, 2, 3] : undefined, hot: s <= 2, note: s === 1 ? '[1] = 0x48 + 1' : undefined },
+    ...(s >= 2 ? [{ addr: '0x50', value: '"ell"', hotBytes: s === 3 ? [0, 1, 2] : undefined, hot: s === 2 || s === 3, note: s === 2 ? '切片 = 複製到新區塊' : undefined } as Cell] : []),
+    ...(s >= 3 ? [{ addr: '0x58', value: '"ELL"', hotBytes: s === 3 ? [0, 1, 2] : undefined, hot: s >= 3, note: s === 3 ? 'immutable：upper() 寫到新區塊' : undefined } as Cell] : []),
   ];
 
   const bus =
-    s === 1 ? { active: true, toRam: false, label: 'load 0x2001' }
+    s === 1 ? { active: true, toRam: false, label: 'load 0x49' }
     : s === 2 ? { active: true, toRam: true, label: 'copy 3 bytes' }
     : s === 3 ? { active: true, toRam: true, label: 'write 新區塊' }
     : s === 4 ? { active: true, toRam: false, label: 'load "ELL"' }

@@ -3,14 +3,15 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Board, CodePanel, Line, Tok, CPU, Bus, RAM, HwRow, Screen, Gate, clampStep, type Cell, type Reg } from '../animation_kit/HardwareKit';
 
-// One set = 8 one-byte slots; an int's hash is itself, so n lives in slot n % 8.
+// One set = 8 slots × 2 bytes; each slot holds the ADDRESS of an int object.
+// An int's hash is itself, so n lives in slot n % 8.
 const setCells = (base: number, label: string, items: number[], hot: number[] = [], miss: number[] = []): Cell[] =>
   Array.from({ length: 8 }, (_, i) => i)
     .filter((i) => items.includes(i) || miss.includes(i))
     .map((i) => ({
-      addr: '0x' + (base + i).toString(16).toUpperCase(),
+      addr: '0x' + (base + i * 2).toString(16).toUpperCase(),
       label: i === Math.min(...items) ? `${label}[${i}]` : `[${i}]`,
-      value: items.includes(i) ? String(i) : '(空)',
+      value: items.includes(i) ? `→ 0x4${(8 + i).toString(16).toUpperCase()}` : 'NULL',
       hot: hot.includes(i),
       warn: miss.includes(i),
       note: miss.includes(i) ? `slot ${i} 是空的 → ${i} 不在 a 裡` : undefined,
@@ -34,11 +35,13 @@ export default function SetHashAnim({ step }: { step: number }) {
 
   const cells: Cell[] = [
     { header: 'names' },
-    { addr: '0x0F00', label: 'a', value: '→ 0x7000', ptr: true },
-    { header: 'set a（8 格；int 的 hash 就是自己，% 8 決定格子）' },
-    ...setCells(0x7000, 'a', [1, 2, 3], s === 1 ? [2] : s === 3 ? [2, 3] : [], s === 3 ? [4] : []),
-    ...(s >= 2 ? [{ header: '{2, 3, 4}（暫時的 set）' } as Cell, ...setCells(0x7100, 'b', [2, 3, 4], s === 3 ? [2, 3, 4] : [])] : []),
-    ...(s >= 3 ? [{ header: 'a & b（新的 set）' } as Cell, ...setCells(0x7200, 'a&b', [2, 3], s >= 3 ? [2, 3] : [])] : []),
+    { addr: '0x40', label: 'a', value: '→ 0x50', ptr: true },
+    { header: 'set a（8 格 × 2 bytes，每格存 int 物件的位址；int 的 hash 就是自己，% 8 決定格子）' },
+    ...setCells(0x50, 'a', [1, 2, 3], s === 1 ? [2] : s === 3 ? [2, 3] : [], s === 3 ? [4] : []),
+    ...(s >= 2 ? [{ header: '{2, 3, 4}（暫時的 set）' } as Cell, ...setCells(0x60, 'b', [2, 3, 4], s === 3 ? [2, 3, 4] : [])] : []),
+    ...(s >= 3 ? [{ header: 'a & b（新的 set）' } as Cell, ...setCells(0x70, 'a&b', [2, 3], s >= 3 ? [2, 3] : [])] : []),
+    { header: 'int 物件 1~4（小整數事先建好、共用）' },
+    ...[1, 2, 3, 4].map((n) => ({ addr: '0x4' + (8 + n).toString(16).toUpperCase(), value: String(n) } as Cell)),
   ];
 
   const bus =
