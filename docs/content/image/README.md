@@ -2,7 +2,7 @@
 
 Place image files here with numeric names: `1.png`, `2.png`, `3.png`, etc.
 
-These are referenced by `imageId` in `python_course/data.json` using `"type": "image"`.
+These are referenced by `imageId` in `docs/content/data.json` using `"type": "image"`.
 
 Example data.json entry:
 ```json
@@ -12,3 +12,5 @@ Example data.json entry:
   "caption": "Description of the image"
 }
 ```
+
+See [CONTENT_FORMAT.md](../../../CONTENT_FORMAT.md) for every block type.

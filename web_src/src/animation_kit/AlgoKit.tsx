@@ -4,13 +4,22 @@
 // so 預告 (preview) keeps working.
 import React from 'react';
 import { motion } from 'motion/react';
+import { CodePanel, Line, Tok, clampStep } from './HardwareKit';
 
 /** Dark board: "現在在做什麼" bar on top, then the code and the drawing. */
-export const AlgoBoard = ({ now, children }: { now?: string; children: React.ReactNode }) => (
+export const AlgoBoard = ({ now, post, children }: { now?: string; post?: string; children: React.ReactNode }) => (
   <div className="w-full max-w-[900px] flex flex-col gap-3 rounded-2xl bg-slate-950 p-3 md:p-4 font-sans text-slate-100">
-    <div className="flex items-center gap-2 rounded-lg bg-sky-500/10 px-3 py-2">
-      <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-sky-400">現在在做什麼</span>
-      <span data-now={now || ''} className="text-sm font-bold text-sky-100">{now || '還沒開始執行'}</span>
+    <div className="flex flex-col gap-1 rounded-lg bg-sky-500/10 px-3 py-2">
+      <div className="flex items-baseline gap-2">
+        <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-sky-400">現在在做什麼</span>
+        <span data-now={now || ''} className="text-sm font-bold text-sky-100">{now || '還沒開始執行'}</span>
+      </div>
+      {post && (
+        <div className="flex items-baseline gap-2">
+          <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-emerald-400">執行後</span>
+          <span className="text-sm text-emerald-100">{post}</span>
+        </div>
+      )}
     </div>
     {children}
   </div>
@@ -217,3 +226,120 @@ export const Table2D = ({ colHeads, rows, corner = '' }: { colHeads: React.React
 export const Split = ({ children }: { children: React.ReactNode }) => (
   <div className="grid w-full gap-3 md:grid-cols-2">{children}</div>
 );
+
+
+/* ───────────── traced programs (one step = one action) ───────────── */
+// Data comes from tracer/run.py: it runs the real Python and records one step per operator,
+// index, call, assignment, if / while / for decision and return.
+
+export type TraceStep = {
+  pre: string;            // 預告：this action will do …
+  post: string;           // 執行後：what it left behind
+  line: number;           // 1-based code line
+  expr: string | null;    // that line after the action; ⟦v⟧ = the value just produced
+  kind: string;           // start | binop | compare | subscript | call | call_user | assign | if | while | for | return | end | def | break | continue | unary | boolop
+  vars: Record<string, any>;
+  stack: { fn: string; args: Record<string, string>; line: number }[];
+  out: string[];
+  ref?: (string | number)[];   // ['dp', 1, 0] = the cell this action read or wrote
+  var?: string;                // the name an assignment changed
+  taken?: boolean;             // if / while / for went in (true) or skipped / left (false)
+  fn?: string;                 // the function a call action called
+  changed?: string[];          // containers a call changed (q.append …)
+  op?: string;                 // the operator of a binop / compare step
+  target?: string | null;      // the object a method call was called on
+};
+export type Trace = { id: number; caption: string; code: string[]; steps: TraceStep[] };
+
+/** Is this step touching container `name` at `idx` (prefix match on the index path)? */
+export const touches = (st: TraceStep, name: string, ...idx: (string | number)[]) =>
+  !!st.ref && st.ref[0] === name && idx.every((v, k) => st.ref![k + 1] === v);
+/** Was `name` written by this step (assignment, a[i] = …, or a method like append)? */
+export const wrote = (st: TraceStep, name: string) =>
+  (st.kind === 'assign' || st.kind === 'for') && (st.var === name || st.ref?.[0] === name) || !!st.changed?.includes(name);
+
+/** Split a code line into tokens so 預告 can mark what the next action works on. */
+function codeTokens(text: string) {
+  const out: React.ReactNode[] = [];
+  text.split(/(⟦[^⟧]*⟧)/).forEach((part, i) => {
+    if (!part) return;
+    if (part.startsWith('⟦')) { out.push(<Tok key={i} s="done">{part.slice(1, -1)}</Tok>); return; }
+    part.split(/(\s+)/).forEach((w, j) => {
+      if (!w) return;
+      out.push(/^\s+$/.test(w) ? w : <Tok key={`${i}-${j}`}>{w}</Tok>);
+    });
+  });
+  return out;
+}
+
+export const TraceCode = ({ code, st, first }: { code: string[]; st: TraceStep; first: boolean }) => {
+  const cur = st.line - 1;
+  const jump =
+    st.kind === 'if' && st.taken === false ? '跳過' :
+    (st.kind === 'while' || st.kind === 'for') && st.taken === false ? '離開迴圈' :
+    st.kind === 'break' ? '跳出迴圈' : st.kind === 'continue' ? '回到迴圈開頭' :
+    st.kind === 'return' || st.kind === 'end' ? '回到呼叫的地方' : st.kind === 'call_user' ? '跳進函式' : undefined;
+  return (
+    <CodePanel>
+      {code.map((ln, i) => {
+        const indent = ln.match(/^\s*/)![0];
+        const isCur = !first && i === cur;
+        const text = isCur && st.expr != null ? indent + st.expr : ln;
+        return (
+          <Line key={i} pc={isCur} jump={isCur ? jump : undefined}>
+            {text.trim() === '' ? ' ' : codeTokens(text)}
+          </Line>
+        );
+      })}
+    </CodePanel>
+  );
+};
+
+const isScalar = (v: any) => v === null || ['number', 'string', 'boolean'].includes(typeof v);
+
+/**
+ * Board + code + scalar variables + call stack + screen. `children` draws the picture for this step.
+ * `show` limits which scalars appear (default: every scalar except UPPER_CASE constants).
+ */
+export const TraceView = ({ T, step, show, hide = [], children, noStack = false }: {
+  T: Trace; step: number; show?: string[]; hide?: string[]; noStack?: boolean;
+  children?: (st: TraceStep, s: number) => React.ReactNode;
+}) => {
+  const s = clampStep(step, T.steps.length);
+  const st = T.steps[s];
+  const names = (show ?? Object.keys(st.vars).filter((k) => isScalar(st.vars[k]) && !/^[A-Z_]+$/.test(k))).filter((k) => !hide.includes(k) && k in st.vars);
+  const hasOut = T.steps.some((x) => x.out.length);
+  const usesStack = !noStack && T.steps.some((x) => x.stack.length > 0);
+  const recursive = T.steps.some((x) => x.stack.length > 1);
+  return (
+    <div className="w-full flex flex-col items-center gap-3 font-sans">
+      <AlgoBoard now={s === 0 ? '還沒開始執行' : st.pre} post={st.post}>
+        <div className={`grid w-full gap-3 ${usesStack ? 'md:grid-cols-[1fr_auto]' : ''}`}>
+          <TraceCode code={T.code} st={st} first={s === 0} />
+          {usesStack && (
+            <Stage title={recursive ? 'call stack（上面是正在跑的）' : '函式呼叫'}>
+              <StackView width="w-52" empty="（沒有函式在跑）" items={st.stack.map((f, i) => ({
+                v: `${f.fn}(${Object.values(f.args).join(', ')})`,
+                tone: i === st.stack.length - 1 ? (st.kind === 'return' || st.kind === 'end' ? 'yes' : 'active') : 'normal',
+              }))} />
+            </Stage>
+          )}
+        </div>
+        {names.length > 0 && (
+          <VarRow vars={names.map((k) => ({ name: k, value: String(st.vars[k]), hot: st.var === k || (st.kind === 'for' && st.var === k) }))} />
+        )}
+        {children?.(st, s)}
+        {hasOut && (
+          <div className="rounded-lg border border-slate-700 bg-black px-3 py-2 font-mono text-sm text-emerald-300 min-h-[2.5rem]">
+            <div className="text-[10px] font-sans font-bold uppercase tracking-widest text-slate-500">螢幕</div>
+            {st.out.length ? st.out.map((l, i) => <div key={i}>{l}</div>) : <span className="text-slate-600">（空的）</span>}
+          </div>
+        )}
+      </AlgoBoard>
+    </div>
+  );
+};
+
+/** steps / results for the lesson block (預告 / 執行後) */
+export const stepsOf = (T: Trace) => T.steps.map((x, i) => (i === 0 ? '還沒開始執行' : x.pre));
+export const resultsOf = (T: Trace) => T.steps.map((x) => x.post);
