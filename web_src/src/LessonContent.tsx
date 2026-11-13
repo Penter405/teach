@@ -556,6 +556,8 @@ function AnimationStepper({ steps, children, title }: { steps: string[]; childre
   const zoomContentRef = React.useRef<HTMLDivElement>(null);
   const previewGhostRef = React.useRef<HTMLDivElement>(null);
   const [previewMarks, setPreviewMarks] = useState(0);
+  // 預告 text: what the next step will DO (read from the next step's CPU "現在在做什麼")
+  const [previewWhat, setPreviewWhat] = useState('');
   const [baseWidth, setBaseWidth] = useState(900);
   const stageRef = React.useRef<HTMLDivElement>(null);
 
@@ -611,7 +613,7 @@ function AnimationStepper({ steps, children, title }: { steps: string[]; childre
           style={{ gridArea: '1 / 1' }}
           className={`${className} ${i === step ? '' : 'invisible'}`}
         >
-          Step {i + 1}{withTotal ? ` / ${total}` : ''}: {t}
+          Step {i + 1}{withTotal ? ` / ${total}` : ''} · {i === 0 ? '開始' : '做完之後'}：{t}
         </p>
       ))}
     </div>
@@ -632,6 +634,7 @@ function AnimationStepper({ steps, children, title }: { steps: string[]; childre
       let n = 0;
       targets.forEach((t) => { n = Math.max(n, markPreview(t, ghost)); });
       setPreviewMarks(n);
+      setPreviewWhat(ghost.querySelector('[data-now]')?.getAttribute('data-now') ?? '');
     });
     return () => cancelAnimationFrame(raf);
   }, [previewing, step, expanded, layout, hwView]);
@@ -682,8 +685,8 @@ function AnimationStepper({ steps, children, title }: { steps: string[]; childre
 
   // What the next step will do (shown while previewing); the line is always reserved so nothing moves.
   const previewNote = (className: string) => (
-    <p aria-live="polite" className={`${className} ${previewing ? '' : 'invisible'}`}>
-      預告 → Step {Math.min(step + 2, total)}：{safeSteps[step + 1] ?? ''}
+    <p aria-live="polite" title={previewWhat || (safeSteps[step + 1] ?? '')} className={`${className} truncate ${previewing ? '' : 'invisible'}`}>
+      預告 Step {Math.min(step + 2, total)} · 這一步會做什麼：{previewWhat || (safeSteps[step + 1] ?? '')}
     </p>
   );
 
