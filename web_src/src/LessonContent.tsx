@@ -544,7 +544,7 @@ function RenderImage({ block }: { block: ContentBlock }) {
 // ═══════════════════════════════════════════════
 // ── ANIMATIONS ──
 // ═══════════════════════════════════════════════
-function AnimationStepper({ steps, children, title }: { steps: string[]; children: (step: number) => React.ReactNode; title?: string }) {
+function AnimationStepper({ steps, results, children, title }: { steps: string[]; results?: string[]; children: (step: number) => React.ReactNode; title?: string }) {
   const safeSteps = steps?.length ? steps : [''];
   const total = safeSteps.length;
   const [step, setStepRaw] = useState(0);
@@ -613,7 +613,7 @@ function AnimationStepper({ steps, children, title }: { steps: string[]; childre
           style={{ gridArea: '1 / 1' }}
           className={`${className} ${i === step ? '' : 'invisible'}`}
         >
-          Step {i + 1}{withTotal ? ` / ${total}` : ''} · {i === 0 ? '開始' : '做完之後'}：{t}
+          Step {i + 1}{withTotal ? ` / ${total}` : ''} · {i === 0 ? '開始' : '執行結果'}：{results?.[i] || t}
         </p>
       ))}
     </div>
@@ -684,10 +684,21 @@ function AnimationStepper({ steps, children, title }: { steps: string[]; childre
   );
 
   // What the next step will do (shown while previewing); the line is always reserved so nothing moves.
+  // All possible 預告 lines stacked in one cell → the area is as tall as the longest one.
+  const previewText = (k: number) => (results?.length ? safeSteps[k] : (k === step + 1 && previewWhat) || safeSteps[k]) ?? '';
   const previewNote = (className: string) => (
-    <p aria-live="polite" title={previewWhat || (safeSteps[step + 1] ?? '')} className={`${className} truncate ${previewing ? '' : 'invisible'}`}>
-      預告 Step {Math.min(step + 2, total)} · 這一步會做什麼：{previewWhat || (safeSteps[step + 1] ?? '')}
-    </p>
+    <div className="grid" aria-live="polite">
+      {safeSteps.map((_, k) => k > 0 && (
+        <p
+          key={k}
+          aria-hidden={!(previewing && k === step + 1)}
+          style={{ gridArea: '1 / 1' }}
+          className={`${className} ${previewing && k === step + 1 ? '' : 'invisible'}`}
+        >
+          預告 Step {k + 1} · 這一步會做什麼：{previewText(k)}
+        </p>
+      ))}
+    </div>
   );
 
   return (
@@ -759,7 +770,7 @@ function RenderAnimation({ block }: { block: ContentBlock }) {
 
   return (
     <div>
-      <AnimationStepper steps={steps} title={block.caption}>
+      <AnimationStepper steps={steps} results={block.results} title={block.caption}>
         {renderer || (() => <div className="text-slate-400">🎬 {block.caption || String(id)}</div>)}
       </AnimationStepper>
       {block.caption && (

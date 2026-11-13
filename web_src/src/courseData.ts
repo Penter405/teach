@@ -32,6 +32,8 @@ export interface ContentBlock {
   items?: any[];
   categories?: string[];
   steps?: string[];
+  /** what each step leaves behind (shown after 執行); steps[] describe what the step does (shown by 預告) */
+  results?: string[];
   // Quiz
   questions?: QuizQuestion[];
   // Practice
