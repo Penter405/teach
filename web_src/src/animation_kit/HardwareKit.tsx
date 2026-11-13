@@ -619,6 +619,7 @@ export const CPU = ({
 
       {/* what is happening right now */}
       {derived && (
+        <div data-now={derived.python}>
         <Section zh="現在在做什麼" en="Now">
           <div className="rounded-lg border-2 border-amber-500/80 bg-amber-950/30 px-2.5 py-1.5">
             {view.asmLevel ? (
@@ -643,6 +644,7 @@ export const CPU = ({
             )}
           </div>
         </Section>
+        </div>
       )}
 
       <Section zh="運算" en="Arithmetic">
