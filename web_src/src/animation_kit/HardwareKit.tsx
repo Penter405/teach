@@ -4,6 +4,7 @@
 //  - DRAM cells and CPU registers are ALWAYS rendered (never hidden), only highlighted
 import React from 'react';
 import { motion } from 'motion/react';
+import { addrRange, asRegister, encode, setHwView, useHwView, type BitStyle, type Data, type HwMode } from './bits';
 
 export const DIM = 0.45;
 
@@ -59,19 +60,98 @@ export const CodePanel = ({ children, title = 'Python' }: { children: React.Reac
 
 /* ───────────────────────── Board ───────────────────────── */
 
-export const Board = ({ children }: { children: React.ReactNode }) => (
-  <div
-    className="w-full flex flex-col gap-3 rounded-2xl border border-emerald-800 p-3 md:p-4 select-none"
-    style={{
-      backgroundColor: '#052e1f',
-      backgroundImage:
-        'linear-gradient(rgba(16,185,129,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.08) 1px, transparent 1px)',
-      backgroundSize: '18px 18px',
-    }}
-  >
-    {children}
-  </div>
-);
+/* Bits drawn as 0/1 digits or as lights. One group per byte. */
+export const Bits = ({
+  bytes, style, tone = 'emerald', small = false, truncated = false,
+}: { bytes: string[]; style: BitStyle; tone?: 'emerald' | 'red' | 'blue' | 'slate'; small?: boolean; truncated?: boolean }) => {
+  const color = { emerald: '#6ee7b7', red: '#f87171', blue: '#93c5fd', slate: '#94a3b8' }[tone];
+  return (
+    <span className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-1">
+      {bytes.map((b, bi) => (
+        <span key={bi} className="inline-flex gap-[2px]">
+          {b.split('').map((bit, i) =>
+            style === 'lights' ? (
+              <motion.span
+                key={i}
+                animate={{
+                  backgroundColor: bit === '1' ? '#fbbf24' : '#1e293b',
+                  boxShadow: bit === '1' ? '0 0 6px rgba(251,191,36,0.8)' : 'inset 0 0 0 1px #475569',
+                }}
+                transition={{ duration: 0.3 }}
+                className={`${small ? 'w-[7px] h-[7px]' : 'w-[9px] h-[9px]'} rounded-full inline-block`}
+              />
+            ) : (
+              <motion.span
+                key={i}
+                animate={{ color: bit === '1' ? color : '#64748b', backgroundColor: bit === '1' ? 'rgba(148,163,184,0.18)' : 'rgba(15,23,42,0.6)' }}
+                transition={{ duration: 0.3 }}
+                className={`inline-flex items-center justify-center rounded-[2px] font-mono font-bold leading-none ${small ? 'w-[8px] h-[12px] text-[8px]' : 'w-[9px] h-[14px] text-[10px]'}`}
+              >
+                {bit}
+              </motion.span>
+            ),
+          )}
+        </span>
+      ))}
+      {truncated && <span className="text-[10px] text-slate-500">…</span>}
+    </span>
+  );
+};
+
+/* Difficulty switch shown on every board; the choice is shared by all boards. */
+const MODES: { id: HwMode; label: string; hint: string }[] = [
+  { id: 'easy', label: '簡單', hint: '看到人看得懂的數值 + 型別' },
+  { id: 'medium', label: '中等', hint: '二進位 + 型別 + 占用的位址範圍' },
+  { id: 'hard', label: '困難', hint: '只有一格一格的 0 和 1，就像真正的硬體' },
+];
+
+export const HwViewControl = () => {
+  const { mode, bitStyle } = useHwView();
+  const seg = (on: boolean) =>
+    `px-2 py-0.5 rounded-md text-[11px] font-bold transition-colors ${on ? 'bg-emerald-500 text-slate-950' : 'text-emerald-200/80 hover:bg-emerald-500/15'}`;
+  return (
+    <div className="flex flex-wrap items-center justify-end gap-2 text-[10px] text-emerald-200/70" onPointerDown={(e) => e.stopPropagation()}>
+      <span className="hidden sm:inline">{MODES.find((m) => m.id === mode)?.hint}</span>
+      <div className="flex rounded-lg border border-emerald-700/70 bg-slate-950/60 p-0.5" role="radiogroup" aria-label="記憶體顯示難度">
+        {MODES.map((m) => (
+          <button key={m.id} role="radio" aria-checked={mode === m.id} className={seg(mode === m.id)} onClick={() => setHwView({ mode: m.id })}>
+            {m.label}
+          </button>
+        ))}
+      </div>
+      {mode === 'hard' && (
+        <div className="flex rounded-lg border border-emerald-700/70 bg-slate-950/60 p-0.5" role="radiogroup" aria-label="位元顯示方式">
+          <button role="radio" aria-checked={bitStyle === 'digits'} className={seg(bitStyle === 'digits')} onClick={() => setHwView({ bitStyle: 'digits' })}>0 / 1</button>
+          <button role="radio" aria-checked={bitStyle === 'lights'} className={seg(bitStyle === 'lights')} onClick={() => setHwView({ bitStyle: 'lights' })}>燈號</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* Board: CPU | memory | code side by side on wide screens, stacked on small screens. */
+export const Board = ({ children }: { children: React.ReactNode }) => {
+  const all = React.Children.toArray(children);
+  const code = all.filter((c) => React.isValidElement(c) && c.type === CodePanel);
+  const rest = all.filter((c) => !(React.isValidElement(c) && c.type === CodePanel));
+  return (
+    <div
+      className="w-full flex flex-col gap-3 rounded-2xl border border-emerald-800 p-3 md:p-4 select-none"
+      style={{
+        backgroundColor: '#052e1f',
+        backgroundImage:
+          'linear-gradient(rgba(16,185,129,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.08) 1px, transparent 1px)',
+        backgroundSize: '18px 18px',
+      }}
+    >
+      <HwViewControl />
+      <div className="flex flex-col xl:flex-row gap-3 w-full">
+        {code.length > 0 && <div className="flex flex-col gap-3 min-w-0 xl:order-last xl:flex-[2] xl:min-w-[280px]">{code}</div>}
+        <div className="flex flex-col gap-3 min-w-0 xl:flex-[3]">{rest}</div>
+      </div>
+    </div>
+  );
+};
 
 export const HwRow = ({ children }: { children: React.ReactNode }) => (
   <div className="flex flex-col md:flex-row items-stretch gap-0 md:gap-0 w-full">{children}</div>
@@ -90,8 +170,46 @@ const Pins = ({ side }: { side: 'top' | 'bottom' }) => (
   </div>
 );
 
-export const CPU = ({ regs, alu = null, flags, extra }: { regs: Reg[]; alu?: Alu; flags?: { Z: number; N: number } | null; extra?: React.ReactNode }) => (
-  <div className="relative w-full md:w-60 shrink-0 rounded-xl border-2 border-sky-500/70 bg-slate-900 p-3 shadow-[0_0_18px_rgba(14,165,233,0.25)]">
+const TypeBadge = ({ type }: { type: string }) =>
+  type ? <span className="shrink-0 rounded px-1 text-[9px] font-bold text-orange-300 bg-orange-400/10 border border-orange-400/40">{type}</span> : null;
+
+const RegRow = ({ r, mode, bitStyle }: { r: Reg; mode: HwMode; bitStyle: BitStyle }) => {
+  const d = asRegister(encode(r.value));
+  const showBits = mode !== 'easy' && d.kind !== 'text';
+  return (
+    <motion.div
+      animate={{ boxShadow: r.hot ? '0 0 0 2px #fbbf24, 0 0 12px rgba(251,191,36,0.45)' : '0 0 0 1px #334155' }}
+      className="flex items-center gap-2 rounded-md bg-slate-800 px-2 py-1 font-mono min-h-[30px]"
+    >
+      <span className="w-10 shrink-0 text-[10px] font-bold text-sky-400">{r.name}</span>
+      {showBits ? (
+        <span className="flex flex-col gap-0.5 min-w-0">
+          {mode === 'medium' && <span className="text-[9px] leading-none text-orange-300">{d.type}</span>}
+          <Bits bytes={d.bytes} truncated={d.truncated} style={mode === 'hard' ? bitStyle : 'digits'} tone={mode === 'medium' ? 'red' : 'emerald'} small />
+        </span>
+      ) : (
+        <>
+          <motion.span
+            key={String(typeof r.value === 'string' || typeof r.value === 'number' ? r.value : r.name)}
+            initial={{ scale: 1.35, color: '#fbbf24' }}
+            animate={{ scale: 1, color: '#f1f5f9' }}
+            transition={{ duration: 0.45 }}
+            className={`text-sm font-bold ${mode !== 'easy' ? 'italic text-slate-400' : ''}`}
+          >
+            {r.value}
+          </motion.span>
+          {mode === 'easy' && d.kind !== 'text' && d.kind !== 'empty' && <TypeBadge type={d.type} />}
+          {mode === 'easy' && r.bin && <span className="ml-auto text-[9px] text-emerald-400/80">{r.bin}</span>}
+        </>
+      )}
+    </motion.div>
+  );
+};
+
+export const CPU = ({ regs, alu = null, flags, extra }: { regs: Reg[]; alu?: Alu; flags?: { Z: number; N: number } | null; extra?: React.ReactNode }) => {
+  const { mode, bitStyle } = useHwView();
+  return (
+  <div className={`relative w-full ${mode === 'easy' ? 'md:w-60' : 'md:w-[17.5rem]'} shrink-0 rounded-xl border-2 border-sky-500/70 bg-slate-900 p-3 shadow-[0_0_18px_rgba(14,165,233,0.25)]`}>
     <Pins side="top" />
     <Pins side="bottom" />
     <div className="mb-2 flex items-center justify-between">
@@ -99,25 +217,7 @@ export const CPU = ({ regs, alu = null, flags, extra }: { regs: Reg[]; alu?: Alu
       <span className="text-[9px] text-slate-500">registers</span>
     </div>
     <div className="flex flex-col gap-1">
-      {regs.map((r) => (
-        <motion.div
-          key={r.name}
-          animate={{ boxShadow: r.hot ? '0 0 0 2px #fbbf24, 0 0 12px rgba(251,191,36,0.45)' : '0 0 0 1px #334155' }}
-          className="flex items-center gap-2 rounded-md bg-slate-800 px-2 py-1 font-mono"
-        >
-          <span className="w-12 shrink-0 text-[10px] font-bold text-sky-400">{r.name}</span>
-          <motion.span
-            key={String(typeof r.value === 'string' || typeof r.value === 'number' ? r.value : r.name)}
-            initial={{ scale: 1.35, color: '#fbbf24' }}
-            animate={{ scale: 1, color: '#f1f5f9' }}
-            transition={{ duration: 0.45 }}
-            className="text-sm font-bold"
-          >
-            {r.value}
-          </motion.span>
-          {r.bin && <span className="ml-auto text-[9px] text-emerald-400/80">{r.bin}</span>}
-        </motion.div>
-      ))}
+      {regs.map((r) => <RegRow key={r.name} r={r} mode={mode} bitStyle={bitStyle} />)}
     </div>
     {/* ALU is hardware: always on screen, idle when unused */}
     <motion.div
@@ -147,7 +247,8 @@ export const CPU = ({ regs, alu = null, flags, extra }: { regs: Reg[]; alu?: Alu
     )}
     {extra}
   </div>
-);
+  );
+};
 
 /* ───────────────────────── Bus ───────────────────────── */
 
@@ -186,38 +287,72 @@ export type Cell =
   | { header: string }
   | { addr: string; label?: React.ReactNode; value: React.ReactNode; note?: React.ReactNode; hot?: boolean; stale?: boolean; ptr?: boolean };
 
-export const RAM = ({ cells, title = 'DRAM', wide = false }: { cells: Cell[]; title?: string; wide?: boolean }) => (
-  <div className={`relative w-full ${wide ? 'md:w-80' : 'md:w-64'} shrink-0 rounded-xl border-2 border-emerald-500/60 bg-slate-900 p-3 shadow-[0_0_18px_rgba(16,185,129,0.2)]`}>
-    <div className="mb-2 flex items-center justify-between">
-      <span className="text-[11px] font-bold tracking-widest text-emerald-300">{title}</span>
-      <span className="text-[9px] text-slate-500">memory unit</span>
+const RamValue = ({ c, d, mode, bitStyle }: { c: Extract<Cell, { addr: string }>; d: Data; mode: HwMode; bitStyle: BitStyle }) => {
+  // Not plain data (formula, note, table…): show it as written, in every mode.
+  if (d.kind === 'text' || mode === 'easy') {
+    return (
+      <>
+        <span className={`text-sm font-bold ${c.stale ? 'text-slate-400' : c.ptr || d.kind === 'pointer' ? 'text-violet-300' : 'text-emerald-300'} ${mode !== 'easy' ? 'italic' : ''}`}>{c.value}</span>
+        {mode === 'easy' && d.kind !== 'text' && d.kind !== 'empty' && <TypeBadge type={d.type} />}
+      </>
+    );
+  }
+  if (mode === 'hard') {
+    // Real memory has no idea about types or whether a block was freed — just bits.
+    return <Bits bytes={d.bytes} truncated={d.truncated} style={bitStyle} tone="emerald" />;
+  }
+  // medium: bits inside a bracket labelled with the type (blue = freed: popped or garbage-collected)
+  const freed = !!c.stale;
+  return (
+    <span className={`inline-flex flex-col gap-0.5 rounded-md border-x-2 px-1.5 py-0.5 ${freed ? 'border-blue-400/70' : 'border-orange-400/80'}`}>
+      <span className={`text-[9px] leading-none font-bold ${freed ? 'text-blue-300' : 'text-orange-300'}`}>
+        {freed ? '已釋放 freed' : d.type} <span className="font-normal text-slate-500">· {d.bytes.length} byte{d.bytes.length > 1 ? 's' : ''}</span>
+      </span>
+      <Bits bytes={d.bytes} truncated={d.truncated} style="digits" tone={freed ? 'blue' : 'red'} />
+    </span>
+  );
+};
+
+export const RAM = ({ cells, title = 'DRAM', wide = false }: { cells: Cell[]; title?: string; wide?: boolean }) => {
+  const { mode, bitStyle } = useHwView();
+  const width = mode === 'easy' ? (wide ? 'md:w-80' : 'md:w-64') : 'md:w-[23rem]';
+  return (
+    <div className={`relative w-full ${width} shrink-0 rounded-xl border-2 border-emerald-500/60 bg-slate-900 p-3 shadow-[0_0_18px_rgba(16,185,129,0.2)]`}>
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-[11px] font-bold tracking-widest text-emerald-300">{title}</span>
+        <span className="text-[9px] text-slate-500">memory unit</span>
+      </div>
+      <div className="flex flex-col gap-1">
+        {cells.map((c, i) => {
+          if ('header' in c) {
+            return <div key={'h' + i} className="mt-1 text-[9px] font-bold uppercase tracking-widest text-slate-500">{c.header}</div>;
+          }
+          const d = encode(c.value);
+          const addr = mode === 'medium' && d.kind !== 'text' ? addrRange(c.addr, d.bytes.length) : c.addr;
+          const staleLook = c.stale && mode === 'easy';
+          return (
+            <motion.div
+              key={c.addr}
+              layout
+              initial={{ opacity: 0, x: 10 }}
+              animate={{
+                opacity: 1,
+                x: 0,
+                boxShadow: c.hot ? '0 0 0 2px #fbbf24, 0 0 12px rgba(251,191,36,0.45)' : '0 0 0 1px #334155',
+              }}
+              className={`flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md px-2 py-1 font-mono ${staleLook ? 'bg-slate-800/60 border border-dashed border-slate-500' : 'bg-slate-800'}`}
+            >
+              <span className={`${mode === 'medium' ? 'w-auto min-w-[44px]' : 'w-11'} shrink-0 text-[9px] text-slate-500`}>{addr}</span>
+              {c.label !== undefined && <span className="shrink-0 text-[11px] font-bold text-cyan-300">{c.label}</span>}
+              <RamValue c={c} d={d} mode={mode} bitStyle={bitStyle} />
+              {c.note !== undefined && mode !== 'hard' && <span className="ml-auto text-[9px] text-slate-400 text-right">{c.note}</span>}
+            </motion.div>
+          );
+        })}
+      </div>
     </div>
-    <div className="flex flex-col gap-1">
-      {cells.map((c, i) =>
-        'header' in c ? (
-          <div key={'h' + i} className="mt-1 text-[9px] font-bold uppercase tracking-widest text-slate-500">{c.header}</div>
-        ) : (
-          <motion.div
-            key={c.addr}
-            layout
-            initial={{ opacity: 0, x: 10 }}
-            animate={{
-              opacity: 1,
-              x: 0,
-              boxShadow: c.hot ? '0 0 0 2px #fbbf24, 0 0 12px rgba(251,191,36,0.45)' : '0 0 0 1px #334155',
-            }}
-            className={`flex items-center gap-2 rounded-md px-2 py-1 font-mono ${c.stale ? 'bg-slate-800/60 border border-dashed border-slate-500' : 'bg-slate-800'}`}
-          >
-            <span className="w-11 shrink-0 text-[9px] text-slate-500">{c.addr}</span>
-            {c.label !== undefined && <span className="shrink-0 text-[11px] font-bold text-cyan-300">{c.label}</span>}
-            <span className={`text-sm font-bold ${c.stale ? 'text-slate-400' : c.ptr ? 'text-violet-300' : 'text-emerald-300'}`}>{c.value}</span>
-            {c.note !== undefined && <span className="ml-auto text-[9px] text-slate-400 text-right">{c.note}</span>}
-          </motion.div>
-        ),
-      )}
-    </div>
-  </div>
-);
+  );
+};
 
 /* ───────────────────────── I/O devices ───────────────────────── */
 
