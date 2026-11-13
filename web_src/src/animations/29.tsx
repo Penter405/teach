@@ -3,32 +3,30 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Board, CodePanel, Line, Tok, CPU, Bus, RAM, HwRow, Gate, clampStep, type Cell, type Reg, type TokState } from '../animation_kit/HardwareKit';
 
+// 0 start | 1 3 + 5 | 2 8 - 3 | 3 x = | 4 x > 4 | 5 x % 2 | 6 1 == 1 | 7 and | 8 ok =
+const NOW = ['', '計算 3 + 5', '計算 8 - 3', '執行 x = 5', '計算 x > 4', '計算 x % 2', '計算 1 == 1', '計算 True and True', '執行 ok = True'];
+
 export default function OperatorALUAnim({ step }: { step: number }) {
-  const s = clampStep(step, 8);
+  const s = clampStep(step, 9);
+  const d = (k: number): TokState => (s === k ? 'done' : 'normal');
 
   // line 1: x = 3 + 5 - 3
-  const xS: TokState = s < 3 ? 'dim' : s === 3 ? 'active' : 'normal';
   const rhs1 =
-    s === 0 ? (<><Tok s="active">3 + 5</Tok> <Tok s="dim">- 3</Tok></>)
-    : s === 1 ? (<><Tok s="done">8</Tok> <Tok s="dim">- 3</Tok></>)
-    : s === 2 ? (<Tok s="active">8 - 3</Tok>)
-    : (<Tok s="done">5</Tok>);
+    s === 0 ? (<><Tok>3 + 5</Tok> <Tok>- 3</Tok></>)
+    : s === 1 ? (<><Tok s="done">8</Tok> <Tok>- 3</Tok></>)
+    : (<Tok s={d(2)}>5</Tok>);
 
   // line 2: ok = x > 4 and x % 2 == 1   (優先順序：%  >  比較  >  and)
-  const l2 = s >= 4;
-  const left = s === 4 ? <Tok s="active">x &gt; 4</Tok> : s > 4 ? <Tok s="done">True</Tok> : <Tok>x &gt; 4</Tok>;
+  const left = s >= 4 ? <Tok s={d(4)}>True</Tok> : <Tok>x &gt; 4</Tok>;
   const right =
-    s < 5 ? <Tok s={l2 ? 'dim' : 'normal'}>x % 2 == 1</Tok>
-    : s === 5 ? (<><Tok s="active">x % 2</Tok> <Tok s="dim">== 1</Tok></>)
-    : s === 6 ? <Tok s="active">1 == 1</Tok>
-    : <Tok s="done">True</Tok>;
-  const andS: TokState = s === 7 ? 'active' : l2 ? 'dim' : 'normal';
-  const okS: TokState = s === 7 ? 'active' : l2 ? 'dim' : 'normal';
+    s < 5 ? <Tok>x % 2 == 1</Tok>
+    : s === 5 ? (<><Tok s="done">1</Tok> <Tok>== 1</Tok></>)
+    : <Tok s={d(6)}>True</Tok>;
 
   const R = (r1: string, r2: string, r3: string, r4: string): Reg[] => [
-    { name: 'R1', value: r1, hot: s !== 3 && s !== 0 },
-    { name: 'R2', value: r2, hot: s !== 3 && s !== 0 },
-    { name: 'R3', value: r3, hot: s >= 1 },
+    { name: 'R1', value: r1, hot: s !== 0 && s !== 3 && s !== 8 },
+    { name: 'R2', value: r2, hot: s !== 0 && s !== 3 && s !== 8 },
+    { name: 'R3', value: r3, hot: s >= 1 && s <= 7 },
     { name: 'R4', value: r4, hot: s === 5 },
   ];
   const regsByStep: Reg[][] = [
@@ -40,8 +38,9 @@ export default function OperatorALUAnim({ step }: { step: number }) {
     R('5', '2', '2 (商)', '1 (餘)'),
     R('1', '1', '0', '1'),
     R('1', '1', '1', '1'),
+    R('1', '1', '1', '1'),
   ];
-  const r3Bin = [undefined, '00001000', '00000101', '00000101', '00000001', '00000010', '00000000', '00000001'][s];
+  const r3Bin = [undefined, '00001000', '00000101', '00000101', '00000001', '00000010', '00000000', '00000001', '00000001'][s];
   const regs = regsByStep[s].map((r) => (r.name === 'R3' ? { ...r, bin: r3Bin } : r));
 
   const alu =
@@ -57,7 +56,7 @@ export default function OperatorALUAnim({ step }: { step: number }) {
   const cells: Cell[] = [
     { header: 'names' },
     ...(s >= 3 ? [{ addr: '0x40', label: 'x', value: '→ 0x49', ptr: true, hot: s === 3 || s === 4 || s === 5, note: s === 3 ? '5 是小整數：Python 早就建好，x 直接指向它' : undefined } as Cell] : []),
-    ...(s >= 7 ? [{ addr: '0x42', label: 'ok', value: '→ 0x4F', ptr: true, hot: true } as Cell] : []),
+    ...(s >= 8 ? [{ addr: '0x42', label: 'ok', value: '→ 0x4F', ptr: true, hot: s === 8 } as Cell] : []),
     { header: 'objects' },
     { addr: '0x48', value: '3', note: '兩個 3 是同一個物件', hot: s === 1 || s === 2 },
     { addr: '0x49', value: '5', note: 'int 常數', hot: s === 1 },
@@ -65,7 +64,7 @@ export default function OperatorALUAnim({ step }: { step: number }) {
     { addr: '0x4B', value: '2', note: 'int 常數', hot: s === 5 },
     { addr: '0x4C', value: '1', note: 'int 常數', hot: s === 6 },
     { addr: '0x4D', value: '8', note: '8 也是小整數，早就建好了', hot: s === 1 },
-    { addr: '0x4F', value: 'True', note: 'True 只有一個，大家共用', hot: s === 7 },
+    { addr: '0x4F', value: 'True', note: 'True 只有一個，大家共用', hot: s === 4 || s >= 6 },
   ];
 
   const bus =
@@ -74,18 +73,19 @@ export default function OperatorALUAnim({ step }: { step: number }) {
     : s === 3 ? { active: true, toRam: true, label: 'store x' }
     : s === 4 ? { active: true, toRam: false, label: 'load x, 4' }
     : s === 5 ? { active: true, toRam: false, label: 'load 2' }
-    : s === 7 ? { active: true, toRam: true, label: 'store ok' }
+    : s === 8 ? { active: true, toRam: true, label: 'store ok' }
     : { active: false };
 
   return (
     <div className="w-full flex flex-col items-center gap-3 font-sans">
-      <Board>
+      <Board now={NOW[s] || '還沒開始執行'}>
         <CodePanel>
-          <Line pc={s < 4}>
-            <Tok s={xS}>x =</Tok> {rhs1}
+          <Line pc={s < 3}>
+            <Tok s={s < 3 ? 'dim' : d(3)}>x =</Tok> {rhs1}
           </Line>
-          <Line pc={s >= 4} dim={!l2}>
-            <Tok s={okS}>ok =</Tok> {left} <Tok s={andS}>and</Tok> {right}
+          <Line pc={s >= 3} dim={s < 3}>
+            <Tok s={d(8)}>ok =</Tok>{' '}
+            {s <= 6 ? (<>{left} <Tok>and</Tok> {right}</>) : <Tok s={d(7)}>True</Tok>}
           </Line>
         </CodePanel>
 
