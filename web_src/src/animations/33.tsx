@@ -1,24 +1,6 @@
 // Animation 33: L6 字串 Method — str 是 DRAM 裡連續的 bytes；index = 位址計算；immutable → 新區塊
 import React from 'react';
-import { motion } from 'motion/react';
 import { Board, CodePanel, Line, Tok, CPU, Bus, RAM, HwRow, Screen, clampStep, type Cell, type Reg, type TokState } from '../animation_kit/HardwareKit';
-
-const Bytes = ({ base, chars, hot = [] }: { base: number; chars: string; hot?: number[] }) => (
-  <div className="flex gap-0.5">
-    {chars.split('').map((c, i) => (
-      <motion.div
-        key={i}
-        animate={{ backgroundColor: hot.includes(i) ? '#b45309' : '#1e293b' }}
-        className="flex flex-col items-center rounded px-1 py-0.5 min-w-[34px] border border-slate-600"
-      >
-        <span className="text-[8px] text-slate-400">[{i}]</span>
-        <span className="text-sm font-bold text-emerald-200">{c}</span>
-        <span className="text-[8px] text-amber-200">{'0x' + c.charCodeAt(0).toString(16).toUpperCase()}</span>
-        <span className="text-[7px] text-slate-500">{'0x' + (base + i).toString(16).toUpperCase()}</span>
-      </motion.div>
-    ))}
-  </div>
-);
 
 export default function StringBytesAnim({ step }: { step: number }) {
   const s = clampStep(step, 5);
@@ -39,9 +21,9 @@ export default function StringBytesAnim({ step }: { step: number }) {
 
   const cells: Cell[] = [
     { header: 'objects (str = 連續的 bytes)' },
-    { addr: '0x2000', value: <Bytes base={0x2000} chars="hello" hot={s === 1 ? [1] : s === 2 ? [1, 2, 3] : []} />, hot: s <= 2 },
-    ...(s >= 2 ? [{ addr: '0x2100', value: <Bytes base={0x2100} chars="ell" hot={s === 3 ? [0, 1, 2] : []} />, hot: s === 2 || s === 3 } as Cell] : []),
-    ...(s >= 3 ? [{ addr: '0x2200', value: <Bytes base={0x2200} chars="ELL" hot={s === 3 ? [0, 1, 2] : []} />, hot: s >= 3 } as Cell] : []),
+    { addr: '0x2000', value: '"hello"', hotBytes: s === 1 ? [1] : s === 2 ? [1, 2, 3] : undefined, hot: s <= 2, note: s === 1 ? '[1] = 0x2000 + 1' : undefined },
+    ...(s >= 2 ? [{ addr: '0x2100', value: '"ell"', hotBytes: s === 3 ? [0, 1, 2] : undefined, hot: s === 2 || s === 3, note: s === 2 ? '切片 = 複製到新區塊' : undefined } as Cell] : []),
+    ...(s >= 3 ? [{ addr: '0x2200', value: '"ELL"', hotBytes: s === 3 ? [0, 1, 2] : undefined, hot: s >= 3, note: s === 3 ? 'immutable：upper() 寫到新區塊' : undefined } as Cell] : []),
   ];
 
   const bus =

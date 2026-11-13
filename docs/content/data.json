@@ -4301,7 +4301,7 @@
               "steps": [
                 "nums = [10, 20]：list 物件記錄 len 與 cap，指標陣列裡的每格指向別處的 int 物件",
                 "append(30)：還有空格 → 只寫 1 格，很快",
-                "append(40)：格子滿了 → 配置更大的新區塊，整排指標複製過去再寫入（舊區塊的資料還在 DRAM）",
+                "append(40)：格子滿了 → 後面的位址沒人用，指標陣列原地往後擴充（cap 3 → 6）再寫入；nums 還是指向同一個 list 物件",
                 "insert(0, 5)：每一格都要往右挪一格，list 越長越慢",
                 "把 →5 寫進第 0 格，len = 5",
                 "最內層 nums.pop()：從尾巴拿走 →40，len 減 1（那格資料還在，只是不算在 list 裡）",
@@ -5959,6 +5959,38 @@
             {
               "type": "paragraph",
               "text": "no matter what you choose, make it have no loop ( loop:  update dp table with current status that you also using it to update dp table in same run with right now you are updating)"
+            }
+          ]
+        },
+        {
+          "id": "module-1794532873928",
+          "title": "bit",
+          "titleEn": "bit",
+          "icon": "📖",
+          "lessons": [
+            {
+              "id": "lesson-1794532873928",
+              "title": "bit",
+              "titleEn": "Lesson 1",
+              "pdfPages": [],
+              "content": [
+                {
+                  "type": "heading",
+                  "text": "why use bit"
+                },
+                {
+                  "type": "paragraph",
+                  "text": "you got a data, like 1101101 ( integer) , it looks like one data"
+                },
+                {
+                  "type": "paragraph",
+                  "text": "why solve problems with separate data to bits first?"
+                },
+                {
+                  "type": "paragraph",
+                  "text": "one popular algorithm is divide and conquer, as we divide data to bits, first thing we need to confirm is that can bit of bits(data) be a sub problem of that data problem?"
+                }
+              ]
             }
           ]
         },
