@@ -23,7 +23,7 @@ export default function UnionFindAnim({ step }: { step: number }) {
   return (
     <TraceView T={T} step={step}>
       {(st) => {
-        const par: number[] = st.vars.parent ?? [0, 1, 2, 3, 4, 5];
+        const par: number[] = st.vars.parent ?? [0, 1, 2];
         const at = layout(par);
         const hot = (i: number) => touches(st, 'parent', i);
         const nodes: GNode[] = par.map((p, i) => {

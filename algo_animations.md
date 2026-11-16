@@ -4,7 +4,7 @@
 
 - **概念**（1 ～ 27）：手寫的概念動畫，沒有 `results`。
 - **硬體**（28 ～ 37）：CPU / DRAM / 螢幕，熟悉語法模組。
-- **演算法**（38 之後）：由 `scripts/animation_tracer` 執行真的程式產生，一步 = 一個動作。要改程式或例子，改 `specs.py` 再跑 `run.py`。
+- **演算法**（38 之後）：由 `scripts/animation_tracer` 執行真的程式產生，一步 = 一個動作，每一步都有「動作」卡片的動畫。要改程式或例子，改 `specs.py` 再跑 `run.py`。
 
 ## 概念動畫
 
@@ -57,38 +57,38 @@
 
 | # | 在哪一課 | 內容 | 步數 |
 |---|---|---|---|
-| 38 | math › 質數 (Prime) | 試除法：is_prime(91)，只試到 √n | 54 |
-| 39 | math › 質數 (Prime) | 埃氏篩：sieve(20)，從 p² 開始劃掉倍數 | 66 |
-| 41 | binary search › 二分搜尋：最左與最右 | 二分搜尋：在 [1,3,4,4,4,7,9,12] 找最左邊的 4 | 39 |
-| 44 | binary search › 二分答案 | 二分答案：piles = [3,6,7,11]，8 小時內吃完的最小速度 | 46 |
-| 54 | data sturcture(data type that not built in) › heap 優先佇列 | heap：push 5, 3, 8, 1，每次往上換（上浮） | 82 |
-| 55 | data sturcture(data type that not built in) › 單調堆疊與單調佇列 | 單調堆疊：[2,1,5,3,6,4] 的下一個更大元素 | 69 |
-| 56 | data sturcture(data type that not built in) › 單調堆疊與單調佇列 | 單調佇列：[1,3,-1,-3,5,3]，k = 3 的視窗最大值 | 119 |
-| 57 | data sturcture(data type that not built in) › union_find 並查集 | 並查集：union 與 find（路徑壓縮） | 99 |
-| 59 | recursion › 遞迴基本 | 遞迴：fact(4) 的 call stack 堆高再回傳 | 25 |
-| 60 | math › GCD 與快速冪 | 快速冪：fast_pow(2, 10)，10 → 5 → 2 → 1 → 0 | 49 |
-| 61 | bit › bit 位元 | bitmask：mask = 5 (101₂) 代表選哪些數 | 24 |
-| 62 | recursion › backtracking 回溯 | 回溯：4 皇后（ok(r, c) = 這格安不安全） | 158 |
-| 65 | Dynamic programming › DP introduction | 記憶化：fib(5) 同樣的 argument 只算一次 | 74 |
-| 66 | Dynamic programming › 1d DP | 1D DP：爬樓梯，dp[i] = dp[i-1] + dp[i-2] | 47 |
-| 67 | Dynamic programming › bag 0/1 | 0/1 背包：容量 3，物品 (重 1, 值 6)、(重 2, 值 10) | 121 |
-| 68 | Dynamic programming › bag 0/n (free amount) | 無限背包：硬幣 {1, 3, 4} 湊 6 最少幾枚 | 106 |
-| 70 | Dynamic programming › longest increasing subsequence | LIS：memo + 二分搜尋（bisect_left 找第一個 ≥ x 的位置） | 62 |
-| 71 | Dynamic programming › splited math | 區間 DP：石頭合併 [3, 4, 5]，按區間長度填表 | 91 |
-| 73 | data sturcture(data type that not built in) › Fenwick tree (binary indexed tree) | Fenwick tree：查詢往下跳 i -= i&-i，更新往上跳 i += i&-i | 69 |
-| 76 | graph 演算法 › BFS 與 DFS | BFS：用 queue 一圈一圈往外走 | 106 |
-| 77 | graph 演算法 › BFS 與 DFS | DFS：一條路走到底，沒路了再退回 | 90 |
-| 78 | Tree algorithm › tree search 樹的走訪 | 前序走訪：node → left → right（-1 = 沒有子節點） | 75 |
-| 79 | graph 演算法 › AOV 拓樸排序 | 拓樸排序（Kahn）：入度變 0 就可以做 | 126 |
-| 80 | graph 演算法 › 二分圖 (bipartite) | 二分圖判定：BFS 塗兩種顏色 | 93 |
-| 81 | Tree algorithm › 樹的直徑 | 樹的直徑：兩次 BFS（farthest = BFS 找最遠的點） | 7 |
-| 82 | Dynamic programming › cycle DP | 環 DP：4 → 3 → 2 → 1 → 2，先找環再往回填答案 | 70 |
-| 83 | graph 演算法 › 兩點間最短路徑 Dijkstra | Dijkstra：每次確定最近的點，再鬆弛它的鄰居 | 123 |
-| 86 | graph 演算法 › min span tree (Prim or Kruskal) | Kruskal：邊由短到長，會形成環的跳過（find = 找 root） | 50 |
-| 87 | graph 演算法 › min span tree (Prim or Kruskal) | Prim：從 A 開始長出去，每次挑最便宜的邊 | 104 |
+| 38 | math › 質數 (Prime) | 試除法：is_prime(91)，只試到 √n | 40 |
+| 39 | math › 質數 (Prime) | 埃氏篩：sieve(12)，從 p² 開始劃掉倍數 | 40 |
+| 41 | binary search › 二分搜尋：最左與最右 | 二分搜尋：在 [1,3,4,4,4,7,9,12] 找最左邊的 4 | 30 |
+| 44 | binary search › 二分答案 | 二分答案：piles = [3,6,7,11]，8 小時內吃完的最小速度 | 34 |
+| 54 | data sturcture(data type that not built in) › heap 優先佇列 | heap：push 5, 3, 1，每次往上換（上浮） | 44 |
+| 55 | data sturcture(data type that not built in) › 單調堆疊與單調佇列 | 單調堆疊：[2,1,5,3] 的下一個更大元素 | 36 |
+| 56 | data sturcture(data type that not built in) › 單調堆疊與單調佇列 | 單調佇列：[3,1,2,0]，k = 2 的視窗最大值 | 61 |
+| 57 | data sturcture(data type that not built in) › union_find 並查集 | 並查集：union 與 find（路徑壓縮） | 52 |
+| 59 | recursion › 遞迴基本 | 遞迴：fact(4) 的 call stack 堆高再回傳 | 20 |
+| 60 | math › GCD 與快速冪 | 快速冪：fast_pow(2, 10)，10 → 5 → 2 → 1 → 0 | 39 |
+| 61 | bit › bit 位元 | bitmask：mask = 5 (101₂) 代表選哪些數 | 18 |
+| 62 | recursion › backtracking 回溯 | 回溯：4 皇后，第 0 列已經放在第 0 行，看它怎麼一路試、一路退回 | 65 |
+| 65 | Dynamic programming › DP introduction | 記憶化：fib(4) 同樣的 argument 只算一次 | 43 |
+| 66 | Dynamic programming › 1d DP | 1D DP：爬樓梯，dp[i] = dp[i-1] + dp[i-2] | 32 |
+| 67 | Dynamic programming › bag 0/1 | 0/1 背包：容量 2，物品 (重 1, 值 6)、(重 2, 值 10) | 70 |
+| 68 | Dynamic programming › bag 0/n (free amount) | 無限背包：硬幣 {1, 3, 4} 湊 6 最少幾枚 | 59 |
+| 70 | Dynamic programming › longest increasing subsequence | LIS：memo + 二分搜尋（bisect_left 找第一個 ≥ x 的位置） | 28 |
+| 71 | Dynamic programming › splited math | 區間 DP：石頭合併 [3, 4, 5]，最後一個區間要從哪裡切 | 41 |
+| 73 | data sturcture(data type that not built in) › Fenwick tree (binary indexed tree) | Fenwick tree：查詢往下跳 i -= i&-i，更新往上跳 i += i&-i | 58 |
+| 76 | graph 演算法 › BFS 與 DFS | BFS：用 queue 一圈一圈往外走 | 63 |
+| 77 | graph 演算法 › BFS 與 DFS | DFS：一條路走到底，沒路了再退回 | 51 |
+| 78 | Tree algorithm › tree search 樹的走訪 | 前序走訪：node → left → right（-1 = 沒有子節點） | 40 |
+| 79 | graph 演算法 › AOV 拓樸排序 | 拓樸排序（Kahn）：入度變 0 就可以做 | 66 |
+| 80 | graph 演算法 › 二分圖 (bipartite) | 二分圖判定：三角形 0–1–2，BFS 塗兩種顏色 | 61 |
+| 81 | Tree algorithm › 樹的直徑 | 樹的直徑：兩次 BFS（farthest = BFS 找最遠的點） | 6 |
+| 82 | Dynamic programming › cycle DP | 環 DP：4 → 3 → 2 → 1 → 2，先找環再往回填答案 | 60 |
+| 83 | graph 演算法 › 兩點間最短路徑 Dijkstra | Dijkstra：每次確定最近的點，再鬆弛它的鄰居 | 68 |
+| 86 | graph 演算法 › min span tree (Prim or Kruskal) | Kruskal：邊由短到長，會形成環的跳過（find = 找 root） | 27 |
+| 87 | graph 演算法 › min span tree (Prim or Kruskal) | Prim：從 A 開始長出去，每次挑最便宜的邊 | 57 |
 | 90 | math › 四捨五入 (Decimal) | 捨入規則：2.5 和 2.675 要往哪邊走 | 18 |
-| 91 | math › GCD 與快速冪 | 輾轉相除：gcd(48, 18)，用正方形切長方形 | 15 |
-| 92 | data sturcture(data type that not built in) › binary tree 二元樹 | 二元樹 ↔ list：index i 的子節點是 2i+1、2i+2 | 16 |
+| 91 | math › GCD 與快速冪 | 輾轉相除：gcd(48, 18)，用正方形切長方形 | 14 |
+| 92 | data sturcture(data type that not built in) › binary tree 二元樹 | 二元樹 ↔ list：index i 的子節點是 2i+1、2i+2 | 13 |
 
 ## 還沒有動畫的演算法
 

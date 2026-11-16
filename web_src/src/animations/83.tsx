@@ -3,14 +3,14 @@ import React from 'react';
 import T from './trace/83';
 import { TraceView, Stage, GraphView, Seq, Split, touches, type GNode, type GEdge } from '../animation_kit/AlgoKit';
 
-export const W_POS: Record<number, [number, number]> = { 0: [60, 130], 1: [260, 40], 2: [260, 220], 3: [460, 130] };
-export const W_EDGES: [number, number, number][] = [[0, 1, 4], [0, 2, 1], [2, 1, 2], [1, 3, 1], [2, 3, 5]];
-export const NAME = ['A', 'B', 'C', 'D'];
+export const W_POS: Record<number, [number, number]> = { 0: [90, 130], 1: [380, 40], 2: [380, 220] };
+export const W_EDGES: [number, number, number][] = [[0, 1, 4], [0, 2, 1], [2, 1, 2]];
+export const NAME = ['A', 'B', 'C'];
 export default function DijkstraAnim({ step }: { step: number }) {
   return (
     <TraceView T={T} step={step}>
       {(st, s) => {
-        const dist: (number | string)[] = st.vars.dist ?? ['∞', '∞', '∞', '∞'];
+        const dist: (number | string)[] = st.vars.dist ?? ['∞', '∞', '∞'];
         const pq: [number, number][] = st.vars.pq ?? [];
         const { u, v } = st.vars;
         // a node is settled once it was popped with d == dist[u] and the stale check passed

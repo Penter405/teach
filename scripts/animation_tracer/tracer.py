@@ -86,13 +86,16 @@ class Tracer:
         self.notes = notes or {}      # {line: text} → first time only; {line: (text, True)} → every time
         self.noted = set()
         self.calldesc = {}
+        self.reads = []                 # names read since the last step
+        self.act = None                 # what the action card shows for the next step
         self.frames = []              # call frames: {fn, locals, line, stmt, header}
         self.steps = []
         self.out = []
         self.max_steps = max_steps
         self.vals = {}                # marker → repr
         self.cur_sid = None
-        self.steps.append(dict(pre='還沒開始執行', post=intro, line=1, expr=None, kind='start', vars={}, stack=[], out=[]))
+        self.steps.append(dict(pre='還沒開始執行', post=intro, line=1, expr=None, kind='start', vars={}, stack=[], out=[], reads=[], act=None))
+        self.setup = set()
 
     # ───────── display ─────────
     def mark(self, node, value):
@@ -157,8 +160,11 @@ class Tracer:
                 self.noted.add(line)
         expr = self.expr_now()
         vars_, stack = self.snapshot()
-        self.steps.append(dict(pre=pre, post=post, line=line, expr=expr, kind=kind, vars=vars_, stack=stack, out=list(self.out), **extra))
+        self.steps.append(dict(pre=pre, post=post, line=line, expr=expr, kind=kind, vars=vars_, stack=stack, out=list(self.out),
+                               reads=list(self.reads), act=self.act, **extra))
         self.cur_sid = None
+        self.reads = []
+        self.act = None
         if len(self.steps) > self.max_steps: raise RuntimeError('too many steps')
 
     def after(self):
@@ -185,16 +191,19 @@ class Tracer:
         if isinstance(n, ast.Constant): return n.value
         if isinstance(n, ast.Name):
             if n.id in self.vals: raise RuntimeError('re-evaluating a marker')
+            if n.id not in self.reads: self.reads.append(n.id)
             return self.lookup(n.id)
         if isinstance(n, ast.UnaryOp):
             if isinstance(n.op, ast.USub) and isinstance(n.operand, ast.Constant): return -n.operand.value
             v = self.ev(n.operand)
             if isinstance(n.op, ast.Not):
                 r = not v
+                self.act = dict(k='op', a='', op='not', b=rp(v), r=rp(r), bool=bool(r))
                 self.mark(n, r); self.emit(f'not {rp(v)}', f'得到 {rp(r)}。{self.after()}', 'unary')
                 return r
             if isinstance(n.op, ast.USub):
                 r = -v
+                self.act = dict(k='op', a='', op='-', b=rp(v), r=rp(r))
                 self.mark(n, r); self.emit(f'-{rp(v)}', f'得到 {rp(r)}。{self.after()}', 'unary')
                 return r
             raise NotImplementedError(ast.dump(n))
@@ -207,6 +216,7 @@ class Tracer:
             pre = f'{src}：{lit}' if src != lit else lit
             if op in ('//', '%', '&', '|', '^', '<<', '>>', '**'): pre += f'（{OPNAME[op]}）'
             self.mark(n, r)
+            self.act = dict(k='op', a=rp(a), op=op, b=rp(b), r=rp(r))
             self.emit(pre, f'得到 {rp(r)}。{self.after()}', 'binop', op=op)
             return r
         if isinstance(n, ast.Compare):
@@ -218,6 +228,7 @@ class Tracer:
             lit = f'{rp(a)} {op} {rp(b)}'
             pre = f'{src}：{lit}' if src != lit else lit
             self.mark(n, r)
+            self.act = dict(k='op', a=rp(a), op=op, b=rp(b), r=rp(r), bool=bool(r))
             self.emit(pre, f'是 {rp(r)}。{self.after()}', 'compare', op=op)
             return r
         if isinstance(n, ast.BoolOp):
@@ -232,6 +243,7 @@ class Tracer:
                 why = f'{kw}：左邊已經是 {rp(v)} → 整個就是 {rp(v)}（右邊不用算）'
             else:
                 why = f'{kw}：結果是最後算的 {rp(v)}'
+            self.act = dict(k='op', a='…', op=kw, b='…', r=rp(v), bool=bool(v))
             self.mark(n, v); self.emit(why, self.after() or f'得到 {rp(v)}', 'boolop')
             return v
         if isinstance(n, ast.Subscript):
@@ -242,6 +254,7 @@ class Tracer:
                 hi = self.ev(n.slice.upper) if n.slice.upper else None
                 r = obj[lo:hi]
                 self.mark(n, r)
+                self.act = dict(k='index', name=obj_src, idx=f'{"" if lo is None else lo}:{"" if hi is None else hi}', r=rp(r))
                 self.emit(f'{obj_src}[{"" if lo is None else lo}:{"" if hi is None else hi}]：切片，複製出一段', f'得到 {rp(r)}。{self.after()}', 'subscript', ref=[obj_src, f'{lo}:{hi}'])
                 return r
             i = self.ev(n.slice)
@@ -250,6 +263,7 @@ class Tracer:
             path = self.path_of(n.value) + [jv(i)]
             n._path = path
             self.mark(n, r)
+            self.act = dict(k='index', name=obj_src, idx=rp(i), r=rp(r))
             self.emit(f'{obj_src}[{rp(i)}]：{what}', f'是 {rp(r)}。{self.after()}', 'subscript', ref=path)
             return r
         if isinstance(n, ast.Attribute):
@@ -305,8 +319,10 @@ class Tracer:
         if r is not None: parts.append(f'回傳 {rp(r)}')
         for k in changed: parts.append(f'{k} 變成 {rp(self.lookup(k)) if k in after else after[k]}')
         if fname == 'print': parts.append('螢幕多一行：' + ' '.join(str(a) for a in args))
+        call_txt = self.src_of(n)
         if r is not None:
             self.mark(n, r)
+        self.act = dict(k='call', call=call_txt, r=None if r is None else rp(r), changed=[f'{k} = {rp(self.lookup(k))}' for k in changed])
         self.emit(pre, '；'.join(parts) or '完成', 'call', fn=fname, target=bound_name, changed=changed)
         return r
 
@@ -314,12 +330,14 @@ class Tracer:
         node = fn.node
         params = [a.arg for a in node.args.args]
         loc = dict(zip(params, args))
+        self.act = dict(k='enter', call=f'{fn.name}({arg_txt})')
         self.emit(f'呼叫 {fn.name}({arg_txt})', '進入 ' + fn.name + '：' + ('、'.join(f'{p} → {rp(v)}' for p, v in loc.items()) or '沒有參數') + '，stack 多一層', 'call_user', fn=fn.name)
         self.frames.append(dict(fn=fn.name, locals=loc, args=dict(loc), line=node.body[0].lineno, stmt=None))
         try:
             self.block(node.body)
             v = None
             self.frames[-1]['stmt'] = None
+            self.act = dict(k='return', fn=fn.name, r='None')
             self.emit(f'{fn.name} 跑到最後：回傳 None', f'{fn.name} 結束，stack 少一層', 'end', line=node.body[-1].end_lineno)
         except Return as R:
             v = R.v
@@ -342,6 +360,23 @@ class Tracer:
         if hasattr(node, '_path'): return list(node._path)
         if isinstance(node, ast.Name) and node.id not in self.vals: return [node.id]
         return ['?']
+
+    def branch(self, n0, kw, cond_txt, go, pre_go, post, kind):
+        """if the condition took steps, the decision joins the last of them; otherwise it is its own step"""
+        if len(self.steps) > n0 and self.steps[-1]['kind'] in ('compare', 'boolop', 'unary', 'call', 'subscript', 'binop'):
+            last = self.steps[-1]
+            last['pre'] += f'，{pre_go}'
+            last['post'] = post
+            last['kind'] = kind
+            last['taken'] = go
+            last['act'] = dict(last.get('act') or {}, kw=kw, go=go)
+            note = self.notes.get(last['line'])
+            if note and (isinstance(note, tuple) or last['line'] not in self.noted):
+                last['post'] += '。' + (note[0] if isinstance(note, tuple) else note)
+                self.noted.add(last['line'])
+            return
+        self.act = dict(k='branch', kw=kw, cond=cond_txt, go=go)
+        self.emit(f'{kw} {cond_txt}：{pre_go}', post, kind, taken=go)
 
     def truth(self, test_node, c):
         """'pq 不是空的' instead of '[(0, 0)]' when the condition is a bare name"""
@@ -379,14 +414,15 @@ class Tracer:
 
     def stmt(self, st):
         if isinstance(st, ast.FunctionDef):
-            self.begin(st)
-            self.store(st.name, UserFn(st))
-            self.emit(f'def {st.name}：名稱 {st.name} 指向函式', '函式內容還沒執行', 'def')
+            self.store(st.name, UserFn(st))     # defining a function is not an action worth a step
             return
+        if isinstance(st, ast.Assign) and id(st) in self.setup:
+            return                               # starting data: already in place before step 1
         if isinstance(st, ast.Assign):
             w = self.begin(st)
             v = self.ev(w.value)
             pre, post, ex = self.assign_target(w.targets[0], v, None)
+            self.act = dict(k='assign', target=ast.unparse(st.targets[0]), r=rp(v))
             self.emit(pre, post, 'assign', **ex)
             return
         if isinstance(st, ast.AugAssign):
@@ -406,8 +442,10 @@ class Tracer:
             fake.value = ast.Constant(0)
             fr['stmt'] = fake
             self.mark(fake.value, r)
+            self.act = dict(k='op', a=rp(cur), op=op, b=rp(rhs), r=rp(r))
             self.emit(f'{tsrc} {op} {rp(rhs)}：{rp(cur)} {op} {rp(rhs)}（{tsrc} {op}= 就是 {tsrc} = {tsrc} {op} …）', f'得到 {rp(r)}。{self.after()}', 'binop', op=op)
             pre, post, ex = self.assign_target(fake.targets[0], r, None)
+            self.act = dict(k='assign', target=tsrc, r=rp(r))
             self.emit(pre, post, 'assign', **ex)
             return
         if isinstance(st, ast.Expr):
@@ -428,33 +466,36 @@ class Tracer:
             v = None if w.value is None else self.ev(w.value)
             fn = self.frames[-1]['fn'] if self.frames else '?'
             back = (self.frames[-2] if len(self.frames) > 1 else self.top)['line']
+            self.act = dict(k='return', fn=fn, r=rp(v))
             self.emit(f'return {rp(v)}：{fn} 結束，把 {rp(v)} 交回去', f'{fn} 回傳 {rp(v)}，stack 少一層' + (f'，回到第 {back} 行' if back else ''), 'return')
             raise Return(v)
         if isinstance(st, ast.If):
             w = self.begin(st)
+            n0 = len(self.steps)
             c = self.ev(w.test)
             tc = self.truth(w.test, c)
             kw = 'elif' if self.lines[st.lineno - 1].strip().startswith('elif') else 'if'
             if c:
-                self.emit(f'{kw} {tc}：條件成立 → 進入', f'往下執行第 {st.body[0].lineno} 行', 'if', taken=True)
+                self.branch(n0, kw, tc, True, f'{kw} 成立 → 進入', f'往下執行第 {st.body[0].lineno} 行', 'if')
                 self.block(st.body)
+            elif st.orelse:
+                nxt = st.orelse[0].lineno
+                to = '（elif）' if isinstance(st.orelse[0], ast.If) and self.lines[nxt - 1].strip().startswith('elif') else '（else）'
+                self.branch(n0, kw, tc, False, f'{kw} 不成立 → 跳過', f'跳到第 {nxt} 行{to}', 'if')
+                self.block(st.orelse)
             else:
-                if st.orelse:
-                    nxt = st.orelse[0].lineno
-                    self.emit(f'{kw} {tc}：條件不成立 → 跳過', f'跳到第 {nxt} 行' + ('（elif）' if isinstance(st.orelse[0], ast.If) and self.lines[nxt - 1].strip().startswith('elif') else '（else）'), 'if', taken=False)
-                    self.block(st.orelse)
-                else:
-                    self.emit(f'{kw} {tc}：條件不成立 → 跳過', '跳過這個 if 區塊', 'if', taken=False)
+                self.branch(n0, kw, tc, False, f'{kw} 不成立 → 跳過', '跳過這個 if 區塊', 'if')
             return
         if isinstance(st, ast.While):
             while True:
                 w = self.begin(st)
+                n0 = len(self.steps)
                 c = self.ev(w.test)
                 tw = self.truth(w.test, c)
                 if not c:
-                    self.emit(f'while {tw}：條件不成立 → 離開迴圈', '跳到迴圈後面', 'while', taken=False)
+                    self.branch(n0, 'while', tw, False, 'while 不成立 → 離開迴圈', '跳到迴圈後面', 'while')
                     return
-                self.emit(f'while {tw}：條件成立 → 進入迴圈', f'往下執行第 {st.body[0].lineno} 行', 'while', taken=True)
+                self.branch(n0, 'while', tw, True, 'while 成立 → 進入迴圈', f'往下執行第 {st.body[0].lineno} 行', 'while')
                 try:
                     self.block(st.body)
                 except Break:
@@ -473,11 +514,13 @@ class Tracer:
                     x = next(it)
                 except StopIteration:
                     fr['stmt'] = copy.deepcopy(st); fr['stmt'].iter = w.iter
+                    self.act = dict(k='branch', kw='for', cond=f'{it_src} 沒有下一個', go=False)
                     self.emit(f'for：{it_src} 沒有下一個了 → 離開迴圈', '跳到迴圈後面', 'for', taken=False)
                     return
                 fr['stmt'] = copy.deepcopy(st); fr['stmt'].iter = w.iter
                 pre_, post_, ex = self.assign_target(st.target, x, None)
                 tname = ast.unparse(st.target)
+                self.act = dict(k='assign', target=tname, r=rp(x), src=it_src)
                 self.emit(f'for：從 {it_src} 拿下一個 → {tname} = {rp(x)}', post_, 'for', taken=True, **ex)
                 try:
                     self.block(st.body)
@@ -486,15 +529,27 @@ class Tracer:
                 except Continue:
                     pass
         if isinstance(st, ast.Break):
-            self.begin(st); self.emit('break：跳出迴圈', '跳到迴圈後面', 'break'); raise Break()
+            self.begin(st); self.act = dict(k='branch', kw='break', cond='', go=False); self.emit('break：跳出迴圈', '跳到迴圈後面', 'break'); raise Break()
         if isinstance(st, ast.Continue):
-            self.begin(st); self.emit('continue：跳回迴圈開頭', '剩下的這一輪不做了', 'continue'); raise Continue()
+            self.begin(st); self.act = dict(k='branch', kw='continue', cond='', go=False); self.emit('continue：跳回迴圈開頭', '剩下的這一輪不做了', 'continue'); raise Continue()
         if isinstance(st, ast.Pass):
             return
         raise NotImplementedError(ast.dump(st))
 
     def run(self):
         self.top = dict(fn='<main>', locals=None, line=1, stmt=None)
+        # starting data: top-level `name = <literal>` lines are set up before step 1
+        self.setup = set()
+        for st in self.tree.body:
+            if isinstance(st, ast.Assign) and len(st.targets) == 1 and isinstance(st.targets[0], ast.Name):
+                try:
+                    v = ast.literal_eval(st.value)
+                except Exception:
+                    continue
+                self.g[st.targets[0].id] = v
+                self.setup.add(id(st))
+        self.steps[0]['vars'], _ = self.snapshot()
+        self.steps[0]['setup'] = [ast.unparse(st) for st in self.tree.body if id(st) in self.setup]
         try:
             self.block(self.tree.body)
         except Return:

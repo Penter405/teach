@@ -37,7 +37,7 @@ def find(x):
         x = PARENT[x]
     return x
 
-PARENT = [0, 1, 2, 3]
+PARENT = [0, 1, 2]
 
 SPECS = {}
 
@@ -56,8 +56,8 @@ def is_prime(n):
 print(is_prime(91))
 ''', notes={'while d * d': ('d * d <= n 就是 d ≤ √n：只試到 √91 ≈ 9.5', True), 'return False\n        d': '找到因數，不用再試下去'})
 
-SPECS[39] = dict(caption='埃氏篩：sieve(20)，從 p² 開始劃掉倍數', intro='is_p[i] 代表 i 是不是質數', src='''
-n = 20
+SPECS[39] = dict(caption='埃氏篩：sieve(12)，從 p² 開始劃掉倍數', intro='is_p[i] 代表 i 是不是質數', src='''
+n = 12
 is_p = [True] * (n + 1)
 is_p[0] = False
 is_p[1] = False
@@ -110,7 +110,7 @@ j = 5
 parent = tree[(j - 1) // 2]
 ''', notes={'left =': '節點 2 的左子節點', 'right =': '節點 2 的右子節點', 'parent =': '節點 6 的父節點'})
 
-SPECS[54] = dict(caption='heap：push 5, 3, 8, 1，每次往上換（上浮）', intro='規則：父節點 ≤ 子節點，所以最小的在 h[0]', src='''
+SPECS[54] = dict(caption='heap：push 5, 3, 1，每次往上換（上浮）', intro='規則：父節點 ≤ 子節點，所以最小的在 h[0]', src='''
 def push(h, x):
     h.append(x)
     i = len(h) - 1
@@ -124,12 +124,11 @@ def push(h, x):
 h = []
 push(h, 5)
 push(h, 3)
-push(h, 8)
 push(h, 1)
 ''', notes={'p = (i - 1)': ('p 是 i 的父節點', True), 'break': ('父節點已經比較小 → 位置對了', True), 'h[p], h[i] =': ('比父節點小 → 交換，往上一層', True)})
 
-SPECS[55] = dict(caption='單調堆疊：[2,1,5,3,6,4] 的下一個更大元素', intro='堆疊放「還沒找到答案」的 index，由下到上遞減', src='''
-a = [2, 1, 5, 3, 6, 4]
+SPECS[55] = dict(caption='單調堆疊：[2,1,5,3] 的下一個更大元素', intro='堆疊放「還沒找到答案」的 index，由下到上遞減', src='''
+a = [2, 1, 5, 3]
 ans = [-1] * len(a)
 stack = []
 for i, x in enumerate(a):
@@ -138,9 +137,9 @@ for i, x in enumerate(a):
     stack.append(i)
 ''', notes={'ans[stack.pop()]': ('堆疊頂端比 x 小：它右邊第一個更大的就是 x', True), 'stack.append(i)': ('x 自己進堆疊等答案', True)})
 
-SPECS[56] = dict(caption='單調佇列：[1,3,-1,-3,5,3]，k = 3 的視窗最大值', intro='deque 放可能成為最大值的 index，由前到後遞減', src='''
-a = [1, 3, -1, -3, 5, 3]
-k = 3
+SPECS[56] = dict(caption='單調佇列：[3,1,2,0]，k = 2 的視窗最大值', intro='deque 放可能成為最大值的 index，由前到後遞減', src='''
+a = [3, 1, 2, 0]
+k = 2
 dq = deque()
 res = []
 for i, x in enumerate(a):
@@ -154,7 +153,7 @@ for i, x in enumerate(a):
 ''', notes={'dq.pop()': ('比 x 小的以後都不可能是最大 → 從後面踢掉', True), 'dq.popleft()': ('最前面的已經滑出視窗', True), 'res.append': ('最前面的就是這個視窗的最大值', True)})
 
 SPECS[57] = dict(caption='並查集：union 與 find（路徑壓縮）', intro='parent[i] = i 的父節點；root 的父節點是自己', src='''
-parent = [0, 1, 2, 3, 4, 5]
+parent = [0, 1, 2]
 
 def find(x):
     if parent[x] != x:
@@ -167,10 +166,9 @@ def union(a, b):
     if ra != rb:
         parent[rb] = ra
 
+union(1, 2)
 union(0, 1)
-union(2, 3)
-union(1, 3)
-find(3)
+find(2)
 ''', notes={'parent[x] = find': ('路徑壓縮：直接接到 root', True), 'parent[rb] = ra': ('把一棵樹的 root 接到另一棵的 root 底下', True)})
 
 SPECS[73] = dict(caption='Fenwick tree：查詢往下跳 i -= i&-i，更新往上跳 i += i&-i', intro='a = [5, 2, 9, 1, 6, 3, 8, 4]（1-indexed）；tree[i] 管「i 往左數 lowbit(i) 個」', src='''
@@ -233,9 +231,9 @@ def fact(n):
 print(fact(4))
 ''', notes={'return 1': 'base case：不再呼叫自己，stack 從這裡開始往回收'})
 
-SPECS[62] = dict(caption='回溯：4 皇后（ok(r, c) = 這格安不安全）', intro='一列放一個皇后；place[r] = 第 r 列放在第幾行', env=dict(ok=ok), src='''
+SPECS[62] = dict(caption='回溯：4 皇后，第 0 列已經放在第 0 行，看它怎麼一路試、一路退回', intro='一列放一個皇后；place[r] = 第 r 列放在第幾行。第 0 列已經放好，從第 1 列開始試', env=dict(ok=ok), src='''
 n = 4
-place = []
+place = [0]
 
 def go(r):
     if r == n:
@@ -248,13 +246,13 @@ def go(r):
             place.pop()
     return False
 
-go(0)
+go(1)
 ''', notes={'place.append(c)': ('放下去，往下一列', True), 'place.pop()': ('這條路走不通 → 拿掉剛剛放的（還原）', True), 'return False': ('這一列每一格都不行 → 退回上一列', True)})
 
 # ───────────── tree ─────────────
-SPECS[78] = dict(caption='前序走訪：node → left → right（-1 = 沒有子節點）', intro='樹：1 的子節點 2、3；2 的子節點 4、5；3 的左子節點 6', src='''
-left = [-1, 2, 4, 6, -1, -1, -1]
-right = [-1, 3, 5, -1, -1, -1, -1]
+SPECS[78] = dict(caption='前序走訪：node → left → right（-1 = 沒有子節點）', intro='樹：1 的子節點 2、3；2 的左子節點 4', src='''
+left = [-1, 2, 4, -1, -1]
+right = [-1, 3, -1, -1, -1]
 out = []
 
 def preorder(node):
@@ -275,10 +273,10 @@ print(d)
 ''', notes={'A, dA': '從任何一點出發，最遠的點一定是直徑的一端', 'B, d': '從 A 出發最遠的點 B，A 到 B 就是直徑'})
 
 # ───────────── graph ─────────────
-G6 = '[[1, 2], [0, 3, 4], [0, 5], [1], [1, 5], [2, 4]]'
-SPECS[76] = dict(caption='BFS：用 queue 一圈一圈往外走', intro='圖：0–1、0–2、1–3、1–4、2–5、4–5', src=f'''
+G6 = '[[1, 2], [0, 3], [0, 3], [1, 2]]'
+SPECS[76] = dict(caption='BFS：用 queue 一圈一圈往外走', intro='圖：0–1、0–2、1–3、2–3（3 可以從 1 也可以從 2 走到）', src=f'''
 adj = {G6}
-dist = [-1] * 6
+dist = [-1] * 4
 dist[0] = 0
 q = deque([0])
 while q:
@@ -289,9 +287,9 @@ while q:
             q.append(v)
 ''', notes={'if dist[v] == -1': ('-1 = 還沒走到', True), 'dist[v] = dist[u] + 1': ('第一次走到就是最短距離', True), 'q.append(v)': ('放進 queue 時就已經標記了，不會重複放', True)})
 
-SPECS[77] = dict(caption='DFS：一條路走到底，沒路了再退回', intro='同一張圖：0–1、0–2、1–3、1–4、2–5、4–5', src=f'''
+SPECS[77] = dict(caption='DFS：一條路走到底，沒路了再退回', intro='同一張圖：0–1、0–2、1–3、2–3', src=f'''
 adj = {G6}
-seen = [False] * 6
+seen = [False] * 4
 order = []
 
 def dfs(u):
@@ -304,14 +302,11 @@ def dfs(u):
 dfs(0)
 ''', notes={'dfs(v)': ('往沒走過的鄰居走下去', True)})
 
-SPECS[79] = dict(caption='拓樸排序（Kahn）：入度變 0 就可以做', intro='先修關係：0→2、1→2、2→3、1→4、4→3', src='''
-adj = [[2], [2, 4], [3], [], [3]]
-indeg = [0, 0, 0, 0, 0]
-for u in range(5):
-    for v in adj[u]:
-        indeg[v] += 1
+SPECS[79] = dict(caption='拓樸排序（Kahn）：入度變 0 就可以做', intro='先修關係：0→2、1→2、2→3、1→3；indeg = 每個點有幾條邊指向它（要先等幾個）', src='''
+adj = [[2], [2, 3], [3], []]
+indeg = [0, 0, 2, 2]
 q = deque()
-for i in range(5):
+for i in range(4):
     if indeg[i] == 0:
         q.append(i)
 order = []
@@ -322,11 +317,11 @@ while q:
         indeg[v] -= 1
         if indeg[v] == 0:
             q.append(v)
-''', notes={'indeg[v] += 1': ('有一條邊指向 v → v 多一個要等的', True), 'q.append(i)': ('沒有要等的 → 現在就能做', True), 'indeg[v] -= 1': ('u 做完了，v 少一個要等的', True)})
+''', notes={'q.append(i)': ('沒有要等的 → 現在就能做', True), 'indeg[v] -= 1': ('u 做完了，v 少一個要等的', True)})
 
-SPECS[80] = dict(caption='二分圖判定：BFS 塗兩種顏色', intro='正方形 0–1–2–3–0；color 0 = 紅、1 = 藍、-1 = 還沒塗', src='''
-adj = [[1, 3], [0, 2], [1, 3], [0, 2]]
-color = [-1, -1, -1, -1]
+SPECS[80] = dict(caption='二分圖判定：三角形 0–1–2，BFS 塗兩種顏色', intro='三角形 0–1–2（奇數長度的環）；color 0 = 紅、1 = 藍、-1 = 還沒塗', src='''
+adj = [[1, 2], [0, 2], [0, 1]]
+color = [-1, -1, -1]
 color[0] = 0
 q = deque([0])
 ok = True
@@ -341,9 +336,9 @@ while q:
 print(ok)
 ''', notes={'color[v] = 1 - color[u]': ('塗和 u 相反的顏色', True), 'ok = False': ('兩端同色就不是二分圖', True)})
 
-SPECS[83] = dict(caption='Dijkstra：每次確定最近的點，再鬆弛它的鄰居', intro='A=0、B=1、C=2、D=3；邊 A–B 4、A–C 1、C–B 2、B–D 1、C–D 5', env=dict(INF=INF, heappush=heapq.heappush, heappop=heapq.heappop), src='''
-adj = [[(1, 4), (2, 1)], [(0, 4), (2, 2), (3, 1)], [(0, 1), (1, 2), (3, 5)], [(1, 1), (2, 5)]]
-dist = [INF] * 4
+SPECS[83] = dict(caption='Dijkstra：每次確定最近的點，再鬆弛它的鄰居', intro='A=0、B=1、C=2；邊 A–B 4、A–C 1、C–B 2', env=dict(INF=INF, heappush=heapq.heappush, heappop=heapq.heappop), src='''
+adj = [[(1, 4), (2, 1)], [(0, 4), (2, 2)], [(0, 1), (1, 2)]]
+dist = [INF] * 3
 dist[0] = 0
 pq = [(0, 0)]
 while pq:
@@ -356,8 +351,8 @@ while pq:
             heappush(pq, (dist[v], v))
 ''', notes={'d, u = heappop': ('heap 裡最小的：還沒確定的點裡，目前最近的', True), 'continue': ('舊的資料：u 早就確定了', True), 'if d + w': ('經過 u 再走到 v 比較近嗎？', True), 'dist[v] = d + w': ('鬆弛：找到更短的路就更新', True)})
 
-SPECS[86] = dict(caption='Kruskal：邊由短到長，會形成環的跳過（find = 找 root）', intro='邊已經由短到長排好；A=0、B=1、C=2、D=3', env=dict(find=find), src='''
-edges = [(1, 0, 2), (1, 1, 3), (2, 2, 1), (4, 0, 1), (5, 2, 3)]
+SPECS[86] = dict(caption='Kruskal：邊由短到長，會形成環的跳過（find = 找 root）', intro='邊已經由短到長排好；A=0、B=1、C=2', env=dict(find=find), src='''
+edges = [(1, 0, 2), (2, 2, 1), (4, 0, 1)]
 total = 0
 for w, u, v in edges:
     ru = find(u)
@@ -368,9 +363,9 @@ for w, u, v in edges:
     total += w
 ''', notes={'if ru == rv': ('同一群：連上去會形成環', True), 'continue': ('跳過這條邊', True), 'PARENT[ru] = rv': ('不同群：連上，兩群合併', True)})
 
-SPECS[87] = dict(caption='Prim：從 A 開始長出去，每次挑最便宜的邊', intro='A=0、B=1、C=2、D=3；邊 A–B 4、A–C 1、C–B 2、B–D 1、C–D 5', env=dict(heappush=heapq.heappush, heappop=heapq.heappop), src='''
-adj = [[(1, 4), (2, 1)], [(0, 4), (2, 2), (3, 1)], [(0, 1), (1, 2), (3, 5)], [(1, 1), (2, 5)]]
-in_tree = [False] * 4
+SPECS[87] = dict(caption='Prim：從 A 開始長出去，每次挑最便宜的邊', intro='A=0、B=1、C=2；邊 A–B 4、A–C 1、C–B 2', env=dict(heappush=heapq.heappush, heappop=heapq.heappop), src='''
+adj = [[(1, 4), (2, 1)], [(0, 4), (2, 2)], [(0, 1), (1, 2)]]
+in_tree = [False] * 3
 pq = [(0, 0)]
 total = 0
 while pq:
@@ -385,7 +380,7 @@ while pq:
 ''', notes={'w, u = heappop': ('拿出最便宜的候選邊', True), 'continue': ('另一端已經在樹裡 → 用了會有環', True), 'in_tree[u] = True': ('u 進樹', True)})
 
 # ───────────── DP ─────────────
-SPECS[65] = dict(caption='記憶化：fib(5) 同樣的 argument 只算一次', intro='沒有記憶化要呼叫 15 次', src='''
+SPECS[65] = dict(caption='記憶化：fib(4) 同樣的 argument 只算一次', intro='沒有記憶化要呼叫 9 次', src='''
 memo = {}
 
 def fib(n):
@@ -396,11 +391,11 @@ def fib(n):
     memo[n] = fib(n - 1) + fib(n - 2)
     return memo[n]
 
-print(fib(5))
+print(fib(4))
 ''', notes={'return memo[n]\n    memo': ('算過了 → 直接從 memo 拿，下面整枝都不用算', True), 'memo[n] = fib': ('算完存進 memo', True)})
 
 SPECS[66] = dict(caption='1D DP：爬樓梯，dp[i] = dp[i-1] + dp[i-2]', intro='一次爬 1 或 2 階；dp[i] = 爬到第 i 階有幾種方法', src='''
-n = 6
+n = 4
 dp = [0] * (n + 1)
 dp[0] = 1
 dp[1] = 1
@@ -409,21 +404,23 @@ for i in range(2, n + 1):
 print(dp[n])
 ''', notes={'dp[i] = dp': ('最後一步不是跨 1 階就是跨 2 階', True)})
 
-SPECS[67] = dict(caption='0/1 背包：容量 3，物品 (重 1, 值 6)、(重 2, 值 10)', intro='dp[i][c] = 只看前 i 個物品、容量 c 的最大價值', src='''
+SPECS[67] = dict(caption='0/1 背包：容量 2，物品 (重 1, 值 6)、(重 2, 值 10)', intro='dp[i][c] = 只看前 i 個物品、容量 c 的最大價值；prev = 上一列、cur = 這一列', src='''
 items = [(1, 6), (2, 10)]
-dp = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+dp = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 for i in range(1, 3):
     w, v = items[i - 1]
-    for c in range(4):
-        dp[i][c] = dp[i - 1][c]
+    prev = dp[i - 1]
+    cur = dp[i]
+    for c in range(3):
+        cur[c] = prev[c]
         if c >= w:
-            dp[i][c] = max(dp[i][c], dp[i - 1][c - w] + v)
-print(dp[2][3])
-''', notes={'dp[i][c] = dp[i - 1][c]': ('不拿第 i 個：和上一列一樣', True), 'dp[i][c] = max': ('拿第 i 個：上一列往左 w 格 + v（只看上一列 → 每個物品最多拿一次）', True)})
+            cur[c] = max(cur[c], prev[c - w] + v)
+print(dp[2][2])
+''', notes={'cur[c] = prev[c]': ('不拿第 i 個：和上一列一樣', True), 'cur[c] = max': ('拿第 i 個：上一列往左 w 格 + v（只看上一列 → 每個物品最多拿一次）', True)})
 
-SPECS[68] = dict(caption='無限背包：硬幣 {1, 3, 4} 湊 6 最少幾枚', intro='dp[c] = 湊出 c 元最少要幾枚', env=dict(INF=INF), src='''
-coins = [1, 3, 4]
-dp = [0, INF, INF, INF, INF, INF, INF]
+SPECS[68] = dict(caption='無限背包：硬幣 {1, 3, 4} 湊 6 最少幾枚', intro='dp[c] = 湊出 c 元最少要幾枚；只用 1 元硬幣時 dp[c] = c，接著把 3 元、4 元也拿來試', src='''
+coins = [3, 4]
+dp = [0, 1, 2, 3, 4, 5, 6]
 for coin in coins:
     for c in range(coin, 7):
         dp[c] = min(dp[c], dp[c - coin] + 1)
@@ -431,7 +428,7 @@ print(dp[6])
 ''', notes={'dp[c] = min': ('c 從小到大：dp[c − coin] 可能已經用過這枚硬幣，沒關係（可以重複用）', True)})
 
 SPECS[70] = dict(caption='LIS：memo + 二分搜尋（bisect_left 找第一個 ≥ x 的位置）', intro='memo[k] = 長度 k+1 的遞增子序列，結尾最小可以是多少', env=dict(bisect_left=bisect_left), src='''
-a = [3, 1, 4, 1, 5, 9, 2, 6]
+a = [3, 1, 4, 2]
 memo = []
 for x in a:
     i = bisect_left(memo, x)
@@ -442,10 +439,10 @@ for x in a:
 print(len(memo))
 ''', notes={'memo.append(x)': ('比 memo 全部都大 → 接在最後，變長', True), 'memo[i] = x': ('換掉：同樣長度，結尾變小，以後更好接', True)})
 
-SPECS[71] = dict(caption='區間 DP：石頭合併 [3, 4, 5]，按區間長度填表', intro='dp[l][r] = 把第 l ～ r 堆合併成一堆的最小代價；pre = 前綴和', env=dict(INF=INF), src='''
+SPECS[71] = dict(caption='區間 DP：石頭合併 [3, 4, 5]，最後一個區間要從哪裡切', intro='dp[l][r] = 把第 l ～ r 堆合併成一堆的最小代價；長度 2 的已經算好（3+4 = 7、4+5 = 9），pre = 前綴和', env=dict(INF=INF), src='''
 pre = [0, 3, 7, 12]
-dp = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
-for length in range(2, 4):
+dp = [[0, 7, 0], [0, 0, 9], [0, 0, 0]]
+for length in range(3, 4):
     for l in range(4 - length):
         r = l + length - 1
         best = INF

@@ -1,6 +1,6 @@
 # [WEB_URL](https://penter405.github.io/teach/)
 
-# PythonClassPenter（Cipher Slate）
+# PythonClassPenter（Cipher Slate: Python Course）
 
 一個互動式的 Python 與演算法課程網站。課程內容寫在一個 JSON 檔裡，網站把它畫成「學習路徑 → 課程頁」，每一課可以有程式碼、測驗、AI 練習、LeetCode 題目，以及一步一步執行的動畫。
 
@@ -21,6 +21,8 @@
 
 ## 快速開始
 
+需要 Node.js 18 以上。
+
 ```bash
 cd web_src
 npm install
@@ -32,6 +34,7 @@ npm run dev        # http://localhost:3000
 ## 更新網站
 
 ```bash
+chmod +x update_course.sh    # 第一次要先給執行權限
 ./update_course.sh          # macOS / Linux
 update_course.bat           # Windows（一定要在 repo 根目錄執行）
 ```

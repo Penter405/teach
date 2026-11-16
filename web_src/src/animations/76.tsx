@@ -3,13 +3,13 @@ import React from 'react';
 import T from './trace/76';
 import { TraceView, Stage, GraphView, Seq, Split, touches, type GNode, type GEdge } from '../animation_kit/AlgoKit';
 
-export const G_POS: Record<number, [number, number]> = { 0: [260, 30], 1: [160, 100], 2: [360, 100], 3: [90, 180], 4: [230, 180], 5: [380, 180] };
-export const G_EDGES: [number, number][] = [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [4, 5]];
+export const G_POS: Record<number, [number, number]> = { 0: [260, 30], 1: [150, 110], 2: [370, 110], 3: [260, 190] };
+export const G_EDGES: [number, number][] = [[0, 1], [0, 2], [1, 3], [2, 3]];
 export default function BfsAnim({ step }: { step: number }) {
   return (
     <TraceView T={T} step={step}>
       {(st) => {
-        const dist: number[] = st.vars.dist ?? [-1, -1, -1, -1, -1, -1];
+        const dist: number[] = st.vars.dist ?? [-1, -1, -1, -1];
         const q: number[] = st.vars.q ?? [];
         const { u, v } = st.vars;
         const nodes: GNode[] = Object.entries(G_POS).map(([k, [x, y]]) => {

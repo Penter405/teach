@@ -9,7 +9,7 @@ export default function KruskalAnim({ step }: { step: number }) {
     <TraceView T={T} step={step} hide={['total']}>
       {(st, s) => {
         const edges: [number, number, number][] = st.vars.edges ?? [];
-        const par: number[] = st.vars.PARENT ?? [0, 1, 2, 3];
+        const par: number[] = st.vars.PARENT ?? [0, 1, 2];
         const { u, v } = st.vars;
         const chosen: string[] = [];
         T.steps.slice(0, s + 1).forEach((x) => { if (x.kind === 'assign' && x.ref?.[0] === 'PARENT') chosen.push(`${x.vars.u}-${x.vars.v}`); });

@@ -3,13 +3,13 @@ import React from 'react';
 import T from './trace/79';
 import { TraceView, Stage, GraphView, Seq, Split, type GNode, type GEdge } from '../animation_kit/AlgoKit';
 
-const POS: Record<number, [number, number]> = { 0: [70, 60], 1: [70, 200], 2: [260, 60], 4: [260, 200], 3: [450, 130] };
-const E: [number, number][] = [[0, 2], [1, 2], [2, 3], [1, 4], [4, 3]];
+const POS: Record<number, [number, number]> = { 0: [70, 60], 1: [70, 200], 2: [260, 60], 3: [450, 130] };
+const E: [number, number][] = [[0, 2], [1, 2], [2, 3], [1, 3]];
 export default function TopoAnim({ step }: { step: number }) {
   return (
     <TraceView T={T} step={step}>
       {(st) => {
-        const indeg: number[] = st.vars.indeg ?? [0, 0, 0, 0, 0];
+        const indeg: number[] = st.vars.indeg ?? [0, 0, 2, 2];
         const q: number[] = st.vars.q ?? [];
         const order: number[] = st.vars.order ?? [];
         const { u, v } = st.vars;

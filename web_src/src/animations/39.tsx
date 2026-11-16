@@ -11,9 +11,9 @@ export default function SieveAnim({ step }: { step: number }) {
         const isp: boolean[] | undefined = st.vars.is_p;
         const p: number | undefined = st.vars.p;
         return (
-          <Stage title="is_p[0..20]（劃掉 = False；綠圈 = 確定是質數）">
-            <div className="grid grid-cols-7 sm:grid-cols-11 justify-items-center gap-x-1 gap-y-0.5">
-              {Array.from({ length: 21 }, (_, k) => {
+          <Stage title="is_p[0..12]（劃掉 = False；綠圈 = 確定是質數）">
+            <div className="grid grid-cols-7 sm:grid-cols-[repeat(13,minmax(0,1fr))] justify-items-center gap-x-1 gap-y-0.5">
+              {Array.from({ length: isp ? isp.length : 13 }, (_, k) => {
                 const alive = isp ? isp[k] : true;
                 const hit = touches(st, 'is_p', k);
                 const sure = alive && k >= 2 && ((p !== undefined && k < p) || s === LAST);

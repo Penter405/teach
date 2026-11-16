@@ -11,7 +11,7 @@ export default function MemoAnim({ step }: { step: number }) {
         const calls = T.steps.slice(0, s + 1).filter((x) => x.kind === 'call_user').length;
         return (
           <>
-            <VarRow vars={[{ name: 'fib 被呼叫幾次', value: calls, hot: st.kind === 'call_user' }, { name: '沒有記憶化要', value: 15 }]} />
+            <VarRow vars={[{ name: 'fib 被呼叫幾次', value: calls, hot: st.kind === 'call_user' }, { name: '沒有記憶化要', value: 9 }]} />
             <Stage title="memo（算過的答案）">
               <Seq items={Object.entries(memo).map(([k, v]) => ({ v, top: `fib(${k})`, tone: st.ref?.[0] === 'memo' && String(st.ref[1]) === k ? 'active' : 'yes' }))} empty="（空的）" />
             </Stage>

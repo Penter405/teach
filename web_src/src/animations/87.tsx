@@ -8,7 +8,7 @@ export default function PrimAnim({ step }: { step: number }) {
   return (
     <TraceView T={T} step={step}>
       {(st) => {
-        const inT: boolean[] = st.vars.in_tree ?? [false, false, false, false];
+        const inT: boolean[] = st.vars.in_tree ?? [false, false, false];
         const pq: [number, number][] = st.vars.pq ?? [];
         const { u, v } = st.vars;
         const nodes: GNode[] = Object.entries(W_POS).map(([k, [x, y]]) => {

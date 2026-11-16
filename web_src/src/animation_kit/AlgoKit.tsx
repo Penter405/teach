@@ -247,9 +247,101 @@ export type TraceStep = {
   fn?: string;                 // the function a call action called
   changed?: string[];          // containers a call changed (q.append …)
   op?: string;                 // the operator of a binop / compare step
+  reads?: string[];            // variables this action read
+  act?: Action | null;         // what the action card shows
+  setup?: string[];            // (step 0) starting data lines
   target?: string | null;      // the object a method call was called on
 };
 export type Trace = { id: number; caption: string; code: string[]; steps: TraceStep[] };
+
+/** One action, as the action card draws it (made by tracer.py). */
+export type Action =
+  | { k: 'op'; a: string; op: string; b: string; r: string; bool?: boolean; kw?: string; go?: boolean }
+  | { k: 'index'; name: string; idx: string; r: string; kw?: string; go?: boolean }
+  | { k: 'call'; call: string; r: string | null; changed: string[]; kw?: string; go?: boolean }
+  | { k: 'enter'; call: string }
+  | { k: 'return'; fn: string; r: string }
+  | { k: 'assign'; target: string; r: string; src?: string }
+  | { k: 'branch'; kw: string; cond: string; go: boolean };
+
+const Chip = ({ children, tone = 'normal', delay = 0, pop = false }: { children: React.ReactNode; tone?: CellTone; delay?: number; pop?: boolean }) => (
+  <motion.span
+    initial={pop ? { opacity: 0, scale: 0.3 } : { opacity: 0, y: 10 }}
+    animate={pop ? { opacity: 1, scale: [0.3, 1.18, 1] } : { opacity: 1, y: 0 }}
+    transition={{ delay, duration: pop ? 0.45 : 0.3 }}
+    className={`inline-flex max-w-[16rem] items-center truncate rounded-lg border px-2.5 py-1 font-mono text-sm font-bold ${TONE[tone]}`}
+  >{children}</motion.span>
+);
+const Arrow = ({ delay = 0, label }: { delay?: number; label?: string }) => (
+  <motion.span initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay, duration: 0.25 }}
+    className="inline-flex items-center gap-1 text-slate-400">
+    {label && <span className="text-[10px]">{label}</span>}<span className="text-lg leading-none">→</span>
+  </motion.span>
+);
+const Jump = ({ go, kw, delay }: { go: boolean; kw: string; delay: number }) => {
+  const text = kw === 'break' ? '跳出迴圈' : kw === 'continue' ? '回到迴圈開頭' : go ? (kw === 'while' || kw === 'for' ? '進入迴圈' : '進入') : kw === 'while' || kw === 'for' ? '離開迴圈' : '跳過';
+  return (
+    <>
+      <Arrow delay={delay} label={kw} />
+      <motion.span initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: delay + 0.15, duration: 0.3 }}
+        className={`rounded-full px-3 py-1 text-xs font-bold ${go ? 'bg-emerald-500/20 text-emerald-200' : 'bg-rose-500/20 text-rose-200'}`}>
+        {go ? '↓ ' : '↷ '}{text}
+      </motion.span>
+    </>
+  );
+};
+
+/** The action of this step, animated: operands come in, the result pops out. Replays every step. */
+export const ActionCard = ({ st, s }: { st: TraceStep; s: number }) => {
+  const a = st.act;
+  let body: React.ReactNode = <span className="text-xs text-slate-500">按「執行」開始：每一步做一個動作</span>;
+  if (a) {
+    const tail = 'kw' in a && a.kw !== undefined && 'go' in a && a.go !== undefined ? <Jump go={a.go} kw={a.kw} delay={0.75} /> : null;
+    if (a.k === 'op') {
+      const res: CellTone = a.bool === undefined ? 'yes' : a.bool ? 'yes' : 'hit';
+      body = (<>{a.a !== '' && <Chip>{a.a}</Chip>}<Chip tone="active" delay={0.1}>{a.op}</Chip><Chip delay={0.2}>{a.b}</Chip><Arrow delay={0.35} /><Chip tone={res} pop delay={0.45}>{a.r}</Chip>{tail}</>);
+    } else if (a.k === 'index') {
+      body = (<><Chip>{a.name}</Chip><Chip tone="active" delay={0.1}>[{a.idx}]</Chip><Arrow delay={0.3} label="拿出" /><Chip tone="yes" pop delay={0.4}>{a.r}</Chip>{tail}</>);
+    } else if (a.k === 'call') {
+      body = (<><Chip tone="active">{a.call}</Chip><Arrow delay={0.3} label={a.r !== null ? '回傳' : undefined} />
+        {a.r !== null ? <Chip tone="yes" pop delay={0.4}>{a.r}</Chip> : a.changed.map((c, i) => <Chip key={i} tone="yes" pop delay={0.4 + i * 0.1}>{c}</Chip>)}
+        {a.r === null && a.changed.length === 0 && <Chip tone="yes" pop delay={0.4}>完成</Chip>}{tail}</>);
+    } else if (a.k === 'enter') {
+      body = (<><Chip tone="active">{a.call}</Chip><Arrow delay={0.25} label="呼叫" /><Chip tone="blue" pop delay={0.35}>進入函式，stack +1</Chip></>);
+    } else if (a.k === 'return') {
+      body = (<><Chip tone="active">return</Chip><Chip tone="yes" pop delay={0.15}>{a.r}</Chip><Arrow delay={0.35} label="交回" /><Chip tone="blue" delay={0.45}>{a.fn} 結束，stack −1</Chip></>);
+    } else if (a.k === 'assign') {
+      body = (<>{a.src && <><Chip>{a.src}</Chip><Arrow delay={0.15} label="下一個" /></>}<Chip tone="yes" delay={a.src ? 0.25 : 0}>{a.r}</Chip><Arrow delay={0.35} label="存進" /><Chip tone="active" pop delay={0.5}>{a.target}</Chip></>);
+    } else if (a.k === 'branch') {
+      body = (<>{a.cond && <Chip tone={a.go ? 'yes' : 'hit'}>{a.cond}</Chip>}<Jump go={a.go} kw={a.kw} delay={0.2} /></>);
+    }
+  }
+  return (
+    <div className="flex min-h-[3.25rem] w-full items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 px-3 py-2">
+      <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-amber-400">動作</span>
+      <div key={s} className="flex flex-wrap items-center gap-1.5">{body}</div>
+    </div>
+  );
+};
+
+/** Variables: amber flash = written this step, blue ring = read this step. */
+export const TraceVars = ({ st, s, names }: { st: TraceStep; s: number; names: string[] }) => (
+  <div className="flex flex-wrap gap-2">
+    {names.map((k) => {
+      const w = st.var === k || (st.kind === 'assign' && st.act?.k === 'assign' && st.act.target.split(',').map((x) => x.trim()).includes(k));
+      const r = !w && !!st.reads?.includes(k);
+      return (
+        <motion.div key={`${k}-${w ? s : 'x'}`}
+          initial={w ? { scale: 1.35, backgroundColor: 'rgba(245,158,11,0.45)' } : false}
+          animate={{ scale: 1, backgroundColor: w ? 'rgba(245,158,11,0.15)' : 'rgba(15,23,42,1)' }}
+          transition={{ duration: 0.5 }}
+          className={`rounded-lg border px-2.5 py-1 font-mono text-xs ${w ? 'border-amber-400 text-amber-100' : r ? 'border-sky-400 text-sky-100 ring-2 ring-sky-400/50' : 'border-slate-700 text-slate-300'}`}>
+          <span className="text-slate-400">{k}</span> = <span className="font-bold">{String(st.vars[k])}</span>
+        </motion.div>
+      );
+    })}
+  </div>
+);
 
 /** Is this step touching container `name` at `idx` (prefix match on the index path)? */
 export const touches = (st: TraceStep, name: string, ...idx: (string | number)[]) =>
@@ -325,9 +417,8 @@ export const TraceView = ({ T, step, show, hide = [], children, noStack = false 
             </Stage>
           )}
         </div>
-        {names.length > 0 && (
-          <VarRow vars={names.map((k) => ({ name: k, value: String(st.vars[k]), hot: st.var === k || (st.kind === 'for' && st.var === k) }))} />
-        )}
+        <ActionCard st={st} s={s} />
+        {names.length > 0 && <TraceVars st={st} s={s} names={names} />}
         {children?.(st, s)}
         {hasOut && (
           <div className="rounded-lg border border-slate-700 bg-black px-3 py-2 font-mono text-sm text-emerald-300 min-h-[2.5rem]">
