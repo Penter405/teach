@@ -5616,6 +5616,45 @@
             },
             {
               "type": "heading",
+              "text": "what is prime"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "prime=1*prime"
+            },
+            {
+              "type": "heading",
+              "text": "what is not prime"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "not_prime = a*b"
+            },
+            {
+              "type": "heading",
+              "text": "找質因數"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "not_prime=a*b...*z\na or b or zmore than not_prime**0.5\nif z is more, a*b... will under not_prime**0.5\nwe can for loop every prime under not_prime**0.5\nand in the end take z as its member of result"
+            },
+            {
+              "type": "heading",
+              "text": "cheaking if i am prime"
+            },
+            {
+              "type": "paragraph",
+              "text": "1. create prime table include the number  -> o(n**2)\n2. create a n**0.5 prime table and cheak if any prime is its devision -> o( 2(n**0.5)-- put cheak if devisionable in loop, no extra time)"
+            },
+            {
+              "type": "heading",
+              "text": "recommand way"
+            },
+            {
+              "type": "heading",
               "text": "怎麼選"
             },
             {
@@ -7180,6 +7219,15 @@
               "code": "n = 6\nparent = list(range(n))   # 一開始每個點自己一群\nsize = [1] * n\n\ndef find(x):\n    if parent[x] != x:\n        parent[x] = find(parent[x])   # 路徑壓縮：直接接到 root\n    return parent[x]\n\ndef union(a, b):\n    ra, rb = find(a), find(b)\n    if ra == rb:\n        return False                  # 本來就同一群（再連就會有環）\n    if size[ra] < size[rb]:\n        ra, rb = rb, ra               # 小的接到大的底下，樹比較矮\n    parent[rb] = ra\n    size[ra] += size[rb]\n    return True\n\nunion(0, 1); union(2, 3); union(1, 3); union(4, 5)\nprint(find(3) == find(0))   # True\nprint(find(4) == find(0))   # False\nprint(len({find(i) for i in range(n)}))   # 2 群"
             },
             {
+              "type": "heading",
+              "text": "原本的模板 (LeetCode 547 isConnected 範例)"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def get(self, isConnected: list[list[int]]) -> int:\n    parent=[a for a in range(len(isConnected))]\n    rank=[1 for _ in range(len(isConnected))]#may not be used\n    result=len(isConnected)\n    def find(me):#get root of that tree\n        if parent[me]==me:\n            return me\n        return find(parent[me])\n    def union(a,b):#return value = whether can be marged\n        nonlocal result\n        root_a=find(a)\n        root_b=find(b)\n        print(a,b,\"  \",root_a,root_b)\n        if root_a==root_b:\n            return False\n        \n        parent[root_b]=root_a#wrote parent[b]=a \n        result-=1\n\n\n        return True\n    \n\n    for dad in range(len(isConnected)):\n        for child in range(len(isConnected)):\n            if isConnected[dad][child] ==0:\n                continue\n            union(dad,child)\n    return result\n\n\na=[[1,0,0,1],[0,1,1,0],[0,1,1,1],[1,0,1,1]]\n#input\n\nget(a)"
+            },
+            {
               "type": "list",
               "style": "definition",
               "items": [
@@ -7416,6 +7464,11 @@
             {
               "type": "heading",
               "text": "what is (i & -i)"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": " i  =  00001100   (12)\n-i  =  11110100   (-12, in two's complement)\n      --------\n &  =  00000100   (4)\nfrom every 1 get rightest one\nresult of ( i& -i) represent the length of this node  , index diff for child and parent"
             },
             {
               "type": "paragraph",
@@ -8166,6 +8219,11 @@
             {
               "type": "heading",
               "text": "definition"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "every time looping will cut about half element until a situation"
             },
             {
               "type": "paragraph",
@@ -9424,6 +9482,11 @@
               "code": "class tree():\n    def __init__(self,value):\n        self.value=value\n        self.left=None\n        self.right=None\ndef build_tree():\n    #by avoid python garbadge collect your result of tree build, you need to make the table in global or return it and then save to a variable\n    root=None\n    object_of_nodes=dict()#a_dict_point_to_object_of_nodes\n    while True:\n        bot=input().split()\n        if bot[0]==\"done\":\n            break\n        if root==None:\n            root=tree(bot[0])\n            object_of_nodes[bot[0]]=root# now both root and a_dict_point_to_object_of_nodes[bot[0]] points to same object\n        for element in bot:\n            if element==\"not\":\n                continue\n            if element not in object_of_nodes:\n                object_of_nodes[element]=tree(element)\n        if bot[1]!=\"not\":\n            object_of_nodes[bot[0]].left=object_of_nodes[bot[1]]\n        if bot[2]!=\"not\":\n            object_of_nodes[bot[0]].right=object_of_nodes[bot[2]]\n    return root\nroot_of_tree=build_tree()\nprint(\"next\")\nsearch_result=[]\ndef preorder(root):\n    if root==None:\n        return 0\n    search_result.append(root.value)\n\n    preorder(root.left)\n    preorder(root.right)\npreorder(root_of_tree)\nprint(search_result)\n\"\"\"testcase\n   1\n /   \\\n2     3\n\"\"\"\n\"\"\"\npreorder(1)         --- preorder(3)\n    \\\n     preorder(2)\n\"\"\""
             },
             {
+              "type": "code",
+              "language": "recursion的執行順序",
+              "code": "#1 ->  2  然後 1 -> 3\npreorder(1)         --- preorder(3)\n    \\\n     preorder(2)\n\n"
+            },
+            {
               "type": "callout",
               "label": "注意",
               "text": "輸入每行是「node left right」：第三個是右子節點，所以要接到 .right。"
@@ -10478,6 +10541,15 @@
               "code": "from collections import deque\n\ndef topo_sort(n, prereq):            # prereq: (a, b) = 先做 a 才能做 b\n    adj = [[] for _ in range(n)]\n    indeg = [0] * n\n    for a, b in prereq:\n        adj[a].append(b)\n        indeg[b] += 1\n\n    q = deque(i for i in range(n) if indeg[i] == 0)   # 現在就能做的\n    order = []\n    while q:\n        u = q.popleft()\n        order.append(u)\n        for v in adj[u]:\n            indeg[v] -= 1            # u 做完了，v 少一個要等的\n            if indeg[v] == 0:\n                q.append(v)\n\n    return order if len(order) == n else []   # 有環：有些 task 永遠等不到\n\nprint(topo_sort(5, [(0, 2), (1, 2), (2, 3), (1, 4), (4, 3)]))   # [0, 1, 2, 4, 3]\nprint(topo_sort(2, [(0, 1), (1, 0)]))                           # []"
             },
             {
+              "type": "paragraph",
+              "text": "原本的模板（用 defaultdict 與 unsolve set 追蹤入度）："
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import defaultdict\n\"\"\"init\"\"\"\nresult=[]\nedge=[]\n#降低之後搜尋的 big o\npointed=defaultdict(int)\npoint=defaultdict(set)#set can lower big o, if you dont need order of iterable dont use list, use set\nfor okay, must in edge:\n    pointed[okay]+=1\n    point[must].add(okay)\n\nunsolve=set(range(n))\nwhile unsolve:\n    buffer=[]\n    #find what we want\n    for me in unsolve:\n        if \"\"\"match what we are finding\"\"\":#such as pointed[me]==0\n            buffer.append(me)\n            result.append(me)\n\n    #make it disappear on the graph because it is in result\n    for me in buffer:\n        for take in point[me]:\n            pointed[me]-=1\nprint(result)"
+            },
+            {
               "type": "callout",
               "label": "重點",
               "text": "如果最後 order 的數量 < n，代表有環：環上的 task 互相等，入度永遠不會變 0。"
@@ -10566,6 +10638,14 @@
             },
             {
               "type": "paragraph",
+              "text": "在解決將所有node連起來，並且花費最少的問題時。可以用最小生成樹"
+            },
+            {
+              "type": "paragraph",
+              "text": "最小生成樹是一個greedy的解法:"
+            },
+            {
+              "type": "paragraph",
               "text": "加權圖上，從起點到每個點的最短距離。（「把所有點連起來、花費最少」是最小生成樹，下一課。）"
             },
             {
@@ -10583,6 +10663,11 @@
             {
               "type": "heading",
               "text": "數學公式"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# write code here\na_point's_shortest_path=min cost of (leaves) comes the point\nas a point become leave, we add all its child in (leaves)\nif the point in leaves already in result:\n    we pop it\nleaves can be a part of result or not. so we still run it."
             },
             {
               "type": "code",
@@ -10857,6 +10942,15 @@
               "type": "code",
               "language": "python",
               "code": "import heapq\n\ndef dijkstra(n, adj, s):           # adj[u] = [(v, w), …]\n    INF = float(\"inf\")\n    dist = [INF] * n\n    dist[s] = 0\n    pq = [(0, s)]                     # (目前距離, 點)\n    while pq:\n        d, u = heapq.heappop(pq)\n        if d > dist[u]:\n            continue                  # 舊的資料，u 早就確定了\n        for v, w in adj[u]:\n            if d + w < dist[v]:       # 鬆弛\n                dist[v] = d + w\n                heapq.heappush(pq, (dist[v], v))\n    return dist\n\n#   A=0 B=1 C=2 D=3 E=4\nedges = [(0, 1, 4), (0, 2, 1), (2, 1, 2), (1, 3, 1), (2, 3, 5), (3, 4, 3)]\nadj = [[] for _ in range(5)]\nfor u, v, w in edges:\n    adj[u].append((v, w)); adj[v].append((u, w))\nprint(dijkstra(5, adj, 0))   # [0, 3, 1, 4, 7]"
+            },
+            {
+              "type": "paragraph",
+              "text": "原本的模板（用 dict 記 went，heapq 推進 leaves）："
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import heapq\nfrom collections import defaultdict\n\ntimes=[]\nk=int(input())\nn=int(input())\n#and then input data by some loop\n\n\n\"\"\"\nmain code below\n\"\"\"\npoint=defaultdict(list)\nfor u,v,w in times:\n    point[u].append((w,v))#w,v can directly into heapq (because heapq will choose smaller for index 0 and then 1 and so on)\n\n\nwent=dict()#to_point=shortest_path_cost\nnext_step=[]#minimum cost of child that has not been walked\nheapq.heappush(next_step,(0,k))#start from k\n#start from what we walked(that child has not been called) and get the minimum one\n#next_step means every leave possible to walk because we walked his parent\nwhile next_step:\n    weight,me=heapq.heappop(next_step)\n    if me in went:\n        continue\n    #minimum node walk first, from every path of leave found walk minimum one, therefore we can always get the minimum path: its a greedy\n    went[me]=weight#minimum one did not puted in, so we put\n    for weight,child in point[me]:#we shortest, try to add our leave in to queue\n        heapq.heappush(next_step,(went[me]+weight,child))"
             },
             {
               "type": "list",
@@ -11134,6 +11228,15 @@
               "type": "code",
               "language": "python",
               "code": "def kruskal_dict(n, edges):          # edges: (w, u, v)\n    group = {i: i for i in range(n)}   # 點 → 組別\n    members = {i: [i] for i in range(n)}\n    total = 0\n    for w, u, v in sorted(edges):\n        gu, gv = group[u], group[v]\n        if gu == gv:\n            continue                   # 同一組：連上去會有環\n        for x in members[gv]:          # 把 gv 整組改成 gu\n            group[x] = gu\n        members[gu] += members.pop(gv)\n        total += w\n    return total\n\nedges = [(4, 0, 1), (1, 0, 2), (2, 2, 1), (1, 1, 3), (5, 2, 3), (3, 3, 4)]\nprint(kruskal_dict(5, edges))   # 7"
+            },
+            {
+              "type": "paragraph",
+              "text": "原本的寫法（用 dict 存 set 並同步更新成員）："
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import heapq\n\ndef get():\n    #input initialization\n    points=[]#list[list[int]]\n\n\n    #node=key  (time,friend) =value\n    queue=[]\n    for a in range(len(points)):\n        for b in  range(len(points)):\n            if a==b:\n                continue\n            way=abs(points[a][0]-points[b][0])+abs(points[a][1]-points[b][1])\n            heapq.heappush(queue,(way,a,b))\n    went={}\n    for i in range(len(points)):\n        went[i]=set([i])\n    count=0\n    result=0\n\n    while queue:\n        way,a,b=heapq.heappop(queue)\n        if count==len(points)-1:\n            return result\n        if a in went[b] or b in went[a]:#dont know that how to cheak if should connect\n            continue\n        #at most one connected now\n        mix=went[a].copy()\n        mix.update(went[b])\n        for teammate in mix:\n            went[teammate]=mix#make sure every member can fetch lastest object, thats why for loop for all object\n        result+=way\n        count+=1\n    return result\nprint(get())"
             },
             {
               "type": "heading",
@@ -11652,6 +11755,15 @@
               "type": "code",
               "language": "python",
               "code": "from collections import deque\n\ndef is_bipartite(n, adj):\n    color = [-1] * n                  # -1 = 還沒塗\n    for s in range(n):                # 圖可能不連通，每一塊都要塗\n        if color[s] != -1:\n            continue\n        color[s] = 0\n        q = deque([s])\n        while q:\n            u = q.popleft()\n            for v in adj[u]:\n                if color[v] == -1:\n                    color[v] = 1 - color[u]   # 塗相反的顏色\n                    q.append(v)\n                elif color[v] == color[u]:\n                    return False              # 兩端同色\n    return True\n\nsquare = [[1, 3], [0, 2], [1, 3], [0, 2]]          # 0-1-2-3-0\nprint(is_bipartite(4, square))                     # True\nsquare[0].append(2); square[2].append(0)           # 加一條 0-2\nprint(is_bipartite(4, square))                     # False：0-1-2 是奇環"
+            },
+            {
+              "type": "paragraph",
+              "text": "原本的寫法（state 陣列與 BFS 染色判斷）："
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import deque,defaultdict\ndef get():\n    #data input\n    \n    point=defaultdict(list)\n\n    for a,b in edge:\n        point[a].append(b)\n        point[b].append(a)\n    \n    state=[0]*(n+1)\n\n    cheaked=[0]*(n+1)\n    legal=True\n    def bfs(me):\n        nonlocal state,cheaked,legal\n        queue=deque()\n        queue.append(me)\n        if state[me]==0:\n            state[me]=1\n        while queue:\n            node=queue.popleft()\n            if cheaked[node]==1:\n                continue\n            cheaked[node]=1\n            for neighbor in point[node]:\n                if state[neighbor]==0:\n                    state[neighbor]=-state[node]\n                else:\n                    if state[neighbor]==state[node]:\n                        legal=False\n                        return False\n                if cheaked[neighbor]==0:\n                    queue.append(neighbor)\n        return True\n    for node in range(1,n+1):\n        if bfs(node)==False:\n            return False\n    return True"
             },
             {
               "type": "quiz",
@@ -12264,6 +12376,10 @@
           "pdfPages": [],
           "content": [
             {
+              "type": "paragraph",
+              "text": "dp"
+            },
+            {
               "type": "heading",
               "text": "introducing"
             },
@@ -12328,6 +12444,15 @@
           "titleEn": "take which child(table DP)",
           "pdfPages": [],
           "content": [
+            {
+              "type": "paragraph",
+              "text": "just like the title, its just like"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "me =  a_value + my best child"
+            },
             {
               "type": "heading",
               "text": "introduce"
@@ -12706,6 +12831,11 @@
                   "description": "有幾種：0/1 背包計數"
                 }
               ]
+            },
+            {
+              "type": "code",
+              "language": "equation",
+              "code": "me[cost]=how many money i got\nme[cost]+=me[cost-new item cost]+new item money getting (no loop problem)\nme[cost+new item cost] = me[cost]+ new item money getting(with loop problem)\n"
             }
           ]
         },
@@ -13017,6 +13147,21 @@
                   "description": "有幾種組合（外層跑硬幣）"
                 }
               ]
+            },
+            {
+              "type": "code",
+              "language": "equation",
+              "code": "me[cost]=how many money i got\nme[cost]+=me[cost-new item cost]+new item money getting (no loop issue)\nme[cost+new item cost] = me[cost]+ new item money getting(with loop issue)\n"
+            },
+            {
+              "type": "code",
+              "language": "equation",
+              "code": "me[cost]=how many money i got\nme[cost]+=me[cost-new item cost]+new item money getting (no loop issue)#which is no loop, but we can choose any times\nme[cost+new item cost] = me[cost]+ new item money getting(with loop issue, but its not matter in 0/n) # we can use this\n"
+            },
+            {
+              "type": "code",
+              "language": "equation",
+              "code": "me[cost+new item cost] = me[cost]+ new item money getting"
             }
           ]
         },
@@ -13046,6 +13191,11 @@
             {
               "type": "heading",
               "text": "math qeuation"
+            },
+            {
+              "type": "code",
+              "language": "math equation",
+              "code": "# this is a graph style explain\nmy best= (if can choose me->1 ,  else->0 ) + biggest premax but dont touch currect line  || biggest premax"
             },
             {
               "type": "code",
@@ -13085,6 +13235,11 @@
             {
               "type": "heading",
               "text": "math equation"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "must choose me= from every smaller than me nodes, get max its value saved on dp(as we are finding longest, the dp[i] usually refer to total length he got)"
             },
             {
               "type": "code",
