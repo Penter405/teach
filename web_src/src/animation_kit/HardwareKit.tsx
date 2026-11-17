@@ -61,7 +61,7 @@ export const Line = ({
     className={`flex flex-wrap items-center gap-x-2 gap-y-1 whitespace-pre rounded px-1 py-[1px] ${pc ? 'bg-amber-400/15' : ''}`}
   >
     <span className="w-3 shrink-0 text-amber-400 text-xs">{pc ? '▶' : ''}</span>
-    {addr !== undefined && <span className="w-9 shrink-0 text-[10px] text-slate-500">{addr}</span>}
+    {addr !== undefined && <span className="w-9 shrink-0 text-[10px] text-slate-400">{addr}</span>}
     <span style={{ paddingLeft: indent * 18 }}>{children}</span>
     {jump && (
       <motion.span initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} className="ml-2 text-[10px] font-sans font-bold text-pink-300 bg-pink-500/15 rounded px-1.5">
@@ -74,7 +74,7 @@ export const Line = ({
 
 export const CodePanel = ({ children, title = 'Python' }: { children: React.ReactNode; title?: string }) => (
   <div className="w-full rounded-xl border border-slate-700 bg-slate-900 p-3 font-mono text-[13px] md:text-[15px] text-slate-100 shadow-lg overflow-x-auto">
-    <div className="mb-1 text-[10px] font-sans font-bold uppercase tracking-widest text-slate-500">{title}</div>
+    <div className="mb-1 text-[10px] font-sans font-bold uppercase tracking-widest text-slate-400">{title}</div>
     {children}
   </div>
 );
@@ -114,7 +114,7 @@ export const Bits = ({
           )}
         </span>
       ))}
-      {truncated && <span className="text-[10px] text-slate-500">…</span>}
+      {truncated && <span className="text-[10px] text-slate-400">…</span>}
     </span>
   );
 };
@@ -340,7 +340,8 @@ export const CpuBridgeProvider = ({ value, children }: { value: BridgeCtx; child
 );
 const noSub = () => () => {};
 
-/* Board: CPU top-left, Python top-right, memory full width below.
+/* Board: wide → CPU / bus / DRAM stacked on the left, Python on the right.
+   Medium → CPU top-left, Python top-right, memory full width below.
    三欄排列: CPU | DRAM | Python.  Phones: one column. */
 /** `now`: what this step did, in Python terms (shown as 現在在做什麼). Derived from the code if left out. */
 export const Board = ({ children, now }: { children: React.ReactNode; now?: string }) => {
@@ -437,7 +438,8 @@ export const Board = ({ children, now }: { children: React.ReactNode; now?: stri
   ) : null;
 
   const threeCol = view.threeCol && w >= 1100;
-  const layout: 'three' | 'split' | 'stack' = w < 700 ? 'stack' : threeCol ? 'three' : 'split';
+  // wide boards: hardware (CPU → bus → DRAM) on the left, the Python code on the right
+  const layout: 'three' | 'side' | 'split' | 'stack' = w < 700 ? 'stack' : threeCol ? 'three' : w >= 960 ? 'side' : 'split';
   const codeCol = (cls: string) => <SlotColumn col="code" className={`flex flex-col gap-3 min-w-0 ${cls}`}>{code}</SlotColumn>;
 
   let body: React.ReactNode;
@@ -449,6 +451,21 @@ export const Board = ({ children, now }: { children: React.ReactNode; now?: stri
         {ramEl && <div className="flex min-w-0 flex-1">{ramEl}</div>}
         <div className="w-3 shrink-0" />
         {codeCol('w-[26rem] shrink-0')}
+      </div>
+    );
+  } else if (layout === 'side' && hw) {
+    // DRAM on the left; the running code on the right with the CPU under it; the bus joins them
+    body = (
+      <div className="flex flex-row items-stretch w-full">
+        {ramEl && <div className="flex min-w-0 flex-1">{ramEl}</div>}
+        {/* DRAM is on the left here, so data going to DRAM moves right → left */}
+        {busEl
+          ? <div className="flex w-[72px] shrink-0 items-center">{React.cloneElement(busEl, { toRam: !(busEl.props.toRam ?? true) })}</div>
+          : <div className="w-3" />}
+        <div className="flex w-[25rem] shrink-0 flex-col gap-3">
+          {codeCol('')}
+          {cpu && <div className="flex w-full">{cpu}</div>}
+        </div>
       </div>
     );
   } else if (layout === 'split' && hw) {
@@ -571,8 +588,8 @@ const InfoName = ({ k, abbr, size = 'sm' }: { k: keyof typeof INFO | string; abb
       onPointerDown={(e) => e.stopPropagation()}
     >
       <span className={`${size === 'sm' ? 'text-[11px]' : 'text-[10px]'} whitespace-nowrap font-bold text-sky-300`}>{info.zh}</span>
-      {abbr !== '' && <span className="whitespace-nowrap font-mono text-[9px] text-sky-500/80">{abbr ?? k}</span>}
-      <span className="truncate text-[9px] text-slate-500">{info.en}</span>
+      {abbr !== '' && <span className="whitespace-nowrap font-mono text-[9px] text-sky-300">{abbr ?? k}</span>}
+      <span className="truncate text-[9px] text-slate-400">{info.en}</span>
       {open && (
         <span className="absolute left-0 top-full z-30 mt-1 w-56 rounded-md bg-slate-100 px-2 py-1 text-[11px] font-normal leading-snug text-slate-900 shadow-xl">
           <b>{info.zh} {abbr ?? (k === 'GP' ? '' : k)}</b>：{info.desc}
@@ -629,7 +646,7 @@ export type CpuDerived = {
 
 const Section = ({ zh, en, children }: { zh: string; en: string; children: React.ReactNode }) => (
   <div className="mt-2 first:mt-0">
-    <div className="mb-1 text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">{zh} · {en}</div>
+    <div className="mb-1 text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400">{zh} · {en}</div>
     <div className="flex flex-col gap-1">{children}</div>
   </div>
 );
@@ -690,13 +707,13 @@ export const CPU = ({
                 {alu.b !== undefined && <>, {alu.b}</>}
                 {alu.out !== undefined && <> → <span className="font-bold text-amber-300">{alu.out}</span></>}
               </motion.span>
-            ) : <span className="text-slate-600">idle</span>}
+            ) : <span className="text-slate-400">idle</span>}
           </div>
         </motion.div>
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 px-1 font-mono text-[10px]">
           <InfoName k="FLAGS" size="xs" />
-          <span className={f.Z ? 'font-bold text-amber-300' : 'text-slate-500'}>等於 Z={f.Z}</span>
-          <span className={f.N ? 'font-bold text-amber-300' : 'text-slate-500'}>負數 N={f.N}</span>
+          <span className={f.Z ? 'font-bold text-amber-300' : 'text-slate-400'}>等於 Z={f.Z}</span>
+          <span className={f.N ? 'font-bold text-amber-300' : 'text-slate-400'}>負數 N={f.N}</span>
         </div>
       </Section>
 
@@ -945,10 +962,10 @@ const MemTable = ({
         : 'border-slate-700 bg-slate-950/70';
       const label = first ? (
         a.sym
-          ? <>{a.cell.label} <span className="text-cyan-200/70">{typeof a.cell.value === 'string' ? a.cell.value : ''}</span></>
+          ? <>{a.cell.label} <span className="text-cyan-200">{typeof a.cell.value === 'string' ? a.cell.value : ''}</span></>
           : freed ? '已釋放'
           : <>{a.cell.label !== undefined && <>{slotLabel(a.cell.label)}: </>}{a.d.type}</>
-      ) : <span className="text-slate-500">…</span>;
+      ) : <span className="text-slate-400">…</span>;
       const pp = a.sym || targetOf(a.cell) !== null ? pointerProps(a.cell) : {};
       const valueText = typeof a.cell.value === 'string' || typeof a.cell.value === 'number' ? a.cell.value : '';
 
@@ -983,7 +1000,7 @@ const MemTable = ({
     }
     rows.push(
       <div key={r} className="flex items-end">
-        <span className="shrink-0 pb-[8px] font-mono text-[10px] text-slate-500" style={{ width: ADDR_W }}>{hex(base)}</span>
+        <span className="shrink-0 pb-[8px] font-mono text-[10px] text-slate-400" style={{ width: ADDR_W }}>{hex(base)}</span>
         {segs}
       </div>,
     );
@@ -1111,7 +1128,7 @@ export const RAM = ({ cells, title = 'DRAM' }: { cells: Cell[]; title?: string; 
         parts.push(
           <div key={'u' + col} style={{ gridColumn: `${col + 2} / span 1` }} className="relative flex items-end" title={sym ? `symbol table：${sym.name}` : undefined}>
             {sym && addr === sym.start && (
-              <span className="absolute -top-[13px] left-0.5 whitespace-nowrap text-[9px] font-bold leading-none text-cyan-400/80">{sym.name}</span>
+              <span className="absolute -top-[13px] left-0.5 whitespace-nowrap text-[9px] font-bold leading-none text-cyan-300">{sym.name}</span>
             )}
             {mode === 'easy'
               ? <span className={`w-full h-[22px] rounded-[3px] border border-dashed ${sym ? 'border-cyan-500/60 bg-cyan-500/10' : 'border-slate-700/80'}`} />
@@ -1133,7 +1150,7 @@ export const RAM = ({ cells, title = 'DRAM' }: { cells: Cell[]; title?: string; 
       const labelText = (
         <>
           {a.cell.label !== undefined && <span className="text-cyan-300">{slotLabel(a.cell.label)}</span>}
-          {a.cell.label !== undefined && showType && <span className="text-slate-500">: </span>}
+          {a.cell.label !== undefined && showType && <span className="text-slate-400">: </span>}
           {showType && (freed ? <span className="text-blue-300">已釋放 freed</span> : <span>{a.d.type}</span>)}
         </>
       );
@@ -1149,7 +1166,7 @@ export const RAM = ({ cells, title = 'DRAM' }: { cells: Cell[]; title?: string; 
         >
           {(
             <span className={`block truncate text-[9px] leading-[11px] font-bold px-0.5 ${freed ? 'text-blue-300' : 'text-orange-300'}`}>
-              {first ? labelText : <span className="text-slate-500">…</span>}
+              {first ? labelText : <span className="text-slate-400">…</span>}
             </span>
           )}
           {mode === 'easy' ? (
@@ -1173,14 +1190,14 @@ export const RAM = ({ cells, title = 'DRAM' }: { cells: Cell[]; title?: string; 
           {selected === a.start && first && <span className="absolute -top-3 right-0 text-[10px] font-bold text-fuchsia-300">★ 選取</span>}
           {mode !== 'easy' && first && <Paren side="left" color={bracket} />}
           {mode !== 'easy' && last && <Paren side="right" color={bracket} />}
-          {last && a.truncated && <span className="absolute -right-2 bottom-0 text-[10px] text-slate-500">…</span>}
+          {last && a.truncated && <span className="absolute -right-2 bottom-0 text-[10px] text-slate-400">…</span>}
         </motion.div>,
       );
       col += segLen;
     }
     return (
       <div key={'r' + r} className="grid items-end gap-y-0.5" style={{ gridTemplateColumns: `${ADDR_W}px repeat(${bpr}, ${bw}px)` }}>
-        <span className="self-end pb-[3px] font-mono text-[9px] text-slate-500" style={{ gridColumn: '1 / span 1' }}>{hex(base)}</span>
+        <span className="self-end pb-[3px] font-mono text-[9px] text-slate-400" style={{ gridColumn: '1 / span 1' }}>{hex(base)}</span>
         {parts}
       </div>
     );
@@ -1191,7 +1208,7 @@ export const RAM = ({ cells, title = 'DRAM' }: { cells: Cell[]; title?: string; 
       <div {...ramSlot} className="relative w-full md:flex-[3] min-w-0 rounded-xl border-2 border-emerald-500/60 bg-slate-900 p-3 shadow-[0_0_18px_rgba(16,185,129,0.2)]">
         <div className="mb-3 flex items-center justify-between">
           <span className="text-[11px] font-bold tracking-widest text-emerald-300">{title}</span>
-          <span className="text-[9px] text-slate-500">1 格 = 1 byte{selected !== null ? ` · 選取 ${hex(selected)}` : ''}</span>
+          <span className="text-[9px] text-slate-400">1 格 = 1 byte{selected !== null ? ` · 選取 ${hex(selected)}` : ''}</span>
         </div>
         <div ref={gridRef} className="w-full overflow-hidden">
           <MemTable symbols={symbols} allocs={allocs} view={view} width={gridW} pointedAt={pointedAt} selected={selected} pointerProps={pointerProps} />
@@ -1206,12 +1223,12 @@ export const RAM = ({ cells, title = 'DRAM' }: { cells: Cell[]; title?: string; 
     <div {...ramSlot} className="relative w-full md:flex-[3] min-w-0 rounded-xl border-2 border-emerald-500/60 bg-slate-900 p-3 shadow-[0_0_18px_rgba(16,185,129,0.2)]">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-[11px] font-bold tracking-widest text-emerald-300">{title}</span>
-        <span className="text-[9px] text-slate-500">memory unit · {bpr} bytes / row</span>
+        <span className="text-[9px] text-slate-400">memory unit · {bpr} bytes / row</span>
       </div>
 
       {symbols.length > 0 && (
         <div className="mb-2 rounded-lg border border-dashed border-cyan-500/50 p-2">
-          <div className="mb-1 text-[9px] font-bold uppercase tracking-widest text-cyan-400/80">symbol table</div>
+          <div className="mb-1 text-[9px] font-bold uppercase tracking-widest text-cyan-300">symbol table</div>
           <div className="flex flex-col gap-0.5">
             {symbols.map((c) => {
               const d = encode(c.value);
@@ -1236,10 +1253,10 @@ export const RAM = ({ cells, title = 'DRAM' }: { cells: Cell[]; title?: string; 
 
       <div ref={gridRef} className="flex flex-col gap-1 w-full overflow-hidden">
         {out.map((it, i) => {
-          if (it.kind === 'caption') return <div key={'c' + i} className="mt-1 text-[9px] font-bold uppercase tracking-widest text-slate-500">{it.text}</div>;
+          if (it.kind === 'caption') return <div key={'c' + i} className="mt-1 text-[9px] font-bold uppercase tracking-widest text-slate-400">{it.text}</div>;
           if (it.kind === 'gap') {
             return (
-              <div key={'g' + it.from} className="flex items-center gap-2 font-mono text-[9px] text-slate-600">
+              <div key={'g' + it.from} className="flex items-center gap-2 font-mono text-[9px] text-slate-400">
                 <span className="flex-1 border-t border-dashed border-slate-700" />⋯ {hex(it.from)}–{hex(it.to)} 未使用<span className="flex-1 border-t border-dashed border-slate-700" />
               </div>
             );
@@ -1252,7 +1269,7 @@ export const RAM = ({ cells, title = 'DRAM' }: { cells: Cell[]; title?: string; 
                 animate={{ boxShadow: c.hot ? '0 0 0 2px #fbbf24' : '0 0 0 1px #334155' }}
                 className="flex items-center gap-2 rounded-md border border-dashed border-slate-600 bg-slate-800/60 px-2 py-1 font-mono"
               >
-                <span className="text-[9px] text-slate-500" style={{ width: ADDR_W - 8 }}>{c.addr}</span>
+                <span className="text-[9px] text-slate-400" style={{ width: ADDR_W - 8 }}>{c.addr}</span>
                 {c.label !== undefined && <span className="text-[11px] font-bold text-cyan-300">{slotLabel(c.label)}</span>}
                 <span className="text-[12px] font-bold italic text-slate-300">{c.value}</span>
                 {c.note !== undefined && <span className="ml-auto text-[9px] text-slate-400">{c.note}</span>}
@@ -1267,7 +1284,7 @@ export const RAM = ({ cells, title = 'DRAM' }: { cells: Cell[]; title?: string; 
         <div className="mt-2 flex flex-col gap-0.5 border-t border-slate-700/70 pt-1.5">
           {hotNotes.map((c, i) => (
             <div key={i} className="text-[10px] text-amber-200/90">
-              <span className="font-mono text-slate-500">{c.addr}</span> {c.note}
+              <span className="font-mono text-slate-400">{c.addr}</span> {c.note}
             </div>
           ))}
         </div>
@@ -1288,7 +1305,7 @@ const ScreenBody = ({ lines, active = false, cursor = false }: { lines: React.Re
     animate={{ boxShadow: active ? '0 0 0 2px #22d3ee, 0 0 14px rgba(34,211,238,0.4)' : '0 0 0 1px #334155' }}
     className="w-full rounded-lg bg-black p-2 font-mono text-sm text-green-400 min-h-[56px]"
   >
-    <div className="mb-1 text-[9px] font-sans font-bold tracking-widest text-slate-500">SCREEN</div>
+    <div className="mb-1 text-[9px] font-sans font-bold tracking-widest text-slate-400">SCREEN</div>
     {lines.map((l, i) => (
       <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>{l}</motion.div>
     ))}

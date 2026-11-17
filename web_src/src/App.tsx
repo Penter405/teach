@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { 
-  Github, 
-  Lock, 
-  Moon, 
-  Sun, 
-  HelpCircle, 
-  ChevronRight, 
+import {
+  Github,
+  Lock,
+  Moon,
+  Sun,
+  HelpCircle,
+  ChevronRight,
   User,
   Layout,
   BookOpen,
@@ -13,7 +13,9 @@ import {
   GitBranch,
   Menu,
   X,
-  Network
+  Network,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { courseData, getFlatLessons, findLesson } from './courseData';
@@ -427,6 +429,15 @@ const LearningPathPage = ({ onSelectModule, onSelectLesson, onOpenCodeTree, onOp
 const LessonPage = ({ lessonId, student, onBack, onLessonChange, onOpenCodeTree, onOpenAlgoTree }: { lessonId: string, student: StudentUser | null, onBack: () => void, onLessonChange: (id: string) => void, onOpenCodeTree: () => void, onOpenAlgoTree: () => void }) => {
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  // focus mode: hide the top bar and the left sidebar so animations get the whole screen
+  const [focusMode, setFocusMode] = useState<boolean>(() => {
+    try { return localStorage.getItem('lessonFocusMode') === '1'; } catch { return false; }
+  });
+  const toggleFocusMode = () => setFocusMode((v) => {
+    const next = !v;
+    try { localStorage.setItem('lessonFocusMode', next ? '1' : '0'); } catch { /* storage unavailable */ }
+    return next;
+  });
   const [teacherChatOpen, setTeacherChatOpen] = useState(false);
   const flatLessons = getFlatLessons();
   const mainRef = useRef<HTMLElement>(null);
@@ -465,7 +476,18 @@ const LessonPage = ({ lessonId, student, onBack, onLessonChange, onOpenCodeTree,
 
   return (
     <div className="h-screen bg-surface dark:bg-slate-950 flex flex-col transition-colors duration-500">
-      <nav className="w-full flex-shrink-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center px-3 sm:px-4 md:px-6 py-3">
+      {focusMode && (
+        <button
+          onClick={toggleFocusMode}
+          className="fixed top-3 right-3 z-[80] flex items-center gap-1.5 rounded-full opacity-70 hover:opacity-100 border border-slate-200 bg-white/90 px-3 py-2 text-xs font-bold text-slate-600 shadow-lg backdrop-blur transition-all hover:scale-105 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-300 dark:hover:text-white"
+          aria-label="Show top bar and sidebar"
+          title="顯示上方列和側欄"
+        >
+          <Minimize2 className="w-4 h-4" />
+          <span className="font-mono">{currentIndex + 1} / {flatLessons.length}</span>
+        </button>
+      )}
+      <nav className={`w-full flex-shrink-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center px-3 sm:px-4 md:px-6 py-3 ${focusMode ? 'hidden' : ''}`}>
         <div className="flex items-center gap-2 sm:gap-4 md:gap-8">
           {/* Mobile sidebar toggle */}
           <button
@@ -500,6 +522,14 @@ const LessonPage = ({ lessonId, student, onBack, onLessonChange, onOpenCodeTree,
           <div className="font-mono text-xs text-slate-400 hidden sm:block">
             {currentIndex + 1} / {flatLessons.length}
           </div>
+          <button
+            onClick={toggleFocusMode}
+            className="p-2 rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+            aria-label="Hide top bar and sidebar"
+            title="隱藏上方列和側欄（專注模式）"
+          >
+            <Maximize2 className="w-4 h-4" />
+          </button>
         </div>
       </nav>
 
@@ -546,7 +576,7 @@ const LessonPage = ({ lessonId, student, onBack, onLessonChange, onOpenCodeTree,
         </AnimatePresence>
 
         {/* Desktop sidebar */}
-        <aside className="hidden lg:block w-72 flex-shrink-0 z-40 bg-transparent relative border-r border-slate-200/50 dark:border-slate-800/50">
+        <aside className={`hidden ${focusMode ? '' : 'lg:block'} w-72 flex-shrink-0 z-40 bg-transparent relative border-r border-slate-200/50 dark:border-slate-800/50`}>
            <Sidebar 
              currentLessonId={lessonId}
              expandedModules={expandedModules}

@@ -7,8 +7,8 @@ import { motion } from 'motion/react';
 import { CodePanel, Line, Tok, clampStep } from './HardwareKit';
 
 /** Dark board: "現在在做什麼" bar on top, then the code and the drawing. */
-export const AlgoBoard = ({ now, post, children }: { now?: string; post?: string; children: React.ReactNode }) => (
-  <div className="w-full max-w-[900px] flex flex-col gap-3 rounded-2xl bg-slate-950 p-3 md:p-4 font-sans text-slate-100">
+export const AlgoBoard = ({ now, post, children, wide = false }: { now?: string; post?: string; children: React.ReactNode; wide?: boolean }) => (
+  <div className={`@container w-full ${wide ? 'max-w-[1500px]' : 'max-w-[900px]'} flex flex-col gap-3 rounded-2xl bg-slate-950 p-3 md:p-4 font-sans text-slate-100`}>
     <div className="flex flex-col gap-1 rounded-lg bg-sky-500/10 px-3 py-2">
       <div className="flex items-baseline gap-2">
         <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-sky-400">現在在做什麼</span>
@@ -30,7 +30,7 @@ export const Stage = ({ title, children, right }: { title?: string; children: Re
   <div className="w-full rounded-xl border border-slate-800 bg-slate-900/70 p-3">
     {(title || right) && (
       <div className="mb-2 flex items-center justify-between gap-2">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{title}</span>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{title}</span>
         {right}
       </div>
     )}
@@ -44,8 +44,8 @@ const TONE: Record<CellTone, string> = {
   normal: 'bg-slate-800 border-slate-600 text-slate-100',
   active: 'bg-amber-500/25 border-amber-400 text-amber-100 ring-2 ring-amber-400',
   yes: 'bg-emerald-500/25 border-emerald-400 text-emerald-100',
-  no: 'bg-slate-800/60 border-slate-700 text-slate-500',
-  dim: 'bg-slate-900 border-slate-800 text-slate-600',
+  no: 'bg-slate-800/60 border-slate-700 text-slate-400',
+  dim: 'bg-slate-900 border-slate-700 text-slate-500',
   hit: 'bg-rose-500/25 border-rose-400 text-rose-100 ring-2 ring-rose-400',
   blue: 'bg-sky-500/25 border-sky-400 text-sky-100',
 };
@@ -172,17 +172,17 @@ export type SeqItem = { v: React.ReactNode; tone?: CellTone; top?: React.ReactNo
 /** A row of boxes (queue, deque, list). `empty` is shown when there is nothing. */
 export const Seq = ({ items, empty = '（空）', size = 'md', left, right }: { items: SeqItem[]; empty?: string; size?: 'sm' | 'md'; left?: string; right?: string }) => (
   <div className="flex flex-wrap items-end gap-1.5 min-h-[64px]">
-    {left && <span className="self-center text-[10px] font-bold text-slate-500">{left}</span>}
-    {items.length === 0 && <span className="self-center text-xs text-slate-500">{empty}</span>}
+    {left && <span className="self-center text-[10px] font-bold text-slate-400">{left}</span>}
+    {items.length === 0 && <span className="self-center text-xs text-slate-400">{empty}</span>}
     {items.map((it, i) => <ValueCell key={i} value={it.v} tone={it.tone} top={it.top} bottom={it.bottom} struck={it.struck} size={size} />)}
-    {right && <span className="self-center text-[10px] font-bold text-slate-500">{right}</span>}
+    {right && <span className="self-center text-[10px] font-bold text-slate-400">{right}</span>}
   </div>
 );
 
 /** A vertical stack (top at the top). */
 export const StackView = ({ items, empty = '（空）', width = 'w-40' }: { items: { v: React.ReactNode; tone?: CellTone; note?: React.ReactNode }[]; empty?: string; width?: string }) => (
   <div className={`flex flex-col-reverse gap-1 ${width} rounded-lg border-x-2 border-b-2 border-slate-600 p-1.5 min-h-[60px]`}>
-    {items.length === 0 && <span className="py-2 text-center text-xs text-slate-500">{empty}</span>}
+    {items.length === 0 && <span className="py-2 text-center text-xs text-slate-400">{empty}</span>}
     {items.map((it, i) => (
       <motion.div key={i} layout initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
         className={`rounded-md border px-2 py-1 text-center font-mono text-xs font-bold ${TONE[it.tone ?? 'normal']}`}>
@@ -201,7 +201,7 @@ export const Table2D = ({ colHeads, rows, corner = '' }: { colHeads: React.React
     <table className="mx-auto border-separate border-spacing-1 font-mono text-sm">
       <thead>
         <tr>
-          <th className="px-1 text-[10px] font-bold text-slate-500">{corner}</th>
+          <th className="px-1 text-[10px] font-bold text-slate-400">{corner}</th>
           {colHeads.map((h, i) => <th key={i} className="min-w-[2.5rem] px-1 text-[11px] font-bold text-slate-400">{h}</th>)}
         </tr>
       </thead>
@@ -294,7 +294,7 @@ const Jump = ({ go, kw, delay }: { go: boolean; kw: string; delay: number }) => 
 /** The action of this step, animated: operands come in, the result pops out. Replays every step. */
 export const ActionCard = ({ st, s }: { st: TraceStep; s: number }) => {
   const a = st.act;
-  let body: React.ReactNode = <span className="text-xs text-slate-500">按「執行」開始：每一步做一個動作</span>;
+  let body: React.ReactNode = <span className="text-xs text-slate-400">按「執行」開始：每一步做一個動作</span>;
   if (a) {
     const tail = 'kw' in a && a.kw !== undefined && 'go' in a && a.go !== undefined ? <Jump go={a.go} kw={a.kw} delay={0.75} /> : null;
     if (a.k === 'op') {
@@ -403,28 +403,43 @@ export const TraceView = ({ T, step, show, hide = [], children, noStack = false 
   const hasOut = T.steps.some((x) => x.out.length);
   const usesStack = !noStack && T.steps.some((x) => x.stack.length > 0);
   const recursive = T.steps.some((x) => x.stack.length > 1);
+  const drawing = children?.(st, s);
+  const screen = hasOut && (
+    <div className="rounded-lg border border-slate-700 bg-black px-3 py-2 font-mono text-sm text-emerald-300 min-h-[2.5rem]">
+      <div className="text-[10px] font-sans font-bold uppercase tracking-widest text-slate-400">螢幕</div>
+      {st.out.length ? st.out.map((l, i) => <div key={i}>{l}</div>) : <span className="text-slate-500">（空的）</span>}
+    </div>
+  );
+  const codeSide = (
+    <>
+      {/* code | call stack side by side; under each other once the drawing takes the left half */}
+      <div className={`grid w-full gap-3 ${usesStack ? '@xl:grid-cols-[1fr_auto] @4xl:grid-cols-1' : ''}`}>
+        <TraceCode code={T.code} st={st} first={s === 0} />
+        {usesStack && (
+          <Stage title={recursive ? 'call stack（上面是正在跑的）' : '函式呼叫'}>
+            <StackView width="w-52" empty="（沒有函式在跑）" items={st.stack.map((f, i) => ({
+              v: `${f.fn}(${Object.values(f.args).join(', ')})`,
+              tone: i === st.stack.length - 1 ? (st.kind === 'return' || st.kind === 'end' ? 'yes' : 'active') : 'normal',
+            }))} />
+          </Stage>
+        )}
+      </div>
+      <ActionCard st={st} s={s} />
+      {names.length > 0 && <TraceVars st={st} s={s} names={names} />}
+    </>
+  );
+  const hasDrawing = drawing !== undefined && drawing !== null && drawing !== false;
   return (
     <div className="w-full flex flex-col items-center gap-3 font-sans">
-      <AlgoBoard now={s === 0 ? '還沒開始執行' : st.pre} post={st.post}>
-        <div className={`grid w-full gap-3 ${usesStack ? 'md:grid-cols-[1fr_auto]' : ''}`}>
-          <TraceCode code={T.code} st={st} first={s === 0} />
-          {usesStack && (
-            <Stage title={recursive ? 'call stack（上面是正在跑的）' : '函式呼叫'}>
-              <StackView width="w-52" empty="（沒有函式在跑）" items={st.stack.map((f, i) => ({
-                v: `${f.fn}(${Object.values(f.args).join(', ')})`,
-                tone: i === st.stack.length - 1 ? (st.kind === 'return' || st.kind === 'end' ? 'yes' : 'active') : 'normal',
-              }))} />
-            </Stage>
-          )}
-        </div>
-        <ActionCard st={st} s={s} />
-        {names.length > 0 && <TraceVars st={st} s={s} names={names} />}
-        {children?.(st, s)}
-        {hasOut && (
-          <div className="rounded-lg border border-slate-700 bg-black px-3 py-2 font-mono text-sm text-emerald-300 min-h-[2.5rem]">
-            <div className="text-[10px] font-sans font-bold uppercase tracking-widest text-slate-500">螢幕</div>
-            {st.out.length ? st.out.map((l, i) => <div key={i}>{l}</div>) : <span className="text-slate-600">（空的）</span>}
+      <AlgoBoard now={s === 0 ? '還沒開始執行' : st.pre} post={st.post} wide={hasDrawing}>
+        {hasDrawing ? (
+          /* wide: drawing on the left, the running code on the right; narrow: code first, drawing below */
+          <div className="grid w-full items-start gap-3 @4xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div className="flex min-w-0 flex-col gap-3">{codeSide}</div>
+            <div className="flex min-w-0 flex-col gap-3 @4xl:order-first">{drawing}{screen}</div>
           </div>
+        ) : (
+          <>{codeSide}{screen}</>
         )}
       </AlgoBoard>
     </div>
