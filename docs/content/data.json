@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y11m11d",
+    "version": "2026y11m17d",
     "language": "zh-TW"
   },
   "modules": [
@@ -12872,6 +12872,15 @@
               "type": "callout",
               "label": "延伸",
               "text": "這種「每個點只有一條出去的邊」的圖叫做 functional graph，找環＋記憶化是它的標準做法。"
+            },
+            {
+              "type": "paragraph",
+              "text": "correct"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import deque\n#1 indexed\nfor _ in range(int(input())):\n    n=int(input())\n    point=[0]*(n+1)\n    be=[[0]]+[[a] for a in range(1,n+1)]\n    cheaked=[False]*(n+1)\n    for _ in range(n):\n        a,b=list(map(int,input().split()))\n        point[a]=b\n        be[b].append(a)\n    roots=[]\n    loops=[]\n    my_value=[0]*(n+1)\n    for index in range(1,n+1):\n        if point[index]==index:\n            roots.append(index)\n            my_value[index]=1\n        if cheaked[index]==False:\n            path=[False]*(n+1)\n            seeing=index\n            cheaked[index]=True\n            while True:\n                path[seeing]=True\n                cheaked[seeing]=True\n                if cheaked[point[seeing]]==True:\n                    if path[point[seeing]]==True:\n                        loops.append(seeing)\n                    break\n                seeing=point[seeing]\n    in_loop=[False]*(n+1)\n    for loop_point in loops:\n        in_loop[loop_point]=True\n        now_loop=[loop_point]\n        size=1\n        while in_loop[point[loop_point]]==False:\n            loop_point=point[loop_point]\n            now_loop.append(loop_point)\n            size+=1\n            in_loop[loop_point]=True\n        for same in now_loop:\n            my_value[same]=size\n    \n    que=deque([element for element in range(1,n+1) if in_loop[element]]+roots)\n    while que:\n        me=que.popleft()\n        for parent in be[me]:\n            if in_loop[parent]==False:\n                in_loop[parent]=True\n                my_value[parent]=my_value[me]+1\n                que.append(parent)\n\n    print(my_value.index(max(my_value)))\n"
             }
           ]
         },
@@ -13348,6 +13357,74 @@
                   "answer": 1
                 }
               ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-1794879380643",
+          "title": "進階排序",
+          "titleEn": "",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "image",
+              "caption": "New image",
+              "text": "New Lesson",
+              "imageId": 23
+            },
+            {
+              "type": "paragraph",
+              "text": "wrong"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "while True:\n    amount, devision=list(map(int,input().split()))\n    print(amount,devision)\n    if amount==0 and devision==0:\n        break\n    data=[]\n    for _ in range(amount):\n        now=int(input())\n        if now%2!=0:\n            my_sort=-now\n        else:\n            my_sort=now\n#----   data.append((now%devision,(now+1)%2,my_sort,now))\n\n    data.sort()\n    for index in range(len(data)):\n        print(data[index][-1])"
+            },
+            {
+              "type": "paragraph",
+              "text": "correct"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "while True:\n    amount, devision=list(map(int,input().split()))\n    print(amount,devision)\n    if amount==0 and devision==0:\n        break\n    data=[]\n    for _ in range(amount):\n        now=int(input())\n#---    \n        devied=(abs(now)%abs(devision))\n        if now<0:\n            devied=-devied\n#---\n        if now%2!=0:\n            my_sort=-now\n        else:\n            my_sort=now\n        \n#---    data.append((devied,(now+1)%2,my_sort,now))\n\n    data.sort()\n    for index in range(len(data)):\n        print(data[index][-1])"
+            },
+            {
+              "type": "paragraph",
+              "text": "負數問題"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1794879403192",
+          "title": "N進制",
+          "titleEn": "",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "image",
+              "caption": "New image",
+              "text": "New Lesson",
+              "imageId": 24
+            },
+            {
+              "type": "paragraph",
+              "text": "wrong"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from sys import stdin\ndef amount(string):\n    if \"0\"<=string<=\"9\":\n        return int(string)\n    if \"A\"<=string<=\"Z\":\n        return 10+ord(string)-65\n    else:\n        return 10+ord(string)-97+26\ndef legal(char):\n    if \"0\"<=char<=\"9\":\n        return True\n    if \"A\"<=char<=\"Z\":\n        return True\n    if \"a\"<=char<=\"z\":\n        return True\n    return False\n\"\"\"\nN based integer R\nfind min possible base\n\"\"\"\nfor line in stdin.read().split(\"\\n\")[:-1]:\n    line=[char for char in line if legal(char)]\n    data=[]\n    \n    for integer in line:\n        data.append(amount(integer))\n    large=max(data)\n    #---\n    go10=sum(data)\n    for base in range(large+1,62+1):\n        #---如果一個𝑁 進位制的數【𝑎𝑏𝑐】是(𝑁 − 1) 的倍數，則(𝑎 + 𝑏 + 𝑐) 也是(𝑁 − 1) 的倍數。\n        if False:\n            for char in data[::-1]:\n                go10+=int(char)*nb\n                nb*=base\n            #--\n        if go10%(base-1)==0:\n            print(base)\n            break\n    else:\n        print(\"such number is impossible!\")"
+            },
+            {
+              "type": "paragraph",
+              "text": "correct"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from sys import stdin\ndef amount(string):\n    if \"0\"<=string<=\"9\":\n        return int(string)\n    if \"A\"<=string<=\"Z\":\n        return 10+ord(string)-65\n    else:\n        return 10+ord(string)-97+26\ndef legal(char):\n    if \"0\"<=char<=\"9\":\n        return True\n    if \"A\"<=char<=\"Z\":\n        return True\n    if \"a\"<=char<=\"z\":\n        return True\n    return False\n\"\"\"\nN based integer R\nfind min possible base\n\"\"\"\nfor line in stdin.read().split(\"\\n\"):\n    #if they switch line\n    if line==\"\":\n        continue\n    line=[char for char in line if legal(char)]\n    data=[]\n    #-- if cheaked is empty\n    if len(line)==0:\n        continue\n    for integer in line:\n        data.append(amount(integer))\n    large=max(data)\n    #---\n    go10=sum(data)\n    for base in range(max(2,large+1),62+1):#range -> 1,  ->  go10% (1-1)  ->  devision zero  -> use max\n        #---如果一個𝑁 進位制的數【𝑎𝑏𝑐】是(𝑁 − 1) 的倍數，則(𝑎 + 𝑏 + 𝑐) 也是(𝑁 − 1) 的倍數。\n        if False:\n            for char in data[::-1]:\n                go10+=int(char)*nb\n                nb*=base\n            #--\n        if go10%(base-1)==0:\n            print(base)\n            break\n    else:\n        print(\"such number is impossible!\")"
             }
           ]
         }
