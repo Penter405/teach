@@ -40,7 +40,7 @@ export const Stage = ({ title, children, right }: { title?: string; children: Re
 
 export type CellTone = 'normal' | 'active' | 'yes' | 'no' | 'dim' | 'hit' | 'blue';
 
-const TONE: Record<CellTone, string> = {
+export const TONE: Record<CellTone, string> = {
   normal: 'bg-slate-800 border-slate-600 text-slate-100',
   active: 'bg-amber-500/25 border-amber-400 text-amber-100 ring-2 ring-amber-400',
   yes: 'bg-emerald-500/25 border-emerald-400 text-emerald-100',
@@ -103,7 +103,7 @@ export type EdgeTone = 'normal' | 'active' | 'chosen' | 'dim' | 'hit';
 export type GNode = { id: string | number; x: number; y: number; label?: React.ReactNode; tone?: CellTone; below?: React.ReactNode; above?: React.ReactNode };
 export type GEdge = { a: string | number; b: string | number; w?: React.ReactNode; tone?: EdgeTone; directed?: boolean };
 
-const NODE_FILL: Record<CellTone, [string, string, string]> = {
+export const NODE_FILL: Record<CellTone, [string, string, string]> = {
   // fill, stroke, text
   normal: ['#1e293b', '#64748b', '#f1f5f9'],
   active: ['#78350f', '#fbbf24', '#fef3c7'],
@@ -113,7 +113,7 @@ const NODE_FILL: Record<CellTone, [string, string, string]> = {
   hit: ['#881337', '#fb7185', '#ffe4e6'],
   blue: ['#0c4a6e', '#38bdf8', '#e0f2fe'],
 };
-const EDGE_STROKE: Record<EdgeTone, [string, number]> = {
+export const EDGE_STROKE: Record<EdgeTone, [string, number]> = {
   normal: ['#64748b', 2], active: ['#fbbf24', 4], chosen: ['#34d399', 4], dim: ['#1e293b', 2], hit: ['#fb7185', 4],
 };
 

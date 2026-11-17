@@ -489,3 +489,49 @@ SPECS[86]['env']['PARENT'] = PARENT
 CALLDESC = {'ok': '檢查 (r, c) 會不會被前面的皇后攻擊', 'hours': '算速度 mid 要吃幾小時', 'farthest': 'BFS：找最遠的點和距離',
             'find': '找 root（一直往 parent 走）', 'bisect_left': '二分搜尋：第一個 ≥ x 的位置',
             'Decimal': '做出 Decimal（十進位的數）', 'quantize': '依格式和規則捨入', 'round': '內建的捨入', 'enumerate': '一次拿 index 和值'}
+
+# ───────────── Mo's algorithm ─────────────
+def add(i):
+    """Mo's: put a[i] into the window; distinct +1 when its count goes 0 → 1"""
+    g = SPECS_STATE['g']
+    x = g['a'][i]
+    g['cnt'][x] += 1
+    if g['cnt'][x] == 1:
+        g['distinct'] += 1
+
+def remove(i):
+    """Mo's: take a[i] out of the window; distinct −1 when its count goes 1 → 0"""
+    g = SPECS_STATE['g']
+    x = g['a'][i]
+    g['cnt'][x] -= 1
+    if g['cnt'][x] == 0:
+        g['distinct'] -= 1
+
+SPECS[94] = dict(caption="Mo's：兩個指標依序走到每一筆查詢，每次只加入或移除一個元素",
+    intro='a 從 index 1 開始；查詢已經依「左端點在第幾塊、塊內右端點由小到大」排好，(l, r, 原本的編號)；目前區間 [cur_l, cur_r] 一開始是空的',
+    env=dict(add=add, remove=remove), src='''
+a = [0, 2, 1, 1, 3, 1, 4, 5, 2]
+qs = [(2,5,0), (3,5,4), (2,6,1), (2,7,2), (3,8,3), (4,4,5)]
+cnt = [0, 0, 0, 0, 0, 0]
+distinct = 0
+ans = [0, 0, 0, 0, 0, 0]
+cur_l = 1
+cur_r = 0
+for l, r, idx in qs:
+    while cur_r < r:
+        cur_r += 1
+        add(cur_r)
+    while cur_l > l:
+        cur_l -= 1
+        add(cur_l)
+    while cur_r > r:
+        remove(cur_r)
+        cur_r -= 1
+    while cur_l < l:
+        remove(cur_l)
+        cur_l += 1
+    ans[idx] = distinct
+print(ans)
+''', notes={'cur_r += 1': ('右指標往右一格', True), 'cur_l -= 1': ('左指標往左一格', True), 'remove(cur_r)': ('先移除 a[cur_r]，右指標再往左', True), 'remove(cur_l)': ('先移除 a[cur_l]，左指標再往右', True), 'ans[idx] = distinct': ('區間已經是 [l, r]：答案存回原本的編號', True)})
+CALLDESC['add'] = '把 a[i] 放進區間：cnt[a[i]] += 1，從 0 變 1 時 distinct += 1'
+CALLDESC['remove'] = '把 a[i] 拿出區間：cnt[a[i]] -= 1，從 1 變 0 時 distinct -= 1'

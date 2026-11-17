@@ -29,7 +29,9 @@ web_src/src/
     ├── stepSize.tsx         # 每一步的高度都一樣，畫面不會跳
     ├── preview.ts           # 預告：比較這一步和下一步的程式碼 token，標出下一步要處理的部分
     ├── DynamicArrows.tsx
-    └── AlgoKit.tsx          # 演算法動畫用（38 號之後）：TraceView、GraphView、Seq、StackView、Table2D…
+    ├── AlgoKit.tsx          # 演算法動畫用（38 號之後）：TraceView、GraphView、Seq、StackView、Table2D…
+    ├── AlgoHelpers.tsx      # 共用的小函式（arr、rwTone、ptrLabel…）和 PointerSeq、CountBars、QueryPlot
+    └── KIT.md               # 零件目錄：每個零件和函式怎麼用
 ```
 
 ## 播放器（AnimationStepper）
@@ -127,6 +129,8 @@ web_src/src/
 `registry.tsx` 會自動找到新檔案，不用另外註冊。
 
 ## AlgoKit 零件
+
+完整的零件目錄（含 `AlgoHelpers` 的函式和範例）見 [web_src/src/animation_kit/KIT.md](web_src/src/animation_kit/KIT.md)。
 
 | 零件 | 用途 |
 |---|---|

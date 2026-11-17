@@ -89,7 +89,9 @@
 | 90 | math › 四捨五入 (Decimal) | 捨入規則：2.5 和 2.675 要往哪邊走 | 18 |
 | 91 | math › GCD 與快速冪 | 輾轉相除：gcd(48, 18)，用正方形切長方形 | 14 |
 | 92 | data sturcture(data type that not built in) › binary tree 二元樹 | 二元樹 ↔ list：index i 的子節點是 2i+1、2i+2 | 13 |
+| 93 | penter wrongs › Mo's algorithm | Mo's 查詢順序：同樣 10 筆查詢，原本順序、分塊排序、奇偶優化的指標各走多遠（手寫，不是 tracer） | 11 |
+| 94 | penter wrongs › Mo's algorithm | Mo's：兩個指標依序走到每一筆查詢，每次只加入或移除一個元素 | 107 |
 
 ## 還沒有動畫的演算法
 
-`algorithm_tree.py` 裡這些演算法還沒有對應的課和動畫：線性搜尋、插值搜尋、雜湊查找、各種排序（氣泡、插入、合併、快速、堆積、計數）、座標壓縮、雙指標、滑動視窗、Shunting-yard、分支限界、貪婪、前綴和、線段樹、莫隊（錯題本有一課）、Bellman-Ford、Floyd-Warshall、KMP、字典樹。
+`algorithm_tree.py` 裡這些演算法還沒有對應的課和動畫：線性搜尋、插值搜尋、雜湊查找、各種排序（氣泡、插入、合併、快速、堆積、計數）、座標壓縮、雙指標、滑動視窗、Shunting-yard、分支限界、貪婪、前綴和、線段樹、Bellman-Ford、Floyd-Warshall、KMP、字典樹。
