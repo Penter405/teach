@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 
 # Build first so a failed Vite build never leaves docs/index.html referring to
-# files that have already been moved to docs/assets/old.
+# files that have already been deleted. Old builds live in git history only.
 set -Eeuo pipefail
 
 repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 web_src_dir="$repo_dir/web_src"
 docs_dir="$repo_dir/docs"
 assets_dir="$docs_dir/assets"
-old_assets_dir="$assets_dir/old"
 build_dir="$(mktemp -d "${TMPDIR:-/tmp}/teach-course-build.XXXXXX")"
 
 cleanup() {
@@ -35,12 +34,12 @@ echo "Building the frontend course application..."
   npm run build -- --outDir "$build_dir"
 )
 
-echo "Moving previous JavaScript and CSS assets to assets/old..."
-mkdir -p "$old_assets_dir"
+echo "Removing previous JavaScript and CSS assets..."
+rm -rf -- "$assets_dir/old"
 shopt -s nullglob
 old_assets=("$assets_dir"/*.js "$assets_dir"/*.css)
 if ((${#old_assets[@]})); then
-  mv -- "${old_assets[@]}" "$old_assets_dir/"
+  rm -f -- "${old_assets[@]}"
 fi
 
 echo "Publishing the new build..."
