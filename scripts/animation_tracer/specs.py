@@ -535,3 +535,43 @@ print(ans)
 ''', notes={'cur_r += 1': ('右指標往右一格', True), 'cur_l -= 1': ('左指標往左一格', True), 'remove(cur_r)': ('先移除 a[cur_r]，右指標再往左', True), 'remove(cur_l)': ('先移除 a[cur_l]，左指標再往右', True), 'ans[idx] = distinct': ('區間已經是 [l, r]：答案存回原本的編號', True)})
 CALLDESC['add'] = '把 a[i] 放進區間：cnt[a[i]] += 1，從 0 變 1 時 distinct += 1'
 CALLDESC['remove'] = '把 a[i] 拿出區間：cnt[a[i]] -= 1，從 1 變 0 時 distinct -= 1'
+
+# ───────────── recursion on linear data ─────────────
+SPECS[95] = dict(caption='先加後乘：f(5,2)*1+2，每個函式吃掉自己那段，回傳 (值, 下一個位置)',
+    intro='t 是切好的 token（數字已經轉成 int），# = 結尾。一般先乘後加會得到 5；先加後乘是 3 * (1+2) = 9',
+    src='''
+def mul_expr(i):
+    v, i = add_expr(i)
+    while t[i] == '*':
+        w, i = add_expr(i + 1)
+        v = v * w
+    return v, i
+
+def add_expr(i):
+    v, i = factor(i)
+    while t[i] == '+':
+        w, i = factor(i + 1)
+        v = v + w
+    return v, i
+
+def factor(i):
+    if t[i] != 'f':
+        return t[i], i + 1
+    args = []
+    i = i + 1
+    while t[i] != ')':
+        v, i = mul_expr(i + 1)
+        args.append(v)
+    return max(args) - min(args), i + 1
+
+t = ['f','(',5,',',2,')','*',1,'+',2,'#']
+ans, end = mul_expr(0)
+''', notes={
+        'return t[i], i + 1': ('數字：自己就是答案，吃掉 1 格', True),
+        'i = i + 1': '跳過 f，i 停在 (',
+        'v, i = mul_expr(i + 1)': ('跳過 ( 或 ,；每個參數又是一個完整的算式 → 遞迴', True),
+        'args.append(v)': ('這個參數算完了，i 停在 , 或 )', True),
+        'return max(args)': 'i + 1 吃掉 )：f(...) 整段變成一個數字',
+        'v = v + w': ('+ 在內層：先算', True),
+        'v = v * w': ('* 在最外層：兩邊的 + 都算完了才乘', True),
+    })

@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y11m17d",
+    "version": "2026y11m19d",
     "language": "zh-TW"
   },
   "modules": [
@@ -8558,6 +8558,421 @@
                   "difficulty": "Hard",
                   "url": "https://leetcode.com/problems/n-queens/",
                   "description": "動畫裡的題目"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-1795054517072",
+          "title": "線性資料recursion",
+          "titleEn": "Recursion on linear data",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "no one tell you the relationship"
+            },
+            {
+              "type": "paragraph",
+              "text": "as data you get is not a->b  , b-> c,  its  a+b*c or so on,  you cant clearly know the relationship of tree"
+            },
+            {
+              "type": "paragraph",
+              "text": "換句話說：樹、圖的題目會直接告訴你「a 指向 b」。但運算式是一排攤平的字元，例如 12+f(13,2+f(8,1+2*3)) ——哪個數字屬於哪個運算、哪一段是 f 的參數，沒有人寫給你，要自己從字元裡讀出來。\n\n好消息是：這種「關係」通常藏在固定的地方。括號 ( 就是往下一層、) 就是這一層結束、, 是同一層的下一個；運算子的優先順序決定誰包住誰。"
+            },
+            {
+              "type": "image",
+              "caption": "例題 1：先加後乘與函數（APCS 2023/1 第 3 題）",
+              "imageId": 25
+            },
+            {
+              "type": "image",
+              "caption": "例題 2：運算式轉換（中序 → 後序）",
+              "imageId": 9
+            },
+            {
+              "type": "heading",
+              "text": "第一步：先寫「文法」"
+            },
+            {
+              "type": "paragraph",
+              "text": "不要一開始就想 stack 怎麼放。先用規則把「一個運算式長什麼樣子」寫下來，每一條規則之後就是一個函式，規則裡提到誰，函式就呼叫誰。\n\n這題是先加後乘，所以 + 要先算 → + 在內層；* 最後才算 → * 在最外層。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "乘法式 mul_expr",
+                  "definition": "加法式 * 加法式 * 加法式 …（優先順序最低，最外層）"
+                },
+                {
+                  "term": "加法式 add_expr",
+                  "definition": "因子 + 因子 + 因子 …"
+                },
+                {
+                  "term": "因子 factor",
+                  "definition": "一個數字，或 f( 乘法式 , 乘法式 , … )"
+                }
+              ]
+            },
+            {
+              "type": "callout",
+              "label": "遞迴從哪裡來",
+              "text": "因子裡面又出現「乘法式」：f( ) 的每個參數本身就是一個完整的運算式。所以 factor 會回頭呼叫 mul_expr —— 字串裡的樹，就是函式呼叫的樹。"
+            },
+            {
+              "type": "callout",
+              "label": "優先順序",
+              "text": "越晚算的運算放越外層。一般的 先乘除後加減：加減在外、乘除在內。這題反過來：乘在外、加在內。"
+            },
+            {
+              "type": "heading",
+              "text": "第二步：每個函式「吃掉」自己那段"
+            },
+            {
+              "type": "paragraph",
+              "text": "所有函式共用同一個 token 陣列 t。規則只有一條：\n\n函式從位置 i 開始讀，把屬於自己的 token 吃掉，回傳 (算出來的值, 下一個還沒讀的位置)。\n\n呼叫的人拿到新的 i，就從那裡接著讀。誰吃掉 )，誰就負責把 i 往後推一格，index 不會多跳也不會少跳。"
+            },
+            {
+              "type": "animation",
+              "animationId": 95,
+              "caption": "先加後乘：f(5,2)*1+2，每個函式吃掉自己那段，回傳 (值, 下一個位置)",
+              "steps": [
+                "還沒開始執行",
+                "呼叫 mul_expr(0)",
+                "呼叫 add_expr(0)",
+                "呼叫 factor(0)",
+                "t[0]：拿 index 0 的值",
+                "t[i] != 'f'：'f' != 'f'，if 不成立 → 跳過",
+                "args =：名稱 args 指向 []",
+                "i + 1：0 + 1",
+                "i =：名稱 i 指向 1",
+                "t[1]：拿 index 1 的值",
+                "t[i] != ')'：'(' != ')'，while 成立 → 進入迴圈",
+                "i + 1：1 + 1",
+                "呼叫 mul_expr(2)",
+                "呼叫 add_expr(2)",
+                "呼叫 factor(2)",
+                "t[2]：拿 index 2 的值",
+                "t[i] != 'f'：5 != 'f'，if 成立 → 進入",
+                "t[2]：拿 index 2 的值",
+                "i + 1：2 + 1",
+                "return (5, 3)：factor 結束，把 (5, 3) 交回去",
+                "v, i =：同時指向 5, 3",
+                "t[3]：拿 index 3 的值",
+                "t[i] == '+'：',' == '+'，while 不成立 → 離開迴圈",
+                "return (5, 3)：add_expr 結束，把 (5, 3) 交回去",
+                "v, i =：同時指向 5, 3",
+                "t[3]：拿 index 3 的值",
+                "t[i] == '*'：',' == '*'，while 不成立 → 離開迴圈",
+                "return (5, 3)：mul_expr 結束，把 (5, 3) 交回去",
+                "v, i =：同時指向 5, 3",
+                "args.append(v)：放到最後",
+                "t[3]：拿 index 3 的值",
+                "t[i] != ')'：',' != ')'，while 成立 → 進入迴圈",
+                "i + 1：3 + 1",
+                "呼叫 mul_expr(4)",
+                "呼叫 add_expr(4)",
+                "呼叫 factor(4)",
+                "t[4]：拿 index 4 的值",
+                "t[i] != 'f'：2 != 'f'，if 成立 → 進入",
+                "t[4]：拿 index 4 的值",
+                "i + 1：4 + 1",
+                "return (2, 5)：factor 結束，把 (2, 5) 交回去",
+                "v, i =：同時指向 2, 5",
+                "t[5]：拿 index 5 的值",
+                "t[i] == '+'：')' == '+'，while 不成立 → 離開迴圈",
+                "return (2, 5)：add_expr 結束，把 (2, 5) 交回去",
+                "v, i =：同時指向 2, 5",
+                "t[5]：拿 index 5 的值",
+                "t[i] == '*'：')' == '*'，while 不成立 → 離開迴圈",
+                "return (2, 5)：mul_expr 結束，把 (2, 5) 交回去",
+                "v, i =：同時指向 2, 5",
+                "args.append(v)：放到最後",
+                "t[5]：拿 index 5 的值",
+                "t[i] != ')'：')' != ')'，while 不成立 → 離開迴圈",
+                "max(args)：取最大",
+                "min(args)：取最小",
+                "max(args) - min(args)：5 - 2",
+                "i + 1：5 + 1",
+                "return (3, 6)：factor 結束，把 (3, 6) 交回去",
+                "v, i =：同時指向 3, 6",
+                "t[6]：拿 index 6 的值",
+                "t[i] == '+'：'*' == '+'，while 不成立 → 離開迴圈",
+                "return (3, 6)：add_expr 結束，把 (3, 6) 交回去",
+                "v, i =：同時指向 3, 6",
+                "t[6]：拿 index 6 的值",
+                "t[i] == '*'：'*' == '*'，while 成立 → 進入迴圈",
+                "i + 1：6 + 1",
+                "呼叫 add_expr(7)",
+                "呼叫 factor(7)",
+                "t[7]：拿 index 7 的值",
+                "t[i] != 'f'：1 != 'f'，if 成立 → 進入",
+                "t[7]：拿 index 7 的值",
+                "i + 1：7 + 1",
+                "return (1, 8)：factor 結束，把 (1, 8) 交回去",
+                "v, i =：同時指向 1, 8",
+                "t[8]：拿 index 8 的值",
+                "t[i] == '+'：'+' == '+'，while 成立 → 進入迴圈",
+                "i + 1：8 + 1",
+                "呼叫 factor(9)",
+                "t[9]：拿 index 9 的值",
+                "t[i] != 'f'：2 != 'f'，if 成立 → 進入",
+                "t[9]：拿 index 9 的值",
+                "i + 1：9 + 1",
+                "return (2, 10)：factor 結束，把 (2, 10) 交回去",
+                "w, i =：同時指向 2, 10",
+                "v + w：1 + 2",
+                "v =：名稱 v 指向 3",
+                "t[10]：拿 index 10 的值",
+                "t[i] == '+'：'#' == '+'，while 不成立 → 離開迴圈",
+                "return (3, 10)：add_expr 結束，把 (3, 10) 交回去",
+                "w, i =：同時指向 3, 10",
+                "v * w：3 * 3",
+                "v =：名稱 v 指向 9",
+                "t[10]：拿 index 10 的值",
+                "t[i] == '*'：'#' == '*'，while 不成立 → 離開迴圈",
+                "return (9, 10)：mul_expr 結束，把 (9, 10) 交回去",
+                "ans, end =：同時指向 9, 10"
+              ],
+              "results": [
+                "t 是切好的 token（數字已經轉成 int），# = 結尾。一般先乘後加會得到 5；先加後乘是 3 * (1+2) = 9",
+                "進入 mul_expr：i → 0，stack 多一層",
+                "進入 add_expr：i → 0，stack 多一層",
+                "進入 factor：i → 0，stack 多一層",
+                "是 'f'。算式變成 if 'f' != 'f':",
+                "跳過這個 if 區塊",
+                "args → []",
+                "得到 1。算式變成 i = 1",
+                "i → 1。跳過 f，i 停在 (",
+                "是 '('。算式變成 while '(' != ')':",
+                "往下執行第 21 行",
+                "得到 2。算式變成 v, i = mul_expr(2)",
+                "進入 mul_expr：i → 2，stack 多一層。跳過 ( 或 ,；每個參數又是一個完整的算式 → 遞迴",
+                "進入 add_expr：i → 2，stack 多一層",
+                "進入 factor：i → 2，stack 多一層",
+                "是 5。算式變成 if 5 != 'f':",
+                "往下執行第 17 行",
+                "是 5。算式變成 return (5, i + 1)",
+                "得到 3。算式變成 return (5, 3)",
+                "factor 回傳 (5, 3)，stack 少一層，回到第 9 行。數字：自己就是答案，吃掉 1 格",
+                "v → 5、i → 3",
+                "是 ','。算式變成 while ',' == '+':",
+                "跳到迴圈後面",
+                "add_expr 回傳 (5, 3)，stack 少一層，回到第 2 行",
+                "v → 5、i → 3",
+                "是 ','。算式變成 while ',' == '*':",
+                "跳到迴圈後面",
+                "mul_expr 回傳 (5, 3)，stack 少一層，回到第 21 行",
+                "v → 5、i → 3。跳過 ( 或 ,；每個參數又是一個完整的算式 → 遞迴",
+                "args 變成 [5]。這個參數算完了，i 停在 , 或 )",
+                "是 ','。算式變成 while ',' != ')':",
+                "往下執行第 21 行",
+                "得到 4。算式變成 v, i = mul_expr(4)",
+                "進入 mul_expr：i → 4，stack 多一層。跳過 ( 或 ,；每個參數又是一個完整的算式 → 遞迴",
+                "進入 add_expr：i → 4，stack 多一層",
+                "進入 factor：i → 4，stack 多一層",
+                "是 2。算式變成 if 2 != 'f':",
+                "往下執行第 17 行",
+                "是 2。算式變成 return (2, i + 1)",
+                "得到 5。算式變成 return (2, 5)",
+                "factor 回傳 (2, 5)，stack 少一層，回到第 9 行。數字：自己就是答案，吃掉 1 格",
+                "v → 2、i → 5",
+                "是 ')'。算式變成 while ')' == '+':",
+                "跳到迴圈後面",
+                "add_expr 回傳 (2, 5)，stack 少一層，回到第 2 行",
+                "v → 2、i → 5",
+                "是 ')'。算式變成 while ')' == '*':",
+                "跳到迴圈後面",
+                "mul_expr 回傳 (2, 5)，stack 少一層，回到第 21 行",
+                "v → 2、i → 5。跳過 ( 或 ,；每個參數又是一個完整的算式 → 遞迴",
+                "args 變成 [5, 2]。這個參數算完了，i 停在 , 或 )",
+                "是 ')'。算式變成 while ')' != ')':",
+                "跳到迴圈後面",
+                "回傳 5",
+                "回傳 2",
+                "得到 3。算式變成 return (3, i + 1)",
+                "得到 6。算式變成 return (3, 6)",
+                "factor 回傳 (3, 6)，stack 少一層，回到第 9 行。i + 1 吃掉 )：f(...) 整段變成一個數字",
+                "v → 3、i → 6",
+                "是 '*'。算式變成 while '*' == '+':",
+                "跳到迴圈後面",
+                "add_expr 回傳 (3, 6)，stack 少一層，回到第 2 行",
+                "v → 3、i → 6",
+                "是 '*'。算式變成 while '*' == '*':",
+                "往下執行第 4 行",
+                "得到 7。算式變成 w, i = add_expr(7)",
+                "進入 add_expr：i → 7，stack 多一層",
+                "進入 factor：i → 7，stack 多一層",
+                "是 1。算式變成 if 1 != 'f':",
+                "往下執行第 17 行",
+                "是 1。算式變成 return (1, i + 1)",
+                "得到 8。算式變成 return (1, 8)",
+                "factor 回傳 (1, 8)，stack 少一層，回到第 9 行。數字：自己就是答案，吃掉 1 格",
+                "v → 1、i → 8",
+                "是 '+'。算式變成 while '+' == '+':",
+                "往下執行第 11 行",
+                "得到 9。算式變成 w, i = factor(9)",
+                "進入 factor：i → 9，stack 多一層",
+                "是 2。算式變成 if 2 != 'f':",
+                "往下執行第 17 行",
+                "是 2。算式變成 return (2, i + 1)",
+                "得到 10。算式變成 return (2, 10)",
+                "factor 回傳 (2, 10)，stack 少一層，回到第 11 行。數字：自己就是答案，吃掉 1 格",
+                "w → 2、i → 10",
+                "得到 3。算式變成 v = 3",
+                "v → 3。+ 在內層：先算",
+                "是 '#'。算式變成 while '#' == '+':",
+                "跳到迴圈後面",
+                "add_expr 回傳 (3, 10)，stack 少一層，回到第 4 行",
+                "w → 3、i → 10",
+                "得到 9。算式變成 v = 9",
+                "v → 9。* 在最外層：兩邊的 + 都算完了才乘",
+                "是 '#'。算式變成 while '#' == '*':",
+                "跳到迴圈後面",
+                "mul_expr 回傳 (9, 10)，stack 少一層，回到第 26 行",
+                "ans → 9、end → 10"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import sys\nsys.setrecursionlimit(10000)   # f 可以包很多層，每層會用掉 3 個呼叫\n\ndef tokenize(s):\n    t = []\n    i = 0\n    while i < len(s):\n        if s[i].isdigit():\n            j = i\n            while j < len(s) and s[j].isdigit():\n                j += 1\n            t.append(int(s[i:j]))   # 多位數一次切出來\n            i = j\n        else:\n            t.append(s[i])           # f ( , ) + *\n            i += 1\n    t.append('#')                    # 結尾記號：省得每次檢查 i < len(t)\n    return t\n\ndef mul_expr(i):         # 乘法式 = 加法式 * 加法式 * …（優先順序最低，放最外層）\n    v, i = add_expr(i)\n    while t[i] == '*':\n        w, i = add_expr(i + 1)\n        v = v * w\n    return v, i\n\ndef add_expr(i):         # 加法式 = 因子 + 因子 + …\n    v, i = factor(i)\n    while t[i] == '+':\n        w, i = factor(i + 1)\n        v = v + w\n    return v, i\n\ndef factor(i):           # 因子 = 數字 或 f(乘法式, 乘法式, …)\n    if t[i] != 'f':\n        return t[i], i + 1\n    args = []\n    i = i + 1            # 跳過 f，停在 (\n    while t[i] != ')':\n        v, i = mul_expr(i + 1)   # 跳過 ( 或 ,，參數又是一個完整的算式\n        args.append(v)\n    return max(args) - min(args), i + 1   # i + 1：吃掉 )\n\nt = tokenize(input().strip())\nprint(mul_expr(0)[0])\n\n# 12+f(13,2+f(8,1+2*3),1+1*f(20,4)*f(2))*2  → 50\n# 2+3*1+2+1                                 → 20\n# f(0)                                      → 0"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "先切 token",
+                  "definition": "先把字串切成 [12, '+', 'f', '(', …]，多位數一次轉成 int。解析的時候就不用再管數字有幾位。"
+                },
+                {
+                  "term": "結尾記號 #",
+                  "definition": "最後放一個不是運算子的東西，t[i] == '*' 讀到結尾就是 False，不用每次檢查 i < len(t)。"
+                },
+                {
+                  "term": "回傳 (值, 位置)",
+                  "definition": "不用 global index，每一層自己決定吃到哪裡。呼叫完一定要接住新的 i。"
+                },
+                {
+                  "term": "時間",
+                  "definition": "O(n)：每個 token 只被讀過一次。"
+                },
+                {
+                  "term": "遞迴深度",
+                  "definition": "每多一層 f( 就多 3 層呼叫（mul_expr → add_expr → factor）。長度 500 的 f(f(f(… 會超過 Python 預設的 1000 層，記得 setrecursionlimit。"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "同一招：運算式轉換（中序 → 後序）"
+            },
+            {
+              "type": "paragraph",
+              "text": "例題 2 的優先順序是 括號 > 乘除 > 加減，所以文法是：加減式 = 乘除式 (+/- 乘除式)*；乘除式 = 因子 (*/÷ 因子)*；因子 = 運算元 或 ( 加減式 )。\n\n和例題 1 幾乎一樣，只是每一層回傳的不是數字，而是「這一段的後序」：左邊的後序 + 右邊的後序 + 運算子。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def expr(i):             # 加減：優先順序最低，最外層\n    out, i = term(i)\n    while t[i] == '+' or t[i] == '-':\n        op = t[i]\n        right, i = term(i + 1)\n        out = out + right + [op]     # 左邊 右邊 運算子\n    return out, i\n\ndef term(i):             # 乘除\n    out, i = factor(i)\n    while t[i] == '*' or t[i] == '/':\n        op = t[i]\n        right, i = factor(i + 1)\n        out = out + right + [op]\n    return out, i\n\ndef factor(i):           # 運算元 或 ( 加減式 )\n    if t[i] == '(':\n        out, i = expr(i + 1)\n        return out, i + 1            # 吃掉 )\n    return [t[i]], i + 1\n\nt = input().split() + ['#']\nprint(' '.join(expr(0)[0]))\n\n# a + b * c                → a b c * +\n# ( ( a + b ) - ( c + d ) ) * d → a b + c d + - d *"
+            },
+            {
+              "type": "callout",
+              "label": "和 stack 解法比",
+              "text": "題目說的「堆疊法」要自己管一個運算子 stack。遞迴的寫法其實也是 stack —— 只是借用 Python 的 call stack：還沒算完的那一層先存著，等裡面的回傳。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "先加後乘的題目，哪一個函式要放在最外層（最先被呼叫）？",
+                  "options": [
+                    "處理 + 的函式",
+                    "處理 * 的函式",
+                    "處理數字的函式",
+                    "都可以"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "f(5,2)*1+2 依先加後乘是多少？",
+                  "options": [
+                    "5",
+                    "9",
+                    "7",
+                    "3"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "factor 碰到 f( 時，每個參數要呼叫哪個函式？",
+                  "options": [
+                    "factor",
+                    "add_expr",
+                    "mul_expr（完整的運算式）",
+                    "不用呼叫，直接 int()"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "v, i = add_expr(i + 1) 之後，i 會停在哪裡？",
+                  "options": [
+                    "還是原來的位置",
+                    "add_expr 吃完的下一個 token",
+                    "字串的結尾",
+                    "一定停在 )"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "為什麼 tokens 最後要放一個 #？",
+                  "options": [
+                    "題目規定",
+                    "讓 t[i] 在結尾也讀得到，比較會是 False，不會 IndexError",
+                    "加速",
+                    "表示註解"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "ai-chat",
+              "title": "Coding：先加後乘與函數",
+              "subtitle": "用遞迴下降寫出 APCS 2023/1 第 3 題",
+              "difficulty": "Hard",
+              "coursePrompt": "請讓學生完成 Python Coding 題（ZeroJudge j607 先加後乘與函數）：輸入一個由數字（0 ～ 200）、+、* 和函式 f() 組成的運算式（長度 ≤ 500），依「先加後乘」計算；f(x1, x2, …) = 參數的最大值 − 最小值。範例：12+f(13,2+f(8,1+2*3),1+1*f(20,4)*f(2))*2 → 50、2+3*1+2+1 → 20、f(0) → 0。\n\n引導順序：1. 先請學生把字串切成 token（多位數要合在一起）。2. 請學生寫出文法：乘法式 = 加法式 (* 加法式)*、加法式 = 因子 (+ 因子)*、因子 = 數字 | f(乘法式, …)，並說明為什麼 * 在外層。3. 每條規則寫成一個函式，回傳 (值, 下一個位置)。4. 先做只有 + 和 * 的版本（30 分），再加上 f。若學生 index 多跳或少跳，請他用 f(5,2)*1+2 一步一步印出每個函式的 i。提醒遞迴深度要 setrecursionlimit。不要直接給答案。"
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "j607. 先加後乘與函數",
+                  "difficulty": "Hard",
+                  "url": "https://zerojudge.tw/ShowProblem?problemid=j607",
+                  "description": "這一課的例題 1"
+                },
+                {
+                  "title": "Basic Calculator II",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/basic-calculator-ii/",
+                  "description": "一般的先乘除後加減：把兩層函式的順序對調"
+                },
+                {
+                  "title": "Decode String",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/decode-string/",
+                  "description": "3[a2[c]]：[ 往下一層、] 回傳"
+                },
+                {
+                  "title": "Basic Calculator",
+                  "difficulty": "Hard",
+                  "url": "https://leetcode.com/problems/basic-calculator/",
+                  "description": "有括號和負號的加減"
                 }
               ]
             }

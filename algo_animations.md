@@ -91,6 +91,7 @@
 | 92 | data sturcture(data type that not built in) › binary tree 二元樹 | 二元樹 ↔ list：index i 的子節點是 2i+1、2i+2 | 13 |
 | 93 | penter wrongs › Mo's algorithm | Mo's 查詢順序：同樣 10 筆查詢，原本順序、分塊排序、奇偶優化的指標各走多遠（手寫，不是 tracer） | 11 |
 | 94 | penter wrongs › Mo's algorithm | Mo's：兩個指標依序走到每一筆查詢，每次只加入或移除一個元素 | 107 |
+| 95 | recursion › 線性資料recursion | 先加後乘：f(5,2)*1+2，每個函式吃掉自己那段，回傳 (值, 下一個位置)；下面畫每一層呼叫吃掉的範圍（字串裡的樹） | 96 |
 
 ## 還沒有動畫的演算法
 
