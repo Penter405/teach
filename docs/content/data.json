@@ -14096,6 +14096,30 @@
               "code": "from sys import stdin\ndef amount(string):\n    if \"0\"<=string<=\"9\":\n        return int(string)\n    if \"A\"<=string<=\"Z\":\n        return 10+ord(string)-65\n    else:\n        return 10+ord(string)-97+26\ndef legal(char):\n    if \"0\"<=char<=\"9\":\n        return True\n    if \"A\"<=char<=\"Z\":\n        return True\n    if \"a\"<=char<=\"z\":\n        return True\n    return False\n\"\"\"\nN based integer R\nfind min possible base\n\"\"\"\nfor line in stdin.read().split(\"\\n\"):\n    #if they switch line\n    if line==\"\":\n        continue\n    line=[char for char in line if legal(char)]\n    data=[]\n    #-- if cheaked is empty\n    if len(line)==0:\n        continue\n    for integer in line:\n        data.append(amount(integer))\n    large=max(data)\n    #---\n    go10=sum(data)\n    for base in range(max(2,large+1),62+1):#range -> 1,  ->  go10% (1-1)  ->  devision zero  -> use max\n        #---如果一個𝑁 進位制的數【𝑎𝑏𝑐】是(𝑁 − 1) 的倍數，則(𝑎 + 𝑏 + 𝑐) 也是(𝑁 − 1) 的倍數。\n        if False:\n            for char in data[::-1]:\n                go10+=int(char)*nb\n                nb*=base\n            #--\n        if go10%(base-1)==0:\n            print(base)\n            break\n    else:\n        print(\"such number is impossible!\")"
             }
           ]
+        },
+        {
+          "id": "lesson-1795067882367",
+          "title": "整數分拆",
+          "titleEn": "",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "image",
+              "caption": "整數分拆",
+              "text": "New Lesson",
+              "imageId": 26
+            },
+            {
+              "type": "paragraph",
+              "text": "integer  ->  singa(integers)   -> 相乘every integers  -> 答案    -> 找最大的答案"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "25->5\n5-> 2+3 -> 2*3=6 \n任何 >=5 都拆成 3+3+3..x(2 or 1 or 0)\n4=2+2=2*2=4   #4 拆成 2 + 2沒有必要\n3=3\n3=2+1 -> 2*1=1  任何數字拆成 1 都會變小",
+              "text": "5->5\n5-> 2+3 -> 2*3=6 \n任何 >=5 都拆成 3+3+3..x(2 or 1 or 0)"
+            }
+          ]
         }
       ]
     }
