@@ -27,14 +27,18 @@ export type HwView = {
   ioBar: boolean;
 };
 
-const KEY = 'teach_hw_view_v2';
+const KEY = 'teach_hw_view_v3';
+const V2_KEY = 'teach_hw_view_v2';
 const OLD_KEY = 'teach_hw_view';
-const DEFAULT_VIEW: HwView = { memBinary: false, cpuBinary: false, memTable: false, bitStyle: 'digits', moreRegs: false, asmLevel: false, threeCol: false, ioBar: false };
+const DEFAULT_VIEW: HwView = { memBinary: false, cpuBinary: false, memTable: false, bitStyle: 'digits', moreRegs: false, asmLevel: false, threeCol: true, ioBar: false };
 
 function load(): HwView {
   try {
     const v = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (v && typeof v.memBinary === 'boolean') return { ...DEFAULT_VIEW, ...v };
+    // v2 saved 三欄排列 = off for everyone (it used to be the default); start v3 with it on
+    const v2 = JSON.parse(localStorage.getItem(V2_KEY) || 'null');
+    if (v2 && typeof v2.memBinary === 'boolean') return { ...DEFAULT_VIEW, ...v2, threeCol: true };
     // carry over the old easy / medium / hard choice
     const old = JSON.parse(localStorage.getItem(OLD_KEY) || 'null');
     if (old?.mode === 'medium') return { ...DEFAULT_VIEW, memBinary: true, cpuBinary: true };

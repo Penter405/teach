@@ -74,9 +74,10 @@ export default function MyAnim({ step }: { step: number }) {
 
 | 零件 | 用法 |
 |---|---|
-| `TraceView` | `<TraceView T={T} step={step} hide={['idx']} show={[…]} noStack>{(st, s) => 圖}</TraceView>`。自動畫：現在在做什麼、執行後、程式碼（目前那行換成算到一半）、動作卡片、純量變數、call stack、螢幕。`hide` 拿掉不想顯示的變數；`show` 只顯示這些 |
+| `TraceView` | `<TraceView T={T} step={step} hide={['idx']} show={[…]} noStack>{(st, s) => 圖}</TraceView>`。自動畫：現在在做什麼、執行後、程式碼（目前那行換成算到一半）、動作卡片、純量變數、call stack、螢幕。`hide` 拿掉不想顯示的變數；`show` 只顯示這些。排版（`index.css` 的 `.trace-grid`）：長的放在短的旁邊，不讓兩個長的疊在一起——窄：程式碼 → call stack／動作／變數 → 圖；中：圖 + call stack／動作／變數 ｜ 程式碼（圖比程式碼高時，call stack 那些改放程式碼下面）；很寬：圖 ｜ 程式碼 ｜ call stack／動作／變數。程式碼太寬（超過 70%）就整個排成一欄 |
 | `AlgoBoard` | 手寫動畫的外框：`<AlgoBoard now="…" post="…" wide>…</AlgoBoard>` |
 | `Stage` | 有標題的一區：`<Stage title="dp" right={<span>…</span>}>…</Stage>`。注意標題會轉成大寫 |
+| `FitWidth` | `<FitWidth>寬的圖</FitWidth>`：欄位不夠寬時把圖等比例縮小（不會放大），不用左右捲動。固定寬度的自訂圖用它（見 95） |
 | `Split` | 兩區左右並排（窄螢幕上下） |
 | `Note` | 一段說明框，`tone="sky" | "emerald" | "rose" | "amber"` |
 | `VarRow` | `name = value` 小標籤，`hot` 會亮 |
@@ -162,7 +163,7 @@ export default function MyAnim({ step }: { step: number }) {
 
 | 零件 | 用途 |
 |---|---|
-| `Board` | 硬體動畫的外框 |
+| `Board` | 硬體動畫的外框。預設「三欄排列」：CPU ｜ DRAM ｜ Python（板子寬 ≥ 860px；更窄時 CPU + Python 在上、DRAM 在下）。開關存在 localStorage `teach_hw_view_v3` |
 | `CodePanel`、`Line`、`Tok` | 程式碼；`Line pc` = 正在跑的那行，`Tok s="active" | "done" | "dim"`。**預告**靠比較兩步的 `Tok` 標出下一步要處理的地方，所以手寫動畫的程式碼也要用它們 |
 | `CPU`、`Bus`、`RAM`、`Screen`、`Keyboard`、`Buffer` | 機器的各部分 |
 | `Bits`、`Tag`、`Gate` | 二進位、標籤、邏輯閘 |

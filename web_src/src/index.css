@@ -73,3 +73,44 @@
   background: rgba(251, 191, 36, 0.18);
   color: #fde68a;
 }
+
+/* TraceView layout (the board is a size container).
+   Rule: a tall part sits next to short parts, never two tall parts on top of each other.
+   narrow: code, then stack / action / vars, then the drawing.
+   wide:   drawing + stack / action / vars on the left | code on the right.
+   widest: drawing | code | stack / action / vars. */
+.trace-grid {
+  display: grid;
+  gap: 0.75rem;
+  align-items: start;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "code" "side" "draw";
+}
+.trace-grid > [data-area='code'] { grid-area: code; }
+.trace-grid > [data-area='side'] { grid-area: side; }
+.trace-grid > [data-area='draw'] { grid-area: draw; }
+@container (min-width: 44rem) {
+  .trace-grid {
+    grid-template-columns: minmax(0, 1fr) fit-content(70%);
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "draw code" "side code";
+  }
+  .trace-grid > [data-area='code'] { min-width: 22rem; }
+}
+@container (min-width: 84rem) {
+  .trace-grid {
+    grid-template-columns: minmax(0, 1fr) fit-content(45%) minmax(14rem, 20rem);
+    grid-template-rows: auto;
+    grid-template-areas: "draw code side";
+  }
+}
+/* two columns, drawing taller than the code: stack / action / vars go under the code instead */
+@container (min-width: 44rem) and (max-width: 83.99rem) {
+  .trace-grid[data-side='code'] { grid-template-areas: "draw code" "draw side"; }
+}
+/* the code is too wide to share the row: everything in one column */
+.trace-grid[data-one-col='1'] {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: none;
+  grid-template-areas: "code" "side" "draw";
+}

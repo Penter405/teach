@@ -4,13 +4,13 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import T from './trace/95';
-import { TraceView, Stage, ValueCell, Note, type CellTone, type TraceStep } from '../animation_kit/AlgoKit';
+import { TraceView, Stage, ValueCell, Note, FitWidth, type CellTone, type TraceStep } from '../animation_kit/AlgoKit';
 import { arr, toneClass } from '../animation_kit/AlgoHelpers';
 
 const ROW_NAME = ['mul_expr', 'add_expr', 'factor']; // the call chain always goes mul → add → factor → mul …
-const CELL = 44;
-const GAP = 6;
-const LABEL = 72;
+const CELL = 36;
+const GAP = 4;
+const LABEL = 52;
 
 type Span = { depth: number; start: number; end: number; value?: string; tone: CellTone; key: string };
 
@@ -65,19 +65,19 @@ export default function LinearRecursionAnim({ step }: { step: number }) {
         return (
           <>
             <Stage title="token 和每一層呼叫吃掉的範圍" right={args && <span className="font-mono text-xs text-slate-300">args = [{args.join(', ')}]</span>}>
-              <div className="mx-auto w-fit max-w-full overflow-x-auto overflow-y-hidden">
+              <FitWidth>
                 <div className="relative" style={{ width }}>
                   {/* tokens */}
-                  <div className="flex gap-1.5" style={{ paddingLeft: LABEL }}>
+                  <div className="flex gap-1" style={{ paddingLeft: LABEL }}>
                     {t.map((v, k) => {
                       const tone: CellTone = k === reading ? 'active' : v === '#' ? 'dim' : cur !== undefined && k < cur ? 'blue' : 'normal';
-                      return <ValueCell key={k} value={String(v)} tone={tone} top={`[${k}]`} bottom={k === cur ? '▲ i' : undefined} />;
+                      return <ValueCell key={k} value={String(v)} tone={tone} top={`[${k}]`} bottom={k === cur ? '▲ i' : undefined} size="sm" />;
                     })}
                   </div>
                   {/* one row per call depth */}
                   <div className="relative mt-1" style={{ height: depth * 30 }}>
                     {Array.from({ length: depth }, (_, d) => (
-                      <span key={d} className="absolute left-0 font-mono text-[10px] leading-[26px] text-slate-500" style={{ top: d * 30 }}>
+                      <span key={d} className="absolute left-0 font-mono text-[9px] leading-[26px] text-slate-500" style={{ top: d * 30 }}>
                         {ROW_NAME[d % 3]}
                       </span>
                     ))}
@@ -99,7 +99,7 @@ export default function LinearRecursionAnim({ step }: { step: number }) {
                     })}
                   </div>
                 </div>
-              </div>
+              </FitWidth>
             </Stage>
             <Note tone="sky">
               一列 = 一層呼叫。黃 = 正在跑、藍 = 等下面那層回傳、綠 = 已經回傳（寫著回傳的值）。

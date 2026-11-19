@@ -25,6 +25,32 @@ export const AlgoBoard = ({ now, post, children, wide = false }: { now?: string;
   </div>
 );
 
+/** Shrinks its content (never enlarges) so a wide drawing fits its column instead of scrolling sideways. */
+export const FitWidth = ({ children }: { children: React.ReactNode }) => {
+  const outer = React.useRef<HTMLDivElement>(null);
+  const inner = React.useRef<HTMLDivElement>(null);
+  const [fit, setFit] = React.useState({ scale: 1, h: 0 });
+  React.useLayoutEffect(() => {
+    const o = outer.current, i = inner.current;
+    if (!o || !i) return;
+    const measure = () => {
+      const scale = Math.min(1, o.clientWidth / Math.max(1, i.scrollWidth));
+      const h = i.offsetHeight * scale;
+      setFit((f) => (Math.abs(f.scale - scale) < 0.005 && Math.abs(f.h - h) < 1 ? f : { scale, h }));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(o);
+    ro.observe(i);
+    return () => ro.disconnect();
+  }, []);
+  return (
+    <div ref={outer} className="w-full overflow-hidden" style={fit.scale < 1 ? { height: fit.h } : undefined}>
+      <div ref={inner} className="mx-auto w-max origin-top-left" style={fit.scale < 1 ? { transform: `scale(${fit.scale})` } : undefined}>{children}</div>
+    </div>
+  );
+};
+
 /** A titled area for the drawing (array, grid, tree …). */
 export const Stage = ({ title, children, right }: { title?: string; children: React.ReactNode; right?: React.ReactNode }) => (
   <div className="w-full rounded-xl border border-slate-800 bg-slate-900/70 p-3">
@@ -410,36 +436,63 @@ export const TraceView = ({ T, step, show, hide = [], children, noStack = false 
       {st.out.length ? st.out.map((l, i) => <div key={i}>{l}</div>) : <span className="text-slate-500">（空的）</span>}
     </div>
   );
-  const codeSide = (
+  const stack = usesStack && (
+    <Stage title={recursive ? 'call stack（上面是正在跑的）' : '函式呼叫'}>
+      <StackView width="w-52" empty="（沒有函式在跑）" items={st.stack.map((f, i) => ({
+        v: `${f.fn}(${Object.values(f.args).join(', ')})`,
+        tone: i === st.stack.length - 1 ? (st.kind === 'return' || st.kind === 'end' ? 'yes' : 'active') : 'normal',
+      }))} />
+    </Stage>
+  );
+  const facts = (
     <>
-      {/* code | call stack side by side; under each other once the drawing takes the left half */}
-      <div className={`grid w-full gap-3 ${usesStack ? '@xl:grid-cols-[1fr_auto] @4xl:grid-cols-1' : ''}`}>
-        <TraceCode code={T.code} st={st} first={s === 0} />
-        {usesStack && (
-          <Stage title={recursive ? 'call stack（上面是正在跑的）' : '函式呼叫'}>
-            <StackView width="w-52" empty="（沒有函式在跑）" items={st.stack.map((f, i) => ({
-              v: `${f.fn}(${Object.values(f.args).join(', ')})`,
-              tone: i === st.stack.length - 1 ? (st.kind === 'return' || st.kind === 'end' ? 'yes' : 'active') : 'normal',
-            }))} />
-          </Stage>
-        )}
-      </div>
       <ActionCard st={st} s={s} />
       {names.length > 0 && <TraceVars st={st} s={s} names={names} />}
     </>
   );
   const hasDrawing = drawing !== undefined && drawing !== null && drawing !== false;
+  // two columns: stack / action / vars go under whichever of code / drawing is shorter
+  // (tallest drawing seen so far, so the parts don't hop between steps)
+  const codeRef = React.useRef<HTMLDivElement>(null);
+  const drawRef = React.useRef<HTMLDivElement>(null);
+  const tallestDraw = React.useRef(0);
+  const [sideUnder, setSideUnder] = React.useState<'draw' | 'code'>('draw');
+  // code wider than its column (it would scroll sideways): one column instead
+  const codeWidth = React.useRef(0);
+  const [oneCol, setOneCol] = React.useState(false);
+  React.useLayoutEffect(() => {
+    if (!hasDrawing || !codeRef.current || !drawRef.current) return;
+    tallestDraw.current = Math.max(tallestDraw.current, drawRef.current.offsetHeight);
+    const next = codeRef.current.offsetHeight >= tallestDraw.current ? 'draw' : 'code';
+    if (next !== sideUnder) setSideUnder(next);
+    const panel = codeRef.current.firstElementChild as HTMLElement | null;
+    const grid = codeRef.current.parentElement;
+    if (panel && grid) {
+      if (panel.scrollWidth > panel.clientWidth + 2) codeWidth.current = Math.max(codeWidth.current, panel.scrollWidth);
+      const want = codeWidth.current > grid.clientWidth * 0.7;
+      if (want !== oneCol) setOneCol(want);
+    }
+  });
   return (
     <div className="w-full flex flex-col items-center gap-3 font-sans">
       <AlgoBoard now={s === 0 ? '還沒開始執行' : st.pre} post={st.post} wide={hasDrawing}>
         {hasDrawing ? (
-          /* wide: drawing on the left, the running code on the right; narrow: code first, drawing below */
-          <div className="grid w-full items-start gap-3 @4xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-            <div className="flex min-w-0 flex-col gap-3">{codeSide}</div>
-            <div className="flex min-w-0 flex-col gap-3 @4xl:order-first">{drawing}{screen}</div>
+          /* layout in index.css (.trace-grid): the tall code always sits beside shorter parts */
+          <div className="trace-grid w-full" data-side={sideUnder} data-one-col={oneCol ? '1' : undefined}>
+            <div ref={codeRef} data-area="code" className="min-w-0"><TraceCode code={T.code} st={st} first={s === 0} /></div>
+            <div data-area="side" className="flex min-w-0 flex-col gap-3">{stack}{facts}</div>
+            <div ref={drawRef} data-area="draw" className="flex min-w-0 flex-col gap-3">{drawing}{screen}</div>
           </div>
         ) : (
-          <>{codeSide}{screen}</>
+          <>
+            {/* code | call stack side by side when there is room */}
+            <div className={`grid w-full gap-3 ${usesStack ? '@xl:grid-cols-[1fr_auto]' : ''}`}>
+              <TraceCode code={T.code} st={st} first={s === 0} />
+              {stack}
+            </div>
+            {facts}
+            {screen}
+          </>
         )}
       </AlgoBoard>
     </div>

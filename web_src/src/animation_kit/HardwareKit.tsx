@@ -437,7 +437,7 @@ export const Board = ({ children, now }: { children: React.ReactNode; now?: stri
     </div>
   ) : null;
 
-  const threeCol = view.threeCol && w >= 1100;
+  const threeCol = view.threeCol && w >= 860; // below this DRAM gets too narrow
   // wide boards: hardware (CPU → bus → DRAM) on the left, the Python code on the right
   const layout: 'three' | 'side' | 'split' | 'stack' = w < 700 ? 'stack' : threeCol ? 'three' : w >= 960 ? 'side' : 'split';
   const codeCol = (cls: string) => <SlotColumn col="code" className={`flex flex-col gap-3 min-w-0 ${cls}`}>{code}</SlotColumn>;
@@ -446,11 +446,11 @@ export const Board = ({ children, now }: { children: React.ReactNode; now?: stri
   if (layout === 'three' && hw) {
     body = (
       <div className="flex flex-row items-stretch w-full">
-        {cpu && <div className="flex shrink-0 w-[23rem]">{cpu}</div>}
-        {busEl ?? <div className="w-3" />}
+        {cpu && <div className="flex shrink-0 w-[clamp(14rem,25%,23rem)]">{cpu}</div>}
+        {busEl ? <div className="flex w-[56px] shrink-0 items-center">{busEl}</div> : <div className="w-3" />}
         {ramEl && <div className="flex min-w-0 flex-1">{ramEl}</div>}
         <div className="w-3 shrink-0" />
-        {codeCol('w-[26rem] shrink-0')}
+        {codeCol('w-max min-w-[15rem] max-w-[42%] shrink-0')}
       </div>
     );
   } else if (layout === 'side' && hw) {
