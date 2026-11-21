@@ -9,7 +9,7 @@ For each id it
   3. updates every lesson block in docs/content/data.json with that animationId:
      steps = 預告 (what each action will do), results = 執行後 (what it left), caption
 """
-import json, os, sys
+import json, os, re, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..'))
 sys.path.insert(0, HERE)
@@ -28,10 +28,13 @@ def trace(i):
         at = src.find(key)
         assert at >= 0, f'{i}: note key not found in code: {key!r}'
         notes[src[:at].count('\n') + 1] = txt
-    t = Tracer(src, env=dict(sp.get('env', {})), notes=notes, intro=sp['intro'], max_steps=600)
+    t = Tracer(src, env=dict(sp.get('env', {})), notes=notes, intro=sp['intro'], max_steps=600, pseudo=sp.get('pseudo'))
     t.calldesc = {**specs.CALLDESC, **sp.get('calldesc', {})}
     specs.SPECS_STATE['g'] = t.g
-    return dict(id=i, caption=sp['caption'], code=t.lines, steps=t.run())
+    d = dict(id=i, caption=sp['caption'], code=t.lines, steps=t.run())
+    if t.pseudo:   # 中文步驟: the same lines, {slots} shown as their code when not running
+        d['pseudo'] = [re.sub(r'\{([^{}]+)\}', r'\1', ln) for ln in t.pseudo]
+    return d
 
 
 def main():

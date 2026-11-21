@@ -472,6 +472,25 @@ while path:
     x = path.pop()
     ans[x] = 1 + ans[nxt[x]]
     state[x] = 2
+''', pseudo='''
+nxt ← 每個點的下一個點
+ans ← 全部先放 0
+state ← 全部先放 0（0 沒走過、1 走到一半、2 完成）
+path ← 空的（這次走過的點）
+u ← 4（從 4 出發）
+當 u 還沒走過（{state[u]} = 0）就重複：
+    把 u 標成走到一半：state[u] ← 1
+    把 u 放進 path
+    u ← 下一個點 {nxt[u]}
+環長 size ← {len(path) - path.index(u)}（path 的長度 − u 在 path 的位置）
+重複 {size} 次（環上的點）：
+    x ← 從 path 最後拿出一個 {path.pop()}
+    ans[x] ← 環長 {size}
+    state[x] ← 2（完成）
+當 path 還有點（{path}）就重複：
+    x ← 從 path 最後拿出一個 {path.pop()}
+    ans[x] ← {1 + ans[nxt[x]]}（1 + 下一個點的答案）
+    state[x] ← 2（完成）
 ''', notes={'state[u] = 1': ('標記「走到一半」', True), 'size =': '碰到走到一半的點 → 找到環', 'ans[x] = size': ('環上的點：答案 = 環長', True), 'ans[x] = 1 +': ('環外的點：1 + 下一個點的答案', True)})
 
 SPECS[61] = dict(caption='bitmask：mask = 5 (101₂) 代表選哪些數', intro='nums = [3, 5, 2]；第 i 位是 1 → 選 nums[i]', src='''

@@ -82,10 +82,22 @@ class UserFn:
 
 
 class Tracer:
-    def __init__(self, src, env=None, watch=None, notes=None, intro='程式還沒開始跑', max_steps=400):
+    def __init__(self, src, env=None, watch=None, notes=None, intro='程式還沒開始跑', max_steps=400, pseudo=None):
         self.src = src.strip('\n')
         self.lines = self.src.split('\n')
         self.tree = ast.parse(self.src)
+        # every expression remembers its own source text (survives deepcopy and marking), for pseudo-code slots
+        for node in ast.walk(self.tree):
+            if isinstance(node, ast.expr): node._src = ast.unparse(node)
+        self.pseudo = None
+        if pseudo is not None:
+            pl = pseudo.strip('\n').split('\n')
+            assert len(pl) == len(self.lines), f'pseudo has {len(pl)} lines, code has {len(self.lines)}'
+            for i, ln in enumerate(pl):
+                for slot in re.findall(r'\{([^{}]+)\}', ln):
+                    on_line = [n for n in ast.walk(self.tree) if getattr(n, '_src', None) == slot and getattr(n, 'lineno', 0) == i + 1]
+                    assert on_line, f'pseudo line {i + 1}: {{{slot}}} is not an expression on code line {i + 1}: {self.lines[i]!r}'
+            self.pseudo = pl
         self.g = dict(env or {})
         self.g.setdefault('deque', deque)
         self.watch = watch            # names to snapshot (None = every simple variable)
@@ -110,6 +122,9 @@ class Tracer:
         SID += 1
         m = f'⁣{SID}⁣'
         self.vals[m] = rp(value)
+        if hasattr(node, '_src'):
+            fr = self.frames[-1] if self.frames else self.top
+            fr.setdefault('slotvals', {})[node._src] = rp(value)
         node.__class__ = ast.Name
         node.id = m
         node.ctx = ast.Load()
@@ -135,6 +150,42 @@ class Tracer:
         if isinstance(st, (ast.FunctionDef,)): return line_src
         if isinstance(st, ast.Return): return 'return' + ('' if st.value is None else ' ' + ast.unparse(st.value))
         return ast.unparse(st)
+
+    def pseudo_now(self, line):
+        """the pseudo-code line with the values of this moment: {expr} slots show what Python has computed so far"""
+        if not self.pseudo: return None
+        fr = self.frames[-1] if self.frames else self.top
+        st = fr.get('stmt')
+        text = self.pseudo[line - 1].strip()
+        live = st is not None and getattr(st, 'lineno', None) == line
+        # header part only (if / while / for test), so a slot never matches code inside the body
+        roots = [st.test] if isinstance(st, (ast.If, ast.While)) else [st.target, st.iter] if isinstance(st, ast.For) else [st] if st is not None else []
+
+        def find(slot):
+            for r in roots:
+                for n in ast.walk(r):
+                    if getattr(n, '_src', None) == slot and getattr(n, 'lineno', line) == line: return n
+            return None
+
+        def sub(mo):
+            slot = mo.group(1)
+            if not live: return slot
+            n = find(slot)
+            if isinstance(n, ast.Name) and n.id not in self.vals:          # a plain name: show what it holds now
+                try: return rp(self.lookup(n.id))
+                except Exception: return slot
+            if n is not None: return self.render(ast.unparse(n))            # partly computed, newest value in ⟦ ⟧
+            v = fr.get('slotvals', {}).get(slot)
+            if v is not None: return v                                     # inside a part that is already one value
+            if re.fullmatch(r'[A-Za-z_]\w*', slot):                         # a plain name: show what it holds now
+                try: return rp(self.lookup(slot))
+                except Exception: return slot
+            return slot
+        out = re.sub(r'\{([^{}]+)\}', sub, text)
+        # if / while: once the whole condition is one value, show it at the end (like `while ⟦True⟧:`)
+        if live and isinstance(st, (ast.If, ast.While)) and isinstance(st.test, ast.Name) and st.test.id in self.vals:
+            out = out.rstrip('：:') + ' → ' + self.render(st.test.id) + '：'
+        return out
 
     def expr_now(self, plain=False):
         fr = self.frames[-1] if self.frames else self.top
@@ -165,7 +216,9 @@ class Tracer:
                 post = post + '。' + (note[0] if every else note)
                 self.noted.add(line)
         expr = self.expr_now()
+        pexpr = self.pseudo_now(line)
         vars_, stack = self.snapshot()
+        if pexpr is not None: extra['pexpr'] = pexpr
         self.steps.append(dict(pre=pre, post=post, line=line, expr=expr, kind=kind, vars=vars_, stack=stack, out=list(self.out),
                                reads=list(self.reads), act=self.act, **extra))
         self.cur_sid = None
@@ -360,6 +413,7 @@ class Tracer:
         fr = self.frames[-1] if self.frames else self.top
         fr['stmt'] = copy.deepcopy(st)
         fr['line'] = st.lineno
+        fr['slotvals'] = {}
         return fr['stmt']
 
     def path_of(self, node):

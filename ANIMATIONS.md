@@ -44,8 +44,10 @@ web_src/src/
 | 回到開頭 | ⏮ | Home |
 | 跳到某一步 | 上方的小圓點 | |
 | 全螢幕放大 | 放大鈕 | |
+| 程式碼：Python ↔ 中文步驟 | 按鈕下面的切換 | |
 
 - 播放器會先把每一步都畫一次（看不見），量出最高的那一步，整個動畫就固定成那個高度，所以步與步之間不會跳動。
+- **程式碼：Python ↔ 中文步驟**（pseudo code）：每支動畫下面都有這個切換，所有動畫共用一個設定（存在 localStorage `teach_code_lang`，`animation_kit/codeLang.tsx`）。中文步驟和 Python **一行對一行、縮排一樣**，所以目前那一行、預告、動作卡片都照樣運作；目前那一行一樣會顯示算到一半的值（`⟦ ⟧`），像 Python 在跑。還沒寫中文步驟的動畫切過去會顯示 Python，旁邊提示一行。哪些動畫有中文步驟：`registry.tsx` 的 `hasPseudo(id)`（trace 有 `pseudo`，或 N.tsx 有 `export const HAS_PSEUDO = true`）。
 - **預告**：有 `results` 時，顯示 `steps[下一步]`。程式碼面板裡下一步要處理的 token 也會被標起來（`preview.ts` 比較兩步的 `Tok`）。
 
 ## 三種動畫
@@ -82,6 +84,7 @@ web_src/src/
 | `pre` / `post` | 預告 / 執行後的文字 |
 | `line` | 第幾行（從 1 開始） |
 | `expr` | 那一行做完這個動作之後的樣子，`⟦ ⟧` 是剛產生的值 |
+| `pexpr` | 同一行的中文步驟，做完這個動作之後的樣子（spec 有 `pseudo` 才有） |
 | `kind` | `binop`、`compare`、`subscript`、`call`、`call_user`、`assign`、`if`、`while`、`for`、`return`… |
 | `vars` | 這一步之後所有變數的值（JSON） |
 | `act` | 動作卡片要畫的東西（運算元、運算子、結果、要存進哪個變數…） |
@@ -94,7 +97,7 @@ web_src/src/
 
 ### 演算法動畫（建議）
 
-1. 在 `scripts/animation_tracer/specs.py` 加一個 `SPECS[N] = dict(caption=…, intro=…, src='''…''', notes={…})`。
+1. 在 `scripts/animation_tracer/specs.py` 加一個 `SPECS[N] = dict(caption=…, intro=…, src='''…''', notes={…})`。要中文步驟就再加 `pseudo='''…'''`（寫法見 tracer 的 README）。
 2. 執行 `python scripts/animation_tracer/run.py N`，確認步數（建議 120 步以內，太多就把例子改小）。
 3. 新增 `web_src/src/animations/N.tsx`：
 
@@ -125,6 +128,7 @@ web_src/src/
 1. 新增 `web_src/src/animations/N.tsx`，`export default function ({ step }: { step: number })`，用 `clampStep(step, 步數)`。
 2. 在 `data.json` 放動畫區塊，`steps`（和 `results`）的數量要等於步數。
 3. 要讓預告標出程式碼，程式碼要用 `HardwareKit` 的 `CodePanel` / `Line` / `Tok` 畫。
+4. 中文步驟：每個 `<Line>` 給 `pseudo={…}`（同一行的中文步驟），`<CodePanel pseudo>`，N.tsx 加 `export const HAS_PSEUDO = true`。目前那一行要顯示算到一半的值，就兩種都自己算好、用 `codeTokens('… ⟦5⟧ …')` 畫（見 105）。
 
 `registry.tsx` 會自動找到新檔案，不用另外註冊。
 

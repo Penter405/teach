@@ -9,7 +9,8 @@ import { CpuBridge, CpuBridgeProvider } from './animation_kit/HardwareKit';
 import { ContentBlock, QuizQuestion, PracticeProblem } from './courseData';
 import { AIChat } from './AIChat';
 import { MatchingExercise } from './MatchingExercise';
-import { getAnimationRenderer } from './animation_kit/registry';
+import { getAnimationRenderer, hasPseudo } from './animation_kit/registry';
+import { CodeLangSwitch, useCodeLang } from './animation_kit/codeLang';
 
 interface LessonContentProps {
   key?: React.Key;
@@ -141,12 +142,22 @@ function RenderCodeBlock({ block }: { block: ContentBlock }) {
     return result;
   };
 
-  const codeHtml = highlightPython(block.code || '');
+  // 中文步驟: same switch as the animations; only blocks that have `pseudo`
+  const zh = useCodeLang() === 'pseudo' && !!block.pseudo;
+  const highlightPseudo = (text: string) => {
+    let result = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    result = result.replace(/（[^（）\n]*）/g, (m) => `<span class="text-slate-400">${m}</span>`);   // （說明）
+    result = result.replace(/(^|\s)(如果|否則|當|就重複|對每個|回傳|換下一個起點|印出)/g, '$1<span class="text-purple-400">$2</span>');
+    result = result.replace(/←/g, '<span class="text-amber-300">←</span>');
+    return result;
+  };
+  const codeHtml = zh ? highlightPseudo(block.pseudo!) : highlightPython(block.code || '');
 
   return (
     <div className="bg-slate-900 rounded-xl overflow-hidden shadow-sm mb-6 border border-slate-800">
-      <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/10">
-        <span className="font-mono text-xs font-semibold text-purple-300 tracking-wider uppercase">{block.language || 'python'}</span>
+      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 bg-white/5 border-b border-white/10">
+        <span className="font-mono text-xs font-semibold text-purple-300 tracking-wider uppercase">{zh ? '中文步驟' : block.language || 'python'}</span>
+        {block.pseudo && <CodeLangSwitch dark />}
         <div className="flex gap-1.5">
           <div className="w-2.5 h-2.5 rounded-full bg-red-400 opacity-80" />
           <div className="w-2.5 h-2.5 rounded-full bg-amber-400 opacity-80" />
@@ -547,7 +558,7 @@ function RenderImage({ block }: { block: ContentBlock }) {
 // ── ANIMATIONS ──
 // ═══════════════════════════════════════════════
 /** heading = the block's `title`: one line on top of the card saying what this animation is about */
-function AnimationStepper({ steps, results, children, title, heading }: { steps: string[]; results?: string[]; children: (step: number) => React.ReactNode; title?: string; heading?: string }) {
+function AnimationStepper({ steps, results, children, title, heading, pseudo = false }: { steps: string[]; results?: string[]; children: (step: number) => React.ReactNode; title?: string; heading?: string; pseudo?: boolean }) {
   const safeSteps = steps?.length ? steps : [''];
   const total = safeSteps.length;
   const [step, setStepRaw] = useState(0);
@@ -582,7 +593,8 @@ function AnimationStepper({ steps, results, children, title, heading }: { steps:
   }, []);
   const ghostRefs = React.useRef<(HTMLDivElement | null)[]>([]);
   const hwView = useHwView();
-  React.useEffect(() => { setMeasuring(true); }, [hwView.memBinary, hwView.cpuBinary, hwView.memTable, hwView.bitStyle, hwView.moreRegs, hwView.asmLevel, hwView.threeCol, hwView.ioBar, total]);
+  const codeLang = useCodeLang();   // Python ↔ 中文步驟 changes line widths / heights → measure again
+  React.useEffect(() => { setMeasuring(true); }, [codeLang, hwView.memBinary, hwView.cpuBinary, hwView.memTable, hwView.bitStyle, hwView.moreRegs, hwView.asmLevel, hwView.threeCol, hwView.ioBar, total]);
   React.useEffect(() => {
     const el = stageRef.current;
     if (!el) return;
@@ -674,7 +686,8 @@ function AnimationStepper({ steps, results, children, title, heading }: { steps:
     </div>
   );
 
-  const controls = (
+  const controls = (dark = false) => (
+    <div className="flex flex-col items-center gap-2">
     <div className="flex flex-wrap justify-center gap-3">
       <button onClick={() => setStep(0)} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Reset"><SkipBack size={16} /></button>
       <button onClick={prev} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Previous"><ChevronRight size={16} className="rotate-180" /></button>
@@ -687,6 +700,9 @@ function AnimationStepper({ steps, results, children, title, heading }: { steps:
         <Eye size={14} /> 預告
       </button>
       <button onClick={next} disabled={step >= total - 1} className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 transition-colors font-medium text-sm flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"><Play size={14} /> 執行</button>
+    </div>
+    {/* Python ↔ 中文步驟: one setting for every animation */}
+    <CodeLangSwitch available={pseudo} dark={dark} />
     </div>
   );
 
@@ -747,7 +763,7 @@ function AnimationStepper({ steps, results, children, title, heading }: { steps:
         {progress}
         {captions('text-sm text-slate-600 dark:text-slate-400 font-medium text-center mb-1 min-h-[40px]', false)}
         {previewNote('text-sm font-bold text-amber-600 dark:text-amber-300 text-center mb-4 min-h-[20px]')}
-        {controls}
+        {controls()}
       </div>
 
       <ZoomViewer
@@ -761,7 +777,7 @@ function AnimationStepper({ steps, results, children, title, heading }: { steps:
             {progress}
             {captions('text-base font-medium text-center mb-1 min-h-[28px]', true)}
             {previewNote('text-sm font-bold text-amber-300 text-center mb-3 min-h-[20px]')}
-            {controls}
+            {controls(true)}
             <p className="hidden md:block mt-2 text-center text-xs text-slate-500">→ 執行 · ↓ 預告 · ← 上一步</p>
           </div>
         }
@@ -782,7 +798,7 @@ function RenderAnimation({ block }: { block: ContentBlock }) {
 
   return (
     <div>
-      <AnimationStepper steps={steps} results={block.results} title={block.caption} heading={block.title}>
+      <AnimationStepper steps={steps} results={block.results} title={block.caption} heading={block.title} pseudo={hasPseudo(id)}>
         {renderer || (() => <div className="text-slate-400">🎬 {block.caption || String(id)}</div>)}
       </AnimationStepper>
       {block.caption && (

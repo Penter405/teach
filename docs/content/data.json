@@ -13629,7 +13629,8 @@
             {
               "type": "code",
               "language": "python",
-              "code": "def count_visited(nxt):\n    n = len(nxt)\n    ans = [0] * n\n    state = [0] * n             # 0 沒走過, 1 走到一半（在目前的路上）, 2 完成\n    for s in range(n):\n        if state[s]:\n            continue\n        path = []\n        u = s\n        while state[u] == 0:    # 一直走，直到碰到走過的點\n            state[u] = 1\n            path.append(u)\n            u = nxt[u]\n        if state[u] == 1:       # 碰到這條路上的點：找到環\n            cyc = path[path.index(u):]\n            for x in cyc:\n                ans[x] = len(cyc)\n                state[x] = 2\n            path = path[:path.index(u)]\n        for x in reversed(path):   # 環外的點：1 + 下一個點的答案（記憶化）\n            ans[x] = 1 + ans[nxt[x]]\n            state[x] = 2\n    return ans\n\n# 點 0 不用；1→2, 2→1, 3→2, 4→3\nprint(count_visited([0, 2, 1, 2, 3]))   # [1, 2, 2, 3, 4]"
+              "code": "def count_visited(nxt):\n    n = len(nxt)\n    ans = [0] * n\n    state = [0] * n             # 0 沒走過, 1 走到一半（在目前的路上）, 2 完成\n    for s in range(n):\n        if state[s]:\n            continue\n        path = []\n        u = s\n        while state[u] == 0:    # 一直走，直到碰到走過的點\n            state[u] = 1\n            path.append(u)\n            u = nxt[u]\n        if state[u] == 1:       # 碰到這條路上的點：找到環\n            cyc = path[path.index(u):]\n            for x in cyc:\n                ans[x] = len(cyc)\n                state[x] = 2\n            path = path[:path.index(u)]\n        for x in reversed(path):   # 環外的點：1 + 下一個點的答案（記憶化）\n            ans[x] = 1 + ans[nxt[x]]\n            state[x] = 2\n    return ans\n\n# 點 0 不用；1→2, 2→1, 3→2, 4→3\nprint(count_visited([0, 2, 1, 2, 3]))   # [1, 2, 2, 3, 4]",
+              "pseudo": "count_visited(nxt)：從每個點出發，各會經過幾個點\n    n ← 點的個數\n    ans ← 全部先放 0\n    state ← 全部先放 0（0 沒走過、1 走到一半、2 完成）\n    對每個起點 s：\n        如果 s 已經走過（state[s] ≠ 0）：\n            換下一個起點\n        path ← 空的（這次走過的點）\n        u ← s\n        當 u 還沒走過（state[u] = 0）就重複：\n            state[u] ← 1（走到一半）\n            把 u 放進 path\n            u ← 下一個點 nxt[u]\n        如果 u 走到一半（state[u] = 1）：碰到這條路上的點 → 找到環\n            環 cyc ← path 從 u 開始到最後\n            對環上每個點 x：\n                ans[x] ← 環長 len(cyc)\n                state[x] ← 2（完成）\n            path ← path 在 u 前面的那一段（環外的尾巴）\n        尾巴從後面往前，每個點 x：\n            ans[x] ← 1 + 下一個點的答案 ans[nxt[x]]\n            state[x] ← 2（完成）\n    回傳 ans\n\n（點 0 不用；1→2, 2→1, 3→2, 4→3）\n印出 count_visited([0, 2, 1, 2, 3])   →  [1, 2, 2, 3, 4]"
             },
             {
               "type": "heading",
@@ -13681,6 +13682,42 @@
             {
               "type": "paragraph",
               "text": "完整的遞迴程式和一步一步的動畫在 penter wrongs › 特殊郵件。遞迴版要注意深度：一條鏈有 n 層，Python 預設只能 1000 層。"
+            },
+            {
+              "type": "heading",
+              "text": "環上「其他」的點怎麼知道自己在環上？"
+            },
+            {
+              "type": "paragraph",
+              "text": "DFS 只會發現「繞回來的那一個點」（環的起點 st）。但這時候 call stack 上，從 st 到最上面的每一層，剛好就是整個環：它們都在這一輪的路上，而且從 st 走下去又回到了 st。\n所以要做的是：在 return 往回的時候，一路告訴上一層「環還沒走完」，直到回到 st 為止。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "可以用參數 dfs(child, in_cycle) 嗎？",
+                  "definition": "不行。參數是「往下」傳的：呼叫 dfs(child) 的時候，環還沒被發現，根本不知道要傳什麼。環是在更深的地方才發現的，這個消息只能「往上」傳，也就是靠 return（或一個全域變數）。"
+                },
+                {
+                  "term": "用回傳值（下面的寫法）",
+                  "definition": "dfs 回傳 (答案, 環的起點)。環的起點 ≠ -1 代表「環還沒走完，你也在環上」。回到 st 自己時改回 -1，再往上的人就知道已經離開環了。"
+                },
+                {
+                  "term": "用全域變數（特殊郵件那一課的寫法）",
+                  "definition": "cycle / st 放在外面，發現環時設定，回到 st 時清掉。效果一樣，只是讀程式時要記得它在外面被改。"
+                },
+                {
+                  "term": "while 版本",
+                  "definition": "不用傳：path 這個 list 就在手上，path[path.index(u):] 直接切出整個環。"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def dfs(u, d):\n    if ans[u] > 0:                 # 算過了\n        return ans[u], -1\n    if depth[u] >= 0:              # 繞回來了：u 是環的起點\n        return d - depth[u], u     # (環長, 環從 u 開始)\n    depth[u] = d\n    r, st = dfs(nxt[u], d + 1)\n    if st != -1:                   # 下面說「環還沒走完」：我在環上\n        ans[u] = r\n        if u == st:                # 我就是環的起點：再往上就不在環上\n            st = -1\n        return r, st\n    ans[u] = r + 1\n    return r + 1, -1\n\nn = 7\nnxt = [0, 2, 3, 4, 1, 1, 5, 3]     # 動畫 105 的圖\nans = [0] * (n + 1)\ndepth = [-1] * (n + 1)\nfor i in range(1, n + 1):\n    dfs(i, 0)\nprint(ans[1:])                     # [4, 4, 4, 4, 5, 6, 5]",
+              "pseudo": "dfs(u, d)：回傳 (答案, 環的起點)；環的起點 = -1 代表「不在環裡」\n    如果 u 算過了（ans[u] > 0）：\n        回傳 (ans[u], -1)\n    如果 u 的 dfs 還沒結束（depth[u] ≥ 0）：繞回來了\n        回傳 (環長 d − depth[u], u)：告訴上面「環從 u 開始，還沒走完」\n    depth[u] ← d（u 進入 call stack）\n    (r, st) ← 問下一個：dfs(nxt[u], d + 1)\n    如果 st ≠ -1（下面說環還沒走完）：我在環上\n        ans[u] ← r（環長）\n        如果 u = st（我就是環的起點）：\n            st ← -1（再往上的人都不在環上）\n        回傳 (r, st)\n    ans[u] ← r + 1（環外：自己 + 下一個）\n    回傳 (r + 1, -1)\n\nn ← 7\nnxt ← 每個點的下一個點（動畫 105 的圖）\nans ← 全部先放 0\ndepth ← 全部先放 -1（-1 = 沒走過）\n對每個點 i：\n    dfs(i, 0)\n印出 ans[1:]   →  [4, 4, 4, 4, 5, 6, 5]"
             },
             {
               "type": "heading",

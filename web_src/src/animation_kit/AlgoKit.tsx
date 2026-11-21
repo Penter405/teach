@@ -5,6 +5,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { CodePanel, Line, Tok, clampStep } from './HardwareKit';
+import { useCodeLang } from './codeLang';
 
 /** Dark board: "現在在做什麼" bar on top, then the code and the drawing. */
 export const AlgoBoard = ({ now, post, children, wide = false }: { now?: string; post?: string; children: React.ReactNode; wide?: boolean }) => (
@@ -292,8 +293,10 @@ export type TraceStep = {
   act?: Action | null;         // what the action card shows
   setup?: string[];            // (step 0) starting data lines
   target?: string | null;      // the object a method call was called on
+  pexpr?: string | null;       // 中文步驟: the pseudo-code line after the action (same ⟦v⟧ marks), when the spec has `pseudo`
 };
-export type Trace = { id: number; caption: string; code: string[]; steps: TraceStep[] };
+/** pseudo = 中文步驟, one line per code line (same indentation); only when the spec has `pseudo` */
+export type Trace = { id: number; caption: string; code: string[]; steps: TraceStep[]; pseudo?: string[] };
 
 /** One action, as the action card draws it (made by tracer.py). */
 export type Action =
@@ -392,7 +395,8 @@ export const wrote = (st: TraceStep, name: string) =>
   (st.kind === 'assign' || st.kind === 'for') && (st.var === name || st.ref?.[0] === name) || !!st.changed?.includes(name);
 
 /** Split a code line into tokens so 預告 can mark what the next action works on. */
-function codeTokens(text: string) {
+/** a code line as Tok pieces; ⟦v⟧ = a value just produced (shown as done) */
+export function codeTokens(text: string) {
   const out: React.ReactNode[] = [];
   text.split(/(⟦[^⟧]*⟧)/).forEach((part, i) => {
     if (!part) return;
@@ -405,7 +409,9 @@ function codeTokens(text: string) {
   return out;
 }
 
-export const TraceCode = ({ code, st, first }: { code: string[]; st: TraceStep; first: boolean }) => {
+export const TraceCode = ({ code, pseudo, st, first }: { code: string[]; pseudo?: string[]; st: TraceStep; first: boolean }) => {
+  const lang = useCodeLang();
+  const zh = lang === 'pseudo' && !!pseudo;   // no pseudo for this animation yet → Python
   const cur = st.line - 1;
   const jump =
     st.kind === 'if' && st.taken === false ? '跳過' :
@@ -413,11 +419,12 @@ export const TraceCode = ({ code, st, first }: { code: string[]; st: TraceStep; 
     st.kind === 'break' ? '跳出迴圈' : st.kind === 'continue' ? '回到迴圈開頭' :
     st.kind === 'return' || st.kind === 'end' ? '回到呼叫的地方' : st.kind === 'call_user' ? '跳進函式' : undefined;
   return (
-    <CodePanel>
-      {code.map((ln, i) => {
+    <CodePanel title={zh ? '中文步驟' : 'Python'}>
+      {(zh ? pseudo! : code).map((ln, i) => {
         const indent = ln.match(/^\s*/)![0];
         const isCur = !first && i === cur;
-        const text = isCur && st.expr != null ? indent + st.expr : ln;
+        const now = zh ? st.pexpr : st.expr;
+        const text = isCur && now != null ? indent + now : ln;
         return (
           <Line key={i} pc={isCur} jump={isCur ? jump : undefined}>
             {text.trim() === '' ? ' ' : codeTokens(text)}
@@ -494,7 +501,7 @@ export const TraceView = ({ T, step, show, hide = [], children, noStack = false 
         {hasDrawing ? (
           /* layout in index.css (.trace-grid): the tall code always sits beside shorter parts */
           <div className="trace-grid w-full" data-side={sideUnder} data-one-col={oneCol ? '1' : undefined}>
-            <div ref={codeRef} data-area="code" className="min-w-0"><TraceCode code={T.code} st={st} first={s === 0} /></div>
+            <div ref={codeRef} data-area="code" className="min-w-0"><TraceCode code={T.code} pseudo={T.pseudo} st={st} first={s === 0} /></div>
             <div data-area="side" className="flex min-w-0 flex-col gap-3">{stack}{facts}</div>
             <div ref={drawRef} data-area="draw" className="flex min-w-0 flex-col gap-3">{drawing}{screen}</div>
           </div>
@@ -502,7 +509,7 @@ export const TraceView = ({ T, step, show, hide = [], children, noStack = false 
           <>
             {/* code | call stack side by side when there is room */}
             <div className={`grid w-full gap-3 ${usesStack ? '@xl:grid-cols-[1fr_auto]' : ''}`}>
-              <TraceCode code={T.code} st={st} first={s === 0} />
+              <TraceCode code={T.code} pseudo={T.pseudo} st={st} first={s === 0} />
               {stack}
             </div>
             {facts}

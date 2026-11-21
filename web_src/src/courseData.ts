@@ -22,6 +22,8 @@ export interface ContentBlock {
   coursePrompt?: string;
   difficulty?: string;
   code?: string;
+  /** code block: the same code as 中文步驟, one line per code line (shown when the reader picks 中文步驟) */
+  pseudo?: string;
   language?: string;
   label?: string;
   diagramId?: string;

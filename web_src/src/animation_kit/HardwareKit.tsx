@@ -6,6 +6,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { SlotColumn, useSlot, useStepSize } from './stepSize';
 import { addrRange, asRegister, encode, setHwView, useHwView, type BitStyle, type Data, type HwMode, type HwView } from './bits';
+import { useCodeLang } from './codeLang';
 
 export const DIM = 0.45;
 
@@ -50,9 +51,12 @@ export const Tok = ({ children, s = 'normal', className = '' }: { children: Reac
   );
 };
 
+/** `pseudo` = the same line as 中文步驟; shown instead of `children` when the reader picks 中文步驟 (codeLang.tsx) */
 export const Line = ({
-  children, addr, pc = false, dim = false, indent = 0, jump, io,
-}: { children?: React.ReactNode; addr?: string; pc?: boolean; dim?: boolean; indent?: number; jump?: string; io?: React.ReactNode }) => (
+  children, addr, pc = false, dim = false, indent = 0, jump, io, pseudo,
+}: { children?: React.ReactNode; addr?: string; pc?: boolean; dim?: boolean; indent?: number; jump?: string; io?: React.ReactNode; pseudo?: React.ReactNode }) => {
+  const zh = useCodeLang() === 'pseudo' && pseudo !== undefined;
+  return (
   <motion.div
     animate={{ opacity: dim ? DIM : 1 }}
     transition={{ duration: 0.35 }}
@@ -62,7 +66,7 @@ export const Line = ({
   >
     <span className="w-3 shrink-0 text-amber-400 text-xs">{pc ? '▶' : ''}</span>
     {addr !== undefined && <span className="w-9 shrink-0 text-[10px] text-slate-400">{addr}</span>}
-    <span style={{ paddingLeft: indent * 18 }}>{children}</span>
+    <span style={{ paddingLeft: indent * 18 }}>{zh ? pseudo : children}</span>
     {jump && (
       <motion.span initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} className="ml-2 text-[10px] font-sans font-bold text-pink-300 bg-pink-500/15 rounded px-1.5">
         {jump}
@@ -70,14 +74,19 @@ export const Line = ({
     )}
     {io}
   </motion.div>
-);
+  );
+};
 
-export const CodePanel = ({ children, title = 'Python' }: { children: React.ReactNode; title?: string }) => (
-  <div className="w-full rounded-xl border border-slate-700 bg-slate-900 p-3 font-mono text-[13px] md:text-[15px] text-slate-100 shadow-lg overflow-x-auto">
-    <div className="mb-1 text-[10px] font-sans font-bold uppercase tracking-widest text-slate-400">{title}</div>
-    {children}
-  </div>
-);
+/** `pseudo`: its Lines have a 中文步驟 version → the title follows the reader's choice */
+export const CodePanel = ({ children, title = 'Python', pseudo = false }: { children: React.ReactNode; title?: string; pseudo?: boolean }) => {
+  const zh = useCodeLang() === 'pseudo' && pseudo;
+  return (
+    <div className="w-full rounded-xl border border-slate-700 bg-slate-900 p-3 font-mono text-[13px] md:text-[15px] text-slate-100 shadow-lg overflow-x-auto">
+      <div className="mb-1 text-[10px] font-sans font-bold uppercase tracking-widest text-slate-400">{zh ? '中文步驟' : title}</div>
+      {children}
+    </div>
+  );
+};
 
 /* ───────────────────────── Board ───────────────────────── */
 

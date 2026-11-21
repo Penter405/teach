@@ -12,7 +12,8 @@ animation_kit/
 ├── bits.ts           硬體畫面的顯示設定、把值編成 bytes
 ├── stepSize.tsx      每一步一樣高（播放器在用，動畫通常不用碰）
 ├── preview.ts        預告時標出下一步要處理的 Tok（播放器在用）
-└── registry.tsx      自動載入 animations/N.tsx
+├── codeLang.tsx      程式碼顯示 Python 還是中文步驟（所有動畫共用的設定、切換按鈕）
+└── registry.tsx      自動載入 animations/N.tsx；hasPseudo(id) = 這支動畫有沒有中文步驟
 ```
 
 ## 選哪一種做法
@@ -167,10 +168,28 @@ export default function MyAnim({ step }: { step: number }) {
 | 零件 | 用途 |
 |---|---|
 | `Board` | 硬體動畫的外框。預設「三欄排列」：CPU ｜ DRAM ｜ Python（板子寬 ≥ 860px；更窄時 CPU + Python 在上、DRAM 在下）。開關存在 localStorage `teach_hw_view_v3` |
-| `CodePanel`、`Line`、`Tok` | 程式碼；`Line pc` = 正在跑的那行，`Tok s="active" | "done" | "dim"`。**預告**靠比較兩步的 `Tok` 標出下一步要處理的地方，所以手寫動畫的程式碼也要用它們 |
+| `CodePanel`、`Line`、`Tok` | 程式碼；`Line pc` = 正在跑的那行，`Tok s="active" | "done" | "dim"`。**預告**靠比較兩步的 `Tok` 標出下一步要處理的地方，所以手寫動畫的程式碼也要用它們。中文步驟：`<Line pseudo={…}>`（讀者選中文步驟時顯示它）、`<CodePanel pseudo>`（標題跟著變） |
 | `CPU`、`Bus`、`RAM`、`Screen`、`Keyboard`、`Buffer` | 機器的各部分 |
 | `Bits`、`Tag`、`Gate` | 二進位、標籤、邏輯閘 |
 | `clampStep(step, 步數)` | 把 step 限制在 0 ～ 步數 − 1。手寫動畫一定要用 |
+
+## 中文步驟（pseudo code）
+
+讀者在播放器下面切換 **Python ↔ 中文步驟**，所有動畫共用一個設定。
+
+| 動畫 | 怎麼加中文步驟 |
+|---|---|
+| tracer | `specs.py` 的 spec 加 `pseudo='''…'''`：和 `src` 一樣多行、一樣縮排。`{運算式}` 會在跑的時候換成那一刻的值（和 Python 一樣：`{1 + ans[nxt[x]]}` → `1 + ans[⟦2⟧]` → `1 + ⟦2⟧` → `⟦3⟧`）。`TraceView` 自己會切換，不用改 N.tsx。見 82 |
+| 手寫（有程式碼的） | 每個 `<Line>` 給 `pseudo`，`<CodePanel pseudo>`，N.tsx `export const HAS_PSEUDO = true`。目前那一行的值自己算，用 `codeTokens('r ← dfs(⟦5⟧, 1)')` 畫。見 105 |
+| 沒有程式碼的 | 不用做（切換只會提示「還沒有中文步驟」） |
+
+寫法：同一行講同一件事；變數名稱不變（變數區、call stack 才對得起來）；指定用 `←`、比較用 `= ≠ ≤ ≥`；說意思，不要照念語法（`color[node] >= 0` → 「node 的 dfs 還沒結束」）；一行太長在窄的欄位會換行，括號裡的說明寫短一點。
+
+| 函式 / 零件 | 意思 |
+|---|---|
+| `useCodeLang()` | 目前是 `'python'` 還是 `'pseudo'`（`codeLang.tsx`） |
+| `CodeLangSwitch` | 切換按鈕（播放器已經放了，動畫裡不用放） |
+| `codeTokens(text)` | 一行程式碼 → `Tok`，`⟦v⟧` 畫成剛算出來的值（AlgoKit） |
 
 ## 常見動畫的配方
 
