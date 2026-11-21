@@ -14,16 +14,19 @@
 - **課程內容**不打包進 JS：`courseData.ts` 的 `loadCourseData()` 在 React 畫面出來之前 fetch `./content/data.json`。所以改內容不用重新 build。
 - **開發時**：`vite.config.ts` 裡的 `serve-docs-content` 外掛把 `/content` 指到 `../docs/content`。
 - **build**：`outDir: '../docs'`、`emptyOutDir: false`（不會刪掉 `docs/content/`）、`base: './'`。
+- **深色 / 淺色**：`index.css` 有 `@custom-variant dark (&:where(.dark, .dark *))`，所以 Tailwind 的 `dark:` 跟著網站右上角的按鈕（`<html class="dark">`），不是跟著電腦的系統設定（Tailwind v4 預設看系統）。選擇記在 localStorage `teach_dark`。
+- **顯示設定**：深色 / 淺色、動畫的「中文步驟」、熟悉語法的硬體開關，都用 `animation_kit/viewSettings.tsx` 的 `createViewSetting` 做，存在 localStorage，所有畫面一起更新（見 [web_src/src/animation_kit/KIT.md](web_src/src/animation_kit/KIT.md) 的「顯示設定和開關」）。
 
 ## 前端檔案（web_src/src）
 
 | 檔案 | 用途 |
 |---|---|
 | `main.tsx` | 進入點：先 `loadCourseData()`，再畫 `App` |
-| `App.tsx` | 頁面：`login`、`path`（學習路徑）、`lesson`、`tree`（語法樹）、`tree-node`、`algo-tree`；Google 登入；問老師視窗 |
+| `App.tsx` | 頁面：`login`、`path`（學習路徑）、`lesson`、`tree`（語法樹）、`tree-node`、`algo-tree`；Google 登入；問老師視窗；深色 / 淺色按鈕（`darkTheme` 設定） |
+| `index.css` | Tailwind 設定、字型、`dark:` 跟著 `.dark` class |
 | `courseData.ts` | `data.json` 的型別（`Module`、`Lesson`、`ContentBlock`…）和讀取函式 |
 | `Sidebar.tsx` | 模組 / 課程側欄 |
-| `LessonContent.tsx` | 依 `type` 畫每一個區塊；`AnimationStepper` 是動畫播放器（預告、執行、上一步、放大） |
+| `LessonContent.tsx` | 依 `type` 畫每一個區塊；`AnimationStepper` 是動畫播放器（預告、執行、上一步、放大；任何顯示設定改了就重新量高度）；程式碼區塊有 `pseudo` 時可以切成中文步驟 |
 | `animations/N.tsx` | 第 N 號動畫，`registry.tsx` 用 `import.meta.glob` 自動載入 |
 | `animations/trace/N.ts` | 演算法動畫的執行資料（由 `scripts/animation_tracer` 產生，不要手改） |
 | `animation_kit/` | 動畫共用零件，見 [ANIMATIONS.md](ANIMATIONS.md) |
@@ -33,6 +36,7 @@
 | `CodeSyntaxTree.tsx`、`codeTreeData.ts`、`NodeExplainPage.tsx` | Code 語法樹和節點說明頁 |
 | `AlgorithmTree.tsx`、`GoalTree.tsx`、`SolveWizard.tsx`、`algoTreeData.ts` | 演算法樹（判斷樹、任務樹、解題流程） |
 | `ZoomViewer.tsx` | 動畫 / 圖的放大檢視 |
+| `measurePage.tsx`（`web_src/measure.html`） | 開發用：只畫一支動畫（`measure.html?aid=N&w=寬度`），給 `scripts/measure_animations.py` 量高度；不會被 build 進網站 |
 | `auth.ts` | 登入資訊 |
 
 ## 演算法樹的資料
@@ -84,6 +88,9 @@ CORS 只允許 `https://penter405.github.io` 和本機的 5500 port（`config.js
 | 改演算法動畫的程式或例子 | `scripts/animation_tracer/specs.py`，然後 `python scripts/animation_tracer/run.py` |
 | 改演算法樹 | `algorithm_tree.py`，然後 `python algorithm_tree.py` |
 | 改外觀規範 | 參考 [DESIGN.md](DESIGN.md) |
+| 加一個顯示開關（像「中文步驟」） | `createViewSetting` + `boolSwitch`，放進板子的 `switches`（見 KIT.md「顯示設定和開關」） |
+| 動畫的中文步驟 | tracer：`specs.py` 的 `pseudo`；手寫：`<Line pseudo>`（見 KIT.md「中文步驟」） |
+| 檢查動畫有沒有太高 | `python scripts/measure_animations.py`（上限：1920×1080 螢幕上整張卡片 ≤ 900px） |
 
 ## 檢查
 
@@ -91,4 +98,12 @@ CORS 只允許 `https://penter405.github.io` 和本機的 5500 port（`config.js
 cd web_src
 npm run lint      # tsc --noEmit
 npm run build
+```
+
+動畫的高度（開發伺服器 `npm run dev` 要開著；需要 `pip install playwright` 和 `python -m playwright install chromium`）：
+
+```bash
+python scripts/measure_animations.py            # 全部；標出 1920×1080 上卡片超過 900px 的
+python scripts/measure_animations.py 100,105    # 只量幾支
+python scripts/measure_animations.py --zh       # 中文步驟模式
 ```

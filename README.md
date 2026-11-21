@@ -39,7 +39,7 @@ chmod +x update_course.sh    # 第一次要先給執行權限
 update_course.bat           # Windows（一定要在 repo 根目錄執行）
 ```
 
-兩個腳本都會 build `web_src/`，把舊的 `docs/assets/*.js、*.css` 搬到 `docs/assets/old/`，再把新的 build 放進 `docs/`。之後 `git push` 到 `main`，GitHub Actions 會把 `docs/` 部署到 GitHub Pages。
+兩個腳本都會 build `web_src/`，把新的 build 放進 `docs/`（舊的 `docs/assets/*.js、*.css` 會刪掉，留在 git 歷史裡；build 失敗會還原）。之後 `git push` 到 `main`，GitHub Actions 會把 `docs/` 部署到 GitHub Pages。
 
 只改課程內容（`docs/content/data.json`、圖片）時不用 build，直接 push 就好。
 
@@ -58,12 +58,13 @@ teach/
 │       ├── App.tsx            # 頁面切換：登入 / 學習路徑 / 課程 / 語法樹 / 演算法樹
 │       ├── LessonContent.tsx  # 把 data.json 的區塊畫出來（含動畫播放器）
 │       ├── animations/        # 動畫元件 N.tsx（N = animationId），trace/ 是動畫的執行資料
-│       ├── animation_kit/     # 動畫共用零件（HardwareKit、AlgoKit…）
+│       ├── animation_kit/     # 動畫共用零件（HardwareKit、AlgoKit…）、顯示設定（viewSettings、中文步驟）
 │       ├── AlgorithmTree.tsx, GoalTree.tsx, SolveWizard.tsx, algoTreeData.ts
 │       └── …                  # 其他元件，見 develop.md
 ├── api/                       # Vercel serverless API（登入、AI 批改、問老師、統計）
 ├── scripts/
 │   ├── animation_tracer/      # 產生演算法動畫的工具（執行真的 Python，一個動作一步）
+│   ├── measure_animations.py  # 量每支動畫在課程頁上多高（上限 900px）
 │   └── extract_animations.mjs # 舊工具：把動畫從 LessonContent.tsx 拆成獨立檔案
 ├── algorithm_tree.py          # 演算法樹的資料來源 → 產生 web_src/src/algoTreeData.ts
 ├── update_course.sh / .bat    # build 並發布到 docs/
@@ -77,7 +78,8 @@ teach/
 |---|---|
 | [develop.md](develop.md) | 架構、元件、API、環境變數、部署 |
 | [CONTENT_FORMAT.md](CONTENT_FORMAT.md) | `data.json` 的格式：模組、課、每一種區塊 |
-| [ANIMATIONS.md](ANIMATIONS.md) | 動畫系統：播放器、預告 / 執行、怎麼新增一支動畫 |
+| [ANIMATIONS.md](ANIMATIONS.md) | 動畫系統：播放器、預告 / 執行、中文步驟、高度上限、怎麼新增一支動畫 |
+| [web_src/src/animation_kit/KIT.md](web_src/src/animation_kit/KIT.md) | 動畫零件目錄：每個零件和函式怎麼用、中文步驟、顯示設定和開關、高度上限 |
 | [algo_animations.md](algo_animations.md) | 所有動畫的清單（編號、在哪一課、幾步） |
 | [scripts/animation_tracer/README.md](scripts/animation_tracer/README.md) | 演算法動畫產生器的用法 |
 | [DESIGN.md](DESIGN.md) | 視覺設計規範（The Guided Synthesist） |
