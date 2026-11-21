@@ -227,10 +227,12 @@ export type Query = { l: number; r: number; id: number | string };
  * `first` = the smallest index (1 = 1-indexed, default; 0 = 0-indexed, blocks are then l // block).
  */
 export const QueryPlot = ({
-  n, queries, order, done, block, first = 1, start = { l: first, r: first - 1 }, size = 300, color = '#38bdf8',
+  n, queries, order, done, block, first = 1, start = { l: first, r: first - 1 }, size = 300, color = '#38bdf8', maxHeight = 260,
 }: {
   n: number; queries: Query[]; order: number[]; done: number; block?: number;
   first?: number; start?: { l: number; r: number }; size?: number; color?: string;
+  /** drawn at most this tall (px), so a wide column does not make it huge (height budget, see KIT.md) */
+  maxHeight?: number;
 }) => {
   const pad = 26;
   const u = (size - pad - 10) / Math.max(1, n);
@@ -239,7 +241,7 @@ export const QueryPlot = ({
   const path = [start, ...order.slice(0, done).map((i) => queries[i])];
   const pos = new Map(order.map((qi, k) => [qi, k]));
   return (
-    <svg viewBox={`0 0 ${size} ${size}`} className="w-full" style={{ maxHeight: size * 1.1 }}>
+    <svg viewBox={`0 0 ${size} ${size}`} className="w-full" style={{ maxHeight }}>
       {block && Array.from({ length: Math.ceil(n / block) }, (_, b) => (
         <g key={b}>
           <rect x={pad + b * block * u} y={6} width={Math.min(block, n - b * block) * u} height={size - pad - 6}

@@ -3,10 +3,10 @@
 // 紫色（stack）= dfs(n) 還沒結束；黃色（active）= 現在在這個點。
 // Frames are simulated below; data.json steps / results = FRAMES.map(f => f.now / f.post) — regenerate both together.
 import React from 'react';
-import { AlgoBoard, Stage, GraphView, Split, Seq, StackView, type GEdge, type CellTone } from '../animation_kit/AlgoKit';
+import { AlgoBoard, Stage, GraphView, Split, Seq, type GEdge, type CellTone } from '../animation_kit/AlgoKit';
 import { clampStep, CodePanel, Line } from '../animation_kit/HardwareKit';
 import { codeTokens } from '../animation_kit/AlgoKit';
-import { posNodes } from '../animation_kit/AlgoHelpers';
+import { posNodes, toneClass } from '../animation_kit/AlgoHelpers';
 
 const NXT: Record<number, number> = { 1: 2, 2: 3, 3: 4, 4: 1, 5: 1, 6: 5, 7: 3 };
 const IDS = [1, 2, 3, 4, 5, 6, 7];
@@ -134,13 +134,31 @@ export default function CycleDfsWalkAnim({ step }: { step: number }) {
   return (
     <div className="w-full flex flex-col items-center gap-3 font-sans">
       <AlgoBoard now={f.now} post={f.post} wide>
-        <Stage title="黃 = 現在在這、紫（虛線）= dfs 還沒結束、綠 = 答案寫好了、紅線 = 環">
-          <GraphView nodes={nodes} edges={edges} width={640} height={240} />
-        </Stage>
-        <div className={`min-h-[2.5rem] rounded-lg border px-3 py-2 text-center font-mono text-base ${f.formula ? 'border-amber-500/60 bg-amber-950/40 text-amber-100' : 'border-transparent'}`}>
-          {f.formula ?? ''}
-        </div>
+        {/* graph + stack + ans | code, side by side (height budget: card ≤ 900px on a 1080p screen) */}
         <Split>
+          <div className="flex min-w-0 flex-col gap-3">
+            <Stage title="黃 = 現在在這、紫（虛線）= dfs 還沒結束、綠 = 答案寫好了、紅線 = 環">
+              <GraphView nodes={nodes} edges={edges} width={640} height={225} />
+            </Stage>
+            <Stage title="call stack（左 = 最早呼叫、右 = 最後呼叫）">
+              <div className="flex min-h-[3.25rem] flex-wrap items-start gap-1.5">
+                {f.stack.length === 0 && <span className="text-sm text-slate-400">（沒有 dfs 在跑）</span>}
+                {f.stack.map((n, k) => (
+                  <div key={k} className="flex flex-col items-center gap-0.5">
+                    <span className={`rounded-md border px-2 py-1 font-mono text-sm transition-colors duration-300 ${toneClass(n === f.at ? 'active' : 'stack')}`}>dfs({n})</span>
+                    <span className="text-[10px] text-slate-400">第 {k} 層</span>
+                  </div>
+                ))}
+              </div>
+            </Stage>
+            <Stage title="ans">
+              <Seq size="sm" items={IDS.map((n) => ({ v: f.ans[n] ?? '?', top: `[${n}]`, tone: n === f.hot ? 'active' : f.ans[n] !== undefined ? 'yes' : 'dim' }))} />
+            </Stage>
+          </div>
+          <div className="flex min-w-0 flex-col gap-3">
+          <div className={`min-h-[2.5rem] rounded-lg border px-3 py-2 text-center font-mono text-sm ${f.formula ? 'border-amber-500/60 bg-amber-950/40 text-amber-100' : 'border-slate-800 text-slate-500'}`}>
+            {f.formula ?? '（這一步的算式會出現在這裡）'}
+          </div>
           <CodePanel pseudo>
             {CODE.map(([py, zh], i) => {
               const cur = f.line === i;
@@ -151,13 +169,6 @@ export default function CycleDfsWalkAnim({ step }: { step: number }) {
               );
             })}
           </CodePanel>
-          <div className="flex flex-col gap-3">
-          <Stage title="call stack（上面 = 最後呼叫的）">
-            <StackView items={[...f.stack].reverse().map((n) => ({ v: `dfs(${n})`, tone: n === f.at ? 'active' : 'stack', note: `第 ${f.stack.indexOf(n)} 層` }))} empty="（沒有 dfs 在跑）" />
-          </Stage>
-          <Stage title="ans">
-            <Seq size="sm" items={IDS.map((n) => ({ v: f.ans[n] ?? '?', top: `[${n}]`, tone: n === f.hot ? 'active' : f.ans[n] !== undefined ? 'yes' : 'dim' }))} />
-          </Stage>
           </div>
         </Split>
       </AlgoBoard>

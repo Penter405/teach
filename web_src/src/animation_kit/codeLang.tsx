@@ -1,47 +1,37 @@
-// 程式碼要顯示成 Python 還是中文步驟（pseudo code）。所有動畫共用一個設定，存在 localStorage。
-// 播放器（LessonContent 的 AnimationStepper）放 <CodeLangSwitch />；畫程式碼的零件用 useCodeLang() 決定顯示哪一種。
-import React, { useSyncExternalStore } from 'react';
+// 程式碼顯示 Python 還是中文步驟（pseudo code）。所有動畫、程式碼區塊共用一個設定（viewSettings.tsx）。
+// 開關放在每塊板子最上面那一排（和熟悉語法的硬體開關同一排、同一個樣子）。
+import React from 'react';
+import { createViewSetting, ViewSwitch, type SwitchDef } from './viewSettings';
 
 export type CodeLang = 'python' | 'pseudo';
 const KEY = 'teach_code_lang';
 
-let lang: CodeLang = 'python';
-try { if (localStorage.getItem(KEY) === 'pseudo') lang = 'pseudo'; } catch { /* storage unavailable */ }
-const listeners = new Set<() => void>();
+const codeLang = createViewSetting<CodeLang>(KEY, 'python', () => {
+  const raw = localStorage.getItem(KEY);
+  return raw === 'pseudo' || raw === '"pseudo"' ? 'pseudo' : 'python';
+});
+export const useCodeLang = codeLang.use;
+export const setCodeLang = codeLang.set;
 
-export function setCodeLang(v: CodeLang) {
-  lang = v;
-  try { localStorage.setItem(KEY, v); } catch { /* storage unavailable */ }
-  listeners.forEach((l) => l());
-}
-const subscribe = (l: () => void) => { listeners.add(l); return () => { listeners.delete(l); }; };
-export const useCodeLang = () => useSyncExternalStore(subscribe, () => lang, (): CodeLang => 'python');
+/** does the animation being shown have 中文步驟? The player provides it (registry.hasPseudo); default true */
+export const PseudoAvailable = React.createContext(true);
 
-/** Python | 中文步驟。`available = false`：這支動畫還沒有中文步驟（切過去還是顯示 Python，旁邊提示一行） */
-export const CodeLangSwitch = ({ available = true, dark = false }: { available?: boolean; dark?: boolean }) => {
-  const cur = useCodeLang();
-  const btn = (v: CodeLang, label: string) => (
-    <button
-      type="button"
-      onClick={() => setCodeLang(v)}
-      aria-pressed={cur === v}
-      className={`px-3 py-1.5 text-xs font-medium transition-colors ${cur === v
-        ? 'bg-cyan-600 text-white'
-        : dark ? 'text-slate-300 hover:bg-slate-700' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
-    >
-      {label}
-    </button>
-  );
-  return (
-    <div className="flex flex-wrap items-center justify-center gap-2">
-      <span className={`text-xs ${dark ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400'}`}>程式碼</span>
-      <div className={`inline-flex overflow-hidden rounded-lg border ${dark ? 'border-slate-600' : 'border-slate-200 dark:border-slate-700'}`} role="group" aria-label="程式碼顯示方式">
-        {btn('python', 'Python')}
-        {btn('pseudo', '中文步驟')}
-      </div>
-      {cur === 'pseudo' && !available && (
-        <span className={`text-xs ${dark ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400'}`}>這支動畫還沒有中文步驟，先顯示 Python</span>
-      )}
-    </div>
-  );
+/** the 中文步驟 switch, as an object (put it in a board's `switches` list; boards include it by default) */
+export const CODE_LANG_SWITCH: SwitchDef = {
+  id: 'codeLang',
+  label: '中文步驟',
+  hint: '程式碼改用中文步驟（pseudo code）顯示，一行對一行；所有動畫一起切換',
+  useOn: () => useCodeLang() === 'pseudo',
+  set: (v) => setCodeLang(v ? 'pseudo' : 'python'),
+  useLabel: () => {
+    const available = React.useContext(PseudoAvailable);
+    return useCodeLang() === 'pseudo' && !available ? '中文步驟（這支還沒有，先顯示 Python）' : '中文步驟';
+  },
+  useMuted: () => {
+    const available = React.useContext(PseudoAvailable);
+    return useCodeLang() === 'pseudo' && !available;
+  },
 };
+
+/** just the 中文步驟 switch (code blocks use it) */
+export const CodeLangToggle = () => <ViewSwitch def={CODE_LANG_SWITCH} />;

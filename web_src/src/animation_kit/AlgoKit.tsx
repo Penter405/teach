@@ -5,15 +5,24 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { CodePanel, Line, Tok, clampStep } from './HardwareKit';
-import { useCodeLang } from './codeLang';
+import { useCodeLang, CODE_LANG_SWITCH } from './codeLang';
+import { SwitchBar, type SwitchDef } from './viewSettings';
+
+/** switches every algorithm board has unless it says otherwise */
+export const DEFAULT_SWITCHES: SwitchDef[] = [CODE_LANG_SWITCH];
 
 /** Dark board: "現在在做什麼" bar on top, then the code and the drawing. */
-export const AlgoBoard = ({ now, post, children, wide = false }: { now?: string; post?: string; children: React.ReactNode; wide?: boolean }) => (
+/** `switches`: the switches top right (default [CODE_LANG_SWITCH]); [] = none */
+export const AlgoBoard = ({ now, post, children, wide = false, switches = DEFAULT_SWITCHES }: { now?: string; post?: string; children: React.ReactNode; wide?: boolean; switches?: SwitchDef[] }) => (
   <div className={`@container w-full ${wide ? 'max-w-[1500px]' : 'max-w-[900px]'} flex flex-col gap-3 rounded-2xl bg-slate-950 p-3 md:p-4 font-sans text-slate-100`}>
     <div className="flex flex-col gap-1 rounded-lg bg-sky-500/10 px-3 py-2">
-      <div className="flex items-baseline gap-2">
-        <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-sky-400">現在在做什麼</span>
-        <span data-now={now || ''} className="text-sm font-bold text-sky-100">{now || '還沒開始執行'}</span>
+      <div className="flex items-start gap-2">
+        <div className="flex min-w-0 flex-1 items-baseline gap-2">
+          <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-sky-400">現在在做什麼</span>
+          <span data-now={now || ''} className="text-sm font-bold text-sky-100">{now || '還沒開始執行'}</span>
+        </div>
+        {/* display switches (viewSettings.tsx): top right, same look as the hardware boards, no extra row */}
+        {switches.length > 0 && <div className="-my-1 shrink-0"><SwitchBar switches={switches} /></div>}
       </div>
       {post && (
         <div className="flex items-baseline gap-2">
@@ -441,8 +450,10 @@ const isScalar = (v: any) => v === null || ['number', 'string', 'boolean'].inclu
  * Board + code + scalar variables + call stack + screen. `children` draws the picture for this step.
  * `show` limits which scalars appear (default: every scalar except UPPER_CASE constants).
  */
-export const TraceView = ({ T, step, show, hide = [], children, noStack = false }: {
+export const TraceView = ({ T, step, show, hide = [], children, noStack = false, switches }: {
   T: Trace; step: number; show?: string[]; hide?: string[]; noStack?: boolean;
+  /** switches top right (default: 中文步驟) */
+  switches?: SwitchDef[];
   children?: (st: TraceStep, s: number) => React.ReactNode;
 }) => {
   const s = clampStep(step, T.steps.length);
@@ -497,7 +508,7 @@ export const TraceView = ({ T, step, show, hide = [], children, noStack = false 
   });
   return (
     <div className="w-full flex flex-col items-center gap-3 font-sans">
-      <AlgoBoard now={s === 0 ? '還沒開始執行' : st.pre} post={st.post} wide={hasDrawing}>
+      <AlgoBoard now={s === 0 ? '還沒開始執行' : st.pre} post={st.post} wide={hasDrawing} switches={switches}>
         {hasDrawing ? (
           /* layout in index.css (.trace-grid): the tall code always sits beside shorter parts */
           <div className="trace-grid w-full" data-side={sideUnder} data-one-col={oneCol ? '1' : undefined}>

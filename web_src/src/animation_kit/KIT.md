@@ -12,7 +12,8 @@ animation_kit/
 ├── bits.ts           硬體畫面的顯示設定、把值編成 bytes
 ├── stepSize.tsx      每一步一樣高（播放器在用，動畫通常不用碰）
 ├── preview.ts        預告時標出下一步要處理的 Tok（播放器在用）
-├── codeLang.tsx      程式碼顯示 Python 還是中文步驟（所有動畫共用的設定、切換按鈕）
+├── viewSettings.tsx  所有動畫共用的顯示設定（store、開關的樣子、設定改了要重新量高度）
+├── codeLang.tsx      程式碼顯示 Python 還是中文步驟（用 viewSettings 做的一個設定 + 它的開關）
 └── registry.tsx      自動載入 animations/N.tsx；hasPseudo(id) = 這支動畫有沒有中文步驟
 ```
 
@@ -175,7 +176,7 @@ export default function MyAnim({ step }: { step: number }) {
 
 ## 中文步驟（pseudo code）
 
-讀者在播放器下面切換 **Python ↔ 中文步驟**，所有動畫共用一個設定。
+讀者用板子最上面那一排的「中文步驟」開關切換 **Python ↔ 中文步驟**（`Board`、`AlgoBoard` 自己會畫，動畫不用放），所有動畫共用一個設定。
 
 | 動畫 | 怎麼加中文步驟 |
 |---|---|
@@ -188,8 +189,64 @@ export default function MyAnim({ step }: { step: number }) {
 | 函式 / 零件 | 意思 |
 |---|---|
 | `useCodeLang()` | 目前是 `'python'` 還是 `'pseudo'`（`codeLang.tsx`） |
-| `CodeLangSwitch` | 切換按鈕（播放器已經放了，動畫裡不用放） |
+| `CodeLangToggle` | 「中文步驟」開關（`Board`、`AlgoBoard`、有 `pseudo` 的程式碼區塊已經放了） |
+| `PseudoAvailable` | context：這支動畫有沒有中文步驟（播放器給，用 `registry.hasPseudo(id)`） |
 | `codeTokens(text)` | 一行程式碼 → `Tok`，`⟦v⟧` 畫成剛算出來的值（AlgoKit） |
+
+## 高度上限：整張卡片 ≤ 900px
+
+1080p 螢幕扣掉瀏覽器和餘裕，大概只剩 900px。整張動畫卡片（標題 + 動畫 + 進度條 + 說明 + 按鈕）要能一次看完，不用捲動：
+
+- **1920 寬的螢幕（課程內容寬約 1520px）卡片 ≤ 900px**，扣掉卡片的其他部分，動畫本身大約 ≤ 690px。
+- 高度 = 「目前這組設定」下最高的那一步（播放器自己會量），所以要看最高的那一步，不是第 0 步。
+- 量法：`npm run dev` 開著，`python scripts/measure_animations.py`（或 `… 100,105` 只量幾支、`--zh` 量中文步驟）。
+
+太高時可以：
+
+| 原因 | 做法 |
+|---|---|
+| 程式碼太長（tracer） | 25 行以內：開頭的資料寫成一行、`n = 3` 這種直接寫進 `range(1, 4)`、不用 `print` 就不會多一個螢幕框；輔助函式放 `env` |
+| 圖在寬的欄位被放很大 | `GraphView` 的 `height` 設小一點；`QueryPlot maxHeight={…}`（預設 260） |
+| 手寫動畫一欄疊太多東西 | 圖和程式碼左右並排（`Split`）；call stack 這種直的清單改成一排（`Seq`）。見 105 |
+| 硬體動畫 | 每一步都會保留「有任何一步用到」的那幾列，最高的那一步決定高度 |
+
+## 顯示設定和開關（viewSettings.tsx）
+
+熟悉語法的硬體開關（`bits.ts` 的 HwView）、中文步驟（`codeLang.tsx`）、網站的深色 / 淺色（`App.tsx`）都是用同一套做的。
+
+**設定**：`createViewSetting(key, 預設值)` 做一個 store，存在 localStorage，所有畫面一起更新；`.use()` 讀、`.set(v)` 改。
+
+**開關 = 一個物件**（`SwitchDef`），板子用 `switches` 參數決定上面放哪些：
+
+```tsx
+import { createViewSetting, boolSwitch } from '../animation_kit/viewSettings';
+import { CODE_LANG_SWITCH } from '../animation_kit/codeLang';
+
+// 1. 一個設定 + 它的開關（放在檔案最外面，不要放在元件裡）
+const bigFont = createViewSetting<boolean>('teach_big_font', false);
+const BIG_FONT_SWITCH = boolSwitch('bigFont', bigFont, '大字', '程式碼用大字');
+
+// 2. 畫面讀它
+const big = bigFont.use();
+
+// 3. 板子放哪些開關
+<AlgoBoard switches={[CODE_LANG_SWITCH, BIG_FONT_SWITCH]}>…</AlgoBoard>
+<TraceView T={T} step={step} switches={[]}>…</TraceView>          // 不要開關
+<Board switches={[...BOARD_SWITCHES, BIG_FONT_SWITCH]}>…</Board>  // 硬體板再多一個
+```
+
+| 名稱 | 在哪裡 | 意思 |
+|---|---|---|
+| `createViewSetting(key, 預設值, load?)` | viewSettings | 做一個設定；`load` 讀舊的存檔格式 |
+| `SwitchDef` | viewSettings | 一個開關：`id`、`label`、`hint`、`useOn()`、`set(on)`；可選 `useVisible()`（要不要出現）、`useLabel()`、`useMuted()`。`use…` 是 hook，畫的時候才呼叫 |
+| `boolSwitch(id, 設定, label, hint)` | viewSettings | 布林設定的開關，最常用 |
+| `SwitchBar switches={…}` / `ViewSwitch def={…}` | viewSettings | 畫一排開關 / 一個開關 |
+| `CODE_LANG_SWITCH` | codeLang | 「中文步驟」開關；這支動畫沒有中文步驟時，會自己顯示「這支還沒有」 |
+| `DEFAULT_SWITCHES` | AlgoKit | `AlgoBoard` / `TraceView` 沒給 `switches` 時用的：`[CODE_LANG_SWITCH]` |
+| `HW_SWITCHES`、`BOARD_SWITCHES` | HardwareKit | 硬體的 8 個開關；`Board` 預設 = 中文步驟 + 硬體的 |
+| `useViewVersion()` | viewSettings | 任何一個設定改了就會變。播放器用它重新量高度，所以動畫的高度 = 目前這組設定下最高的那一步；新的設定不用另外通知播放器 |
+
+深色 / 淺色：`index.css` 有 `@custom-variant dark (&:where(.dark, .dark *))`，所以 `dark:` 跟著網站的按鈕（`<html class="dark">`），不是跟著電腦的系統設定。
 
 ## 常見動畫的配方
 

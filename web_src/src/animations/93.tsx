@@ -40,7 +40,7 @@ export default function MoOrderAnim({ step }: { step: number }) {
             return (
               <Stage key={o.key} title={o.name} right={<span className="font-mono text-[11px] text-slate-300">{cur ? `q${cur.id}：+${moved} 步` : ''}</span>}>
                 <div className="flex flex-col gap-2">
-                  <QueryPlot n={N} queries={QS} order={o.order} done={s} block={BLOCK} color={o.color} />
+                  <QueryPlot n={N} queries={QS} order={o.order} done={s} block={BLOCK} color={o.color} maxHeight={215} />
                   <Stat label="指標總共走了" value={`${travel(QS, o.order, s)} 步`} hot={s === STEPS - 1 && o.key === 'oe'} />
                   <QueryList queries={QS} order={o.order} done={s} />
                 </div>

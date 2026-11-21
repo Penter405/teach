@@ -23,6 +23,8 @@ web_src/src/
 │   └── trace/N.ts           # 演算法動畫的執行資料（自動產生）
 └── animation_kit/
     ├── registry.tsx         # 用 import.meta.glob 載入 animations/*.tsx，id = 檔名的數字
+    ├── viewSettings.tsx     # 所有動畫共用的顯示設定：createViewSetting、Switch / SwitchRow、useViewVersion
+    ├── codeLang.tsx         # Python ↔ 中文步驟（用 viewSettings 做的一個設定）
     ├── shared.tsx           # Box、AnimArrow（1 ～ 27 號用）
     ├── HardwareKit.tsx      # CPU / Bus / DRAM / 螢幕 / 鍵盤 / CodePanel / Line / Tok（28 ～ 37 號用）
     ├── bits.ts              # 硬體畫面的顯示設定（二進位、記憶體表格…）
@@ -44,10 +46,11 @@ web_src/src/
 | 回到開頭 | ⏮ | Home |
 | 跳到某一步 | 上方的小圓點 | |
 | 全螢幕放大 | 放大鈕 | |
-| 程式碼：Python ↔ 中文步驟 | 按鈕下面的切換 | |
+| 程式碼：Python ↔ 中文步驟 | 板子最上面那一排的「中文步驟」開關 | |
 
 - 播放器會先把每一步都畫一次（看不見），量出最高的那一步，整個動畫就固定成那個高度，所以步與步之間不會跳動。
-- **程式碼：Python ↔ 中文步驟**（pseudo code）：每支動畫下面都有這個切換，所有動畫共用一個設定（存在 localStorage `teach_code_lang`，`animation_kit/codeLang.tsx`）。中文步驟和 Python **一行對一行、縮排一樣**，所以目前那一行、預告、動作卡片都照樣運作；目前那一行一樣會顯示算到一半的值（`⟦ ⟧`），像 Python 在跑。還沒寫中文步驟的動畫切過去會顯示 Python，旁邊提示一行。哪些動畫有中文步驟：`registry.tsx` 的 `hasPseudo(id)`（trace 有 `pseudo`，或 N.tsx 有 `export const HAS_PSEUDO = true`）。
+- **高度上限**：在 1920×1080 的螢幕上，整張卡片（標題 + 動畫 + 按鈕）≤ 900px，一次看得完。用 `scripts/measure_animations.py` 量，太高的改法見 KIT.md 的「高度上限」。**任何一個顯示設定改了**（硬體開關、中文步驟…，`viewSettings.tsx` 的 `useViewVersion()`），就用新的設定重新量一次：高度永遠是「目前這組設定」下最高的那一步。
+- **程式碼：Python ↔ 中文步驟**（pseudo code）：開關在每塊板子最上面那一排，和熟悉語法的硬體開關同一排、同一個樣子。開關是物件（`SwitchDef`），`Board` / `AlgoBoard` / `TraceView` 的 `switches` 參數決定放哪些（預設：演算法板 = 中文步驟；硬體板 = 中文步驟 + 硬體開關）；程式碼區塊有 `pseudo` 時也有。寫法見 KIT.md 的「顯示設定和開關」。所有動畫共用一個設定（存在 localStorage `teach_code_lang`，`animation_kit/codeLang.tsx`）。中文步驟和 Python **一行對一行、縮排一樣**，所以目前那一行、預告、動作卡片都照樣運作；目前那一行一樣會顯示算到一半的值（`⟦ ⟧`），像 Python 在跑。還沒寫中文步驟的動畫切過去會顯示 Python，開關旁邊寫「這支還沒有，先顯示 Python」（播放器用 `PseudoAvailable` context 告訴板子）。哪些動畫有中文步驟：`registry.tsx` 的 `hasPseudo(id)`（trace 有 `pseudo`，或 N.tsx 有 `export const HAS_PSEUDO = true`）。
 - **預告**：有 `results` 時，顯示 `steps[下一步]`。程式碼面板裡下一步要處理的 token 也會被標起來（`preview.ts` 比較兩步的 `Tok`）。
 
 ## 三種動畫

@@ -720,13 +720,12 @@ def dfs(node, s):
     vis[node] = count + 1
     return count + 1
 
-n = 3
 nxt = [0, 2, 1, 1]
 vis = [0, 0, 0, 0]
 color = [-1, -1, -1, -1]
 cycle = False
 st = 0
-for i in range(1, n + 1):
+for i in range(1, 4):
     dfs(i, 0)
 print(vis.index(max(vis)))
 ''', notes={'if vis[node] > 0': 'vis > 0 = 算過了，直接拿答案',
@@ -800,7 +799,6 @@ low = [0, 0, 0, 0]
 cut = [False, False, False, False]
 t = 0
 dfs(0, -1)
-print(cut)
 ''', notes={'if v == p': ('來的那條邊不算回頭', True),
              'low[u] = min(low[u], tin[v])': ('v 已經走過：這是一條回頭的邊，u 可以直接碰到 tin[v]', True),
              'low[u] = min(low[u], low[v])': ('v 的子樹能碰到的，u 也能碰到', True),

@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
+/* dark: 跟著 App 的「深色 / 淺色」按鈕（<html class="dark">），不是跟著系統設定（Tailwind v4 預設看系統） */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-headline: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;

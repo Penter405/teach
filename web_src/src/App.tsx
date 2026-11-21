@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createViewSetting } from './animation_kit/viewSettings';
 import {
   Github,
   Lock,
@@ -698,12 +699,14 @@ const LessonPage = ({ lessonId, student, onBack, onLessonChange, onOpenCodeTree,
   );
 };
 
+const darkTheme = createViewSetting<boolean>('teach_dark', true);
+
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('login');
   const [previousPage, setPreviousPage] = useState<Page>('path');
   const [currentLessonId, setCurrentLessonId] = useState<string>('les-01-01');
   const [currentNodeId, setCurrentNodeId] = useState<string>('code');
-  const [isDark, setIsDark] = useState(true);
+  const isDark = darkTheme.use();   // 深色 / 淺色：記在 localStorage（viewSettings.tsx）
   const [student, setStudent] = useState<StudentUser | null>(null);
 
   useEffect(() => {
@@ -835,7 +838,7 @@ export default function App() {
       </AnimatePresence>
 
       <div className="fixed bottom-6 left-6 z-[100]">
-        <ThemeToggle isDark={isDark} onToggle={() => setIsDark(!isDark)} />
+        <ThemeToggle isDark={isDark} onToggle={() => darkTheme.set(!isDark)} />
       </div>
     </div>
   );

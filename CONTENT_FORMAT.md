@@ -84,7 +84,7 @@
 { "type": "code", "language": "python", "code": "...", "pseudo": "..." }
 ```
 
-- `pseudo`（可省略）：同一段程式的中文步驟，**一行對一行、縮排一樣**。有 `pseudo` 的程式碼區塊上面會出現「Python | 中文步驟」切換，和動畫共用同一個設定。寫法和動畫的中文步驟一樣（見 `web_src/src/animation_kit/KIT.md` 的「中文步驟」）。
+- `pseudo`（可省略）：同一段程式的中文步驟，**一行對一行、縮排一樣**。有 `pseudo` 的程式碼區塊標題列會出現「中文步驟」開關，和動畫共用同一個設定。寫法和動畫的中文步驟一樣（見 `web_src/src/animation_kit/KIT.md` 的「中文步驟」）。
 
 ### animation
 

@@ -6,7 +6,8 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { SlotColumn, useSlot, useStepSize } from './stepSize';
 import { addrRange, asRegister, encode, setHwView, useHwView, type BitStyle, type Data, type HwMode, type HwView } from './bits';
-import { useCodeLang } from './codeLang';
+import { useCodeLang, CODE_LANG_SWITCH } from './codeLang';
+import { SwitchBar, type SwitchDef } from './viewSettings';
 
 export const DIM = 0.45;
 
@@ -62,7 +63,7 @@ export const Line = ({
     transition={{ duration: 0.35 }}
     data-line=""
     data-pc={pc ? '1' : '0'}
-    className={`flex flex-wrap items-center gap-x-2 gap-y-1 whitespace-pre rounded px-1 py-[1px] ${pc ? 'bg-amber-400/15' : ''}`}
+    className={`flex flex-wrap items-center gap-x-2 gap-y-1 whitespace-pre rounded px-1 ${pc ? 'bg-amber-400/15' : ''}`}
   >
     <span className="w-3 shrink-0 text-amber-400 text-xs">{pc ? '▶' : ''}</span>
     {addr !== undefined && <span className="w-9 shrink-0 text-[10px] text-slate-400">{addr}</span>}
@@ -81,7 +82,7 @@ export const Line = ({
 export const CodePanel = ({ children, title = 'Python', pseudo = false }: { children: React.ReactNode; title?: string; pseudo?: boolean }) => {
   const zh = useCodeLang() === 'pseudo' && pseudo;
   return (
-    <div className="w-full rounded-xl border border-slate-700 bg-slate-900 p-3 font-mono text-[13px] md:text-[15px] text-slate-100 shadow-lg overflow-x-auto">
+    <div className="w-full rounded-xl border border-slate-700 bg-slate-900 p-3 font-mono text-[13px] md:text-[14px] leading-[1.4] text-slate-100 shadow-lg overflow-x-auto">
       <div className="mb-1 text-[10px] font-sans font-bold uppercase tracking-widest text-slate-400">{zh ? '中文步驟' : title}</div>
       {children}
     </div>
@@ -128,41 +129,32 @@ export const Bits = ({
   );
 };
 
-/* Display switches shown on every board; the choice is shared by all boards. */
-const Switch = ({ on, label, hint, onChange }: { on: boolean; label: string; hint: string; onChange: (v: boolean) => void }) => (
-  <button
-    type="button"
-    role="switch"
-    aria-checked={on}
-    aria-label={label}
-    title={hint}
-    onClick={() => onChange(!on)}
-    onPointerDown={(e) => e.stopPropagation()}
-    className="flex items-center gap-1.5 rounded-lg px-1.5 py-1 text-[11px] font-bold text-emerald-100/90 hover:bg-emerald-500/10"
-  >
-    <span className={`relative inline-block h-[16px] w-[28px] rounded-full transition-colors ${on ? 'bg-emerald-500' : 'bg-slate-600'}`}>
-      <span className={`absolute top-[2px] h-[12px] w-[12px] rounded-full bg-white shadow transition-all ${on ? 'left-[14px]' : 'left-[2px]'}`} />
-    </span>
-    {label}
-  </button>
-);
+/* Display switches shown on every board; the choice is shared by all boards (viewSettings.tsx). */
+type HwFlag = 'memBinary' | 'cpuBinary' | 'memTable' | 'moreRegs' | 'asmLevel' | 'threeCol' | 'ioBar';
+const hwSwitch = (id: HwFlag, label: string, hint: string): SwitchDef =>
+  ({ id, label, hint, useOn: () => useHwView()[id], set: (x) => setHwView({ [id]: x }) });
 
-export const HwViewControl = () => {
-  const v = useHwView();
-  const anyBinary = v.memBinary || v.cpuBinary;
-  return (
-    <div className="flex flex-wrap items-center justify-end gap-x-1 gap-y-1" aria-label="顯示設定">
-      <Switch on={v.memBinary} label="記憶體二進位" hint="記憶體裡的資料用 0 和 1 顯示" onChange={(x) => setHwView({ memBinary: x })} />
-      <Switch on={v.cpuBinary} label="CPU 二進位" hint="暫存器裡的資料用 0 和 1 顯示" onChange={(x) => setHwView({ cpuBinary: x })} />
-      <Switch on={v.memTable} label="記憶體表格" hint="記憶體畫成一整塊格子板，一格 = 1 byte" onChange={(x) => setHwView({ memTable: x })} />
-      <Switch on={v.moreRegs} label="更多暫存器" hint="顯示 IR、MAR、MDR，以及作業系統的輸入／輸出暫存區" onChange={(x) => setHwView({ moreRegs: x })} />
-      <Switch on={v.asmLevel} label="組合語言" hint="「現在在做什麼」改用組合語言（assembly）顯示" onChange={(x) => setHwView({ asmLevel: x })} />
-      <Switch on={v.threeCol} label="三欄排列" hint="CPU ｜ DRAM ｜ Python 排成三欄（畫面夠寬時）" onChange={(x) => setHwView({ threeCol: x })} />
-      <Switch on={v.ioBar} label="I/O 放說明欄" hint="鍵盤、螢幕放在下方一整條；關掉時放在 input()、print 旁邊" onChange={(x) => setHwView({ ioBar: x })} />
-      {anyBinary && <Switch on={v.bitStyle === 'lights'} label="燈號" hint="0 / 1 改用燈亮、燈滅表示" onChange={(x) => setHwView({ bitStyle: x ? 'lights' : 'digits' })} />}
-    </div>
-  );
-};
+/** the hardware switches, as objects (a board's `switches` list) */
+export const HW_SWITCHES: SwitchDef[] = [
+  hwSwitch('memBinary', '記憶體二進位', '記憶體裡的資料用 0 和 1 顯示'),
+  hwSwitch('cpuBinary', 'CPU 二進位', '暫存器裡的資料用 0 和 1 顯示'),
+  hwSwitch('memTable', '記憶體表格', '記憶體畫成一整塊格子板，一格 = 1 byte'),
+  hwSwitch('moreRegs', '更多暫存器', '顯示 IR、MAR、MDR，以及作業系統的輸入／輸出暫存區'),
+  hwSwitch('asmLevel', '組合語言', '「現在在做什麼」改用組合語言（assembly）顯示'),
+  hwSwitch('threeCol', '三欄排列', 'CPU ｜ DRAM ｜ Python 排成三欄（畫面夠寬時）'),
+  hwSwitch('ioBar', 'I/O 放說明欄', '鍵盤、螢幕放在下方一整條；關掉時放在 input()、print 旁邊'),
+  {
+    id: 'bitStyle', label: '燈號', hint: '0 / 1 改用燈亮、燈滅表示',
+    useOn: () => useHwView().bitStyle === 'lights',
+    set: (x) => setHwView({ bitStyle: x ? 'lights' : 'digits' }),
+    useVisible: () => { const v = useHwView(); return v.memBinary || v.cpuBinary; },
+  },
+];
+
+/** default switches of a hardware board: 中文步驟 + the hardware ones */
+export const BOARD_SWITCHES: SwitchDef[] = [CODE_LANG_SWITCH, ...HW_SWITCHES];
+
+export const HwViewControl = ({ switches = BOARD_SWITCHES }: { switches?: SwitchDef[] }) => <SwitchBar switches={switches} />;
 
 /* ───────── helpers that read what an animation put on the board ───────── */
 
@@ -353,7 +345,8 @@ const noSub = () => () => {};
    Medium → CPU top-left, Python top-right, memory full width below.
    三欄排列: CPU | DRAM | Python.  Phones: one column. */
 /** `now`: what this step did, in Python terms (shown as 現在在做什麼). Derived from the code if left out. */
-export const Board = ({ children, now }: { children: React.ReactNode; now?: string }) => {
+/** `switches`: the switches on top (default BOARD_SWITCHES = 中文步驟 + hardware); [] = none */
+export const Board = ({ children, now, switches = BOARD_SWITCHES }: { children: React.ReactNode; now?: string; switches?: SwitchDef[] }) => {
   const view = useHwView();
   const bridgeCtx = React.useContext(CpuBridgeCtx);
   const sink = bridgeCtx?.role === 'sink' ? bridgeCtx.bridge : null;
@@ -510,7 +503,7 @@ export const Board = ({ children, now }: { children: React.ReactNode; now?: stri
         backgroundSize: '18px 18px',
       }}
     >
-      <HwViewControl />
+      <HwViewControl switches={switches} />
       {body}
       {others}
       {(restOthers.length > 0 || reserved('rest')) && <SlotColumn col="rest" className="flex flex-col gap-3 min-w-0">{restOthers}</SlotColumn>}

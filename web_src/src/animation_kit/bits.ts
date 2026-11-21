@@ -1,7 +1,7 @@
 // Turns the values animations already pass to CPU/RAM (mostly strings like '26', '"F"',
 // '→ 0x2120', 'True') into typed data with real bits, so the hardware view can show
 // them as values or as binary without changing every animation.
-import { useSyncExternalStore } from 'react';
+import { createViewSetting } from './viewSettings';
 
 /* ───────────────────────── view setting (shared by every board) ───────────────────────── */
 
@@ -47,22 +47,14 @@ function load(): HwView {
   return DEFAULT_VIEW;
 }
 
-let view: HwView = load();
-const listeners = new Set<() => void>();
+const hwView = createViewSetting<HwView>(KEY, DEFAULT_VIEW, load);
 
 export function setHwView(patch: Partial<HwView>) {
-  view = { ...view, ...patch };
-  try { localStorage.setItem(KEY, JSON.stringify(view)); } catch { /* ignore */ }
-  listeners.forEach((l) => l());
+  hwView.set({ ...hwView.get(), ...patch });
 }
 
-const subscribe = (l: () => void) => {
-  listeners.add(l);
-  return () => listeners.delete(l);
-};
-
 /** Current view setting; every board re-renders together when it changes. */
-export const useHwView = () => useSyncExternalStore(subscribe, () => view, () => DEFAULT_VIEW);
+export const useHwView = hwView.use;
 
 /* ───────────────────────── encoding ───────────────────────── */
 

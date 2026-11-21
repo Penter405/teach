@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, ChevronRight, Play, SkipBack, ExternalLink, XCircle, Trophy, Code2, Maximize2, ZoomIn, Eye } from 'lucide-react';
 import { ZoomViewer } from './ZoomViewer';
-import { useHwView } from './animation_kit/bits';
 import { StepSizeProvider, measureLayout, type StepLayout } from './animation_kit/stepSize';
 import { markPreview, clearPreview } from './animation_kit/preview';
 import { CpuBridge, CpuBridgeProvider } from './animation_kit/HardwareKit';
@@ -10,7 +9,8 @@ import { ContentBlock, QuizQuestion, PracticeProblem } from './courseData';
 import { AIChat } from './AIChat';
 import { MatchingExercise } from './MatchingExercise';
 import { getAnimationRenderer, hasPseudo } from './animation_kit/registry';
-import { CodeLangSwitch, useCodeLang } from './animation_kit/codeLang';
+import { CodeLangToggle, PseudoAvailable, useCodeLang } from './animation_kit/codeLang';
+import { useViewVersion } from './animation_kit/viewSettings';
 
 interface LessonContentProps {
   key?: React.Key;
@@ -157,7 +157,7 @@ function RenderCodeBlock({ block }: { block: ContentBlock }) {
     <div className="bg-slate-900 rounded-xl overflow-hidden shadow-sm mb-6 border border-slate-800">
       <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 bg-white/5 border-b border-white/10">
         <span className="font-mono text-xs font-semibold text-purple-300 tracking-wider uppercase">{zh ? '中文步驟' : block.language || 'python'}</span>
-        {block.pseudo && <CodeLangSwitch dark />}
+        {block.pseudo && <CodeLangToggle />}
         <div className="flex gap-1.5">
           <div className="w-2.5 h-2.5 rounded-full bg-red-400 opacity-80" />
           <div className="w-2.5 h-2.5 rounded-full bg-amber-400 opacity-80" />
@@ -592,9 +592,10 @@ function AnimationStepper({ steps, results, children, title, heading, pseudo = f
     return () => { alive = false; };
   }, []);
   const ghostRefs = React.useRef<(HTMLDivElement | null)[]>([]);
-  const hwView = useHwView();
-  const codeLang = useCodeLang();   // Python ↔ 中文步驟 changes line widths / heights → measure again
-  React.useEffect(() => { setMeasuring(true); }, [codeLang, hwView.memBinary, hwView.cpuBinary, hwView.memTable, hwView.bitStyle, hwView.moreRegs, hwView.asmLevel, hwView.threeCol, hwView.ioBar, total]);
+  // any display setting (hardware switches, Python ↔ 中文步驟 …) changes sizes:
+  // measure again, so the box is as tall as the tallest step under the settings chosen now
+  const viewVersion = useViewVersion();
+  React.useEffect(() => { setMeasuring(true); }, [viewVersion, total]);
   React.useEffect(() => {
     const el = stageRef.current;
     if (!el) return;
@@ -656,7 +657,7 @@ function AnimationStepper({ steps, results, children, title, heading, pseudo = f
       setPreviewWhat(ghost.querySelector('[data-now]')?.getAttribute('data-now') ?? '');
     });
     return () => cancelAnimationFrame(raf);
-  }, [previewing, step, expanded, layout, hwView]);
+  }, [previewing, step, expanded, layout, viewVersion]);
 
   const openExpanded = () => {
     // Keep the same layout as on the page, just scaled up: render at the inline width.
@@ -686,8 +687,7 @@ function AnimationStepper({ steps, results, children, title, heading, pseudo = f
     </div>
   );
 
-  const controls = (dark = false) => (
-    <div className="flex flex-col items-center gap-2">
+  const controls = (
     <div className="flex flex-wrap justify-center gap-3">
       <button onClick={() => setStep(0)} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Reset"><SkipBack size={16} /></button>
       <button onClick={prev} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Previous"><ChevronRight size={16} className="rotate-180" /></button>
@@ -700,9 +700,6 @@ function AnimationStepper({ steps, results, children, title, heading, pseudo = f
         <Eye size={14} /> 預告
       </button>
       <button onClick={next} disabled={step >= total - 1} className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 transition-colors font-medium text-sm flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"><Play size={14} /> 執行</button>
-    </div>
-    {/* Python ↔ 中文步驟: one setting for every animation */}
-    <CodeLangSwitch available={pseudo} dark={dark} />
     </div>
   );
 
@@ -725,7 +722,8 @@ function AnimationStepper({ steps, results, children, title, heading, pseudo = f
   );
 
   return (
-    <div className="relative bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800 mb-8 w-full">
+    <PseudoAvailable.Provider value={pseudo}>
+    <div className="relative bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-5 shadow-sm border border-slate-100 dark:border-slate-800 mb-8 w-full">
       <button
         onClick={openExpanded}
         className="absolute top-3 right-3 z-10 flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-800/80 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
@@ -739,18 +737,18 @@ function AnimationStepper({ steps, results, children, title, heading, pseudo = f
           <span className="mr-2 text-cyan-600 dark:text-cyan-400">▶</span>{heading}
         </h3>
       )}
-      <div ref={stageRef} className="relative flex justify-center items-start w-full py-4" style={{ minHeight: Math.max(200, maxH + 32) }}>
+      <div ref={stageRef} className="relative flex justify-center items-start w-full py-1" style={{ minHeight: Math.max(200, maxH + 8) }}>
         <div ref={visibleRef} data-previewing={previewing ? '1' : '0'} className="flex justify-center w-full" style={{ minHeight: maxH || undefined }}>
           <CpuBridgeProvider value={sinkCtx}><StepSizeProvider value={{ mode: 'show', layout }}>{children(step)}</StepSizeProvider></CpuBridgeProvider>
         </div>
         {previewing && step < total - 1 && (
           // the next step, rendered invisibly, only to find out what it will process
-          <div ref={previewGhostRef} aria-hidden className="absolute inset-x-0 top-4 invisible pointer-events-none flex justify-center w-full">
+          <div ref={previewGhostRef} aria-hidden className="absolute inset-x-0 top-1 invisible pointer-events-none flex justify-center w-full">
             <CpuBridgeProvider value={sourceCtx}><StepSizeProvider value={{ mode: 'show', layout }}>{children(step + 1)}</StepSizeProvider></CpuBridgeProvider>
           </div>
         )}
         {measuring && (
-          <div aria-hidden className="absolute inset-x-0 top-4 invisible pointer-events-none">
+          <div aria-hidden className="absolute inset-x-0 top-1 invisible pointer-events-none">
             {safeSteps.map((_, i) => (
               <div key={i} ref={el => { ghostRefs.current[i] = el; }} className="absolute inset-x-0 top-0 flex justify-center w-full">
                 <StepSizeProvider value={{ mode: 'measure' }}>{children(i)}</StepSizeProvider>
@@ -759,11 +757,11 @@ function AnimationStepper({ steps, results, children, title, heading, pseudo = f
           </div>
         )}
       </div>
-      <div className="mt-4 px-2">
+      <div className="mt-2 px-2">
         {progress}
         {captions('text-sm text-slate-600 dark:text-slate-400 font-medium text-center mb-1 min-h-[40px]', false)}
-        {previewNote('text-sm font-bold text-amber-600 dark:text-amber-300 text-center mb-4 min-h-[20px]')}
-        {controls()}
+        {previewNote('text-sm font-bold text-amber-600 dark:text-amber-300 text-center mb-2 min-h-[20px]')}
+        {controls}
       </div>
 
       <ZoomViewer
@@ -777,7 +775,7 @@ function AnimationStepper({ steps, results, children, title, heading, pseudo = f
             {progress}
             {captions('text-base font-medium text-center mb-1 min-h-[28px]', true)}
             {previewNote('text-sm font-bold text-amber-300 text-center mb-3 min-h-[20px]')}
-            {controls(true)}
+            {controls}
             <p className="hidden md:block mt-2 text-center text-xs text-slate-500">→ 執行 · ↓ 預告 · ← 上一步</p>
           </div>
         }
@@ -787,6 +785,7 @@ function AnimationStepper({ steps, results, children, title, heading, pseudo = f
         </div>
       </ZoomViewer>
     </div>
+    </PseudoAvailable.Provider>
   );
 }
 
