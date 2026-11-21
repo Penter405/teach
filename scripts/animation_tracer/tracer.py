@@ -186,7 +186,8 @@ class Tracer:
         return getattr(builtins, name)
 
     def store(self, name, v):
-        if self.frames: self.frames[-1]['locals'][name] = v
+        if self.frames and name in self.frames[-1].get('globals', ()): self.g[name] = v   # `global x` inside a function
+        elif self.frames: self.frames[-1]['locals'][name] = v
         else: self.g[name] = v
 
     def src_of(self, node):
@@ -539,6 +540,9 @@ class Tracer:
         if isinstance(st, ast.Continue):
             self.begin(st); self.act = dict(k='branch', kw='continue', cond='', go=False); self.emit('continue：跳回迴圈開頭', '剩下的這一輪不做了', 'continue'); raise Continue()
         if isinstance(st, ast.Pass):
+            return
+        if isinstance(st, ast.Global):
+            if self.frames: self.frames[-1].setdefault('globals', set()).update(st.names)   # not an action: no step
             return
         raise NotImplementedError(ast.dump(st))
 

@@ -127,7 +127,8 @@ export const Note = ({ children, tone = 'sky' }: { children: React.ReactNode; to
 
 export type EdgeTone = 'normal' | 'active' | 'chosen' | 'dim' | 'hit';
 export type GNode = { id: string | number; x: number; y: number; label?: React.ReactNode; tone?: CellTone; below?: React.ReactNode; above?: React.ReactNode };
-export type GEdge = { a: string | number; b: string | number; w?: React.ReactNode; tone?: EdgeTone; directed?: boolean };
+/** bend = curve the edge sideways by this many units (two directed edges a→b and b→a: give both the same bend) */
+export type GEdge = { a: string | number; b: string | number; w?: React.ReactNode; tone?: EdgeTone; directed?: boolean; bend?: number };
 
 export const NODE_FILL: Record<CellTone, [string, string, string]> = {
   // fill, stroke, text
@@ -161,12 +162,23 @@ export const GraphView = ({ nodes, edges, width = 520, height = 260, r = 18 }: {
         const ux = dx / len, uy = dy / len;
         const tone = e.tone ?? 'normal';
         const [stroke, sw] = EDGE_STROKE[tone];
-        const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
+        const gap = r + (e.directed ? 2 : 0);
+        let mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
+        let line: React.ReactNode;
+        const common = { stroke, strokeWidth: sw, strokeLinecap: 'round' as const, markerEnd: e.directed ? `url(#arrow-${tone})` : undefined, style: { transition: 'stroke 0.3s, stroke-width 0.3s' } };
+        if (e.bend) {
+          // quadratic curve; the control point sits beside the middle of a→b
+          const cx = mx - uy * e.bend * 2, cy = my + ux * e.bend * 2;
+          const unit = (fx: number, fy: number, tx: number, ty: number) => { const l = Math.hypot(tx - fx, ty - fy) || 1; return [(tx - fx) / l, (ty - fy) / l]; };
+          const [sx, sy] = unit(A.x, A.y, cx, cy), [ex, ey] = unit(B.x, B.y, cx, cy);
+          line = <path d={`M ${A.x + sx * r} ${A.y + sy * r} Q ${cx} ${cy} ${B.x + ex * gap} ${B.y + ey * gap}`} fill="none" {...common} />;
+          mx = (A.x + 2 * cx + B.x) / 4; my = (A.y + 2 * cy + B.y) / 4;
+        } else {
+          line = <line x1={A.x + ux * r} y1={A.y + uy * r} x2={B.x - ux * gap} y2={B.y - uy * gap} {...common} />;
+        }
         return (
           <g key={i}>
-            <line x1={A.x + ux * r} y1={A.y + uy * r} x2={B.x - ux * (r + (e.directed ? 2 : 0))} y2={B.y - uy * (r + (e.directed ? 2 : 0))}
-              stroke={stroke} strokeWidth={sw} strokeLinecap="round" markerEnd={e.directed ? `url(#arrow-${tone})` : undefined}
-              style={{ transition: 'stroke 0.3s, stroke-width 0.3s' }} />
+            {line}
             {e.w !== undefined && (
               <g>
                 <rect x={mx - 11} y={my - 9} width={22} height={18} rx={4} fill="#0f172a" />

@@ -1,6 +1,6 @@
 # 動畫清單
 
-所有動畫都在 `web_src/src/animations/<編號>.tsx`。動畫系統的說明見 [ANIMATIONS.md](ANIMATIONS.md)。
+所有動畫都在 `web_src/src/animations/<編號>.tsx`。課裡的動畫區塊可以加 `title`（卡片最上面的標題，說這支動畫要回答什麼），Mo's algorithm 那一課的 93、96、97、98、99、特殊郵件的 100、101 和 cycle DP 的 82、101 都有。動畫系統的說明見 [ANIMATIONS.md](ANIMATIONS.md)。
 
 - **概念**（1 ～ 27）：手寫的概念動畫，沒有 `results`。
 - **硬體**（28 ～ 37）：CPU / DRAM / 螢幕，熟悉語法模組。
@@ -96,6 +96,8 @@
 | 97 | penter wrongs › Mo's algorithm | Mo's（學生的寫法，0-indexed）：sort 之後兩個指標移到每一筆查詢，add / remove 回傳新的答案 | 75 |
 | 98 | penter wrongs › Mo's algorithm | 每個數字只保留最後出現的位置：右端點由左往右掃，舊位置改 0、新位置標 1，Fenwick 求 [begin, back] 有幾個 1 | 81 |
 | 99 | penter wrongs › Mo's algorithm | Mo's 的結構樹：1. 更改搜尋順序（主要依塊號、次要依 r）、2. 移動 two pointers（add / remove、存答案），每一步亮一個節點和對應的程式碼（手寫） | 7 |
+| 100 | penter wrongs › 特殊郵件 | 特殊郵件（學生的遞迴 DFS）：color 標「這一輪正在走」，撞到就是環（環長 = s − color）；vis 記答案，環上 = 環長、環外 = 1 + 下一個人。nxt = [0, 2, 1, 1] | 74 |
+| 101 | Dynamic programming › cycle DP<br>penter wrongs › 特殊郵件 | 環 DP 的計算順序：4 → 3 → 2 → 1 → 2，ans[u] = 1 + ans[nxt[u]] 一路等到環上互相等；先把整個環算好（環長），再由近到遠填尾巴（手寫，不是 tracer） | 8 |
 
 ## 還沒有動畫的演算法
 

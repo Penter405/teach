@@ -546,7 +546,8 @@ function RenderImage({ block }: { block: ContentBlock }) {
 // ═══════════════════════════════════════════════
 // ── ANIMATIONS ──
 // ═══════════════════════════════════════════════
-function AnimationStepper({ steps, results, children, title }: { steps: string[]; results?: string[]; children: (step: number) => React.ReactNode; title?: string }) {
+/** heading = the block's `title`: one line on top of the card saying what this animation is about */
+function AnimationStepper({ steps, results, children, title, heading }: { steps: string[]; results?: string[]; children: (step: number) => React.ReactNode; title?: string; heading?: string }) {
   const safeSteps = steps?.length ? steps : [''];
   const total = safeSteps.length;
   const [step, setStepRaw] = useState(0);
@@ -717,6 +718,11 @@ function AnimationStepper({ steps, results, children, title }: { steps: string[]
       >
         <Maximize2 size={14} /> 放大
       </button>
+      {heading && (
+        <h3 className="pr-20 font-headline text-lg md:text-xl font-semibold text-slate-800 dark:text-white leading-snug">
+          <span className="mr-2 text-cyan-600 dark:text-cyan-400">▶</span>{heading}
+        </h3>
+      )}
       <div ref={stageRef} className="relative flex justify-center items-start w-full py-4" style={{ minHeight: Math.max(200, maxH + 32) }}>
         <div ref={visibleRef} data-previewing={previewing ? '1' : '0'} className="flex justify-center w-full" style={{ minHeight: maxH || undefined }}>
           <CpuBridgeProvider value={sinkCtx}><StepSizeProvider value={{ mode: 'show', layout }}>{children(step)}</StepSizeProvider></CpuBridgeProvider>
@@ -749,7 +755,7 @@ function AnimationStepper({ steps, results, children, title }: { steps: string[]
         onClose={() => setExpanded(false)}
         onKey={onKey}
         maxFit={2.5}
-        title={title}
+        title={heading || title}
         footer={
           <div className="mx-auto w-full max-w-4xl px-4 pb-5 pt-3 text-slate-200">
             {progress}
@@ -776,7 +782,7 @@ function RenderAnimation({ block }: { block: ContentBlock }) {
 
   return (
     <div>
-      <AnimationStepper steps={steps} results={block.results} title={block.caption}>
+      <AnimationStepper steps={steps} results={block.results} title={block.caption} heading={block.title}>
         {renderer || (() => <div className="text-slate-400">🎬 {block.caption || String(id)}</div>)}
       </AnimationStepper>
       {block.caption && (

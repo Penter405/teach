@@ -84,6 +84,7 @@
 {
   "type": "animation",
   "animationId": 41,
+  "title": "最左邊的 4 在哪？lo、hi 怎麼縮",
   "caption": "二分搜尋：在 [1,3,4,4,4,7,9,12] 找最左邊的 4",
   "steps":   ["還沒開始執行", "def lower_bound：名稱 lower_bound 指向函式", …],
   "results": ["a 已經排好序；左閉右開 [lo, hi)", "函式內容還沒執行", …]
@@ -91,6 +92,8 @@
 ```
 
 - `animationId` = `web_src/src/animations/<id>.tsx`。
+- `title`：（可省略）動畫卡片最上面的標題，一句話說這支動畫要回答什麼問題，例如「硬要 left 遞增排序會怎樣」。`run.py` 不會改它。
+- `caption`：動畫下面的小字說明。演算法動畫由 `run.py` 從 `specs.py` 寫入。
 - `steps[k]`：**預告**，第 k 步會做什麼。
 - `results[k]`：**執行後**，第 k 步做完留下什麼。可以省略（舊的動畫 1 ～ 27 沒有）。
 - `steps` 的數量就是動畫的步數，要和動畫元件一致。演算法動畫（38 號之後）的 `steps`、`results` 由 `scripts/animation_tracer/run.py` 自動填，**不要手改**，改了下次產生會被蓋掉。

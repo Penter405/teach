@@ -90,7 +90,7 @@ export default function MyAnim({ step }: { step: number }) {
 | `Seq` | 一排格子（list、queue、deque）：`items={[{ v, tone, top, bottom, struck }]}`、`left="出" right="進"`、`empty="（空）"` |
 | `StackView` | 直的堆疊，上面是頂：`items={[{ v, tone, note }]}` |
 | `Table2D` | DP 表格：`colHeads`、`rows={[{ head, cells: [{ v, tone, note }] }]}`、`corner` |
-| `GraphView` | 圖 / 樹：`nodes={[{ id, x, y, label, tone, above, below }]}`、`edges={[{ a, b, w, tone, directed }]}`；邊的 tone：`normal`、`active`、`chosen`、`dim`、`hit` |
+| `GraphView` | 圖 / 樹：`nodes={[{ id, x, y, label, tone, above, below }]}`、`edges={[{ a, b, w, tone, directed, bend }]}`；邊的 tone：`normal`、`active`、`chosen`、`dim`、`hit`。`bend` = 把邊彎成弧線（a→b 和 b→a 兩條邊都給同樣的 `bend` 就不會疊在一起，見 100） |
 
 ### 讀這一步的資料
 
@@ -189,6 +189,7 @@ export default function MyAnim({ step }: { step: number }) {
 - 不是重點的函式放進 `env`，只算一步，例如 Mo's 的 `add(i)` / `remove(i)`。它可以用 `SPECS_STATE['g']` 讀寫程式裡的變數，然後在 `CALLDESC` 寫說明。兩支動畫的輔助函式同名但做的事不一樣時（例如 94、97、98 都有 `add`），在那個 spec 裡寫 `calldesc={'add': '…'}`，只對那支有效。
 - 開頭的資料（`a = [...]`）不算步數，第 0 步就看得到。
 - 步數太多：資料改小、把輔助函式放進 `env`。`x += 1` 是兩步（運算＋指定）。
+- 函式裡可以用 `global x, y`（不算一步）：指定 `x = …` 會改到外面的 `x`，見 100。
 - `qs` 這類很長的資料，tuple 裡不加空白，程式碼面板才放得下。
 
 ## 檢查

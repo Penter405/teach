@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y11m20d",
+    "version": "2026y11m21d",
     "language": "zh-TW"
   },
   "modules": [
@@ -5692,6 +5692,23 @@
           ]
         },
         {
+          "id": "lesson-1795244973782",
+          "title": "找所有因數",
+          "titleEn": "",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "找因數"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "因數*另一個因數  = target\ntarget % 因數 = 0\n所以因數可以兩兩配對\n如果是 小配上大\n則小因數最大值為 n**0.5   因此遍歷到 int(n**0.5 )+1 可以找到所有的小因數\n接著把 小因數  跟對應的大因數都算進去就可以了\n"
+            }
+          ]
+        },
+        {
           "id": "lesson-1794560000000",
           "title": "GCD 與快速冪",
           "titleEn": "GCD and Fast Power",
@@ -6292,6 +6309,31 @@
               "subtitle": "用向量加減求頂點",
               "difficulty": "Medium",
               "coursePrompt": "請讓學生完成 Python Coding 題：給正方形的兩個相鄰頂點 A(x1, y1)、B(x2, y2)（整數），輸出另外兩個頂點（取 A→B 逆時針旋轉 90 度的那一邊）。引導學生想：向量 AB = (dx, dy)，逆時針轉 90 度是 (−dy, dx)，C = B + (−dy, dx)、D = A + (−dy, dx)。和平行四邊形那題一樣，是用點的加減來算。不要直接給答案。"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1795238776505",
+          "title": "餘數",
+          "titleEn": "modulo",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "1."
+            },
+            {
+              "type": "paragraph",
+              "text": "列舉  (a+b)%m == (a-b)%m 在  a,b,m有固定範圍"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "%m 餘數相同  -> (a+b)  跟 (a-b) 的差值可以被 m 整除(整除 ->  %m=0)\n[(a+b)-(a-b)]%m==0 化簡\n(2*b)%m==0  -> 僅需2個 factor 就能找答案\n只要 b,m符合條件，任何合法的 a都符合原本的條件\n答案*= 合法的a  -> print(答案)"
+            },
+            {
+              "type": "paragraph",
+              "text": "New paragraph"
             }
           ]
         }
@@ -12477,32 +12519,119 @@
               "text": "題目像「每個人都指定一個下一個人」「從 i 會跳到 next[i]」：每個點剛好一條出邊（functional graph）。從任何點一直走，最後一定會掉進一個環。\n\n問題：從每個點出發，總共會經過幾個不同的點？"
             },
             {
+              "type": "heading",
+              "text": "1. 為什麼一定會走進環"
+            },
+            {
+              "type": "paragraph",
+              "text": "只有 n 個點，每走一步都會到某一個點。走 n 步一共碰到 n + 1 次點，一定有一個點出現兩次（鴿籠原理）。走到一個走過的點之後，下一步、下下步都和上次一樣，所以會一直繞同一圈。\n\n所以從任何點出發，路線都長成「一段尾巴 + 一個環」，像字母 ρ。不同的起點可能接到同一個環上，好幾條尾巴也可能合在一起再進環。"
+            },
+            {
+              "type": "heading",
+              "text": "2. 把它寫成 DP"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "狀態",
+                  "definition": "ans[u] = 從 u 出發，總共會經過幾個不同的點（包含 u 自己）。"
+                },
+                {
+                  "term": "轉移（不在環上的點）",
+                  "definition": "ans[u] = 1 + ans[nxt[u]]。u 自己算 1 個，剩下的就是「從下一個點出發」會經過的點。不會重複算：u 不在環上，走出去就不會再回到 u。"
+                },
+                {
+                  "term": "邊界（環上的點）",
+                  "definition": "從環上任何一個點出發，都會把整個環走一遍再回到自己，經過的是同一群點：ans = 環長。"
+                },
+                {
+                  "term": "計算順序",
+                  "definition": "先把環找出來、整個環一次給答案；再沿著尾巴，從靠近環的點往外填。"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "為什麼環上不能也用 ans[u] = 1 + ans[nxt[u]]？有兩個原因：\n• 互相等：環上 ans[2] 要等 ans[1]，ans[1] 又要等 ans[2]，找不到一個「先算」的點。一般 DP 能做，是因為依賴關係沒有環（例如 dp[i] 只看 dp[i-1]）。\n• 會重複算：從 2 出發本來就會走到 1，1 + ans[2] 會把 1 多算一次。\n所以環要當成一整塊先解決，這就是「環 DP」和一般 DP 不一樣的地方。"
+            },
+            {
+              "type": "animation",
+              "animationId": 101,
+              "title": "為什麼環上不能直接用 ans[u] = 1 + ans[nxt[u]]？",
+              "caption": "環 DP 的計算順序：一般 DP 在環上會互相等，所以先把整個環算好，再往外填尾巴",
+              "steps": [
+                "還沒開始執行",
+                "要算 ans[4]：先要 ans[3]",
+                "要算 ans[3]：先要 ans[2]",
+                "要算 ans[2]：先要 ans[1]",
+                "要算 ans[1]：先要 ans[2]……又回到 ans[2]",
+                "把環當成一整塊：環上的人經過的是同一群點",
+                "往回填尾巴：ans[3] = 1 + ans[2]",
+                "再往外：ans[4] = 1 + ans[3]"
+              ],
+              "results": [
+                "ans[u] = 從 u 出發會經過幾個不同的點。每個點只有一條出去的邊，所以答案只和下一個點有關",
+                "ans[4] 等 ans[3]（還不知道）",
+                "ans[3] 等 ans[2]（還不知道）",
+                "ans[2] 等 ans[1]（還不知道）",
+                "繞了一圈：ans[2] 等 ans[1]、ans[1] 又等 ans[2]，誰都算不出來。而且 1 + ans[2] 會把 1 算兩次（從 2 出發本來就會走到 1）",
+                "從 1 或 2 出發，經過的都是 {1, 2}：ans = 環長 = 2。這是這個 DP 的起點（邊界）",
+                "ans[3] = 1 + 2 = 3：3 不在環上，走出去就不會再回到 3，所以不會重複算",
+                "ans[4] = 1 + 3 = 4。順序：先環，再沿著尾巴由近到遠，每個點只算一次"
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "3. 程式怎麼找環：三種狀態"
+            },
+            {
               "type": "image",
-              "caption": "New image",
+              "caption": "① 從 4 出發，一路往下一個點走：4 → 3 → 2 → 1 → 2",
               "imageId": 5
             },
             {
               "type": "image",
-              "caption": "New image",
+              "caption": "② 一邊走一邊做記號（藍字）：記住哪些點已經在這條路上",
               "imageId": 6
             },
             {
               "type": "image",
-              "caption": "New image",
+              "caption": "③ 走到 2 時，2 已經在這條路上 → 紫框就是環，環長 2",
               "imageId": 7
             },
             {
               "type": "image",
-              "caption": "New image",
+              "caption": "④ 往回填：3 = 1 + 2 = 3，4 = 1 + 1 + 2 = 4",
               "imageId": 8
             },
             {
               "type": "paragraph",
-              "text": "圖裡：4 → 3 → 2 → 1 → 2，1 和 2 是一個長度 2 的環。\n• 環上的點：繞一圈就回來了，答案 = 環長 = 2。\n• 不在環上的點：答案 = 1 + 下一個點的答案。3 = 1 + 2 = 3，4 = 1 + 3 = 4（就是圖上的 1 + 1 + 2）。\n\n藍色的 0、1 是走訪狀態：走到一半（0，還在這條路上）的點如果又被走到，代表找到環了。"
+              "text": "圖裡：4 → 3 → 2 → 1 → 2，1 和 2 是一個長度 2 的環。\n• 環上的點：答案 = 環長 = 2。\n• 不在環上的點：答案 = 1 + 下一個點的答案。3 = 1 + 2 = 3，4 = 1 + 3 = 4（就是圖上的 1 + 1 + 2）。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "state 0：沒走過",
+                  "definition": "繼續往下走，把它標成 1、放進 path。"
+                },
+                {
+                  "term": "state 1：走到一半（就在這條路上）",
+                  "definition": "又走到它 → 繞回來了，從它在 path 裡的位置到最後就是環。"
+                },
+                {
+                  "term": "state 2：完成",
+                  "definition": "它的答案已經算好（以前的起點算過），直接用，不用再往下走。這就是 DP 的「記住答案」。"
+                }
+              ]
             },
             {
               "type": "animation",
               "animationId": 82,
+              "title": "程式怎麼跑：先找環，再往回填答案",
               "caption": "環 DP：4 → 3 → 2 → 1 → 2，先找環再往回填答案",
               "steps": [
                 "還沒開始執行",
@@ -12635,9 +12764,89 @@
               "code": "def count_visited(nxt):\n    n = len(nxt)\n    ans = [0] * n\n    state = [0] * n             # 0 沒走過, 1 走到一半（在目前的路上）, 2 完成\n    for s in range(n):\n        if state[s]:\n            continue\n        path = []\n        u = s\n        while state[u] == 0:    # 一直走，直到碰到走過的點\n            state[u] = 1\n            path.append(u)\n            u = nxt[u]\n        if state[u] == 1:       # 碰到這條路上的點：找到環\n            cyc = path[path.index(u):]\n            for x in cyc:\n                ans[x] = len(cyc)\n                state[x] = 2\n            path = path[:path.index(u)]\n        for x in reversed(path):   # 環外的點：1 + 下一個點的答案（記憶化）\n            ans[x] = 1 + ans[nxt[x]]\n            state[x] = 2\n    return ans\n\n# 點 0 不用；1→2, 2→1, 3→2, 4→3\nprint(count_visited([0, 2, 1, 2, 3]))   # [1, 2, 2, 3, 4]"
             },
             {
+              "type": "heading",
+              "text": "4. 為什麼是 O(n)"
+            },
+            {
               "type": "callout",
               "label": "為什麼是 DP",
               "text": "走到 state = 2 的點就直接用它的答案，不用再走一次，每個點只算一次，O(n)。"
+            },
+            {
+              "type": "paragraph",
+              "text": "每個點的 state 只會 0 → 1 一次、1 → 2 一次，所以 while 迴圈所有起點加起來最多走 n 步，往回填也是每個點一次。path.index(u) 只在找到環的時候做一次，加起來也不超過 n。\n\n對照：從每個點各自模擬一次，每次最多走 n 步，總共 n²。n = 50000 時是 25 億步。"
+            },
+            {
+              "type": "heading",
+              "text": "5. 同一件事，用遞迴寫"
+            },
+            {
+              "type": "paragraph",
+              "text": "也可以用遞迴：dfs(u) 先問 dfs(nxt[u])，回來再算自己。兩種寫法一一對應："
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "state 1（走到一半）",
+                  "definition": "color[u] ≥ 0：記下 u 是這一輪的第幾層。"
+                },
+                {
+                  "term": "path 這個 list",
+                  "definition": "call stack：還沒 return 的 dfs 就是這條路。"
+                },
+                {
+                  "term": "len(cyc)（環長）",
+                  "definition": "現在第幾層 − 繞回來的那個點當初在第幾層。"
+                },
+                {
+                  "term": "state 2 + ans",
+                  "definition": "vis[u] > 0：算過了，直接回傳。"
+                },
+                {
+                  "term": "reversed(path) 往回填",
+                  "definition": "遞迴 return 的時候：從最深的點一層一層回來，剛好是由近到遠。"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "完整的遞迴程式和一步一步的動畫在 penter wrongs › 特殊郵件。遞迴版要注意深度：一條鏈有 n 層，Python 預設只能 1000 層。"
+            },
+            {
+              "type": "heading",
+              "text": "6. 常見錯誤"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "環長差 1",
+                  "definition": "環長 = 路上的點數 len(path) − path.index(u)，或遞迴版的「層數相減」，不用再 −1。少 1 的話，所有答案都會一起少 1。"
+                },
+                {
+                  "term": "自己指向自己",
+                  "definition": "nxt[u] = u 是長度 1 的環，答案是 1。如果把「答案 0」當成「還沒算」，這種點會出錯。有些題目（例如特殊郵件）保證 u ≠ v，就不會有。"
+                },
+                {
+                  "term": "遞迴太深",
+                  "definition": "n = 50000 的一條長鏈會 RecursionError，用 while 版本，或 sys.setrecursionlimit。"
+                },
+                {
+                  "term": "每個起點都重新模擬",
+                  "definition": "沒有用 state 2 的答案，就退回 O(n²)。"
+                },
+                {
+                  "term": "同樣多要取哪一個",
+                  "definition": "題目常說「一樣多輸出最小的編號」：從小到大找第一個最大值，或 max(..., key=lambda u: (ans[u], -u))。"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "用這一課的方法解的題目：penter wrongs › 特殊郵件（從誰開始寄，能讓最多人收到）。"
             },
             {
               "type": "practice",
@@ -13775,7 +13984,33 @@
             },
             {
               "type": "heading",
-              "text": "老師講解：每個人只寄給一個人 → 一條鏈最後一定繞回環"
+              "text": "老師講解：先把題目變成一張圖"
+            },
+            {
+              "type": "paragraph",
+              "text": "每個使用者是一個點，「u 寄給 v」是一條 u → v 的邊。題目保證每個人剛好寄給一個人，而且不寄給自己（u ≠ v），所以每個點剛好有一條出去的邊。\n\n郵件從某個人出發，就是沿著邊一直走；「收到過就不會再收」就是走到走過的人就停。所以題目問的是：從哪個點出發，經過的不同點最多？"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "範例 in1 第 2 組",
+                  "definition": "1 → 2、2 → 1、4 → 3、3 → 2。"
+                },
+                {
+                  "term": "從 4 寄",
+                  "definition": "4 → 3 → 2 → 1 → 2（2 收過了，停）：4、3、2、1 共 4 人。"
+                },
+                {
+                  "term": "從 3 寄",
+                  "definition": "3、2、1 共 3 人。從 1 或 2 寄：只有 1、2 兩人。"
+                },
+                {
+                  "term": "答案",
+                  "definition": "4。"
+                }
+              ]
             },
             {
               "type": "paragraph",
@@ -13787,7 +14022,7 @@
             },
             {
               "type": "heading",
-              "text": "關鍵：記住算過的答案"
+              "text": "關鍵：記住算過的答案（環 DP）"
             },
             {
               "type": "list",
@@ -13809,6 +14044,36 @@
             },
             {
               "type": "paragraph",
+              "text": "上面這組範例剛好就是 Dynamic programming › cycle DP 那一課的圖。為什麼環上不能直接用「1 + 下一個人」、為什麼要先算環，那一課有完整的推導；這裡用同一個例子再看一次："
+            },
+            {
+              "type": "animation",
+              "animationId": 101,
+              "title": "範例 4 → 3 → 2 → 1 → 2：為什麼要先把環算好？",
+              "caption": "環 DP 的計算順序：一般 DP 在環上會互相等，所以先把整個環算好，再往外填尾巴",
+              "steps": [
+                "還沒開始執行",
+                "要算 ans[4]：先要 ans[3]",
+                "要算 ans[3]：先要 ans[2]",
+                "要算 ans[2]：先要 ans[1]",
+                "要算 ans[1]：先要 ans[2]……又回到 ans[2]",
+                "把環當成一整塊：環上的人經過的是同一群點",
+                "往回填尾巴：ans[3] = 1 + ans[2]",
+                "再往外：ans[4] = 1 + ans[3]"
+              ],
+              "results": [
+                "ans[u] = 從 u 出發會經過幾個不同的點。每個點只有一條出去的邊，所以答案只和下一個點有關",
+                "ans[4] 等 ans[3]（還不知道）",
+                "ans[3] 等 ans[2]（還不知道）",
+                "ans[2] 等 ans[1]（還不知道）",
+                "繞了一圈：ans[2] 等 ans[1]、ans[1] 又等 ans[2]，誰都算不出來。而且 1 + ans[2] 會把 1 算兩次（從 2 出發本來就會走到 1）",
+                "從 1 或 2 出發，經過的都是 {1, 2}：ans = 環長 = 2。這是這個 DP 的起點（邊界）",
+                "ans[3] = 1 + 2 = 3：3 不在環上，走出去就不會再回到 3，所以不會重複算",
+                "ans[4] = 1 + 3 = 4。順序：先環，再沿著尾巴由近到遠，每個點只算一次"
+              ]
+            },
+            {
+              "type": "paragraph",
               "text": "每個人只會被走過一次、算一次，所以總共 O(N)。用迴圈（不是遞迴）寫，N = 50000 時也不會遇到遞迴深度的限制。"
             },
             {
@@ -13822,9 +14087,220 @@
               "text": "題目兩個輸入檔的 8 組答案（1 4 3 / 6 1 7 1 3）都能對上。「同樣多人時輸出最小的編號」用 key=(reach[u], -u) 一次處理。"
             },
             {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "同樣多取最小的編號",
+                  "definition": "max(range(1, n + 1), key=lambda u: (reach[u], -u))：人數一樣時 -u 大的（編號小的）贏。遞迴版用 vis.index(max(vis))，從小到大找第一個最大值，效果一樣。"
+                },
+                {
+                  "term": "多組測資",
+                  "definition": "每一組都要重新建 reach、state（或 vis、color），不能用上一組留下來的。"
+                },
+                {
+                  "term": "讀輸入",
+                  "definition": "N 到 50000、最多 20 組：一次 sys.stdin.read().split() 比一行一行 input() 快。"
+                }
+              ]
+            },
+            {
               "type": "callout",
               "label": "延伸",
               "text": "這種「每個點只有一條出去的邊」的圖叫做 functional graph，找環＋記憶化是它的標準做法。"
+            },
+            {
+              "type": "heading",
+              "text": "遞迴寫法：color 找環、vis 記答案"
+            },
+            {
+              "type": "paragraph",
+              "text": "同一個想法也可以用遞迴寫：dfs(node, s) 一路往下寄，s = 這是這一輪的第幾層。color 標「這一輪正在走」，碰到 color ≥ 0 的人就是繞回來了；vis 記住算好的答案，下次直接拿。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import sys\nsys.setrecursionlimit(200000)          # 一條鏈最長 N = 50000 層\n\ndef dfs(node, s):\n    global cycle, st\n    if vis[node] > 0:                  # 算過了\n        return vis[node]\n    if color[node] >= 0:               # 這一輪的路上已經有他 → 找到環\n        cycle = True\n        st = node                      # 環從 st 開始\n        return s - color[node]         # 環長\n    color[node] = s                    # 這一輪正在走，記下第幾層\n    count = dfs(nxt[node], s + 1)      # 每個人只寄給一個人\n    color[node] = -2                   # 走完了\n    if cycle:                          # 還在環裡：答案 = 環長\n        vis[node] = count\n        if node == st:                 # 退回到環的起點，離開環\n            cycle = False\n        return count\n    vis[node] = count + 1              # 環外：自己 + 下一個人的答案\n    return count + 1\n\nfor _ in range(int(input())):\n    n = int(input())\n    nxt = [0] * (n + 1)\n    for _ in range(n):\n        u, v = map(int, input().split())\n        nxt[u] = v\n    vis = [0] * (n + 1)\n    color = [-1] * (n + 1)              # -1 沒走過、>= 0 正在走、-2 走完\n    cycle = False\n    for i in range(1, n + 1):\n        dfs(i, 0)\n    print(vis.index(max(vis)))"
+            },
+            {
+              "type": "animation",
+              "animationId": 100,
+              "title": "遞迴版：color 怎麼找到環、vis 怎麼記住答案",
+              "caption": "特殊郵件（遞迴）：撞到「這一輪正在走」的人 = 找到環；環上的人答案 = 環長，其他人 = 1 + 下一個人",
+              "steps": [
+                "還沒開始執行",
+                "n + 1：3 + 1",
+                "range(1, 4)：做出 range 物件（只記 start / stop / step）",
+                "for：從 range(1, n + 1) 拿下一個 → i = 1",
+                "呼叫 dfs(1, 0)",
+                "vis[1]：拿 index 1 的值",
+                "vis[node] > 0：0 > 0，if 不成立 → 跳過",
+                "color[1]：拿 index 1 的值",
+                "color[node] >= 0：-1 >= 0，if 不成立 → 跳過",
+                "color[1] =：color[1] 從 -1 改成 0",
+                "nxt[1]：拿 index 1 的值",
+                "s + 1：0 + 1",
+                "呼叫 dfs(2, 1)",
+                "vis[2]：拿 index 2 的值",
+                "vis[node] > 0：0 > 0，if 不成立 → 跳過",
+                "color[2]：拿 index 2 的值",
+                "color[node] >= 0：-1 >= 0，if 不成立 → 跳過",
+                "color[2] =：color[2] 從 -1 改成 1",
+                "nxt[2]：拿 index 2 的值",
+                "s + 1：1 + 1",
+                "呼叫 dfs(1, 2)",
+                "vis[1]：拿 index 1 的值",
+                "vis[node] > 0：0 > 0，if 不成立 → 跳過",
+                "color[1]：拿 index 1 的值",
+                "color[node] >= 0：0 >= 0，if 成立 → 進入",
+                "cycle =：名稱 cycle 指向 True",
+                "st =：名稱 st 指向 1",
+                "color[1]：拿 index 1 的值",
+                "s - color[node]：2 - 0",
+                "return 2：dfs 結束，把 2 交回去",
+                "count =：名稱 count 指向 2",
+                "color[2] =：color[2] 從 1 改成 -2",
+                "if True：if 成立 → 進入",
+                "vis[2] =：vis[2] 從 0 改成 2",
+                "node == st：2 == 1，if 不成立 → 跳過",
+                "return 2：dfs 結束，把 2 交回去",
+                "count =：名稱 count 指向 2",
+                "color[1] =：color[1] 從 0 改成 -2",
+                "if True：if 成立 → 進入",
+                "vis[1] =：vis[1] 從 0 改成 2",
+                "node == st：1 == 1，if 成立 → 進入",
+                "cycle =：名稱 cycle 指向 False",
+                "return 2：dfs 結束，把 2 交回去",
+                "for：從 range(1, n + 1) 拿下一個 → i = 2",
+                "呼叫 dfs(2, 0)",
+                "vis[2]：拿 index 2 的值",
+                "vis[node] > 0：2 > 0，if 成立 → 進入",
+                "vis[2]：拿 index 2 的值",
+                "return 2：dfs 結束，把 2 交回去",
+                "for：從 range(1, n + 1) 拿下一個 → i = 3",
+                "呼叫 dfs(3, 0)",
+                "vis[3]：拿 index 3 的值",
+                "vis[node] > 0：0 > 0，if 不成立 → 跳過",
+                "color[3]：拿 index 3 的值",
+                "color[node] >= 0：-1 >= 0，if 不成立 → 跳過",
+                "color[3] =：color[3] 從 -1 改成 0",
+                "nxt[3]：拿 index 3 的值",
+                "s + 1：0 + 1",
+                "呼叫 dfs(1, 1)",
+                "vis[1]：拿 index 1 的值",
+                "vis[node] > 0：2 > 0，if 成立 → 進入",
+                "vis[1]：拿 index 1 的值",
+                "return 2：dfs 結束，把 2 交回去",
+                "count =：名稱 count 指向 2",
+                "color[3] =：color[3] 從 0 改成 -2",
+                "if False：if 不成立 → 跳過",
+                "count + 1：2 + 1",
+                "vis[3] =：vis[3] 從 0 改成 3",
+                "count + 1：2 + 1",
+                "return 3：dfs 結束，把 3 交回去",
+                "for：range(1, n + 1) 沒有下一個了 → 離開迴圈",
+                "max(vis)：取最大",
+                "vis.index(3)：找位置",
+                "print(3)：印到螢幕"
+              ],
+              "results": [
+                "nxt[i] = i 收到後寄給誰：1 → 2 → 1 是環，3 → 1 是尾巴。color[i]：-1 沒走過、≥ 0 這一輪正在走（第幾層）、-2 走完；vis[i] = 從 i 開始有幾個人收到（0 = 還沒算）",
+                "得到 4。算式變成 for i in range(1, 4):",
+                "回傳 range(1, 4)",
+                "i → 1",
+                "進入 dfs：node → 1、s → 0，stack 多一層",
+                "是 0。算式變成 if 0 > 0:",
+                "跳過這個 if 區塊。vis > 0 = 算過了，直接拿答案",
+                "是 -1。算式變成 if -1 >= 0:",
+                "跳過這個 if 區塊。color ≥ 0 = 這一輪的路上已經有他 → 繞回來了",
+                "color 變成 [-1, 0, -1, -1]。標成「這一輪正在走」，記下第幾層",
+                "是 2。算式變成 count = dfs(2, s + 1)",
+                "得到 1。算式變成 count = dfs(2, 1)",
+                "進入 dfs：node → 2、s → 1，stack 多一層",
+                "是 0。算式變成 if 0 > 0:",
+                "跳過這個 if 區塊",
+                "是 -1。算式變成 if -1 >= 0:",
+                "跳過這個 if 區塊",
+                "color 變成 [-1, 0, 1, -1]。標成「這一輪正在走」，記下第幾層",
+                "是 1。算式變成 count = dfs(1, s + 1)",
+                "得到 2。算式變成 count = dfs(1, 2)",
+                "進入 dfs：node → 1、s → 2，stack 多一層",
+                "是 0。算式變成 if 0 > 0:",
+                "跳過這個 if 區塊",
+                "是 0。算式變成 if 0 >= 0:",
+                "往下執行第 6 行",
+                "cycle → True",
+                "st → 1。記住環從誰開始，退回到他時就離開環",
+                "是 0。算式變成 return s - 0",
+                "得到 2。算式變成 return 2",
+                "dfs 回傳 2，stack 少一層，回到第 10 行。環長 = 現在第幾層 − 他當初在第幾層",
+                "count → 2",
+                "color 變成 [-1, 0, -2, -1]。走完了，不在這一輪的路上",
+                "往下執行第 13 行",
+                "vis 變成 [0, 0, 2, 0]。還在環裡：答案 = 環長",
+                "跳過這個 if 區塊",
+                "dfs 回傳 2，stack 少一層，回到第 10 行",
+                "count → 2",
+                "color 變成 [-1, -2, -2, -1]",
+                "往下執行第 13 行",
+                "vis 變成 [0, 2, 2, 0]。還在環裡：答案 = 環長",
+                "往下執行第 15 行",
+                "cycle → False。退回到環的起點：再往回的人都不在環上",
+                "dfs 回傳 2，stack 少一層，回到第 27 行",
+                "i → 2",
+                "進入 dfs：node → 2、s → 0，stack 多一層",
+                "是 2。算式變成 if 2 > 0:",
+                "往下執行第 4 行",
+                "是 2。算式變成 return 2",
+                "dfs 回傳 2，stack 少一層，回到第 27 行",
+                "i → 3",
+                "進入 dfs：node → 3、s → 0，stack 多一層",
+                "是 0。算式變成 if 0 > 0:",
+                "跳過這個 if 區塊",
+                "是 -1。算式變成 if -1 >= 0:",
+                "跳過這個 if 區塊",
+                "color 變成 [-1, -2, -2, 0]。標成「這一輪正在走」，記下第幾層",
+                "是 1。算式變成 count = dfs(1, s + 1)",
+                "得到 1。算式變成 count = dfs(1, 1)",
+                "進入 dfs：node → 1、s → 1，stack 多一層",
+                "是 2。算式變成 if 2 > 0:",
+                "往下執行第 4 行",
+                "是 2。算式變成 return 2",
+                "dfs 回傳 2，stack 少一層，回到第 10 行",
+                "count → 2",
+                "color 變成 [-1, -2, -2, -2]",
+                "跳過這個 if 區塊",
+                "得到 3。算式變成 vis[node] = 3",
+                "vis 變成 [0, 2, 2, 3]。不在環上：自己 1 個 + 下一個人的答案",
+                "得到 3。算式變成 return 3",
+                "dfs 回傳 3，stack 少一層，回到第 27 行",
+                "跳到迴圈後面",
+                "回傳 3",
+                "回傳 3",
+                "螢幕多一行：3"
+              ]
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "原本的 return s-color[st]-1",
+                  "definition": "環長少算 1，環外的人是「1 + 下一個人」，所以也跟著少 1：每個人的 vis 都剛好比真正的人數少 1。題目保證 u ≠ v（環長至少 2），所以 vis 不會變成 0，最大的人也不變，答案還是對的（8 組範例都對）。但 vis 已經不是「收到的人數」；如果題目允許寄給自己（環長 1），那個人會變成 0，被當成「還沒算」，最後的 res if res > 0 else 0 也是在補這個洞。改成 return s - color[node]，vis 就是真正的人數。"
+                },
+                {
+                  "term": "遞迴深度",
+                  "definition": "一條鏈最長 50000 層，Python 預設只能 1000 層，會 RecursionError。這是原本的程式真正會錯的地方。要加 sys.setrecursionlimit；比較舊的 Python 加了也可能整個當掉，上面的 while 版本沒有這個問題。"
+                },
+                {
+                  "term": "d 用 list 就好",
+                  "definition": "每個人只寄給一個人，d[u] 永遠只有一個元素，nxt[u] = v 一個 list 就夠，不用 defaultdict(list) 和 for nei 迴圈。cycle 在每次 dfs 結束時都已經變回 False，迴圈裡的 cycle = False 可以拿掉。"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "和上面的 while 版本比：想法完全一樣（state 1 = color ≥ 0、state 2 = vis 算好了；環上 = 環長、環外 = 1 + 下一個），都是 O(N)。遞迴版比較短，while 版本不怕遞迴深度，正式送出建議用 while 版本。"
             },
             {
               "type": "paragraph",
@@ -14212,6 +14688,7 @@
             {
               "type": "animation",
               "animationId": 99,
+              "title": "Mo's 只做兩件事：先換查詢順序，再移動兩個指標",
               "caption": "Mo's algorithm 的結構：先更改搜尋順序，再移動 two pointers",
               "steps": [
                 "還沒開始執行",
@@ -14270,6 +14747,7 @@
             {
               "type": "animation",
               "animationId": 96,
+              "title": "硬要 left 指標遞增排序會怎樣？為什麼 left 只看在第幾塊",
               "caption": "Mo's 排序規則：(x[0] // end, x[1])，為什麼 left 只看在第幾塊",
               "steps": [
                 "還沒開始執行",
@@ -14293,6 +14771,7 @@
             {
               "type": "animation",
               "animationId": 93,
+              "title": "不排序、分塊排序、奇偶優化：兩個指標各要走多遠？",
               "caption": "Mo's 查詢順序：同樣 10 筆查詢，三種順序的指標各走多遠",
               "steps": [
                 "還沒開始執行",
@@ -14355,6 +14834,7 @@
             {
               "type": "animation",
               "animationId": 97,
+              "title": "實際跑一次：排好序之後，兩個指標怎麼走到每一筆查詢",
               "caption": "Mo's：先排序查詢，再把兩個指標移到每一筆查詢",
               "steps": [
                 "還沒開始執行",
@@ -14550,6 +15030,7 @@
             {
               "type": "animation",
               "animationId": 98,
+              "title": "不用 Mo's：每個數字只留最後出現的位置，Fenwick 怎麼數出幾種值",
               "caption": "每個數字只保留最後出現的位置：Fenwick tree 數區間裡有幾種值",
               "steps": [
                 "還沒開始執行",

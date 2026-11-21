@@ -677,3 +677,45 @@ for begin, end in need:
     print(result[(begin, end)])
 ''', notes={'add(back, 1)': ('先在新的位置標 1', True), 'add(appear[d[back]], -1)': ('這個值以前出現過：舊的位置改回 0，每個值只留最右邊的 1', True),
              'appear[d[back]] = back': ('記住這個值最後出現在哪', True), 'found = get': ('[begin, back] 裡有幾個 1 = 有幾種不同的值', True)})
+
+# ───────────── 特殊郵件：學生的遞迴 DFS（functional graph 找環 + 記憶化） ─────────────
+SPECS[100] = dict(caption='特殊郵件（遞迴）：撞到「這一輪正在走」的人 = 找到環；環上的人答案 = 環長，其他人 = 1 + 下一個人',
+    intro='nxt[i] = i 收到後寄給誰：1 → 2 → 1 是環，3 → 1 是尾巴。color[i]：-1 沒走過、≥ 0 這一輪正在走（第幾層）、-2 走完；vis[i] = 從 i 開始有幾個人收到（0 = 還沒算）',
+    src='''
+def dfs(node, s):
+    global cycle, st
+    if vis[node] > 0:
+        return vis[node]
+    if color[node] >= 0:
+        cycle = True
+        st = node
+        return s - color[node]
+    color[node] = s
+    count = dfs(nxt[node], s + 1)
+    color[node] = -2
+    if cycle:
+        vis[node] = count
+        if node == st:
+            cycle = False
+        return count
+    vis[node] = count + 1
+    return count + 1
+
+n = 3
+nxt = [0, 2, 1, 1]
+vis = [0, 0, 0, 0]
+color = [-1, -1, -1, -1]
+cycle = False
+st = 0
+for i in range(1, n + 1):
+    dfs(i, 0)
+print(vis.index(max(vis)))
+''', notes={'if vis[node] > 0': 'vis > 0 = 算過了，直接拿答案',
+             'if color[node] >= 0': 'color ≥ 0 = 這一輪的路上已經有他 → 繞回來了',
+             'st = node': '記住環從誰開始，退回到他時就離開環',
+             'return s - color[node]': '環長 = 現在第幾層 − 他當初在第幾層',
+             'color[node] = s': ('標成「這一輪正在走」，記下第幾層', True),
+             'color[node] = -2': '走完了，不在這一輪的路上',
+             'vis[node] = count\n': ('還在環裡：答案 = 環長', True),
+             'cycle = False': '退回到環的起點：再往回的人都不在環上',
+             'vis[node] = count + 1': ('不在環上：自己 1 個 + 下一個人的答案', True)})
