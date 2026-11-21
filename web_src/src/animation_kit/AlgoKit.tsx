@@ -64,7 +64,8 @@ export const Stage = ({ title, children, right }: { title?: string; children: Re
   </div>
 );
 
-export type CellTone = 'normal' | 'active' | 'yes' | 'no' | 'dim' | 'hit' | 'blue';
+/** stack = 還沒結束的呼叫（遞迴 / DFS 進去了還沒 return），和正在處理的 active 分開 */
+export type CellTone = 'normal' | 'active' | 'yes' | 'no' | 'dim' | 'hit' | 'blue' | 'stack';
 
 export const TONE: Record<CellTone, string> = {
   normal: 'bg-slate-800 border-slate-600 text-slate-100',
@@ -74,6 +75,7 @@ export const TONE: Record<CellTone, string> = {
   dim: 'bg-slate-900 border-slate-700 text-slate-500',
   hit: 'bg-rose-500/25 border-rose-400 text-rose-100 ring-2 ring-rose-400',
   blue: 'bg-sky-500/25 border-sky-400 text-sky-100',
+  stack: 'bg-violet-500/25 border-violet-400 text-violet-100 border-dashed',
 };
 
 /** One box of an array / grid. `struck` draws a line through the value, `top` / `bottom` are small labels. */
@@ -139,6 +141,7 @@ export const NODE_FILL: Record<CellTone, [string, string, string]> = {
   dim: ['#0f172a', '#1e293b', '#475569'],
   hit: ['#881337', '#fb7185', '#ffe4e6'],
   blue: ['#0c4a6e', '#38bdf8', '#e0f2fe'],
+  stack: ['#3b0764', '#a78bfa', '#ede9fe'],
 };
 export const EDGE_STROKE: Record<EdgeTone, [string, number]> = {
   normal: ['#64748b', 2], active: ['#fbbf24', 4], chosen: ['#34d399', 4], dim: ['#1e293b', 2], hit: ['#fb7185', 4],
@@ -192,7 +195,7 @@ export const GraphView = ({ nodes, edges, width = 520, height = 260, r = 18 }: {
         const [fill, stroke, text] = NODE_FILL[n.tone ?? 'normal'];
         return (
           <g key={n.id}>
-            <circle cx={n.x} cy={n.y} r={r} fill={fill} stroke={stroke} strokeWidth={n.tone === 'active' || n.tone === 'hit' ? 3.5 : 2} style={{ transition: 'fill 0.3s, stroke 0.3s' }} />
+            <circle cx={n.x} cy={n.y} r={r} fill={fill} stroke={stroke} strokeWidth={n.tone === 'active' || n.tone === 'hit' ? 3.5 : n.tone === 'stack' ? 2.5 : 2} strokeDasharray={n.tone === 'stack' ? '5 3' : undefined} style={{ transition: 'fill 0.3s, stroke 0.3s' }} />
             <text x={n.x} y={n.y + 5} textAnchor="middle" fontSize={14} fontWeight={700} fill={text} fontFamily="monospace">{n.label ?? n.id}</text>
             {n.above !== undefined && <text x={n.x} y={n.y - r - 6} textAnchor="middle" fontSize={11} fontWeight={700} fill="#fcd34d">{n.above}</text>}
             {n.below !== undefined && <text x={n.x} y={n.y + r + 14} textAnchor="middle" fontSize={11} fill="#94a3b8">{n.below}</text>}

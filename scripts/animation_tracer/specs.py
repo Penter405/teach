@@ -719,3 +719,73 @@ print(vis.index(max(vis)))
              'vis[node] = count\n': ('還在環裡：答案 = 環長', True),
              'cycle = False': '退回到環的起點：再往回的人都不在環上',
              'vis[node] = count + 1': ('不在環上：自己 1 個 + 下一個人的答案', True)})
+
+# ───────────── tree center：一圈一圈剝葉子 ─────────────
+SPECS[102] = dict(caption='樹中心：每一輪把所有葉子（deg = 1）一起拿掉，剩下 ≤ 2 個點就是中心',
+    intro='樹：0 – 1 – 2 – 3 – 4，2 – 5。deg[u] = u 還連著幾條邊；q = 這一輪的葉子；left = 還剩幾個點',
+    src='''
+g = [[1], [0, 2], [1, 3, 5], [2, 4], [3], [2]]
+deg = [1, 2, 3, 2, 1, 1]
+q = [0, 4, 5]
+left = 6
+while left > 2:
+    nq = []
+    for u in q:
+        left -= 1
+        for v in g[u]:
+            deg[v] -= 1
+            if deg[v] == 1:
+                nq.append(v)
+    q = nq
+print(q)
+''', notes={'while left > 2': ('剩 1 或 2 個點就停：它們就是中心', True),
+             'nq = []': ('nq 收集「下一輪」的葉子', True),
+             'left -= 1': ('拿掉葉子 u', True),
+             'deg[v] -= 1': ('u 被拿掉，鄰居少一條邊（已經拿掉的鄰居變 0 或負數也沒關係，不會再用到）', True),
+             'nq.append(v)': ('v 變成新的葉子，下一輪拿掉', True),
+             'q = nq': ('這一輪的葉子都拿掉了：每個點離最遠的葉子都近了 1', True)})
+
+# ───────────── articulation point：Tarjan ─────────────
+def tj_visit(u):
+    """tin[u] = low[u] = t; t += 1"""
+    g = SPECS_STATE['g']
+    g['tin'][u] = g['t']
+    g['low'][u] = g['t']
+    g['t'] += 1
+
+SPECS[104] = dict(caption='割點（Tarjan）：子節點 v 繞不回 u 的上面（low[v] ≥ tin[u]），拿掉 u 就會斷開',
+    intro='圖：三角形 0 – 1 – 2，再加 1 – 3。從 0 開始 DFS。tin[u] = 第幾個走到；low[u] = 從 u 的子樹（可以走一條回頭的邊）最早能碰到的 tin',
+    env=dict(visit=tj_visit),
+    calldesc={'visit': 'tin[u] = low[u] = t（第幾個走到），t 加 1'},
+    src='''
+def dfs(u, p):
+    visit(u)
+    kids = 0
+    for v in g[u]:
+        if v == p:
+            continue
+        if tin[v] != -1:
+            low[u] = min(low[u], tin[v])
+        else:
+            dfs(v, u)
+            kids += 1
+            low[u] = min(low[u], low[v])
+            if p != -1 and low[v] >= tin[u]:
+                cut[u] = True
+    if p == -1 and kids >= 2:
+        cut[u] = True
+
+g = [[1, 2], [0, 2, 3], [0, 1], [1]]
+tin = [-1, -1, -1, -1]
+low = [0, 0, 0, 0]
+cut = [False, False, False, False]
+t = 0
+dfs(0, -1)
+print(cut)
+''', notes={'if v == p': ('來的那條邊不算回頭', True),
+             'low[u] = min(low[u], tin[v])': ('v 已經走過：這是一條回頭的邊，u 可以直接碰到 tin[v]', True),
+             'low[u] = min(low[u], low[v])': ('v 的子樹能碰到的，u 也能碰到', True),
+             'if p != -1 and low[v]': ('low[v] ≥ tin[u] 代表 v 那一塊最多只能碰到 u，繞不到 u 的上面', True),
+             'cut[u] = True\n    if': '拿掉 u，v 那一塊就和其他點斷開',
+             'if p == -1 and kids': '根沒有上面：要看它有沒有兩個以上互不相連的子樹',
+             })

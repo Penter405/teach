@@ -20,7 +20,7 @@ export default function SpecialMailDfsAnim({ step }: { step: number }) {
         // nodes of the cycle that was just found: from st along nxt back to st
         const ring: number[] = [];
         if (cycle) { let u = start as number; do { ring.push(u); u = NXT[u]; } while (u !== start && ring.length < 4); }
-        const tone = (n: number): CellTone => (n === node && path.length ? 'active' : color[n] >= 0 ? 'blue' : vis[n] > 0 ? 'yes' : 'normal');
+        const tone = (n: number): CellTone => (n === node && path.length ? 'active' : color[n] >= 0 ? 'stack' : vis[n] > 0 ? 'yes' : 'normal');
         const nodes = posNodes(POS, (n) => ({
           tone: tone(n),
           above: color[n] >= 0 ? `第 ${color[n]} 層` : vis[n] > 0 ? `vis = ${vis[n]}` : undefined,
@@ -35,7 +35,7 @@ export default function SpecialMailDfsAnim({ step }: { step: number }) {
         });
         return (
           <>
-            <Stage title="誰寄給誰（藍 = 這一輪正在走，上面是第幾層；綠 = vis 算好了；紅線 = 找到的環）">
+            <Stage title="黃 = 現在的 node、紫（虛線）= dfs 還沒結束（上面是第幾層）、綠 = vis 算好了、紅線 = 環">
               <GraphView nodes={nodes} edges={edges} width={500} height={210} />
             </Stage>
             <Split>
@@ -43,7 +43,7 @@ export default function SpecialMailDfsAnim({ step }: { step: number }) {
                 <Seq size="sm" items={IDS.map((i) => ({ v: vis[i], top: `[${i}]`, tone: rwTone(st, 'vis', [i], vis[i] > 0 ? 'yes' : 'dim') }))} />
               </Stage>
               <Stage title="color：-1 沒走過、≥ 0 第幾層、-2 走完">
-                <Seq size="sm" items={IDS.map((i) => ({ v: color[i], top: `[${i}]`, tone: rwTone(st, 'color', [i], color[i] >= 0 ? 'blue' : color[i] === -2 ? 'no' : 'dim') }))} />
+                <Seq size="sm" items={IDS.map((i) => ({ v: color[i], top: `[${i}]`, tone: rwTone(st, 'color', [i], color[i] >= 0 ? 'stack' : color[i] === -2 ? 'no' : 'dim') }))} />
               </Stage>
             </Split>
           </>

@@ -98,6 +98,10 @@
 | 99 | penter wrongs › Mo's algorithm | Mo's 的結構樹：1. 更改搜尋順序（主要依塊號、次要依 r）、2. 移動 two pointers（add / remove、存答案），每一步亮一個節點和對應的程式碼（手寫） | 7 |
 | 100 | penter wrongs › 特殊郵件 | 特殊郵件（學生的遞迴 DFS）：color 標「這一輪正在走」，撞到就是環（環長 = s − color）；vis 記答案，環上 = 環長、環外 = 1 + 下一個人。nxt = [0, 2, 1, 1] | 74 |
 | 101 | Dynamic programming › cycle DP<br>penter wrongs › 特殊郵件 | 環 DP 的計算順序：4 → 3 → 2 → 1 → 2，ans[u] = 1 + ans[nxt[u]] 一路等到環上互相等；先把整個環算好（環長），再由近到遠填尾巴（手寫，不是 tracer） | 8 |
+| 102 | Tree algorithm › 樹中心 | 樹中心：deg = 1 的葉子一輪一輪一起拿掉，剩下 ≤ 2 個點就是中心（0 – 1 – 2 – 3 – 4，2 – 5 → 中心 2） | 74 |
+| 103 | Tree algorithm › 樹重心 | 樹重心：由下往上算 sz，max_part(v) = max(各子樹 sz(c), n − sz(v))；從根往 sz > n/2 的子節點走，停下的就是重心（手寫，不是 tracer） | 11 |
+| 104 | graph 演算法 › 割點 (articulation point) | 割點（Tarjan）：三角形 0–1–2 加 1–3，visit = tin / low 設成 t；子節點 low[v] ≥ tin[u] → u 是割點，根要 ≥ 2 個子節點 | 103 |
+| 105 | Dynamic programming › cycle DP | 環 DP 用 DFS：6 → 5 → 1 → 2 → 3 → 4 → 1、7 → 3。呼叫下去點變紫色（dfs 還沒結束），呼叫到紫色的點 = 找到環；return 時把 ans 寫在點旁邊（環上 = 環長、其他 = 1 + 下一個）；7 → 3 用記憶化（手寫，不是 tracer） | 18 |
 
 ## 還沒有動畫的演算法
 

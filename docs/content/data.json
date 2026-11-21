@@ -9363,6 +9363,477 @@
               ]
             }
           ]
+        },
+        {
+          "id": "lesson-1795250000001",
+          "title": "樹中心",
+          "titleEn": "Tree Center",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "樹中心：離最遠的點最近的點"
+            },
+            {
+              "type": "paragraph",
+              "text": "ecc(v) = 從 v 出發，走到最遠的點要幾步。樹中心 = ecc 最小的點。\n\n用途：在樹上選一個點當總部（或當根），讓最遠的人離它最近。LeetCode 的 Minimum Height Trees 就是在問這個：以中心當根，樹最矮。"
+            },
+            {
+              "type": "paragraph",
+              "text": "暴力：每個點各 BFS 一次，O(n²)。\n\n更好的做法：deg = 1 的點是葉子。每一輪把「所有」葉子一起拿掉；拿掉之後，有些點只剩一條邊，變成新的葉子，下一輪再拿。剩下的點 ≤ 2 個時就停，剩下的就是中心。像剝洋蔥，從外面一圈一圈剝進去。"
+            },
+            {
+              "type": "animation",
+              "animationId": 102,
+              "title": "一圈一圈剝葉子：剩下的就是中心",
+              "caption": "樹中心：每一輪把所有葉子（deg = 1）一起拿掉，剩下 ≤ 2 個點就是中心",
+              "steps": [
+                "還沒開始執行",
+                "left > 2：6 > 2，while 成立 → 進入迴圈",
+                "nq =：名稱 nq 指向 []",
+                "for：從 q 拿下一個 → u = 0",
+                "left - 1：6 - 1（left -= 就是 left = left - …）",
+                "left =：名稱 left 指向 5",
+                "g[0]：拿 index 0 的值",
+                "for：從 g[u] 拿下一個 → v = 1",
+                "deg[v] - 1：2 - 1（deg[v] -= 就是 deg[v] = deg[v] - …）",
+                "deg[1] =：deg[1] 從 2 改成 1",
+                "deg[1]：拿 index 1 的值",
+                "deg[v] == 1：1 == 1，if 成立 → 進入",
+                "nq.append(v)：放到最後",
+                "for：g[u] 沒有下一個了 → 離開迴圈",
+                "for：從 q 拿下一個 → u = 4",
+                "left - 1：5 - 1（left -= 就是 left = left - …）",
+                "left =：名稱 left 指向 4",
+                "g[4]：拿 index 4 的值",
+                "for：從 g[u] 拿下一個 → v = 3",
+                "deg[v] - 1：2 - 1（deg[v] -= 就是 deg[v] = deg[v] - …）",
+                "deg[3] =：deg[3] 從 2 改成 1",
+                "deg[3]：拿 index 3 的值",
+                "deg[v] == 1：1 == 1，if 成立 → 進入",
+                "nq.append(v)：放到最後",
+                "for：g[u] 沒有下一個了 → 離開迴圈",
+                "for：從 q 拿下一個 → u = 5",
+                "left - 1：4 - 1（left -= 就是 left = left - …）",
+                "left =：名稱 left 指向 3",
+                "g[5]：拿 index 5 的值",
+                "for：從 g[u] 拿下一個 → v = 2",
+                "deg[v] - 1：3 - 1（deg[v] -= 就是 deg[v] = deg[v] - …）",
+                "deg[2] =：deg[2] 從 3 改成 2",
+                "deg[2]：拿 index 2 的值",
+                "deg[v] == 1：2 == 1，if 不成立 → 跳過",
+                "for：g[u] 沒有下一個了 → 離開迴圈",
+                "for：q 沒有下一個了 → 離開迴圈",
+                "q =：名稱 q 指向 [1, 3]",
+                "left > 2：3 > 2，while 成立 → 進入迴圈",
+                "nq =：名稱 nq 指向 []",
+                "for：從 q 拿下一個 → u = 1",
+                "left - 1：3 - 1（left -= 就是 left = left - …）",
+                "left =：名稱 left 指向 2",
+                "g[1]：拿 index 1 的值",
+                "for：從 g[u] 拿下一個 → v = 0",
+                "deg[v] - 1：1 - 1（deg[v] -= 就是 deg[v] = deg[v] - …）",
+                "deg[0] =：deg[0] 從 1 改成 0",
+                "deg[0]：拿 index 0 的值",
+                "deg[v] == 1：0 == 1，if 不成立 → 跳過",
+                "for：從 g[u] 拿下一個 → v = 2",
+                "deg[v] - 1：2 - 1（deg[v] -= 就是 deg[v] = deg[v] - …）",
+                "deg[2] =：deg[2] 從 2 改成 1",
+                "deg[2]：拿 index 2 的值",
+                "deg[v] == 1：1 == 1，if 成立 → 進入",
+                "nq.append(v)：放到最後",
+                "for：g[u] 沒有下一個了 → 離開迴圈",
+                "for：從 q 拿下一個 → u = 3",
+                "left - 1：2 - 1（left -= 就是 left = left - …）",
+                "left =：名稱 left 指向 1",
+                "g[3]：拿 index 3 的值",
+                "for：從 g[u] 拿下一個 → v = 2",
+                "deg[v] - 1：1 - 1（deg[v] -= 就是 deg[v] = deg[v] - …）",
+                "deg[2] =：deg[2] 從 1 改成 0",
+                "deg[2]：拿 index 2 的值",
+                "deg[v] == 1：0 == 1，if 不成立 → 跳過",
+                "for：從 g[u] 拿下一個 → v = 4",
+                "deg[v] - 1：1 - 1（deg[v] -= 就是 deg[v] = deg[v] - …）",
+                "deg[4] =：deg[4] 從 1 改成 0",
+                "deg[4]：拿 index 4 的值",
+                "deg[v] == 1：0 == 1，if 不成立 → 跳過",
+                "for：g[u] 沒有下一個了 → 離開迴圈",
+                "for：q 沒有下一個了 → 離開迴圈",
+                "q =：名稱 q 指向 [2]",
+                "left > 2：1 > 2，while 不成立 → 離開迴圈",
+                "print(q)：印到螢幕"
+              ],
+              "results": [
+                "樹：0 – 1 – 2 – 3 – 4，2 – 5。deg[u] = u 還連著幾條邊；q = 這一輪的葉子；left = 還剩幾個點",
+                "往下執行第 6 行。剩 1 或 2 個點就停：它們就是中心",
+                "nq → []。nq 收集「下一輪」的葉子",
+                "u → 0",
+                "得到 5。算式變成 left = 5",
+                "left → 5。拿掉葉子 u",
+                "是 [1]。算式變成 for v in [1]:",
+                "v → 1",
+                "得到 1。算式變成 deg[v] = 1",
+                "deg 變成 [1, 1, 3, 2, 1, 1]。u 被拿掉，鄰居少一條邊（已經拿掉的鄰居變 0 或負數也沒關係，不會再用到）",
+                "是 1。算式變成 if 1 == 1:",
+                "往下執行第 12 行",
+                "nq 變成 [1]。v 變成新的葉子，下一輪拿掉",
+                "跳到迴圈後面",
+                "u → 4",
+                "得到 4。算式變成 left = 4",
+                "left → 4。拿掉葉子 u",
+                "是 [3]。算式變成 for v in [3]:",
+                "v → 3",
+                "得到 1。算式變成 deg[v] = 1",
+                "deg 變成 [1, 1, 3, 1, 1, 1]。u 被拿掉，鄰居少一條邊（已經拿掉的鄰居變 0 或負數也沒關係，不會再用到）",
+                "是 1。算式變成 if 1 == 1:",
+                "往下執行第 12 行",
+                "nq 變成 [1, 3]。v 變成新的葉子，下一輪拿掉",
+                "跳到迴圈後面",
+                "u → 5",
+                "得到 3。算式變成 left = 3",
+                "left → 3。拿掉葉子 u",
+                "是 [2]。算式變成 for v in [2]:",
+                "v → 2",
+                "得到 2。算式變成 deg[v] = 2",
+                "deg 變成 [1, 1, 2, 1, 1, 1]。u 被拿掉，鄰居少一條邊（已經拿掉的鄰居變 0 或負數也沒關係，不會再用到）",
+                "是 2。算式變成 if 2 == 1:",
+                "跳過這個 if 區塊",
+                "跳到迴圈後面",
+                "跳到迴圈後面",
+                "q → [1, 3]。這一輪的葉子都拿掉了：每個點離最遠的葉子都近了 1",
+                "往下執行第 6 行。剩 1 或 2 個點就停：它們就是中心",
+                "nq → []。nq 收集「下一輪」的葉子",
+                "u → 1",
+                "得到 2。算式變成 left = 2",
+                "left → 2。拿掉葉子 u",
+                "是 [0, 2]。算式變成 for v in [0, 2]:",
+                "v → 0",
+                "得到 0。算式變成 deg[v] = 0",
+                "deg 變成 [0, 1, 2, 1, 1, 1]。u 被拿掉，鄰居少一條邊（已經拿掉的鄰居變 0 或負數也沒關係，不會再用到）",
+                "是 0。算式變成 if 0 == 1:",
+                "跳過這個 if 區塊",
+                "v → 2",
+                "得到 1。算式變成 deg[v] = 1",
+                "deg 變成 [0, 1, 1, 1, 1, 1]。u 被拿掉，鄰居少一條邊（已經拿掉的鄰居變 0 或負數也沒關係，不會再用到）",
+                "是 1。算式變成 if 1 == 1:",
+                "往下執行第 12 行",
+                "nq 變成 [2]。v 變成新的葉子，下一輪拿掉",
+                "跳到迴圈後面",
+                "u → 3",
+                "得到 1。算式變成 left = 1",
+                "left → 1。拿掉葉子 u",
+                "是 [2, 4]。算式變成 for v in [2, 4]:",
+                "v → 2",
+                "得到 0。算式變成 deg[v] = 0",
+                "deg 變成 [0, 1, 0, 1, 1, 1]。u 被拿掉，鄰居少一條邊（已經拿掉的鄰居變 0 或負數也沒關係，不會再用到）",
+                "是 0。算式變成 if 0 == 1:",
+                "跳過這個 if 區塊",
+                "v → 4",
+                "得到 0。算式變成 deg[v] = 0",
+                "deg 變成 [0, 1, 0, 1, 0, 1]。u 被拿掉，鄰居少一條邊（已經拿掉的鄰居變 0 或負數也沒關係，不會再用到）",
+                "是 0。算式變成 if 0 == 1:",
+                "跳過這個 if 區塊",
+                "跳到迴圈後面",
+                "跳到迴圈後面",
+                "q → [2]。這一輪的葉子都拿掉了：每個點離最遠的葉子都近了 1",
+                "跳到迴圈後面。剩 1 或 2 個點就停：它們就是中心",
+                "螢幕多一行：[2]"
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "為什麼這樣是對的"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "① 離 v 最遠的點一定是葉子",
+                  "definition": "如果最遠的點 w 不是葉子，w 還有另一個鄰居，再走一步會更遠，矛盾。"
+                },
+                {
+                  "term": "② 剝掉一圈，留下來的點 ecc 都剛好 −1",
+                  "definition": "ecc′(u) = ecc(u) − 1。u 最遠的那些點都是葉子，一起被拿掉了，所以至少少 1；而走向最遠葉子的路上，倒數第二個點不是葉子（它有兩個鄰居），還留著，所以剛好少 1。"
+                },
+                {
+                  "term": "③ 葉子不會是中心（n ≥ 3 時）",
+                  "definition": "葉子 l 唯一的鄰居 x：到其他每個點都比 l 近 1 步，所以 ecc(x) = ecc(l) − 1 < ecc(l)。被拿掉的都不是中心。"
+                },
+                {
+                  "term": "結論",
+                  "definition": "每一輪所有點的 ecc 一起 −1，大小順序不變，ecc 最小的點不會被拿掉，一直留到最後。"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "和直徑的關係：設直徑長 D（最遠的兩個點距離 D）。\n• D 是偶數：中心只有 1 個，在直徑正中間，ecc = D / 2。\n• D 是奇數：中心有 2 個，而且相鄰，ecc = (D + 1) / 2。\n所以最後剩下的一定是 1 個或 2 個點，while left > 2 就是在等這件事。"
+            },
+            {
+              "type": "callout",
+              "label": "一輪要整個做完",
+              "text": "不能拿掉一片葉子就檢查。路徑 0 – 1 – 2：拿掉 0 之後只剩 2 個點，如果這時候就停，會以為 1、2 都是中心；其實 2 也是這一輪的葉子，中心只有 1。所以 while 檢查 left 的位置在「一整輪」外面。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def tree_center(n, edges):\n    g = [[] for _ in range(n)]\n    for u, v in edges:\n        g[u].append(v)\n        g[v].append(u)\n    deg = [len(g[u]) for u in range(n)]\n    q = [u for u in range(n) if deg[u] <= 1]\n    left = n\n    while left > 2:\n        nq = []\n        for u in q:\n            left -= 1\n            for v in g[u]:\n                deg[v] -= 1\n                if deg[v] == 1:\n                    nq.append(v)\n        q = nq\n    return sorted(q)\n\n# 0 – 1 – 2 – 3 – 4，2 – 5\nprint(tree_center(6, [(0, 1), (1, 2), (2, 3), (3, 4), (2, 5)]))   # [2]\n# 0 – 1 – 2 – 3：直徑長 3（奇數）→ 兩個中心\nprint(tree_center(4, [(0, 1), (1, 2), (2, 3)]))                   # [1, 2]"
+            },
+            {
+              "type": "callout",
+              "label": "中心 ≠ 重心",
+              "text": "中心看的是「最遠的距離」，重心看的是「最大的一塊有多大」，可能不是同一個點。例如 0 – 1 – 2 – 3 – 4 – 5 – 6 這條路，6 再接 6 片葉子 7 ～ 12（n = 13）：中心是 3 和 4（直徑 0 ～ 7 長 7，中間的兩個點），重心是 6（刪掉 6，最大的一塊是 0 ～ 5 共 6 個點，≤ 13/2）。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "剝葉子的方法什麼時候停？",
+                  "options": [
+                    "剩下 1 個點",
+                    "剩下的點 ≤ 2",
+                    "沒有葉子了",
+                    "剝了 n/2 輪"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "直徑長 5 的樹有幾個中心？",
+                  "options": [
+                    "1 個",
+                    "2 個，而且相鄰",
+                    "2 個，不一定相鄰",
+                    "看樹的形狀"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "為什麼每一輪要把葉子「一起」拿掉？",
+                  "options": [
+                    "比較快",
+                    "一片一片拿可能在一輪的中間就停下，留下錯的點",
+                    "Python 的 list 不能一次刪一個",
+                    "沒有差別"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Minimum Height Trees",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/minimum-height-trees/",
+                  "description": "就是這一課：回傳所有中心"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-1795250000002",
+          "title": "樹重心",
+          "titleEn": "Tree Centroid",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "樹重心：刪掉它，最大的一塊最小"
+            },
+            {
+              "type": "paragraph",
+              "text": "刪掉樹上的一個點 v（和它的邊），樹會斷成好幾塊。重心 = 讓「最大的那一塊」最小的點。\n\n重心有一個很好用的性質：刪掉它，每一塊都 ≤ n/2。所以「以重心切開」可以讓問題每次至少小一半（點分治）。"
+            },
+            {
+              "type": "heading",
+              "text": "公式：刪掉 v 會剩哪幾塊"
+            },
+            {
+              "type": "paragraph",
+              "text": "先隨便選一個根（例如 0），由下往上算子樹大小 sz。刪掉 v 之後的每一塊，都可以用 sz 算出來：往下每個子節點 c 是一塊，往上的其他點是一塊。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "子樹大小",
+                  "definition": "sz(u) = 1 + Σ sz(c)，c 是 u 的子節點。葉子 sz = 1，根 sz = n。"
+                },
+                {
+                  "term": "往下的塊",
+                  "definition": "每個子節點 c 一塊，大小 sz(c)。"
+                },
+                {
+                  "term": "往上的塊",
+                  "definition": "除了 v 的子樹以外的點，大小 n − sz(v)。根沒有這一塊。"
+                },
+                {
+                  "term": "最大的一塊",
+                  "definition": "max_part(v) = max( max sz(c), n − sz(v) )"
+                },
+                {
+                  "term": "重心",
+                  "definition": "max_part(v) 最小的 v。"
+                }
+              ]
+            },
+            {
+              "type": "animation",
+              "animationId": 103,
+              "title": "刪掉哪個點，最大的一塊最小？用 sz 算出每一塊",
+              "caption": "樹重心：max_part(v) = max(各子樹 sz(c), n − sz(v))；從根往 sz > n/2 的子節點走，停下的就是重心",
+              "steps": [
+                "還沒開始執行",
+                "由下往上算子樹大小：第 3 層（葉子）",
+                "第 2 層：sz(u) = 1 + 子節點的 sz 加起來",
+                "第 1 層",
+                "第 0 層（根）：sz(0) = n",
+                "刪掉 3：剩下哪幾塊？",
+                "刪掉 0（根）：沒有上面那一塊",
+                "刪掉 1",
+                "每個點都算一次 max_part，最小的就是重心",
+                "更快：從根出發，往 sz > n/2 的子節點走",
+                "走到 1：沒有子節點 > n/2，停下"
+              ],
+              "results": [
+                "n = 9。重心 = 刪掉後「最大的那一塊」最小的點；一定找得到一個點，讓每一塊都 ≤ n/2 = 4.5",
+                "sz(7) = sz(8) = 1",
+                "sz(3) = 1 + 1 + 1 = 3；4、5、6 是葉子，sz = 1",
+                "sz(1) = 1 + 3 + 1 + 1 = 6；sz(2) = 1 + 1 = 2",
+                "sz(0) = 1 + 6 + 2 = 9",
+                "子樹 7、8 各 1 塊；上面那一塊 = n − sz(3) = 9 − 3 = 6。max_part(3) = 6 > 4.5，不行",
+                "兩塊：sz(1) = 6、sz(2) = 2。max_part(0) = 6 > 4.5，不行",
+                "子樹 3、4、5：3、1、1；上面 n − sz(1) = 3。max_part(1) = 3 ≤ 4.5，可以",
+                "max_part = [6, 3, 7, 6, 8, 8, 8, 8, 8]，最小是 3，在點 1。每個點 O(子節點數)，全部 O(n)",
+                "sz(1) = 6 > 4.5：0 不行，而且子樹 1 以外的點也都不行（那一塊至少有 6 個點），答案一定在子樹 1 裡",
+                "子節點都 ≤ 4.5；上面 = n − sz(1) = 3 < 4.5，因為剛才是 sz(1) > n/2 才走下來的。1 就是重心"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def centroids(n, edges):\n    g = [[] for _ in range(n)]\n    for u, v in edges:\n        g[u].append(v)\n        g[v].append(u)\n    par = [-1] * n\n    order = [0]\n    seen = [False] * n\n    seen[0] = True\n    for u in order:\n        for v in g[u]:\n            if not seen[v]:\n                seen[v] = True\n                par[v] = u\n                order.append(v)\n    sz = [1] * n\n    max_part = [0] * n\n    for u in reversed(order):\n        if par[u] != -1:\n            sz[par[u]] += sz[u]\n            max_part[par[u]] = max(max_part[par[u]], sz[u])\n    for u in range(n):\n        max_part[u] = max(max_part[u], n - sz[u])\n    best = min(max_part)\n    return [u for u in range(n) if max_part[u] == best]\n\n# 動畫裡的樹：0 的子節點 1、2；1 的子節點 3、4、5；2 的子節點 6；3 的子節點 7、8\nedges = [(0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (3, 7), (3, 8)]\nprint(centroids(9, edges))      # [1]\nprint(centroids(4, [(0, 1), (1, 2), (2, 3)]))   # [1, 2]：n 是偶數，兩個重心相鄰"
+            },
+            {
+              "type": "heading",
+              "text": "為什麼一定有一個點，每一塊都 ≤ n/2"
+            },
+            {
+              "type": "paragraph",
+              "text": "從根出發，用下面的規則走：如果某個子節點 c 的 sz(c) > n/2，就走到 c；沒有就停。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "路只有一條",
+                  "definition": "sz(c) > n/2 的子節點最多一個：兩個加起來就 > n 了。"
+                },
+                {
+                  "term": "走下來之後，上面那一塊一定夠小",
+                  "definition": "sz(c) > n/2 ⇒ n − sz(c) < n − n/2 = n/2。之後只會往更下面走，上面那一塊雖然會變大，但每次都是因為「下面那塊 > n/2」才走，所以上面那塊永遠 < n/2。"
+                },
+                {
+                  "term": "一定會停",
+                  "definition": "每走一步 sz 變小，樹是有限的。"
+                },
+                {
+                  "term": "停下的點 v",
+                  "definition": "子節點都 sz(c) ≤ n/2（不然就會繼續走），上面 n − sz(v) < n/2（或 v 是根，沒有上面）。所以 max_part(v) ≤ n/2。"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def walk_centroid(n, edges):\n    g = [[] for _ in range(n)]\n    for u, v in edges:\n        g[u].append(v)\n        g[v].append(u)\n    par = [-1] * n\n    order = [0]\n    seen = [False] * n\n    seen[0] = True\n    for u in order:\n        for v in g[u]:\n            if not seen[v]:\n                seen[v] = True\n                par[v] = u\n                order.append(v)\n    sz = [1] * n\n    for u in reversed(order):\n        if par[u] != -1:\n            sz[par[u]] += sz[u]\n    u = 0\n    while True:\n        heavy = -1\n        for v in g[u]:\n            if v != par[u] and sz[v] * 2 > n:\n                heavy = v\n        if heavy == -1:\n            return u\n        u = heavy\n\nprint(walk_centroid(9, edges))  # 1"
+            },
+            {
+              "type": "heading",
+              "text": "為什麼 max_part ≤ n/2 的點就是最小的"
+            },
+            {
+              "type": "paragraph",
+              "text": "設 max_part(v) ≤ n/2，w 是其他任何一個點。以 v 當根，w 在 v 的某個子節點 c 的子樹裡，sz(c) ≤ n/2。\n刪掉 w 時，包含 v 的那一塊 = w 的子樹以外的所有點：n − sz(w) ≥ n − sz(c) ≥ n − n/2 = n/2。\n所以 max_part(w) ≥ n/2 ≥ max_part(v)：v 一定是最小的，就是重心。"
+            },
+            {
+              "type": "paragraph",
+              "text": "什麼時候有兩個重心？上面的不等式要全部變成等號：sz(w) = sz(c) = n/2。sz(w) = sz(c) 而且 w 在 c 的子樹裡，只能 w = c，也就是 w 和 v 相鄰；而且 n/2 是整數，n 是偶數。\n所以：重心最多 2 個；有 2 個時一定相鄰，n 是偶數，刪掉中間那條邊剛好分成兩半。"
+            },
+            {
+              "type": "callout",
+              "label": "同一個規則的另一種看法：距離總和",
+              "text": "以 v 為根，從 v 走到子節點 c，c 的子樹 sz(c) 個點都近了 1，其他 n − sz(c) 個點都遠了 1：\ndist_sum(c) = dist_sum(v) + (n − sz(c)) − sz(c) = dist_sum(v) + n − 2·sz(c)。\nsz(c) > n/2 時總和變小，和「往 sz > n/2 走」是同一個規則。所以重心也是「到所有點距離總和最小」的點（LeetCode Sum of Distances in Tree 用的就是這個式子）。"
+            },
+            {
+              "type": "callout",
+              "label": "中心 ≠ 重心",
+              "text": "樹中心看最遠的距離（剝葉子），重心看最大的一塊（sz）。兩個可能是不同的點，例子見「樹中心」那一課。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "以 0 為根，刪掉點 v 後「往上」那一塊有幾個點？",
+                  "options": [
+                    "sz(v)",
+                    "n − sz(v)",
+                    "n − sz(v) − 1",
+                    "sz(parent(v)) − sz(v)"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "從根往下找重心時，為什麼只有一條路可以走？",
+                  "options": [
+                    "樹沒有環",
+                    "sz > n/2 的子節點最多一個",
+                    "根只有一個子節點",
+                    "DFS 只走一條路"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "一棵樹有 2 個重心，下面哪個一定對？",
+                  "options": [
+                    "n 是奇數",
+                    "兩個重心相鄰",
+                    "兩個重心都是葉子",
+                    "兩個重心的 sz 都是 n"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Finding a Centroid",
+                  "difficulty": "Easy",
+                  "url": "https://cses.fi/problemset/task/2079",
+                  "description": "純重心題，上面的程式直接可用"
+                },
+                {
+                  "title": "Count Nodes With the Highest Score",
+                  "difficulty": "Medium",
+                  "url": "https://leetcode.com/problems/count-nodes-with-the-highest-score/",
+                  "description": "刪點後各塊大小相乘：各塊大小的算法和 max_part 一樣"
+                },
+                {
+                  "title": "Sum of Distances in Tree",
+                  "difficulty": "Hard",
+                  "url": "https://leetcode.com/problems/sum-of-distances-in-tree/",
+                  "description": "換根：dist_sum(c) = dist_sum(v) + n − 2·sz(c)"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -10891,6 +11362,349 @@
                   "difficulty": "Medium",
                   "url": "https://leetcode.com/problems/possible-bipartition/",
                   "description": "討厭的人要分到不同組"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-1795250000003",
+          "title": "割點 (articulation point)",
+          "titleEn": "Articulation Points",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "割點：拿掉它，圖就斷開"
+            },
+            {
+              "type": "paragraph",
+              "text": "無向圖裡，拿掉點 u（和它所有的邊）之後，原本連在一起的點變成不連通，u 就是割點。例如網路裡壞掉就會讓一部分電腦斷線的那台機器。\n\n暴力：每個點拿掉一次，做一次 BFS 數連通塊，O(n · (n + m))。用 DFS 一次就能找出全部：O(n + m)。"
+            },
+            {
+              "type": "paragraph",
+              "text": "先看樹：樹沒有環，拿掉任何一個 deg ≥ 2 的點都會斷開，所以除了葉子以外都是割點。圖比較難，是因為有環：環提供了「繞過去」的路。所以問題變成：拿掉 u 之後，u 下面的點還繞得回 u 的上面嗎？"
+            },
+            {
+              "type": "heading",
+              "text": "DFS 樹：只有兩種邊"
+            },
+            {
+              "type": "paragraph",
+              "text": "從某個點開始 DFS，走過的邊形成一棵 DFS 樹。無向圖做 DFS，每條邊只有兩種：\n• 樹邊：走到一個新的點。\n• 回頭的邊：連到 call stack 上的祖先。\n不會有連到「旁邊另一棵子樹」的邊：如果 x 和 y 之間有邊、x 先走到，DFS 在 x 還沒結束之前就會沿著這條邊走到 y，y 就變成 x 的子孫了。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "tin[u]",
+                  "definition": "u 是第幾個被走到的（時間戳）。祖先的 tin 比子孫小。"
+                },
+                {
+                  "term": "low[u]",
+                  "definition": "從 u 的子樹出發，最多走一條回頭的邊，能碰到的最小 tin。\nlow[u] = min( tin[u]、回頭的邊連到的 tin[w]、每個子節點的 low[v] )"
+                },
+                {
+                  "term": "不是根的 u",
+                  "definition": "有一個子節點 v，low[v] ≥ tin[u] ⇒ u 是割點。v 的整個子樹往上最多只能碰到 u，碰不到 u 的上面；拿掉 u，v 那一塊就和 u 的上面斷開。"
+                },
+                {
+                  "term": "根",
+                  "definition": "DFS 樹上有 ≥ 2 個子節點 ⇒ 根是割點。根沒有上面，所以不能用 low；但不同子樹之間沒有邊（上面說過），拿掉根，它們就斷開了。只有 1 個子節點時，拿掉根其他點還是連在一起。"
+                }
+              ]
+            },
+            {
+              "type": "animation",
+              "animationId": 104,
+              "title": "low[v] ≥ tin[u]：子樹繞不到 u 的上面，u 就是割點",
+              "caption": "割點（Tarjan）：子節點 v 繞不回 u 的上面（low[v] ≥ tin[u]），拿掉 u 就會斷開",
+              "steps": [
+                "還沒開始執行",
+                "呼叫 dfs(0, -1)",
+                "visit(u)：tin[u] = low[u] = t（第幾個走到），t 加 1",
+                "kids =：名稱 kids 指向 0",
+                "g[0]：拿 index 0 的值",
+                "for：從 g[u] 拿下一個 → v = 1",
+                "v == p：1 == -1，if 不成立 → 跳過",
+                "tin[1]：拿 index 1 的值",
+                "tin[v] != -1：-1 != -1，if 不成立 → 跳過",
+                "呼叫 dfs(1, 0)",
+                "visit(u)：tin[u] = low[u] = t（第幾個走到），t 加 1",
+                "kids =：名稱 kids 指向 0",
+                "g[1]：拿 index 1 的值",
+                "for：從 g[u] 拿下一個 → v = 0",
+                "v == p：0 == 0，if 成立 → 進入",
+                "continue：跳回迴圈開頭",
+                "for：從 g[u] 拿下一個 → v = 2",
+                "v == p：2 == 0，if 不成立 → 跳過",
+                "tin[2]：拿 index 2 的值",
+                "tin[v] != -1：-1 != -1，if 不成立 → 跳過",
+                "呼叫 dfs(2, 1)",
+                "visit(u)：tin[u] = low[u] = t（第幾個走到），t 加 1",
+                "kids =：名稱 kids 指向 0",
+                "g[2]：拿 index 2 的值",
+                "for：從 g[u] 拿下一個 → v = 0",
+                "v == p：0 == 1，if 不成立 → 跳過",
+                "tin[0]：拿 index 0 的值",
+                "tin[v] != -1：0 != -1，if 成立 → 進入",
+                "low[2]：拿 index 2 的值",
+                "tin[0]：拿 index 0 的值",
+                "min(2, 0)：取最小",
+                "low[2] =：low[2] 從 2 改成 0",
+                "for：從 g[u] 拿下一個 → v = 1",
+                "v == p：1 == 1，if 成立 → 進入",
+                "continue：跳回迴圈開頭",
+                "for：g[u] 沒有下一個了 → 離開迴圈",
+                "p == -1：1 == -1",
+                "and：左邊已經是 False → 整個就是 False（右邊不用算），if 不成立 → 跳過",
+                "dfs 跑到最後：回傳 None",
+                "kids + 1：0 + 1（kids += 就是 kids = kids + …）",
+                "kids =：名稱 kids 指向 1",
+                "low[1]：拿 index 1 的值",
+                "low[2]：拿 index 2 的值",
+                "min(1, 0)：取最小",
+                "low[1] =：low[1] 從 1 改成 0",
+                "p != -1：0 != -1",
+                "low[2]：拿 index 2 的值",
+                "tin[1]：拿 index 1 的值",
+                "low[v] >= tin[u]：0 >= 1",
+                "and：結果是最後算的 False，if 不成立 → 跳過",
+                "for：從 g[u] 拿下一個 → v = 3",
+                "v == p：3 == 0，if 不成立 → 跳過",
+                "tin[3]：拿 index 3 的值",
+                "tin[v] != -1：-1 != -1，if 不成立 → 跳過",
+                "呼叫 dfs(3, 1)",
+                "visit(u)：tin[u] = low[u] = t（第幾個走到），t 加 1",
+                "kids =：名稱 kids 指向 0",
+                "g[3]：拿 index 3 的值",
+                "for：從 g[u] 拿下一個 → v = 1",
+                "v == p：1 == 1，if 成立 → 進入",
+                "continue：跳回迴圈開頭",
+                "for：g[u] 沒有下一個了 → 離開迴圈",
+                "p == -1：1 == -1",
+                "and：左邊已經是 False → 整個就是 False（右邊不用算），if 不成立 → 跳過",
+                "dfs 跑到最後：回傳 None",
+                "kids + 1：1 + 1（kids += 就是 kids = kids + …）",
+                "kids =：名稱 kids 指向 2",
+                "low[1]：拿 index 1 的值",
+                "low[3]：拿 index 3 的值",
+                "min(0, 3)：取最小",
+                "low[1] =：low[1] 從 0 改成 0",
+                "p != -1：0 != -1",
+                "low[3]：拿 index 3 的值",
+                "tin[1]：拿 index 1 的值",
+                "low[v] >= tin[u]：3 >= 1",
+                "and：結果是最後算的 True，if 成立 → 進入",
+                "cut[1] =：cut[1] 從 False 改成 True",
+                "for：g[u] 沒有下一個了 → 離開迴圈",
+                "p == -1：0 == -1",
+                "and：左邊已經是 False → 整個就是 False（右邊不用算），if 不成立 → 跳過",
+                "dfs 跑到最後：回傳 None",
+                "kids + 1：0 + 1（kids += 就是 kids = kids + …）",
+                "kids =：名稱 kids 指向 1",
+                "low[0]：拿 index 0 的值",
+                "low[1]：拿 index 1 的值",
+                "min(0, 0)：取最小",
+                "low[0] =：low[0] 從 0 改成 0",
+                "p != -1：-1 != -1",
+                "and：左邊已經是 False → 整個就是 False（右邊不用算），if 不成立 → 跳過",
+                "for：從 g[u] 拿下一個 → v = 2",
+                "v == p：2 == -1，if 不成立 → 跳過",
+                "tin[2]：拿 index 2 的值",
+                "tin[v] != -1：2 != -1，if 成立 → 進入",
+                "low[0]：拿 index 0 的值",
+                "tin[2]：拿 index 2 的值",
+                "min(0, 2)：取最小",
+                "low[0] =：low[0] 從 0 改成 0",
+                "for：g[u] 沒有下一個了 → 離開迴圈",
+                "p == -1：-1 == -1",
+                "kids >= 2：1 >= 2",
+                "and：結果是最後算的 False，if 不成立 → 跳過",
+                "dfs 跑到最後：回傳 None",
+                "print(cut)：印到螢幕"
+              ],
+              "results": [
+                "圖：三角形 0 – 1 – 2，再加 1 – 3。從 0 開始 DFS。tin[u] = 第幾個走到；low[u] = 從 u 的子樹（可以走一條回頭的邊）最早能碰到的 tin",
+                "進入 dfs：u → 0、p → -1，stack 多一層",
+                "tin 變成 [0, -1, -1, -1]；t 變成 1",
+                "kids → 0",
+                "是 [1, 2]。算式變成 for v in [1, 2]:",
+                "v → 1",
+                "跳過這個 if 區塊。來的那條邊不算回頭",
+                "是 -1。算式變成 if -1 != -1:",
+                "跳到第 10 行（else）",
+                "進入 dfs：u → 1、p → 0，stack 多一層",
+                "tin 變成 [0, 1, -1, -1]；low 變成 [0, 1, 0, 0]；t 變成 2",
+                "kids → 0",
+                "是 [0, 2, 3]。算式變成 for v in [0, 2, 3]:",
+                "v → 0",
+                "往下執行第 6 行。來的那條邊不算回頭",
+                "剩下的這一輪不做了",
+                "v → 2",
+                "跳過這個 if 區塊。來的那條邊不算回頭",
+                "是 -1。算式變成 if -1 != -1:",
+                "跳到第 10 行（else）",
+                "進入 dfs：u → 2、p → 1，stack 多一層",
+                "tin 變成 [0, 1, 2, -1]；low 變成 [0, 1, 2, 0]；t 變成 3",
+                "kids → 0",
+                "是 [0, 1]。算式變成 for v in [0, 1]:",
+                "v → 0",
+                "跳過這個 if 區塊。來的那條邊不算回頭",
+                "是 0。算式變成 if 0 != -1:",
+                "往下執行第 8 行",
+                "是 2。算式變成 low[u] = min(2, tin[v])",
+                "是 0。算式變成 low[u] = min(2, 0)",
+                "回傳 0",
+                "low 變成 [0, 1, 0, 0]。v 已經走過：這是一條回頭的邊，u 可以直接碰到 tin[v]",
+                "v → 1",
+                "往下執行第 6 行。來的那條邊不算回頭",
+                "剩下的這一輪不做了",
+                "跳到迴圈後面",
+                "是 False。算式變成 if False and kids >= 2:",
+                "跳過這個 if 區塊。根沒有上面：要看它有沒有兩個以上互不相連的子樹",
+                "dfs 結束，stack 少一層",
+                "得到 1。算式變成 kids = 1",
+                "kids → 1",
+                "是 1。算式變成 low[u] = min(1, low[v])",
+                "是 0。算式變成 low[u] = min(1, 0)",
+                "回傳 0",
+                "low 變成 [0, 0, 0, 0]。v 的子樹能碰到的，u 也能碰到",
+                "是 True。算式變成 if True and low[v] >= tin[u]:",
+                "是 0。算式變成 if True and 0 >= tin[u]:",
+                "是 1。算式變成 if True and 0 >= 1:",
+                "是 False。算式變成 if True and False:",
+                "跳過這個 if 區塊。low[v] ≥ tin[u] 代表 v 那一塊最多只能碰到 u，繞不到 u 的上面",
+                "v → 3",
+                "跳過這個 if 區塊。來的那條邊不算回頭",
+                "是 -1。算式變成 if -1 != -1:",
+                "跳到第 10 行（else）",
+                "進入 dfs：u → 3、p → 1，stack 多一層",
+                "tin 變成 [0, 1, 2, 3]；low 變成 [0, 0, 0, 3]；t 變成 4",
+                "kids → 0",
+                "是 [1]。算式變成 for v in [1]:",
+                "v → 1",
+                "往下執行第 6 行。來的那條邊不算回頭",
+                "剩下的這一輪不做了",
+                "跳到迴圈後面",
+                "是 False。算式變成 if False and kids >= 2:",
+                "跳過這個 if 區塊",
+                "dfs 結束，stack 少一層",
+                "得到 2。算式變成 kids = 2",
+                "kids → 2",
+                "是 0。算式變成 low[u] = min(0, low[v])",
+                "是 3。算式變成 low[u] = min(0, 3)",
+                "回傳 0",
+                "low 變成 [0, 0, 0, 3]。v 的子樹能碰到的，u 也能碰到",
+                "是 True。算式變成 if True and low[v] >= tin[u]:",
+                "是 3。算式變成 if True and 3 >= tin[u]:",
+                "是 1。算式變成 if True and 3 >= 1:",
+                "是 True。算式變成 if True and True:",
+                "往下執行第 14 行。low[v] ≥ tin[u] 代表 v 那一塊最多只能碰到 u，繞不到 u 的上面",
+                "cut 變成 [False, True, False, False]。拿掉 u，v 那一塊就和其他點斷開",
+                "跳到迴圈後面",
+                "是 False。算式變成 if False and kids >= 2:",
+                "跳過這個 if 區塊",
+                "dfs 結束，stack 少一層",
+                "得到 1。算式變成 kids = 1",
+                "kids → 1",
+                "是 0。算式變成 low[u] = min(0, low[v])",
+                "是 0。算式變成 low[u] = min(0, 0)",
+                "回傳 0",
+                "low 變成 [0, 0, 0, 3]。v 的子樹能碰到的，u 也能碰到",
+                "是 False。算式變成 if False and low[v] >= tin[u]:",
+                "跳過這個 if 區塊。low[v] ≥ tin[u] 代表 v 那一塊最多只能碰到 u，繞不到 u 的上面",
+                "v → 2",
+                "跳過這個 if 區塊。來的那條邊不算回頭",
+                "是 2。算式變成 if 2 != -1:",
+                "往下執行第 8 行",
+                "是 0。算式變成 low[u] = min(0, tin[v])",
+                "是 2。算式變成 low[u] = min(0, 2)",
+                "回傳 0",
+                "low 變成 [0, 0, 0, 3]。v 已經走過：這是一條回頭的邊，u 可以直接碰到 tin[v]",
+                "跳到迴圈後面",
+                "是 True。算式變成 if True and kids >= 2:",
+                "是 False。算式變成 if True and False:",
+                "跳過這個 if 區塊",
+                "dfs 結束，stack 少一層",
+                "螢幕多一行：[False, True, False, False]"
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "import sys\nsys.setrecursionlimit(300000)\n\ndef cut_vertices(n, edges):\n    g = [[] for _ in range(n)]\n    for u, v in edges:\n        g[u].append(v)\n        g[v].append(u)\n    tin = [-1] * n\n    low = [0] * n\n    cut = [False] * n\n    t = 0\n    def dfs(u, p):\n        nonlocal t\n        tin[u] = low[u] = t\n        t += 1\n        kids = 0\n        for v in g[u]:\n            if v == p:\n                continue\n            if tin[v] != -1:\n                low[u] = min(low[u], tin[v])\n            else:\n                dfs(v, u)\n                kids += 1\n                low[u] = min(low[u], low[v])\n                if p != -1 and low[v] >= tin[u]:\n                    cut[u] = True\n        if p == -1 and kids >= 2:\n            cut[u] = True\n    for s in range(n):\n        if tin[s] == -1:\n            dfs(s, -1)\n    return [u for u in range(n) if cut[u]]\n\n# 三角形 0 – 1 – 2，再加 1 – 3\nprint(cut_vertices(4, [(0, 1), (0, 2), (1, 2), (1, 3)]))   # [1]\n# 一條路 0 – 1 – 2 – 3：中間的點都是割點\nprint(cut_vertices(4, [(0, 1), (1, 2), (2, 3)]))           # [1, 2]"
+            },
+            {
+              "type": "paragraph",
+              "text": "每個點進一次 dfs，每條邊從兩邊各看一次：O(n + m)。圖不連通時，每個還沒走過的點都要當一次根（最後的 for s in range(n)）。"
+            },
+            {
+              "type": "callout",
+              "label": "橋：把 ≥ 改成 >",
+              "text": "拿掉一條「邊」就斷開，那條邊叫橋。樹邊 u – v 是橋 ⇔ low[v] > tin[u]：v 的子樹連 u 都碰不到，只能靠這條邊。注意：圖有重複的邊（u – v 有兩條）時，不能用 v == p 跳過，要記「從哪一條邊來」，跳過那一條就好。"
+            },
+            {
+              "type": "callout",
+              "label": "遞迴深度",
+              "text": "一條長鏈會有 n 層遞迴。n 很大時要 sys.setrecursionlimit，或改成自己用 stack 模擬 DFS。"
+            },
+            {
+              "type": "quiz",
+              "questions": [
+                {
+                  "question": "不是根的 u，什麼時候是割點？",
+                  "options": [
+                    "u 有兩個以上的鄰居",
+                    "某個子節點 v 的 low[v] ≥ tin[u]",
+                    "low[u] == tin[u]",
+                    "u 在環上"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "DFS 的根什麼時候是割點？",
+                  "options": [
+                    "low[root] == 0",
+                    "它有兩個以上的鄰居",
+                    "DFS 樹上它有兩個以上的子節點",
+                    "永遠不是"
+                  ],
+                  "answer": 2
+                },
+                {
+                  "question": "樹邊 u – v 是橋的條件？",
+                  "options": [
+                    "low[v] ≥ tin[u]",
+                    "low[v] > tin[u]",
+                    "low[u] > tin[v]",
+                    "tin[v] > tin[u]"
+                  ],
+                  "answer": 1
+                }
+              ]
+            },
+            {
+              "type": "practice",
+              "problems": [
+                {
+                  "title": "Necessary Cities",
+                  "difficulty": "Medium",
+                  "url": "https://cses.fi/problemset/task/2077",
+                  "description": "就是找所有割點"
+                },
+                {
+                  "title": "Necessary Roads",
+                  "difficulty": "Medium",
+                  "url": "https://cses.fi/problemset/task/2076",
+                  "description": "找所有橋：low[v] > tin[u]"
+                },
+                {
+                  "title": "Critical Connections in a Network",
+                  "difficulty": "Hard",
+                  "url": "https://leetcode.com/problems/critical-connections-in-a-network/",
+                  "description": "找所有橋"
                 }
               ]
             }
@@ -12584,7 +13398,61 @@
             },
             {
               "type": "heading",
-              "text": "3. 程式怎麼找環：三種狀態"
+              "text": "3. 實際走一次：找環、填答案"
+            },
+            {
+              "type": "paragraph",
+              "text": "用 DFS 來看最直覺：dfs(u) 先呼叫 dfs(nxt[u])，等它回傳答案，自己再 +1。\n• 呼叫下去的時候：點變成紫色，代表 dfs 還沒結束（還在 call stack 上）。\n• 如果呼叫到一個紫色的點：它的 dfs 還沒結束又被走到，就是繞回來了，找到環。\n• return 回來的時候：才把答案寫在點旁邊。環上的寫環長，環外的寫 1 + 下一個。"
+            },
+            {
+              "type": "animation",
+              "animationId": 105,
+              "title": "沿著箭頭一路 dfs：紫色 = 還沒結束，return 的時候把答案寫上去",
+              "caption": "環 DP（DFS）：6 → 5 → 1 → 2 → 3 → 4 → 1、7 → 3。呼叫到「還沒結束」的點 = 找到環；return 時環上寫環長，其他寫 1 + 下一個",
+              "steps": [
+                "還沒開始執行",
+                "呼叫 dfs(6)：第 0 層",
+                "呼叫 dfs(5)：第 1 層",
+                "呼叫 dfs(1)：第 2 層",
+                "呼叫 dfs(2)：第 3 層",
+                "呼叫 dfs(3)：第 4 層",
+                "呼叫 dfs(4)：第 5 層",
+                "呼叫 dfs(1)：1 是紫色，dfs(1) 還沒結束又被呼叫 → 繞回來了",
+                "回到 dfs(4)：還在環裡",
+                "回到 dfs(3)：還在環裡",
+                "回到 dfs(2)：還在環裡",
+                "回到 dfs(1)：還在環裡",
+                "回到 dfs(5)：ans[5] = 1 + dfs(1)",
+                "回到 dfs(6)：ans[6] = 1 + dfs(5)",
+                "呼叫 dfs(7)：第 0 層",
+                "呼叫 dfs(3)：ans[3] 已經算好了",
+                "回到 dfs(7)：ans[7] = 1 + dfs(3)",
+                "全部的 dfs 都結束了"
+              ],
+              "results": [
+                "dfs(u)：先呼叫 dfs(下一個點)，等它回傳，再算自己的 ans。紫色 = dfs 還沒結束（還在 call stack 上），黃色 = 現在在這裡",
+                "6 還沒有答案，dfs(6) 先不結束，去呼叫 dfs(5)",
+                "5 還沒有答案，dfs(5) 先不結束，去呼叫 dfs(1)",
+                "1 還沒有答案，dfs(1) 先不結束，去呼叫 dfs(2)",
+                "2 還沒有答案，dfs(2) 先不結束，去呼叫 dfs(3)",
+                "3 還沒有答案，dfs(3) 先不結束，去呼叫 dfs(4)",
+                "4 還沒有答案，dfs(4) 先不結束，去呼叫 dfs(1)",
+                "環 = 1 → 2 → 3 → 4 → 1。回傳環長 4",
+                "ans[4] = 環長 = 4",
+                "ans[3] = 環長 = 4",
+                "ans[2] = 環長 = 4",
+                "ans[1] = 環長 = 4。1 就是環的起點，再往回就不在環上了",
+                "5 自己 1 個，加上從 1 開始的 4 個 = 5",
+                "6 自己 1 個，加上從 5 開始的 5 個 = 6",
+                "7 還沒有答案，dfs(7) 先不結束，去呼叫 dfs(3)",
+                "直接回傳 4，不用再往下走（記憶化）",
+                "7 自己 1 個，加上從 3 開始的 4 個 = 5",
+                "每個點只寫一次答案。最多的是 6：ans = 6"
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "下面四張手繪圖和 82 號動畫是同一件事的 while 版本：用 state 1（走到一半）代替紫色，用 path 這個 list 代替 call stack。"
             },
             {
               "type": "image",

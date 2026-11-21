@@ -65,6 +65,7 @@ export default function MyAnim({ step }: { step: number }) {
 | `hit` | 紅＋外框 | 衝突、被移除、會被攻擊 |
 | `no` | 淡灰 | 排除了 |
 | `dim` | 更淡 | 不用看 / 還沒用到 |
+| `stack` | 紫（虛線框） | 遞迴 / DFS 還沒結束的呼叫：進去了、還沒 return（和正在處理的 `active` 分開，見 100、105） |
 
 自己畫的格子要同樣的顏色：`toneClass(tone)`（Tailwind class）、`toneFill(tone)`（SVG 的 `[fill, stroke, text]`）。
 
