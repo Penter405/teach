@@ -1,12 +1,13 @@
 """The program each animation runs. One spec per animation id.
 src    the code shown in the animation (traced one action per step)
 env    things that exist before the program starts (helpers treated as one action, like len())
+calldesc {name: text} description of an env helper for this spec only (overrides CALLDESC, e.g. two specs both call add)
 notes  {line: text} extra explanation added to the 執行後 text (first time; (text, True) = every time)
 """
 import heapq, math
 from bisect import bisect_left
 from decimal import Decimal, ROUND_HALF_UP, ROUND_HALF_EVEN, ROUND_FLOOR, ROUND_CEILING
-from collections import deque
+from collections import deque, defaultdict
 
 INF = float('inf')
 
@@ -575,3 +576,104 @@ ans, end = mul_expr(0)
         'v = v + w': ('+ 在內層：先算', True),
         'v = v * w': ('* 在最外層：兩邊的 + 都算完了才乘', True),
     })
+
+# ───────────── Mo's algorithm：學生的兩種寫法 ─────────────
+def mo_key(x):
+    """Mo's sort key = lambda x: (x[0] // end, x[1])"""
+    return (x[0] // SPECS_STATE['g']['end'], x[1])
+
+def mo_add(x, ans):
+    """student's add(x, ans): d[x] += 1, return ans + 1 when it became 1"""
+    d = SPECS_STATE['g']['d']
+    d[x] += 1
+    if d[x] == 1:
+        ans += 1
+    return ans
+
+def mo_remove(x, ans):
+    d = SPECS_STATE['g']['d']
+    d[x] -= 1
+    if d[x] == 0:
+        ans -= 1
+    return ans
+
+SPECS[97] = dict(caption="Mo's（我的寫法）：先排序查詢，再把兩個指標移到每一筆查詢",
+    intro='輸入已經讀好（0-indexed）：queries = (l, r, 原本的編號)；d = 每個值在目前區間出現幾次；一開始區間是空的 [0, -1]',
+    env=dict(defaultdict=defaultdict, mo_key=mo_key, add=mo_add, remove=mo_remove),
+    calldesc={'mo_key': '就是 lambda x: (x[0] // end, x[1])',
+              'add': 'd[x] += 1；從 0 變 1 代表多一種值，回傳 ans + 1',
+              'remove': 'd[x] -= 1；從 1 變 0 代表少一種值，回傳 ans - 1',
+              'defaultdict': '做一個沒有的 key 預設是 0 的 dict'},
+    src='''
+a = 5
+nums = [1, 2, 1, 3, 2]
+queries = [(1,3,0), (3,4,1), (0,2,2)]
+ans = [0, 0, 0]
+end = int(a ** 0.5)
+d = defaultdict(int)
+queries.sort(key=mo_key)
+cur_r = -1
+cur_l = 0
+cur_ans = 0
+for l, r, idx in queries:
+    while cur_l > l:
+        cur_l -= 1
+        cur_ans = add(nums[cur_l], cur_ans)
+    while cur_r < r:
+        cur_r += 1
+        cur_ans = add(nums[cur_r], cur_ans)
+    while cur_l < l:
+        cur_ans = remove(nums[cur_l], cur_ans)
+        cur_l += 1
+    while cur_r > r:
+        cur_ans = remove(nums[cur_r], cur_ans)
+        cur_r -= 1
+    ans[idx] = cur_ans
+print(ans)
+''', notes={'end = int': '塊的大小 ≈ √n', 'queries.sort': '主要依 l 在第幾塊，次要依 r 由小到大', 'cur_l -= 1': ('左指標往左一格：區間變大', True), 'cur_r += 1': ('右指標往右一格：區間變大', True),
+             'cur_ans = remove(nums[cur_l]': ('先移除 nums[cur_l]，左指標再往右', True), 'cur_ans = remove(nums[cur_r]': ('先移除 nums[cur_r]，右指標再往左', True),
+             'ans[idx] = cur_ans': ('區間已經是 [l, r]：答案存回原本的編號', True)})
+
+def bit_add(index, target):
+    """student's add: Fenwick point update on last_ocuur"""
+    g = SPECS_STATE['g']
+    t = g['last_ocuur']
+    while index < g['d_size']:
+        t[index] += target
+        index += index & -index
+
+def bit_get(index):
+    t = SPECS_STATE['g']['last_ocuur']
+    s = 0
+    while index > 0:
+        s += t[index]
+        index -= index & -index
+    return s
+
+SPECS[98] = dict(caption='每個數字只保留最後出現的位置：Fenwick tree 數區間裡有幾種值',
+    intro='d 從 index 1 開始；interval[b] = 右端點是 b 的查詢的左端點；last_ocuur 是 Fenwick tree（add / get 的細節見 Fenwick tree 那一課）',
+    env=dict(defaultdict=defaultdict, add=bit_add, get=bit_get),
+    calldesc={'add': 'Fenwick：位置 index 加上 target',
+              'get': 'Fenwick：位置 1 ～ index 加起來（有幾個 1）',
+              'defaultdict': '做一個沒有的 key 預設是 0 的 dict'},
+    src='''
+d_size = 6
+d = [0, 1, 2, 1, 3, 2]
+interval = {3: [1], 5: [2, 4]}
+need = [(1,3), (2,5), (4,5)]
+result = {}
+last_ocuur = [0, 0, 0, 0, 0, 0, 0]
+appear = defaultdict(int)
+for back in range(1, d_size):
+    add(back, 1)
+    if d[back] in appear:
+        add(appear[d[back]], -1)
+    appear[d[back]] = back
+    if back in interval:
+        for begin in interval[back]:
+            found = get(back) - get(begin - 1)
+            result[(begin, back)] = found
+for begin, end in need:
+    print(result[(begin, end)])
+''', notes={'add(back, 1)': ('先在新的位置標 1', True), 'add(appear[d[back]], -1)': ('這個值以前出現過：舊的位置改回 0，每個值只留最右邊的 1', True),
+             'appear[d[back]] = back': ('記住這個值最後出現在哪', True), 'found = get': ('[begin, back] 裡有幾個 1 = 有幾種不同的值', True)})

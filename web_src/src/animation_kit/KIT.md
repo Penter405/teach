@@ -155,6 +155,8 @@ export default function MyAnim({ step }: { step: number }) {
 <QueryPlot n={8} queries={QS} order={order} done={k} block={3} color="#38bdf8" />
 ```
 
+0-indexed 的資料加 `first={0}`（塊 = `l // block`，起點是空區間 `[0, -1]`），見 96。`travel(..., { l: 0, r: -1 })` 也要給同樣的起點。
+
 **`QueryList`**：查詢小標籤，做完 = 藍、現在 = 黃、還沒 = 灰。`extra={(q) => …}` 可以加答案。
 
 **`Stat`**：一個大數字＋標題（總步數、總權重）。`hot` 會亮。
@@ -184,7 +186,7 @@ export default function MyAnim({ step }: { step: number }) {
 
 ## tracer 的小技巧
 
-- 不是重點的函式放進 `env`，只算一步，例如 Mo's 的 `add(i)` / `remove(i)`。它可以用 `SPECS_STATE['g']` 讀寫程式裡的變數，然後在 `CALLDESC` 寫說明。
+- 不是重點的函式放進 `env`，只算一步，例如 Mo's 的 `add(i)` / `remove(i)`。它可以用 `SPECS_STATE['g']` 讀寫程式裡的變數，然後在 `CALLDESC` 寫說明。兩支動畫的輔助函式同名但做的事不一樣時（例如 94、97、98 都有 `add`），在那個 spec 裡寫 `calldesc={'add': '…'}`，只對那支有效。
 - 開頭的資料（`a = [...]`）不算步數，第 0 步就看得到。
 - 步數太多：資料改小、把輔助函式放進 `env`。`x += 1` 是兩步（運算＋指定）。
 - `qs` 這類很長的資料，tuple 裡不加空白，程式碼面板才放得下。

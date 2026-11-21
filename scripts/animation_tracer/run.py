@@ -29,7 +29,7 @@ def trace(i):
         assert at >= 0, f'{i}: note key not found in code: {key!r}'
         notes[src[:at].count('\n') + 1] = txt
     t = Tracer(src, env=dict(sp.get('env', {})), notes=notes, intro=sp['intro'], max_steps=600)
-    t.calldesc = specs.CALLDESC
+    t.calldesc = {**specs.CALLDESC, **sp.get('calldesc', {})}
     specs.SPECS_STATE['g'] = t.g
     return dict(id=i, caption=sp['caption'], code=t.lines, steps=t.run())
 

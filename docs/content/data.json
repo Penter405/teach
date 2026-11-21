@@ -14223,6 +14223,19 @@
             },
             {
               "type": "heading",
+              "text": "Mo's algorithm 的結構"
+            },
+            {
+              "type": "paragraph",
+              "text": "整個方法只有兩件事：先決定查詢的順序，再照這個順序把兩個指標一個一個移到每一筆查詢。"
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "code": "Mo's algorithm\n├── 1. 更改搜尋順序\n│     queries.sort(key=lambda x: (x[0]//end, x[1]))\n│     ├── 主要規則：left 所在的區間（x[0]//end）由小到大\n│     └── 次要規則：right（x[1]）由小到大\n└── 2. 每次將 two pointers 移動到當前搜尋\n      ├── 移動 cur_l、cur_r，同時更新出現次數 d[x]\n      └── 兩個指標到位後，答案存進 ans[原本的編號]"
+            },
+            {
+              "type": "heading",
               "text": "怎麼排序查詢"
             },
             {
@@ -14245,6 +14258,52 @@
                   "term": "答案順序",
                   "definition": "排序會打亂順序，所以每筆查詢要記住原本的編號，答案存回 ans[原本的編號]。"
                 }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "end = int(n ** 0.5)                              # 每 end 格一塊\nqueries.sort(key=lambda x: (x[0] // end, x[1]))  # x = (l, r, 原本的編號)"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "主要規則",
+                  "definition": "根據 left 所在的區間排序（x[0] // end 算出 left 在第幾塊），塊號由小到大。"
+                },
+                {
+                  "term": "次要規則",
+                  "definition": "同一塊裡根據 right 由小到大排序。"
+                },
+                {
+                  "term": "為什麼 left 只靠區間排序",
+                  "definition": "right 由小到大的好處比 left 由小到大多：同一塊裡 right 只往右走一趟（最多 n 步），left 雖然會來回，但每筆最多只走 end 格。如果改成完整的 (l, r) 排序，left 很少動，right 卻每筆都可能從頭跑到尾。"
+                }
+              ]
+            },
+            {
+              "type": "animation",
+              "animationId": 96,
+              "caption": "Mo's 排序規則：(x[0] // end, x[1])，為什麼 left 只看在第幾塊",
+              "steps": [
+                "還沒開始執行",
+                "先算每一筆查詢的 x[0] // end：左端點在第幾塊",
+                "主要規則：依塊號由小到大",
+                "次要規則：同一塊裡依 r 由小到大",
+                "對照：如果 l 也完整排序，排成 (l, r)",
+                "比一比兩個指標各走幾步",
+                "資料變大：n = q = 10000"
+              ],
+              "results": [
+                "x = (l, r, 編號)；end = int(8 ** 0.5) = 2，每 2 格一塊",
+                "同一塊的查詢，左端點最多差 end − 1 格",
+                "塊號一樣的先不管 r，只是放在一起",
+                "同一塊裡 r 只往右走；換塊時 r 才可能跳回去",
+                "(l, r) 排序：l 一直往右，但 r 跳來跳去：2 → 7 → 4 → 5 → 6 → 4 → 7 → 3 → 7 → 6",
+                "分塊：左 10 + 右 18 = 28；(l, r)：左 5 + 右 27 = 32",
+                "l 讓一點（每筆最多走 end 格），換來 r 在每一塊裡只走一趟：右邊省下的比左邊多很多"
               ]
             },
             {
@@ -14277,6 +14336,200 @@
                 "原本順序 累計 37 步；分塊排序 累計 26 步；奇偶優化 累計 20 步",
                 "原本順序 累計 46 步；分塊排序 累計 28 步；奇偶優化 累計 25 步。分塊排序讓左指標只在一塊裡小幅移動、右指標往上走；奇偶優化讓右指標換塊時不用掉回最下面"
               ]
+            },
+            {
+              "type": "heading",
+              "text": "照順序移動兩個指標"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "3. 移動 two pointers",
+                  "definition": "依排好的順序，把 cur_l、cur_r 一格一格移到這一筆查詢的 [l, r]。區間變大就 add（d[x] += 1，從 0 變 1 時答案 +1）；區間變小就 remove（d[x] -= 1，從 1 變 0 時答案 −1）。"
+                },
+                {
+                  "term": "4. 存答案",
+                  "definition": "兩個指標到位後，目前的答案就是這一筆查詢的答案，存進 ans[原本的編號]。全部做完再依原本的順序輸出。"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "解法一：Mo's algorithm（我的寫法）"
+            },
+            {
+              "type": "paragraph",
+              "text": "0-indexed：讀進來的 l、r 先減 1。add / remove 直接回傳更新後的答案。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "from collections import defaultdict\nd = defaultdict(int)\na,b=map(int,input().split())\nnums=list(map(int,input().split()))\nend=int(a**0.5)\nqueries=[]\nans=[]\nfor i in range(b):\n    l,r=list(map(int,input().split()))\n    queries.append((l-1,r-1,i))\nans=[0]*(i+1)\nqueries.sort(key=lambda x:(x[0]//end,x[1]))\ncur_r=-1\ncur_l=0\ncur_ans=0\ndef add(x,ans):\n    d[x]+=1\n    if d[x]==1:\n        ans+=1\n    return ans\n    \ndef remove(x,ans):\n    d[x]-=1\n    if d[x]==0:\n        ans-=1\n    return ans\nfor l,r,idx in queries:\n    while cur_l>l:\n        cur_l-=1\n        cur_ans=add(nums[cur_l],cur_ans)\n    while cur_r<r:\n        cur_r+=1\n        cur_ans=add(nums[cur_r],cur_ans)\n    while cur_l<l:\n        cur_ans=remove(nums[cur_l],cur_ans)\n        cur_l+=1\n    while cur_r>r:\n        cur_ans=remove(nums[cur_r],cur_ans)\n        cur_r-=1\n    ans[idx]=cur_ans\nfor i in ans:\n    print(i)"
+            },
+            {
+              "type": "animation",
+              "animationId": 97,
+              "caption": "Mo's（我的寫法）：先排序查詢，再把兩個指標移到每一筆查詢",
+              "steps": [
+                "還沒開始執行",
+                "a ** 0.5：5 ** 0.5（次方）",
+                "int(2.23606797749979)：轉成 int",
+                "end =：名稱 end 指向 2",
+                "defaultdict(int)：做一個沒有的 key 預設是 0 的 dict",
+                "d =：名稱 d 指向 defaultdict({})",
+                "queries.sort(key=mo_key)：原地排序",
+                "for：從 queries 拿下一個 → (l, r, idx) = (0, 2, 2)",
+                "cur_l > l：0 > 0，while 不成立 → 離開迴圈",
+                "cur_r < r：-1 < 2，while 成立 → 進入迴圈",
+                "cur_r + 1：-1 + 1（cur_r += 就是 cur_r = cur_r + …）",
+                "cur_r =：名稱 cur_r 指向 0",
+                "nums[0]：拿 index 0 的值",
+                "add(1, cur_ans)：d[x] += 1；從 0 變 1 代表多一種值，回傳 ans + 1",
+                "cur_ans =：名稱 cur_ans 指向 1",
+                "cur_r < r：0 < 2，while 成立 → 進入迴圈",
+                "cur_r + 1：0 + 1（cur_r += 就是 cur_r = cur_r + …）",
+                "cur_r =：名稱 cur_r 指向 1",
+                "nums[1]：拿 index 1 的值",
+                "add(2, cur_ans)：d[x] += 1；從 0 變 1 代表多一種值，回傳 ans + 1",
+                "cur_ans =：名稱 cur_ans 指向 2",
+                "cur_r < r：1 < 2，while 成立 → 進入迴圈",
+                "cur_r + 1：1 + 1（cur_r += 就是 cur_r = cur_r + …）",
+                "cur_r =：名稱 cur_r 指向 2",
+                "nums[2]：拿 index 2 的值",
+                "add(1, cur_ans)：d[x] += 1；從 0 變 1 代表多一種值，回傳 ans + 1",
+                "cur_ans =：名稱 cur_ans 指向 2",
+                "cur_r < r：2 < 2，while 不成立 → 離開迴圈",
+                "cur_l < l：0 < 0，while 不成立 → 離開迴圈",
+                "cur_r > r：2 > 2，while 不成立 → 離開迴圈",
+                "ans[2] =：ans[2] 從 0 改成 2",
+                "for：從 queries 拿下一個 → (l, r, idx) = (1, 3, 0)",
+                "cur_l > l：0 > 1，while 不成立 → 離開迴圈",
+                "cur_r < r：2 < 3，while 成立 → 進入迴圈",
+                "cur_r + 1：2 + 1（cur_r += 就是 cur_r = cur_r + …）",
+                "cur_r =：名稱 cur_r 指向 3",
+                "nums[3]：拿 index 3 的值",
+                "add(3, cur_ans)：d[x] += 1；從 0 變 1 代表多一種值，回傳 ans + 1",
+                "cur_ans =：名稱 cur_ans 指向 3",
+                "cur_r < r：3 < 3，while 不成立 → 離開迴圈",
+                "cur_l < l：0 < 1，while 成立 → 進入迴圈",
+                "nums[0]：拿 index 0 的值",
+                "remove(1, cur_ans)：d[x] -= 1；從 1 變 0 代表少一種值，回傳 ans - 1",
+                "cur_ans =：名稱 cur_ans 指向 3",
+                "cur_l + 1：0 + 1（cur_l += 就是 cur_l = cur_l + …）",
+                "cur_l =：名稱 cur_l 指向 1",
+                "cur_l < l：1 < 1，while 不成立 → 離開迴圈",
+                "cur_r > r：3 > 3，while 不成立 → 離開迴圈",
+                "ans[0] =：ans[0] 從 0 改成 3",
+                "for：從 queries 拿下一個 → (l, r, idx) = (3, 4, 1)",
+                "cur_l > l：1 > 3，while 不成立 → 離開迴圈",
+                "cur_r < r：3 < 4，while 成立 → 進入迴圈",
+                "cur_r + 1：3 + 1（cur_r += 就是 cur_r = cur_r + …）",
+                "cur_r =：名稱 cur_r 指向 4",
+                "nums[4]：拿 index 4 的值",
+                "add(2, cur_ans)：d[x] += 1；從 0 變 1 代表多一種值，回傳 ans + 1",
+                "cur_ans =：名稱 cur_ans 指向 3",
+                "cur_r < r：4 < 4，while 不成立 → 離開迴圈",
+                "cur_l < l：1 < 3，while 成立 → 進入迴圈",
+                "nums[1]：拿 index 1 的值",
+                "remove(2, cur_ans)：d[x] -= 1；從 1 變 0 代表少一種值，回傳 ans - 1",
+                "cur_ans =：名稱 cur_ans 指向 3",
+                "cur_l + 1：1 + 1（cur_l += 就是 cur_l = cur_l + …）",
+                "cur_l =：名稱 cur_l 指向 2",
+                "cur_l < l：2 < 3，while 成立 → 進入迴圈",
+                "nums[2]：拿 index 2 的值",
+                "remove(1, cur_ans)：d[x] -= 1；從 1 變 0 代表少一種值，回傳 ans - 1",
+                "cur_ans =：名稱 cur_ans 指向 2",
+                "cur_l + 1：2 + 1（cur_l += 就是 cur_l = cur_l + …）",
+                "cur_l =：名稱 cur_l 指向 3",
+                "cur_l < l：3 < 3，while 不成立 → 離開迴圈",
+                "cur_r > r：4 > 4，while 不成立 → 離開迴圈",
+                "ans[1] =：ans[1] 從 0 改成 2",
+                "for：queries 沒有下一個了 → 離開迴圈",
+                "print(ans)：印到螢幕"
+              ],
+              "results": [
+                "輸入已經讀好（0-indexed）：queries = (l, r, 原本的編號)；d = 每個值在目前區間出現幾次；一開始區間是空的 [0, -1]",
+                "得到 2.23606797749979。算式變成 end = int(2.23606797749979)",
+                "回傳 2",
+                "end → 2。塊的大小 ≈ √n",
+                "回傳 defaultdict({})",
+                "d → defaultdict({})",
+                "queries 變成 [(0, 2, 2), (1, 3, 0), (3, 4, 1)]。主要依 l 在第幾塊，次要依 r 由小到大",
+                "l → 0、r → 2、idx → 2",
+                "跳到迴圈後面",
+                "往下執行第 16 行",
+                "得到 0。算式變成 cur_r = 0",
+                "cur_r → 0。右指標往右一格：區間變大",
+                "是 1。算式變成 cur_ans = add(1, cur_ans)",
+                "回傳 1；d 變成 defaultdict({1: 1})",
+                "cur_ans → 1",
+                "往下執行第 16 行",
+                "得到 1。算式變成 cur_r = 1",
+                "cur_r → 1。右指標往右一格：區間變大",
+                "是 2。算式變成 cur_ans = add(2, cur_ans)",
+                "回傳 2；d 變成 defaultdict({1: 1, 2: 1})",
+                "cur_ans → 2",
+                "往下執行第 16 行",
+                "得到 2。算式變成 cur_r = 2",
+                "cur_r → 2。右指標往右一格：區間變大",
+                "是 1。算式變成 cur_ans = add(1, cur_ans)",
+                "回傳 2；d 變成 defaultdict({1: 2, 2: 1})",
+                "cur_ans → 2",
+                "跳到迴圈後面",
+                "跳到迴圈後面",
+                "跳到迴圈後面",
+                "ans 變成 [0, 0, 2]。區間已經是 [l, r]：答案存回原本的編號",
+                "l → 1、r → 3、idx → 0",
+                "跳到迴圈後面",
+                "往下執行第 16 行",
+                "得到 3。算式變成 cur_r = 3",
+                "cur_r → 3。右指標往右一格：區間變大",
+                "是 3。算式變成 cur_ans = add(3, cur_ans)",
+                "回傳 3；d 變成 defaultdict({1: 2, 2: 1, 3: 1})",
+                "cur_ans → 3",
+                "跳到迴圈後面",
+                "往下執行第 19 行",
+                "是 1。算式變成 cur_ans = remove(1, cur_ans)",
+                "回傳 3；d 變成 defaultdict({1: 1, 2: 1, 3: 1})",
+                "cur_ans → 3。先移除 nums[cur_l]，左指標再往右",
+                "得到 1。算式變成 cur_l = 1",
+                "cur_l → 1",
+                "跳到迴圈後面",
+                "跳到迴圈後面",
+                "ans 變成 [3, 0, 2]。區間已經是 [l, r]：答案存回原本的編號",
+                "l → 3、r → 4、idx → 1",
+                "跳到迴圈後面",
+                "往下執行第 16 行",
+                "得到 4。算式變成 cur_r = 4",
+                "cur_r → 4。右指標往右一格：區間變大",
+                "是 2。算式變成 cur_ans = add(2, cur_ans)",
+                "回傳 3；d 變成 defaultdict({1: 1, 2: 2, 3: 1})",
+                "cur_ans → 3",
+                "跳到迴圈後面",
+                "往下執行第 19 行",
+                "是 2。算式變成 cur_ans = remove(2, cur_ans)",
+                "回傳 3；d 變成 defaultdict({1: 1, 2: 1, 3: 1})",
+                "cur_ans → 3。先移除 nums[cur_l]，左指標再往右",
+                "得到 2。算式變成 cur_l = 2",
+                "cur_l → 2",
+                "往下執行第 19 行",
+                "是 1。算式變成 cur_ans = remove(1, cur_ans)",
+                "回傳 2；d 變成 defaultdict({1: 0, 2: 1, 3: 1})",
+                "cur_ans → 2。先移除 nums[cur_l]，左指標再往右",
+                "得到 3。算式變成 cur_l = 3",
+                "cur_l → 3",
+                "跳到迴圈後面",
+                "跳到迴圈後面",
+                "ans 變成 [3, 2, 2]。區間已經是 [l, r]：答案存回原本的編號",
+                "跳到迴圈後面",
+                "螢幕多一行：[3, 2, 2]"
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "同樣的方法，換成一次讀完輸入、加上奇偶優化的版本（1-indexed）："
             },
             {
               "type": "code",
@@ -14524,6 +14777,208 @@
               "text": "這一題（區間不同值）其實還有一個更快的離線方法：把查詢依右端點排序，從左到右掃陣列，每個值只在「最後一次出現的位置」標 1，用樹狀陣列（Fenwick tree）求區間和。複雜度 O((n + q) log n)，同樣的資料約 1 秒。"
             },
             {
+              "type": "heading",
+              "text": "解法二：每個數字只保留最後出現的位置（我的寫法）"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "想法",
+                  "definition": "右端點由左往右掃。掃到 back 時，每個值只在它「最後一次出現的位置」標 1，舊的位置改回 0。這時 [begin, back] 裡有幾個 1，就是有幾種不同的值。"
+                },
+                {
+                  "term": "為什麼要先依右端點分組",
+                  "definition": "標記只對「右端點剛好是 back」的查詢正確，所以 interval[b] 先存好右端點是 b 的查詢，掃到 b 時一起回答。"
+                },
+                {
+                  "term": "為什麼用 Fenwick tree",
+                  "definition": "標記會一直改（單點加減），又要問區間和：get(back) − get(begin − 1)，兩個都是 O(log n)。"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "#每個數字只保留最後出現位置\nfrom collections import defaultdict\ndef add(index, target):\n    global last_ocuur\n    while index<d_size:\n        last_ocuur[index]+=target\n        index+=index&-index\ndef get(index):\n    result=0\n    while index>0:\n        result+=last_ocuur[index]\n        index-=index&-index\n    return result\n\n\n\n\nd_size, interval_size=list(map(int,input().split()))\nd=[0]+list(map(int,input().split()));d_size+=1\ninterval=dict()\nneed=[]\nresult=dict()\nfor _ in range(interval_size):\n    a,b=list(map(int,input().split()))\n    if b not in interval:\n        interval[b]=list()\n    interval[b].append(a)\n    need.append((a,b))\n\n\nappear=defaultdict(int)\nlast_ocuur=[0]+[0]*d_size\nfor back in range(1,d_size):\n    add(back,1)\n    if d[back] in appear:\n        add(appear[d[back]],-1)\n    appear[d[back]]=back\n    if back in interval:\n        for begin in interval[back]:\n            found=get(back)-get(begin-1)\n            result[(begin,back)]=found\n\nfor begin,end in need:\n    print(result[(begin,end)])"
+            },
+            {
+              "type": "animation",
+              "animationId": 98,
+              "caption": "每個數字只保留最後出現的位置：Fenwick tree 數區間裡有幾種值",
+              "steps": [
+                "還沒開始執行",
+                "defaultdict(int)：做一個沒有的 key 預設是 0 的 dict",
+                "appear =：名稱 appear 指向 defaultdict({})",
+                "range(1, d_size)：做出 range 物件（只記 start / stop / step）",
+                "for：從 range(1, d_size) 拿下一個 → back = 1",
+                "add(back, 1)：Fenwick：位置 index 加上 target",
+                "d[1]：拿 index 1 的值",
+                "d[back] in appear：1 in defaultdict({})，if 不成立 → 跳過",
+                "d[1]：拿 index 1 的值",
+                "appear[1] =：新增 key 1 → 1",
+                "back in interval：1 in {3: [1], 5: [2, 4]}，if 不成立 → 跳過",
+                "for：從 range(1, d_size) 拿下一個 → back = 2",
+                "add(back, 1)：Fenwick：位置 index 加上 target",
+                "d[2]：拿 index 2 的值",
+                "d[back] in appear：2 in defaultdict({1: 1})，if 不成立 → 跳過",
+                "d[2]：拿 index 2 的值",
+                "appear[2] =：新增 key 2 → 2",
+                "back in interval：2 in {3: [1], 5: [2, 4]}，if 不成立 → 跳過",
+                "for：從 range(1, d_size) 拿下一個 → back = 3",
+                "add(back, 1)：Fenwick：位置 index 加上 target",
+                "d[3]：拿 index 3 的值",
+                "d[back] in appear：1 in defaultdict({1: 1, 2: 2})，if 成立 → 進入",
+                "d[3]：拿 index 3 的值",
+                "appear[1]：查 key 1",
+                "add(1, -1)：Fenwick：位置 index 加上 target",
+                "d[3]：拿 index 3 的值",
+                "appear[1] =：appear[1] 從 1 改成 3",
+                "back in interval：3 in {3: [1], 5: [2, 4]}，if 成立 → 進入",
+                "interval[3]：查 key 3",
+                "for：從 interval[back] 拿下一個 → begin = 1",
+                "get(back)：Fenwick：位置 1 ～ index 加起來（有幾個 1）",
+                "begin - 1：1 - 1",
+                "get(0)：Fenwick：位置 1 ～ index 加起來（有幾個 1）",
+                "get(back) - get(begin - 1)：2 - 0",
+                "found =：名稱 found 指向 2",
+                "result[(1, 3)] =：新增 key (1, 3) → 2",
+                "for：interval[back] 沒有下一個了 → 離開迴圈",
+                "for：從 range(1, d_size) 拿下一個 → back = 4",
+                "add(back, 1)：Fenwick：位置 index 加上 target",
+                "d[4]：拿 index 4 的值",
+                "d[back] in appear：3 in defaultdict({1: 3, 2: 2})，if 不成立 → 跳過",
+                "d[4]：拿 index 4 的值",
+                "appear[3] =：新增 key 3 → 4",
+                "back in interval：4 in {3: [1], 5: [2, 4]}，if 不成立 → 跳過",
+                "for：從 range(1, d_size) 拿下一個 → back = 5",
+                "add(back, 1)：Fenwick：位置 index 加上 target",
+                "d[5]：拿 index 5 的值",
+                "d[back] in appear：2 in defaultdict({1: 3, 2: 2, 3: 4})，if 成立 → 進入",
+                "d[5]：拿 index 5 的值",
+                "appear[2]：查 key 2",
+                "add(2, -1)：Fenwick：位置 index 加上 target",
+                "d[5]：拿 index 5 的值",
+                "appear[2] =：appear[2] 從 2 改成 5",
+                "back in interval：5 in {3: [1], 5: [2, 4]}，if 成立 → 進入",
+                "interval[5]：查 key 5",
+                "for：從 interval[back] 拿下一個 → begin = 2",
+                "get(back)：Fenwick：位置 1 ～ index 加起來（有幾個 1）",
+                "begin - 1：2 - 1",
+                "get(1)：Fenwick：位置 1 ～ index 加起來（有幾個 1）",
+                "get(back) - get(begin - 1)：3 - 0",
+                "found =：名稱 found 指向 3",
+                "result[(2, 5)] =：新增 key (2, 5) → 3",
+                "for：從 interval[back] 拿下一個 → begin = 4",
+                "get(back)：Fenwick：位置 1 ～ index 加起來（有幾個 1）",
+                "begin - 1：4 - 1",
+                "get(3)：Fenwick：位置 1 ～ index 加起來（有幾個 1）",
+                "get(back) - get(begin - 1)：3 - 1",
+                "found =：名稱 found 指向 2",
+                "result[(4, 5)] =：新增 key (4, 5) → 2",
+                "for：interval[back] 沒有下一個了 → 離開迴圈",
+                "for：range(1, d_size) 沒有下一個了 → 離開迴圈",
+                "for：從 need 拿下一個 → (begin, end) = (1, 3)",
+                "result[(1, 3)]：查 key (1, 3)",
+                "print(2)：印到螢幕",
+                "for：從 need 拿下一個 → (begin, end) = (2, 5)",
+                "result[(2, 5)]：查 key (2, 5)",
+                "print(3)：印到螢幕",
+                "for：從 need 拿下一個 → (begin, end) = (4, 5)",
+                "result[(4, 5)]：查 key (4, 5)",
+                "print(2)：印到螢幕",
+                "for：need 沒有下一個了 → 離開迴圈"
+              ],
+              "results": [
+                "d 從 index 1 開始；interval[b] = 右端點是 b 的查詢的左端點；last_ocuur 是 Fenwick tree（add / get 的細節見 Fenwick tree 那一課）",
+                "回傳 defaultdict({})",
+                "appear → defaultdict({})",
+                "回傳 range(1, 6)",
+                "back → 1",
+                "last_ocuur 變成 [0, 1, 1, 0, 1, 0, 0]。先在新的位置標 1",
+                "是 1。算式變成 if 1 in appear:",
+                "跳過這個 if 區塊",
+                "是 1。算式變成 appear[1] = back",
+                "appear 變成 defaultdict({1: 1})。記住這個值最後出現在哪",
+                "跳過這個 if 區塊",
+                "back → 2",
+                "last_ocuur 變成 [0, 1, 2, 0, 2, 0, 0]。先在新的位置標 1",
+                "是 2。算式變成 if 2 in appear:",
+                "跳過這個 if 區塊",
+                "是 2。算式變成 appear[2] = back",
+                "appear 變成 defaultdict({1: 1, 2: 2})。記住這個值最後出現在哪",
+                "跳過這個 if 區塊",
+                "back → 3",
+                "last_ocuur 變成 [0, 1, 2, 1, 3, 0, 0]。先在新的位置標 1",
+                "是 1。算式變成 if 1 in appear:",
+                "往下執行第 11 行",
+                "是 1。算式變成 add(appear[1], -1)",
+                "是 1。算式變成 add(1, -1)",
+                "last_ocuur 變成 [0, 0, 1, 1, 2, 0, 0]。這個值以前出現過：舊的位置改回 0，每個值只留最右邊的 1",
+                "是 1。算式變成 appear[1] = back",
+                "appear 變成 defaultdict({1: 3, 2: 2})。記住這個值最後出現在哪",
+                "往下執行第 14 行",
+                "是 [1]。算式變成 for begin in [1]:",
+                "begin → 1",
+                "回傳 2",
+                "得到 0。算式變成 found = 2 - get(0)",
+                "回傳 0",
+                "得到 2。算式變成 found = 2",
+                "found → 2。[begin, back] 裡有幾個 1 = 有幾種不同的值",
+                "result 變成 {(1, 3): 2}",
+                "跳到迴圈後面",
+                "back → 4",
+                "last_ocuur 變成 [0, 0, 1, 1, 3, 0, 0]。先在新的位置標 1",
+                "是 3。算式變成 if 3 in appear:",
+                "跳過這個 if 區塊",
+                "是 3。算式變成 appear[3] = back",
+                "appear 變成 defaultdict({1: 3, 2: 2, 3: 4})。記住這個值最後出現在哪",
+                "跳過這個 if 區塊",
+                "back → 5",
+                "last_ocuur 變成 [0, 0, 1, 1, 3, 1, 0]。先在新的位置標 1",
+                "是 2。算式變成 if 2 in appear:",
+                "往下執行第 11 行",
+                "是 2。算式變成 add(appear[2], -1)",
+                "是 2。算式變成 add(2, -1)",
+                "last_ocuur 變成 [0, 0, 0, 1, 2, 1, 0]。這個值以前出現過：舊的位置改回 0，每個值只留最右邊的 1",
+                "是 2。算式變成 appear[2] = back",
+                "appear 變成 defaultdict({1: 3, 2: 5, 3: 4})。記住這個值最後出現在哪",
+                "往下執行第 14 行",
+                "是 [2, 4]。算式變成 for begin in [2, 4]:",
+                "begin → 2",
+                "回傳 3",
+                "得到 1。算式變成 found = 3 - get(1)",
+                "回傳 0",
+                "得到 3。算式變成 found = 3",
+                "found → 3。[begin, back] 裡有幾個 1 = 有幾種不同的值",
+                "result 變成 {(1, 3): 2, (2, 5): 3}",
+                "begin → 4",
+                "回傳 3",
+                "得到 3。算式變成 found = 3 - get(3)",
+                "回傳 1",
+                "得到 2。算式變成 found = 2",
+                "found → 2。[begin, back] 裡有幾個 1 = 有幾種不同的值",
+                "result 變成 {(1, 3): 2, (2, 5): 3, (4, 5): 2}",
+                "跳到迴圈後面",
+                "跳到迴圈後面",
+                "begin → 1、end → 3",
+                "是 2。算式變成 print(2)",
+                "螢幕多一行：2",
+                "begin → 2、end → 5",
+                "是 3。算式變成 print(3)",
+                "螢幕多一行：3",
+                "begin → 4、end → 5",
+                "是 2。算式變成 print(2)",
+                "螢幕多一行：2",
+                "跳到迴圈後面"
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "同樣的方法，一次讀完輸入的版本："
+            },
+            {
               "type": "code",
               "language": "python",
               "code": "import sys\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    n, q = int(data[0]), int(data[1])\n    a = [0] + [int(x) for x in data[2:2 + n]]\n    by_r = [[] for _ in range(n + 1)]                 # 依右端點把查詢分組\n    for i in range(q):\n        l, r = int(data[2 + n + 2 * i]), int(data[3 + n + 2 * i])\n        by_r[r].append((l, i))\n\n    tree = [0] * (n + 1)                              # Fenwick tree\n    def add(i, v):\n        while i <= n:\n            tree[i] += v; i += i & -i\n    def prefix(i):\n        s = 0\n        while i > 0:\n            s += tree[i]; i -= i & -i\n        return s\n\n    last = {}                                         # 每個值「最後一次」出現的位置\n    ans = [0] * q\n    for r in range(1, n + 1):\n        x = a[r]\n        if x in last:\n            add(last[x], -1)                          # 舊的位置不算了\n        add(r, 1)                                     # 只在最右邊的位置記 1\n        last[x] = r\n        for l, i in by_r[r]:\n            ans[i] = prefix(r) - prefix(l - 1)        # [l, r] 裡標 1 的數量 = 不同值的個數\n    print(\"\\n\".join(map(str, ans)))\n\nmain()"
@@ -14562,6 +15017,24 @@
                     "陣列必須已經排序"
                   ],
                   "answer": 1
+                },
+                {
+                  "question": "queries.sort(key=lambda x: (x[0] // end, x[1])) 為什麼 left 只用塊號排序，不直接用 (l, r)？",
+                  "options": [
+                    "因為 left 不重要",
+                    "同一塊裡 right 只往右走，省下的步數比 left 多走的多",
+                    "因為 lambda 只能回傳兩個值"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "「每個數字只保留最後出現位置」的解法，為什麼要把查詢依右端點分組？",
+                  "options": [
+                    "標記只對右端點剛好是目前位置的查詢正確",
+                    "Fenwick tree 只能從右邊查",
+                    "為了讓輸出由小到大"
+                  ],
+                  "answer": 0
                 }
               ]
             }

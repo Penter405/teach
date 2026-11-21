@@ -224,17 +224,18 @@ export type Query = { l: number; r: number; id: number | string };
  * Each query is a point (l, r); pointer travel between two queries = |Δl| + |Δr|.
  * Shades every other block of l (Mo's √n blocks) and draws the path through `order` up to `done` queries.
  *   <QueryPlot n={8} queries={qs} order={[2, 0, 1]} done={2} block={3} />
+ * `first` = the smallest index (1 = 1-indexed, default; 0 = 0-indexed, blocks are then l // block).
  */
 export const QueryPlot = ({
-  n, queries, order, done, block, start = { l: 1, r: 0 }, size = 300, color = '#38bdf8',
+  n, queries, order, done, block, first = 1, start = { l: first, r: first - 1 }, size = 300, color = '#38bdf8',
 }: {
   n: number; queries: Query[]; order: number[]; done: number; block?: number;
-  start?: { l: number; r: number }; size?: number; color?: string;
+  first?: number; start?: { l: number; r: number }; size?: number; color?: string;
 }) => {
   const pad = 26;
   const u = (size - pad - 10) / Math.max(1, n);
-  const sx = (l: number) => pad + (l - 0.5) * u;
-  const sy = (r: number) => size - pad - (r - 0.5) * u;
+  const sx = (l: number) => pad + (l - first + 0.5) * u;
+  const sy = (r: number) => size - pad - (r - first + 0.5) * u;
   const path = [start, ...order.slice(0, done).map((i) => queries[i])];
   const pos = new Map(order.map((qi, k) => [qi, k]));
   return (
@@ -248,7 +249,7 @@ export const QueryPlot = ({
       ))}
       <line x1={pad} y1={size - pad} x2={size - 6} y2={size - pad} stroke="#475569" />
       <line x1={pad} y1={size - pad} x2={pad} y2={6} stroke="#475569" />
-      {Array.from({ length: n }, (_, k) => k + 1).map((v) => (
+      {Array.from({ length: n }, (_, k) => k + first).map((v) => (
         <g key={v}>
           <text x={sx(v)} y={size - pad + 12} textAnchor="middle" fontSize={10} fill="#94a3b8">{v}</text>
           <text x={pad - 8} y={sy(v) + 3} textAnchor="middle" fontSize={10} fill="#94a3b8">{v}</text>
@@ -258,7 +259,7 @@ export const QueryPlot = ({
       <text x={pad + 4} y={14} fontSize={10} fill="#64748b">r ↑</text>
       {path.slice(1).map((q, k) => {
         const p = path[k];
-        const y0 = p.r < 1 ? size - pad : sy(p.r);
+        const y0 = p.r < first ? size - pad : sy(p.r);
         const isLast = k === path.length - 2;
         return (
           <motion.path key={`${k}-${q.l}-${q.r}`} d={`M ${sx(p.l)} ${y0} L ${sx(q.l)} ${y0} L ${sx(q.l)} ${sy(q.r)}`}

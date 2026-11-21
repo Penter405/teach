@@ -61,10 +61,16 @@ def jv(x, depth=0):
     return repr(x)
 
 
+def kv(k):
+    """an index / dict key inside a ref path: tuples become the same text as the dict key in vars ('(1, 3)')"""
+    return str(k) if isinstance(k, tuple) else jv(k)
+
+
 def rp(x):
     """short repr for text"""
     if isinstance(x, float) and math.isinf(x): return 'inf' if x > 0 else '-inf'
     if isinstance(x, deque): return 'deque(' + repr(list(x)) + ')'
+    if type(x).__name__ == 'defaultdict': return 'defaultdict(' + repr(dict(x)) + ')'
     if isinstance(x, range): return jv(x)
     if isinstance(x, UserFn): return f'<函式 {x.name}>'
     r = repr(x)
@@ -260,7 +266,7 @@ class Tracer:
             i = self.ev(n.slice)
             r = obj[i]
             what = f'查 key {rp(i)}' if isinstance(obj, dict) else f'拿 index {rp(i)} 的值'
-            path = self.path_of(n.value) + [jv(i)]
+            path = self.path_of(n.value) + [kv(i)]
             n._path = path
             self.mark(n, r)
             self.act = dict(k='index', name=obj_src, idx=rp(i), r=rp(r))
@@ -397,10 +403,10 @@ class Tracer:
             obj = eval(compile(ast.Expression(copy.deepcopy(t.value)), '<t>', 'eval'), scope)
             if isinstance(t.value, ast.Subscript):
                 inner = copy.deepcopy(t.value)
-                t.value._path = self.path_of(inner.value) + [jv(eval(compile(ast.Expression(inner.slice), '<t>', 'eval'), scope))]
+                t.value._path = self.path_of(inner.value) + [kv(eval(compile(ast.Expression(inner.slice), '<t>', 'eval'), scope))]
             i = self.ev(t.slice)
             old = obj[i] if (isinstance(obj, dict) and i in obj) or (not isinstance(obj, dict)) else None
-            path = self.path_of(t.value) + [jv(i)]
+            path = self.path_of(t.value) + [kv(i)]
             obj[i] = v
             return (f'{obj_src}[{rp(i)}] =：{obj_src}[{rp(i)}] 從 {rp(old)} 改成 {rp(v)}' if old is not None else f'{obj_src}[{rp(i)}] =：新增 key {rp(i)} → {rp(v)}',
                     f'{obj_src} 變成 {rp(obj)}', dict(ref=path, var=path[0]))
