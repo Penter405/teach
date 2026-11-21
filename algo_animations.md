@@ -90,11 +90,12 @@
 | 91 | math › GCD 與快速冪 | 輾轉相除：gcd(48, 18)，用正方形切長方形 | 14 |
 | 92 | data sturcture(data type that not built in) › binary tree 二元樹 | 二元樹 ↔ list：index i 的子節點是 2i+1、2i+2 | 13 |
 | 93 | penter wrongs › Mo's algorithm | Mo's 查詢順序：同樣 10 筆查詢，原本順序、分塊排序、奇偶優化的指標各走多遠（手寫，不是 tracer） | 11 |
-| 94 | penter wrongs › Mo's algorithm | Mo's：兩個指標依序走到每一筆查詢，每次只加入或移除一個元素 | 107 |
+| 94 | penter wrongs › Mo's algorithm | Mo's：兩個指標依序走到每一筆查詢，每次只加入或移除一個元素（目前不在課裡，97 做同樣的事） | 107 |
 | 95 | recursion › 線性資料recursion | 先加後乘：f(5,2)*1+2，每個函式吃掉自己那段，回傳 (值, 下一個位置)；下面畫每一層呼叫吃掉的範圍（字串裡的樹） | 96 |
 | 96 | penter wrongs › Mo's algorithm | Mo's 排序規則 (x[0] // end, x[1])：先算塊號、主要依塊號、次要依 r；再和 (l, r) 排序比左右指標各走幾步（手寫，不是 tracer） | 7 |
 | 97 | penter wrongs › Mo's algorithm | Mo's（學生的寫法，0-indexed）：sort 之後兩個指標移到每一筆查詢，add / remove 回傳新的答案 | 75 |
 | 98 | penter wrongs › Mo's algorithm | 每個數字只保留最後出現的位置：右端點由左往右掃，舊位置改 0、新位置標 1，Fenwick 求 [begin, back] 有幾個 1 | 81 |
+| 99 | penter wrongs › Mo's algorithm | Mo's 的結構樹：1. 更改搜尋順序（主要依塊號、次要依 r）、2. 移動 two pointers（add / remove、存答案），每一步亮一個節點和對應的程式碼（手寫） | 7 |
 
 ## 還沒有動畫的演算法
 

@@ -597,7 +597,7 @@ def mo_remove(x, ans):
         ans -= 1
     return ans
 
-SPECS[97] = dict(caption="Mo's（我的寫法）：先排序查詢，再把兩個指標移到每一筆查詢",
+SPECS[97] = dict(caption="Mo's：先排序查詢，再把兩個指標移到每一筆查詢",
     intro='輸入已經讀好（0-indexed）：queries = (l, r, 原本的編號)；d = 每個值在目前區間出現幾次；一開始區間是空的 [0, -1]',
     env=dict(defaultdict=defaultdict, mo_key=mo_key, add=mo_add, remove=mo_remove),
     calldesc={'mo_key': '就是 lambda x: (x[0] // end, x[1])',

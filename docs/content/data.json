@@ -14206,59 +14206,35 @@
                 {
                   "term": "需要的條件",
                   "definition": "1. 可以離線：先讀完所有查詢，最後再一起輸出。2. 加入／移除一個元素時，答案可以 O(1) 更新。"
-                },
-                {
-                  "term": "加入一個元素",
-                  "definition": "cnt[x] 從 0 變 1 時，不同值的數量 +1。"
-                },
-                {
-                  "term": "移除一個元素",
-                  "definition": "cnt[x] 從 1 變 0 時，不同值的數量 −1。"
-                },
-                {
-                  "term": "關鍵：查詢的順序",
-                  "definition": "如果照原本順序處理，指標可能左右亂跳，最壞還是 O(nq)。所以要先把查詢排序。"
                 }
               ]
             },
             {
-              "type": "heading",
-              "text": "Mo's algorithm 的結構"
-            },
-            {
-              "type": "paragraph",
-              "text": "整個方法只有兩件事：先決定查詢的順序，再照這個順序把兩個指標一個一個移到每一筆查詢。"
-            },
-            {
-              "type": "code",
-              "language": "text",
-              "code": "Mo's algorithm\n├── 1. 更改搜尋順序\n│     queries.sort(key=lambda x: (x[0]//end, x[1]))\n│     ├── 主要規則：left 所在的區間（x[0]//end）由小到大\n│     └── 次要規則：right（x[1]）由小到大\n└── 2. 每次將 two pointers 移動到當前搜尋\n      ├── 移動 cur_l、cur_r，同時更新出現次數 d[x]\n      └── 兩個指標到位後，答案存進 ans[原本的編號]"
-            },
-            {
-              "type": "heading",
-              "text": "怎麼排序查詢"
-            },
-            {
-              "type": "paragraph",
-              "text": "把陣列切成每塊大約 √n 個（或 n/√q 個）元素。查詢先依「左端點在第幾塊」排序，同一塊裡再依右端點排序。這樣：同一塊裡左指標每次最多移動一塊的長度，右指標只往一個方向走；換塊時右指標最多走一次 n。"
-            },
-            {
-              "type": "list",
-              "style": "definition",
-              "items": [
-                {
-                  "term": "時間複雜度",
-                  "definition": "O((n + q)·√n)。"
-                },
-                {
-                  "term": "奇偶優化",
-                  "definition": "奇數塊的右端點由大到小、偶數塊由小到大，右指標就不用每換一塊都跑回最左邊，實際上快不少。"
-                },
-                {
-                  "term": "答案順序",
-                  "definition": "排序會打亂順序，所以每筆查詢要記住原本的編號，答案存回 ans[原本的編號]。"
-                }
+              "type": "animation",
+              "animationId": 99,
+              "caption": "Mo's algorithm 的結構：先更改搜尋順序，再移動 two pointers",
+              "steps": [
+                "還沒開始執行",
+                "1. 更改搜尋順序：先把查詢排序",
+                "主要規則：依 left 在第幾塊（x[0] // end）由小到大",
+                "次要規則：同一塊裡依 right（x[1]）由小到大",
+                "2. 照排好的順序，一筆一筆處理查詢",
+                "把 cur_l、cur_r 一格一格移到這一筆的 [l, r]",
+                "兩個指標到位：存答案"
+              ],
+              "results": [
+                "先決定查詢的順序，再照這個順序移動兩個指標",
+                "排序會打亂順序，所以每筆查詢要帶著原本的編號 idx",
+                "end ≈ √n：同一塊的查詢，left 最多差 end − 1 格",
+                "同一塊裡 right 只往右走一趟；right 由小到大的好處比 left 由小到大多",
+                "區間 [cur_l, cur_r] 從上一筆留下來，不用重新數",
+                "區間變大 add：d[x] += 1（0 → 1 答案 +1）；變小 remove：d[x] -= 1（1 → 0 答案 −1）",
+                "ans[idx] = cur_ans 存回原本的編號，最後依原本的順序輸出"
               ]
+            },
+            {
+              "type": "heading",
+              "text": "1. 更改搜尋順序"
             },
             {
               "type": "code",
@@ -14280,6 +14256,14 @@
                 {
                   "term": "為什麼 left 只靠區間排序",
                   "definition": "right 由小到大的好處比 left 由小到大多：同一塊裡 right 只往右走一趟（最多 n 步），left 雖然會來回，但每筆最多只走 end 格。如果改成完整的 (l, r) 排序，left 很少動，right 卻每筆都可能從頭跑到尾。"
+                },
+                {
+                  "term": "奇偶優化",
+                  "definition": "奇數塊的右端點由大到小、偶數塊由小到大，右指標就不用每換一塊都跑回最左邊，實際上快不少。"
+                },
+                {
+                  "term": "時間複雜度",
+                  "definition": "O((n + q)·√n)。"
                 }
               ]
             },
@@ -14339,25 +14323,25 @@
             },
             {
               "type": "heading",
-              "text": "照順序移動兩個指標"
+              "text": "2. 移動 two pointers 到當前搜尋"
             },
             {
               "type": "list",
               "style": "definition",
               "items": [
                 {
-                  "term": "3. 移動 two pointers",
+                  "term": "移動 cur_l、cur_r",
                   "definition": "依排好的順序，把 cur_l、cur_r 一格一格移到這一筆查詢的 [l, r]。區間變大就 add（d[x] += 1，從 0 變 1 時答案 +1）；區間變小就 remove（d[x] -= 1，從 1 變 0 時答案 −1）。"
                 },
                 {
-                  "term": "4. 存答案",
+                  "term": "存答案",
                   "definition": "兩個指標到位後，目前的答案就是這一筆查詢的答案，存進 ans[原本的編號]。全部做完再依原本的順序輸出。"
                 }
               ]
             },
             {
               "type": "heading",
-              "text": "解法一：Mo's algorithm（我的寫法）"
+              "text": "解法一：Mo's algorithm"
             },
             {
               "type": "paragraph",
@@ -14371,7 +14355,7 @@
             {
               "type": "animation",
               "animationId": 97,
-              "caption": "Mo's（我的寫法）：先排序查詢，再把兩個指標移到每一筆查詢",
+              "caption": "Mo's：先排序查詢，再把兩個指標移到每一筆查詢",
               "steps": [
                 "還沒開始執行",
                 "a ** 0.5：5 ** 0.5（次方）",
@@ -14529,7 +14513,7 @@
             },
             {
               "type": "paragraph",
-              "text": "同樣的方法，換成一次讀完輸入、加上奇偶優化的版本（1-indexed）："
+              "text": "更快的寫法：一次讀完輸入、加上奇偶優化（1-indexed）："
             },
             {
               "type": "code",
@@ -14537,248 +14521,8 @@
               "code": "import sys\nfrom math import isqrt\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    n, q = int(data[0]), int(data[1])\n    a = [0] + [int(x) for x in data[2:2 + n]]        # 1-indexed\n    queries = []\n    for i in range(q):\n        l, r = int(data[2 + n + 2 * i]), int(data[3 + n + 2 * i])\n        queries.append((l, r, i))\n\n    # 1. 分塊：左端點在同一塊的查詢放一起，塊內依右端點排序\n    #    （奇數塊右端點由大到小，偶數塊由小到大，讓右指標來回走，少走很多路）\n    block = max(1, int(n / max(1, isqrt(q))) )\n    queries.sort(key=lambda x: (x[0] // block, x[1] if (x[0] // block) % 2 == 0 else -x[1]))\n\n    # 2. 準備「目前區間」[cur_l, cur_r] 的狀態：每個值出現幾次、有幾種不同的值\n    cnt = {}\n    distinct = 0\n    cur_l, cur_r = 1, 0          # 一開始是空區間\n    ans = [0] * q\n\n    for l, r, idx in queries:\n        # 3. 移動兩個指標，每次只加入或移除一個元素：O(1)\n        while cur_r < r:                      # 右邊擴張：加入\n            cur_r += 1\n            x = a[cur_r]\n            c = cnt.get(x, 0)\n            if c == 0: distinct += 1\n            cnt[x] = c + 1\n        while cur_l > l:                      # 左邊擴張：加入\n            cur_l -= 1\n            x = a[cur_l]\n            c = cnt.get(x, 0)\n            if c == 0: distinct += 1\n            cnt[x] = c + 1\n        while cur_r > r:                      # 右邊縮小：移除\n            x = a[cur_r]\n            cnt[x] -= 1\n            if cnt[x] == 0: distinct -= 1\n            cur_r -= 1\n        while cur_l < l:                      # 左邊縮小：移除\n            x = a[cur_l]\n            cnt[x] -= 1\n            if cnt[x] == 0: distinct -= 1\n            cur_l += 1\n        ans[idx] = distinct                   # 4. 依原本的順序存答案\n\n    print(\"\\n\".join(map(str, ans)))\n\nmain()"
             },
             {
-              "type": "animation",
-              "animationId": 94,
-              "caption": "Mo's：兩個指標依序走到每一筆查詢，每次只加入或移除一個元素",
-              "steps": [
-                "還沒開始執行",
-                "for：從 qs 拿下一個 → (l, r, idx) = (2, 5, 0)",
-                "cur_r < r：0 < 5，while 成立 → 進入迴圈",
-                "cur_r + 1：0 + 1（cur_r += 就是 cur_r = cur_r + …）",
-                "cur_r =：名稱 cur_r 指向 1",
-                "add(cur_r)：把 a[i] 放進區間：cnt[a[i]] += 1，從 0 變 1 時 distinct += 1",
-                "cur_r < r：1 < 5，while 成立 → 進入迴圈",
-                "cur_r + 1：1 + 1（cur_r += 就是 cur_r = cur_r + …）",
-                "cur_r =：名稱 cur_r 指向 2",
-                "add(cur_r)：把 a[i] 放進區間：cnt[a[i]] += 1，從 0 變 1 時 distinct += 1",
-                "cur_r < r：2 < 5，while 成立 → 進入迴圈",
-                "cur_r + 1：2 + 1（cur_r += 就是 cur_r = cur_r + …）",
-                "cur_r =：名稱 cur_r 指向 3",
-                "add(cur_r)：把 a[i] 放進區間：cnt[a[i]] += 1，從 0 變 1 時 distinct += 1",
-                "cur_r < r：3 < 5，while 成立 → 進入迴圈",
-                "cur_r + 1：3 + 1（cur_r += 就是 cur_r = cur_r + …）",
-                "cur_r =：名稱 cur_r 指向 4",
-                "add(cur_r)：把 a[i] 放進區間：cnt[a[i]] += 1，從 0 變 1 時 distinct += 1",
-                "cur_r < r：4 < 5，while 成立 → 進入迴圈",
-                "cur_r + 1：4 + 1（cur_r += 就是 cur_r = cur_r + …）",
-                "cur_r =：名稱 cur_r 指向 5",
-                "add(cur_r)：把 a[i] 放進區間：cnt[a[i]] += 1，從 0 變 1 時 distinct += 1",
-                "cur_r < r：5 < 5，while 不成立 → 離開迴圈",
-                "cur_l > l：1 > 2，while 不成立 → 離開迴圈",
-                "cur_r > r：5 > 5，while 不成立 → 離開迴圈",
-                "cur_l < l：1 < 2，while 成立 → 進入迴圈",
-                "remove(cur_l)：把 a[i] 拿出區間：cnt[a[i]] -= 1，從 1 變 0 時 distinct -= 1",
-                "cur_l + 1：1 + 1（cur_l += 就是 cur_l = cur_l + …）",
-                "cur_l =：名稱 cur_l 指向 2",
-                "cur_l < l：2 < 2，while 不成立 → 離開迴圈",
-                "ans[0] =：ans[0] 從 0 改成 2",
-                "for：從 qs 拿下一個 → (l, r, idx) = (3, 5, 4)",
-                "cur_r < r：5 < 5，while 不成立 → 離開迴圈",
-                "cur_l > l：2 > 3，while 不成立 → 離開迴圈",
-                "cur_r > r：5 > 5，while 不成立 → 離開迴圈",
-                "cur_l < l：2 < 3，while 成立 → 進入迴圈",
-                "remove(cur_l)：把 a[i] 拿出區間：cnt[a[i]] -= 1，從 1 變 0 時 distinct -= 1",
-                "cur_l + 1：2 + 1（cur_l += 就是 cur_l = cur_l + …）",
-                "cur_l =：名稱 cur_l 指向 3",
-                "cur_l < l：3 < 3，while 不成立 → 離開迴圈",
-                "ans[4] =：ans[4] 從 0 改成 2",
-                "for：從 qs 拿下一個 → (l, r, idx) = (2, 6, 1)",
-                "cur_r < r：5 < 6，while 成立 → 進入迴圈",
-                "cur_r + 1：5 + 1（cur_r += 就是 cur_r = cur_r + …）",
-                "cur_r =：名稱 cur_r 指向 6",
-                "add(cur_r)：把 a[i] 放進區間：cnt[a[i]] += 1，從 0 變 1 時 distinct += 1",
-                "cur_r < r：6 < 6，while 不成立 → 離開迴圈",
-                "cur_l > l：3 > 2，while 成立 → 進入迴圈",
-                "cur_l - 1：3 - 1（cur_l -= 就是 cur_l = cur_l - …）",
-                "cur_l =：名稱 cur_l 指向 2",
-                "add(cur_l)：把 a[i] 放進區間：cnt[a[i]] += 1，從 0 變 1 時 distinct += 1",
-                "cur_l > l：2 > 2，while 不成立 → 離開迴圈",
-                "cur_r > r：6 > 6，while 不成立 → 離開迴圈",
-                "cur_l < l：2 < 2，while 不成立 → 離開迴圈",
-                "ans[1] =：ans[1] 從 0 改成 3",
-                "for：從 qs 拿下一個 → (l, r, idx) = (2, 7, 2)",
-                "cur_r < r：6 < 7，while 成立 → 進入迴圈",
-                "cur_r + 1：6 + 1（cur_r += 就是 cur_r = cur_r + …）",
-                "cur_r =：名稱 cur_r 指向 7",
-                "add(cur_r)：把 a[i] 放進區間：cnt[a[i]] += 1，從 0 變 1 時 distinct += 1",
-                "cur_r < r：7 < 7，while 不成立 → 離開迴圈",
-                "cur_l > l：2 > 2，while 不成立 → 離開迴圈",
-                "cur_r > r：7 > 7，while 不成立 → 離開迴圈",
-                "cur_l < l：2 < 2，while 不成立 → 離開迴圈",
-                "ans[2] =：ans[2] 從 0 改成 4",
-                "for：從 qs 拿下一個 → (l, r, idx) = (3, 8, 3)",
-                "cur_r < r：7 < 8，while 成立 → 進入迴圈",
-                "cur_r + 1：7 + 1（cur_r += 就是 cur_r = cur_r + …）",
-                "cur_r =：名稱 cur_r 指向 8",
-                "add(cur_r)：把 a[i] 放進區間：cnt[a[i]] += 1，從 0 變 1 時 distinct += 1",
-                "cur_r < r：8 < 8，while 不成立 → 離開迴圈",
-                "cur_l > l：2 > 3，while 不成立 → 離開迴圈",
-                "cur_r > r：8 > 8，while 不成立 → 離開迴圈",
-                "cur_l < l：2 < 3，while 成立 → 進入迴圈",
-                "remove(cur_l)：把 a[i] 拿出區間：cnt[a[i]] -= 1，從 1 變 0 時 distinct -= 1",
-                "cur_l + 1：2 + 1（cur_l += 就是 cur_l = cur_l + …）",
-                "cur_l =：名稱 cur_l 指向 3",
-                "cur_l < l：3 < 3，while 不成立 → 離開迴圈",
-                "ans[3] =：ans[3] 從 0 改成 5",
-                "for：從 qs 拿下一個 → (l, r, idx) = (4, 4, 5)",
-                "cur_r < r：8 < 4，while 不成立 → 離開迴圈",
-                "cur_l > l：3 > 4，while 不成立 → 離開迴圈",
-                "cur_r > r：8 > 4，while 成立 → 進入迴圈",
-                "remove(cur_r)：把 a[i] 拿出區間：cnt[a[i]] -= 1，從 1 變 0 時 distinct -= 1",
-                "cur_r - 1：8 - 1（cur_r -= 就是 cur_r = cur_r - …）",
-                "cur_r =：名稱 cur_r 指向 7",
-                "cur_r > r：7 > 4，while 成立 → 進入迴圈",
-                "remove(cur_r)：把 a[i] 拿出區間：cnt[a[i]] -= 1，從 1 變 0 時 distinct -= 1",
-                "cur_r - 1：7 - 1（cur_r -= 就是 cur_r = cur_r - …）",
-                "cur_r =：名稱 cur_r 指向 6",
-                "cur_r > r：6 > 4，while 成立 → 進入迴圈",
-                "remove(cur_r)：把 a[i] 拿出區間：cnt[a[i]] -= 1，從 1 變 0 時 distinct -= 1",
-                "cur_r - 1：6 - 1（cur_r -= 就是 cur_r = cur_r - …）",
-                "cur_r =：名稱 cur_r 指向 5",
-                "cur_r > r：5 > 4，while 成立 → 進入迴圈",
-                "remove(cur_r)：把 a[i] 拿出區間：cnt[a[i]] -= 1，從 1 變 0 時 distinct -= 1",
-                "cur_r - 1：5 - 1（cur_r -= 就是 cur_r = cur_r - …）",
-                "cur_r =：名稱 cur_r 指向 4",
-                "cur_r > r：4 > 4，while 不成立 → 離開迴圈",
-                "cur_l < l：3 < 4，while 成立 → 進入迴圈",
-                "remove(cur_l)：把 a[i] 拿出區間：cnt[a[i]] -= 1，從 1 變 0 時 distinct -= 1",
-                "cur_l + 1：3 + 1（cur_l += 就是 cur_l = cur_l + …）",
-                "cur_l =：名稱 cur_l 指向 4",
-                "cur_l < l：4 < 4，while 不成立 → 離開迴圈",
-                "ans[5] =：ans[5] 從 0 改成 1",
-                "for：qs 沒有下一個了 → 離開迴圈",
-                "print(ans)：印到螢幕"
-              ],
-              "results": [
-                "a 從 index 1 開始；查詢已經依「左端點在第幾塊、塊內右端點由小到大」排好，(l, r, 原本的編號)；目前區間 [cur_l, cur_r] 一開始是空的",
-                "l → 2、r → 5、idx → 0",
-                "往下執行第 10 行",
-                "得到 1。算式變成 cur_r = 1",
-                "cur_r → 1。右指標往右一格",
-                "cnt 變成 [0, 0, 1, 0, 0, 0]；distinct 變成 1",
-                "往下執行第 10 行",
-                "得到 2。算式變成 cur_r = 2",
-                "cur_r → 2。右指標往右一格",
-                "cnt 變成 [0, 1, 1, 0, 0, 0]；distinct 變成 2",
-                "往下執行第 10 行",
-                "得到 3。算式變成 cur_r = 3",
-                "cur_r → 3。右指標往右一格",
-                "cnt 變成 [0, 2, 1, 0, 0, 0]",
-                "往下執行第 10 行",
-                "得到 4。算式變成 cur_r = 4",
-                "cur_r → 4。右指標往右一格",
-                "cnt 變成 [0, 2, 1, 1, 0, 0]；distinct 變成 3",
-                "往下執行第 10 行",
-                "得到 5。算式變成 cur_r = 5",
-                "cur_r → 5。右指標往右一格",
-                "cnt 變成 [0, 3, 1, 1, 0, 0]",
-                "跳到迴圈後面",
-                "跳到迴圈後面",
-                "跳到迴圈後面",
-                "往下執行第 19 行",
-                "cnt 變成 [0, 3, 0, 1, 0, 0]；distinct 變成 2。先移除 a[cur_l]，左指標再往右",
-                "得到 2。算式變成 cur_l = 2",
-                "cur_l → 2",
-                "跳到迴圈後面",
-                "ans 變成 [2, 0, 0, 0, 0, 0]。區間已經是 [l, r]：答案存回原本的編號",
-                "l → 3、r → 5、idx → 4",
-                "跳到迴圈後面",
-                "跳到迴圈後面",
-                "跳到迴圈後面",
-                "往下執行第 19 行",
-                "cnt 變成 [0, 2, 0, 1, 0, 0]。先移除 a[cur_l]，左指標再往右",
-                "得到 3。算式變成 cur_l = 3",
-                "cur_l → 3",
-                "跳到迴圈後面",
-                "ans 變成 [2, 0, 0, 0, 2, 0]。區間已經是 [l, r]：答案存回原本的編號",
-                "l → 2、r → 6、idx → 1",
-                "往下執行第 10 行",
-                "得到 6。算式變成 cur_r = 6",
-                "cur_r → 6。右指標往右一格",
-                "cnt 變成 [0, 2, 0, 1, 1, 0]；distinct 變成 3",
-                "跳到迴圈後面",
-                "往下執行第 13 行",
-                "得到 2。算式變成 cur_l = 2",
-                "cur_l → 2。左指標往左一格",
-                "cnt 變成 [0, 3, 0, 1, 1, 0]",
-                "跳到迴圈後面",
-                "跳到迴圈後面",
-                "跳到迴圈後面",
-                "ans 變成 [2, 3, 0, 0, 2, 0]。區間已經是 [l, r]：答案存回原本的編號",
-                "l → 2、r → 7、idx → 2",
-                "往下執行第 10 行",
-                "得到 7。算式變成 cur_r = 7",
-                "cur_r → 7。右指標往右一格",
-                "cnt 變成 [0, 3, 0, 1, 1, 1]；distinct 變成 4",
-                "跳到迴圈後面",
-                "跳到迴圈後面",
-                "跳到迴圈後面",
-                "跳到迴圈後面",
-                "ans 變成 [2, 3, 4, 0, 2, 0]。區間已經是 [l, r]：答案存回原本的編號",
-                "l → 3、r → 8、idx → 3",
-                "往下執行第 10 行",
-                "得到 8。算式變成 cur_r = 8",
-                "cur_r → 8。右指標往右一格",
-                "cnt 變成 [0, 3, 1, 1, 1, 1]；distinct 變成 5",
-                "跳到迴圈後面",
-                "跳到迴圈後面",
-                "跳到迴圈後面",
-                "往下執行第 19 行",
-                "cnt 變成 [0, 2, 1, 1, 1, 1]。先移除 a[cur_l]，左指標再往右",
-                "得到 3。算式變成 cur_l = 3",
-                "cur_l → 3",
-                "跳到迴圈後面",
-                "ans 變成 [2, 3, 4, 5, 2, 0]。區間已經是 [l, r]：答案存回原本的編號",
-                "l → 4、r → 4、idx → 5",
-                "跳到迴圈後面",
-                "跳到迴圈後面",
-                "往下執行第 16 行",
-                "cnt 變成 [0, 2, 0, 1, 1, 1]；distinct 變成 4。先移除 a[cur_r]，右指標再往左",
-                "得到 7。算式變成 cur_r = 7",
-                "cur_r → 7",
-                "往下執行第 16 行",
-                "cnt 變成 [0, 2, 0, 1, 1, 0]；distinct 變成 3。先移除 a[cur_r]，右指標再往左",
-                "得到 6。算式變成 cur_r = 6",
-                "cur_r → 6",
-                "往下執行第 16 行",
-                "cnt 變成 [0, 2, 0, 1, 0, 0]；distinct 變成 2。先移除 a[cur_r]，右指標再往左",
-                "得到 5。算式變成 cur_r = 5",
-                "cur_r → 5",
-                "往下執行第 16 行",
-                "cnt 變成 [0, 1, 0, 1, 0, 0]。先移除 a[cur_r]，右指標再往左",
-                "得到 4。算式變成 cur_r = 4",
-                "cur_r → 4",
-                "跳到迴圈後面",
-                "往下執行第 19 行",
-                "cnt 變成 [0, 0, 0, 1, 0, 0]；distinct 變成 1。先移除 a[cur_l]，左指標再往右",
-                "得到 4。算式變成 cur_l = 4",
-                "cur_l → 4",
-                "跳到迴圈後面",
-                "ans 變成 [2, 3, 4, 5, 2, 1]。區間已經是 [l, r]：答案存回原本的編號",
-                "跳到迴圈後面",
-                "螢幕多一行：[2, 3, 4, 5, 2, 1]"
-              ]
-            },
-            {
-              "type": "callout",
-              "label": "自我檢查",
-              "text": "範例輸出 2 3 3 正確；也用 100 組隨機資料和「直接用 set 數」的暴力解比對過。"
-            },
-            {
               "type": "heading",
-              "text": "在 Python 裡要注意速度"
-            },
-            {
-              "type": "paragraph",
-              "text": "Mo's 的指標總共要移動大約 (n + q)·√n 次。n = q = 2×10⁵ 時，我測到大約 11 秒，Python 很可能超時。"
-            },
-            {
-              "type": "paragraph",
-              "text": "這一題（區間不同值）其實還有一個更快的離線方法：把查詢依右端點排序，從左到右掃陣列，每個值只在「最後一次出現的位置」標 1，用樹狀陣列（Fenwick tree）求區間和。複雜度 O((n + q) log n)，同樣的資料約 1 秒。"
-            },
-            {
-              "type": "heading",
-              "text": "解法二：每個數字只保留最後出現的位置（我的寫法）"
+              "text": "解法二：每個數字只保留最後出現的位置"
             },
             {
               "type": "list",
@@ -14982,6 +14726,14 @@
               "type": "code",
               "language": "python",
               "code": "import sys\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    n, q = int(data[0]), int(data[1])\n    a = [0] + [int(x) for x in data[2:2 + n]]\n    by_r = [[] for _ in range(n + 1)]                 # 依右端點把查詢分組\n    for i in range(q):\n        l, r = int(data[2 + n + 2 * i]), int(data[3 + n + 2 * i])\n        by_r[r].append((l, i))\n\n    tree = [0] * (n + 1)                              # Fenwick tree\n    def add(i, v):\n        while i <= n:\n            tree[i] += v; i += i & -i\n    def prefix(i):\n        s = 0\n        while i > 0:\n            s += tree[i]; i -= i & -i\n        return s\n\n    last = {}                                         # 每個值「最後一次」出現的位置\n    ans = [0] * q\n    for r in range(1, n + 1):\n        x = a[r]\n        if x in last:\n            add(last[x], -1)                          # 舊的位置不算了\n        add(r, 1)                                     # 只在最右邊的位置記 1\n        last[x] = r\n        for l, i in by_r[r]:\n            ans[i] = prefix(r) - prefix(l - 1)        # [l, r] 裡標 1 的數量 = 不同值的個數\n    print(\"\\n\".join(map(str, ans)))\n\nmain()"
+            },
+            {
+              "type": "heading",
+              "text": "兩種解法怎麼選"
+            },
+            {
+              "type": "paragraph",
+              "text": "Mo's 的指標總共要移動大約 (n + q)·√n 次，n = q = 2×10⁵ 時我測到大約 11 秒，Python 很可能超時。解法二是 O((n + q) log n)，同樣的資料約 1 秒。"
             },
             {
               "type": "list",

@@ -104,7 +104,8 @@ function RenderAIChat({ block, student }: { block: ContentBlock, student?: any }
 function RenderCodeBlock({ block }: { block: ContentBlock }) {
   // Simple highlighter for basic python syntax
   const highlightPython = (code: string) => {
-    let result = code;
+    // escape first: the result goes in as HTML, so `index<d_size` would otherwise start a tag
+    let result = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     
     // Comments
     result = result.replace(/(#.*)$/gm, '__C_START__$1__SPAN_END__');
