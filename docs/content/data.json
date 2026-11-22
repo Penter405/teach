@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y11m21d",
+    "version": "2026y11m22d",
     "language": "zh-TW"
   },
   "modules": [
@@ -13331,6 +13331,11 @@
               "text": "題目像「每個人都指定一個下一個人」「從 i 會跳到 next[i]」：每個點剛好一條出邊（functional graph）。從任何點一直走，最後一定會掉進一個環。\n\n問題：從每個點出發，總共會經過幾個不同的點？"
             },
             {
+              "type": "callout",
+              "label": "Note",
+              "text": "if you get some trouble about how to know if we are still in cycle \\n\nyou can try remember size of cycle, or the point of visited again ( because this is a dfs search, so when leaving a recursion to his parent recursion, there is only one point is his parent recursion node)"
+            },
+            {
               "type": "heading",
               "text": "1. 為什麼一定會走進環"
             },
@@ -13767,6 +13772,28 @@
                   "description": "找環的部分一樣"
                 }
               ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-1795351285650",
+          "title": "Penter try cycle dp",
+          "titleEn": "",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def dfs(node,value=1):#do i need return value? have i ever use it?\n    #or i have only take out side memory \n    global cycle_point,in_cycle\n    #normal logic\n    if not point[node]:\n        result[node]=1\n        return 1\n\n    #dp logic\n    if visit[node]:\n        return result[node]\n    visit[node]=value\n    if visit[point[node]] and result[point[node]]:\n        result[node]=result[point[node]]+1\n        return result[node]\n    \n\n    #cycle logic\n    if visit[point[node]] and not result[point[node]]:\n        cycle_point=point[node]\n        in_cycle=True\n        result[node]=value-visit[point[node]]+1\n        return result[node]\n\n\n    #normal logic\n    if point[node]:#not 0\n        dfs(point[node],value+1)\n    credit=1\n    if in_cycle:#it is recursion,  backing cycle by recursion call back, cheak in cycle should be under row of dfs recursion\n        credit=0\n    if node==cycle_point:\n        in_cycle=False\n    result[node]=result[point[node]]+credit\n    return result[node]\n\nfor _ in range(int(input())):\n    n=int(input())\n    point=[0 for i in range(n+1)]\n    visit=[False]*(n+1)\n    be=[i for i in range(n+1)]\n    result=[0]*(n+1)\n    for _ in range(n):\n        a,b=list(map(int,input().split()))\n        point[a]=b\n        be[b]=a\n    cycle_point=0\n    in_cycle=False\n    for i in range(1,n+1):\n        dfs(i)\n    print(result.index(max(result)))\n\n\n\n\n\n",
+              "text": "New Lesson"
+            },
+            {
+              "type": "heading",
+              "text": "可以改進的地方"
+            },
+            {
+              "type": "paragraph",
+              "text": "python的 function 代價很高, 可以自己實做 recursion call stack"
             }
           ]
         }
@@ -15211,6 +15238,24 @@
               "type": "code",
               "language": "python",
               "code": "from collections import deque\n#1 indexed\nfor _ in range(int(input())):\n    n=int(input())\n    point=[0]*(n+1)\n    be=[[0]]+[[a] for a in range(1,n+1)]\n    cheaked=[False]*(n+1)\n    for _ in range(n):\n        a,b=list(map(int,input().split()))\n        point[a]=b\n        be[b].append(a)\n    roots=[]\n    loops=[]\n    my_value=[0]*(n+1)\n    for index in range(1,n+1):\n        if point[index]==index:\n            roots.append(index)\n            my_value[index]=1\n        if cheaked[index]==False:\n            path=[False]*(n+1)\n            seeing=index\n            cheaked[index]=True\n            while True:\n                path[seeing]=True\n                cheaked[seeing]=True\n                if cheaked[point[seeing]]==True:\n                    if path[point[seeing]]==True:\n                        loops.append(seeing)\n                    break\n                seeing=point[seeing]\n    in_loop=[False]*(n+1)\n    for loop_point in loops:\n        in_loop[loop_point]=True\n        now_loop=[loop_point]\n        size=1\n        while in_loop[point[loop_point]]==False:\n            loop_point=point[loop_point]\n            now_loop.append(loop_point)\n            size+=1\n            in_loop[loop_point]=True\n        for same in now_loop:\n            my_value[same]=size\n    \n    que=deque([element for element in range(1,n+1) if in_loop[element]]+roots)\n    while que:\n        me=que.popleft()\n        for parent in be[me]:\n            if in_loop[parent]==False:\n                in_loop[parent]=True\n                my_value[parent]=my_value[me]+1\n                que.append(parent)\n\n    print(my_value.index(max(my_value)))\n"
+            },
+            {
+              "type": "heading",
+              "text": "Penter 寫寫看"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def dfs(node,value=1):#do i need return value? have i ever use it?\n    #or i have only take out side memory \n    global cycle_point,in_cycle\n    #normal logic\n    if not point[node]:\n        result[node]=1\n        return 1\n\n    #dp logic\n    if visit[node]:\n        return result[node]\n    visit[node]=value\n    if visit[point[node]] and result[point[node]]:\n        result[node]=result[point[node]]+1\n        return result[node]\n    \n\n    #cycle logic\n    if visit[point[node]] and not result[point[node]]:\n        cycle_point=point[node]\n        in_cycle=True\n        result[node]=value-visit[point[node]]+1\n        return result[node]\n\n\n    #normal logic\n    if point[node]:#not 0\n        dfs(point[node],value+1)\n    credit=1\n    if in_cycle:#it is recursion,  backing cycle by recursion call back, cheak in cycle should be under row of dfs recursion\n        credit=0\n    if node==cycle_point:\n        in_cycle=False\n    result[node]=result[point[node]]+credit\n    return result[node]\n\nfor _ in range(int(input())):\n    n=int(input())\n    point=[0 for i in range(n+1)]\n    visit=[False]*(n+1)\n    be=[i for i in range(n+1)]\n    result=[0]*(n+1)\n    for _ in range(n):\n        a,b=list(map(int,input().split()))\n        point[a]=b\n        be[b]=a\n    cycle_point=0\n    in_cycle=False\n    for i in range(1,n+1):\n        dfs(i)\n    print(result.index(max(result)))\n\n\n\n\n\n",
+              "text": "New Lesson"
+            },
+            {
+              "type": "heading",
+              "text": "可以改進的地方"
+            },
+            {
+              "type": "paragraph",
+              "text": "python的 function 代價很高, 可以自己實做 recursion call stack"
             }
           ]
         },
