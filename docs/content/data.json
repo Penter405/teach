@@ -9875,7 +9875,31 @@
             },
             {
               "type": "paragraph",
-              "text": "給定 list represent a tree\n判斷是  a normal tree\\n a heap tree( node always bigger than or smaller than its child)\\n"
+              "text": "給定 list represent a tree\n判斷是  \na normal tree\na heap tree( node always bigger than or smaller than its child)\na binary search tree"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "Binary search Tree= its inorder search is increaing\nHeap = every point their child is smaller always or larger always"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "now=[1,1]\ntraval=[]\ndef dfs(n=0):\n    if n>=len(d):\n        return 0\n    left=n*2+1\n    right=n*2+2\n    dfs(left)\n    traval.append(d[n])\n    dfs(right)\n    #is Large root\n    if left>=len(d):\n        l=float(\"-inf\")\n    else:\n        l=d[left]\n    if right>=len(d):\n        r=float(\"-inf\")\n    else:\n        r=d[right]\n    if not(d[n]>l and d[n]>r):\n        now[0]=0\n\n\n    #is min root\n    if left>=len(d):\n        l=float(\"inf\")\n    if right>=len(d):\n        r=float(\"inf\")\n    if not(d[n]<l and d[n]<r):\n        now[1]=0\n    return 0\n\nfor _ in range(int(input())):\n    d=list(map(int,input().split(',')))\n    now=[1,1]\n    traval.clear()\n    dfs()\n    if now[0] or now[1]:\n        print('H')\n    elif traval==sorted(traval):\n        print('B')\n    else:\n        print('F')"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1795426245127",
+          "title": "tree vs graph",
+          "titleEn": "",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "code",
+              "language": "python",
+              "code": "graph ->  can always find 入度>=2 after for loop every 入度 ==1 and remove them",
+              "text": "Add content here..."
             }
           ]
         }
@@ -10534,18 +10558,6 @@
             },
             {
               "type": "paragraph",
-              "text": "在解決將所有node連起來，並且花費最少的問題時。可以用最小生成樹"
-            },
-            {
-              "type": "paragraph",
-              "text": "最小生成樹是一個greedy的解法:"
-            },
-            {
-              "type": "paragraph",
-              "text": "加權圖上，從起點到每個點的最短距離。（「把所有點連起來、花費最少」是最小生成樹，下一課。）"
-            },
-            {
-              "type": "paragraph",
               "text": "Dijkstra 是一個 greedy 的解法："
             },
             {
@@ -10842,6 +10854,25 @@
           ]
         },
         {
+          "id": "lesson-1795425943186",
+          "title": "parent 路徑壓縮",
+          "titleEn": "",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def find(x):\n    if parent[x] != x:\n        parent[x] = find(parent[x])  # 路徑壓縮\n    return x",
+              "text": "Add content here..."
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "find always return root\nparent[x] = find(parent[x])   ->  parent[x] = real root"
+            }
+          ]
+        },
+        {
           "id": "lesson-1788830382601",
           "title": "min span tree (Prim or Kruskal)",
           "titleEn": "min span tree (Prim or Kruskal)",
@@ -10854,6 +10885,11 @@
             {
               "type": "paragraph",
               "text": "根據多個node還有edge之間的權重，在所有能把all node connect 的連接方式中，找到total weight 最小的"
+            },
+            {
+              "type": "callout",
+              "label": "Note",
+              "text": "由於min span tree 是能把 all node connect 的 , 因此開始的點可以是任意一個點"
             },
             {
               "type": "heading",
@@ -11009,6 +11045,15 @@
             {
               "type": "paragraph",
               "text": "Prim 從一個點開始，像 Dijkstra 一樣用 heap：每次挑「一端在樹裡、另一端不在」最短的邊。用 in_tree 檢查另一端是不是已經在樹裡，就是在檢查 cycle。"
+            },
+            {
+              "type": "heading",
+              "text": "數學公式"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "legal edges = edge can connect to current tree+ add the edge will not lead to loop\nthis time edge= min weight of legal edges"
             },
             {
               "type": "animation",
