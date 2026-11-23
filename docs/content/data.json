@@ -6364,6 +6364,31 @@
               "code": "log 10  a**b=  b *  log 10 a\n轉 int  -> result"
             }
           ]
+        },
+        {
+          "id": "lesson-1795429600523",
+          "title": "循環小數",
+          "titleEn": "",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "題目"
+            },
+            {
+              "type": "paragraph",
+              "text": "float d= x / y\n找循環\nif 整除  : output 結果\nif len>50: output 前 50 with \"...\"\nelse: output 循環"
+            },
+            {
+              "type": "heading",
+              "text": "solution"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def check():\n    a, b = map(int, input().split())\n\n    integer = str(a // b)\n    a %= b\n\n    digits = []\n    appeared = {}\n\n    while True:\n        a *= 10\n        digit = a // b\n        remainder = a % b\n\n        if remainder == 0:\n            return integer + \".\" + \"\".join(map(str, digits + [digit])) + \"(0)\"\n\n        if remainder in appeared:\n            start = appeared[remainder]\n            cycle = digits[start:]\n\n            return (\n                integer + \".\"\n                + \"\".join(map(str, digits[:start]))\n                + \"(\" + \"\".join(map(str, cycle)) + \")\"\n            )\n\n        appeared[remainder] = len(digits)\n        digits.append(digit)"
+            }
+          ]
         }
       ]
     },
@@ -13050,6 +13075,19 @@
                   "description": "原本那段程式的題目"
                 }
               ]
+            },
+            {
+              "type": "heading",
+              "text": "例題"
+            },
+            {
+              "type": "paragraph",
+              "text": "給定 d saved many a,b\nfind 排序 that now a> last a  && now b > last b  , longest size"
+            },
+            {
+              "type": "callout",
+              "label": "Note",
+              "text": "if we sort d with key= lambda x: (x[0], -x[1])\n那麼可以確定 for loop d 的 x[0] 一定會increasing\n題目就換變成 LIS\nx[1] 反著排序 , 可以確保x[0] 相同時不會重複選取"
             }
           ]
         },
