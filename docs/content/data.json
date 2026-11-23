@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y11m22d",
+    "version": "2026y11m23d",
     "language": "zh-TW"
   },
   "modules": [
@@ -6320,11 +6320,7 @@
           "content": [
             {
               "type": "heading",
-              "text": "1."
-            },
-            {
-              "type": "paragraph",
-              "text": "列舉  (a+b)%m == (a-b)%m 在  a,b,m有固定範圍"
+              "text": "1.列舉  (a+b)%m == (a-b)%m 在  a,b,m有固定範圍"
             },
             {
               "type": "code",
@@ -6332,8 +6328,40 @@
               "code": "%m 餘數相同  -> (a+b)  跟 (a-b) 的差值可以被 m 整除(整除 ->  %m=0)\n[(a+b)-(a-b)]%m==0 化簡\n(2*b)%m==0  -> 僅需2個 factor 就能找答案\n只要 b,m符合條件，任何合法的 a都符合原本的條件\n答案*= 合法的a  -> print(答案)"
             },
             {
-              "type": "paragraph",
-              "text": "New paragraph"
+              "type": "heading",
+              "text": "2. 求出 (a**b)%m"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "a**b\nif b == 135 :\n    b= b//2 +b//2 +1\n    if 套入 a**b:\n        a**b= a**(b//2) * a**(b//2) * a**(1)#有效避免  2**30 -1 的全部135 數字 time out\nelif b==246:\n    b= b//2 +b//2\n    if 套入 a**b:\n            a**b= a**(b//2) * a**(b//2)"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1795396172182",
+          "title": "次方後長度",
+          "titleEn": "",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "normal 解法"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "print( len(  a**b))\nprint( int(log10(a**b))",
+              "text": "Add content here..."
+            },
+            {
+              "type": "heading",
+              "text": "math 解法"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "log 10  a**b=  b *  log 10 a\n轉 int  -> result"
             }
           ]
         }
@@ -9832,6 +9860,22 @@
                   "description": "換根：dist_sum(c) = dist_sum(v) + n − 2·sz(c)"
                 }
               ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-1795416132394",
+          "title": "樹的類型",
+          "titleEn": "",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "題目"
+            },
+            {
+              "type": "paragraph",
+              "text": "給定 list represent a tree\n判斷是  a normal tree\\n a heap tree( node always bigger than or smaller than its child)\\n"
             }
           ]
         }
@@ -13794,6 +13838,48 @@
             {
               "type": "paragraph",
               "text": "python的 function 代價很高, 可以自己實做 recursion call stack"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1795398134380",
+          "title": "有多少 nodes=n 的樹",
+          "titleEn": "",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "math equation"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "my value= sigma(0-n)( value[i]  * value[n-i-1]",
+              "text": "Add content here..."
+            },
+            {
+              "type": "heading",
+              "text": "o(1) equation"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "def catalan(n):\n    return ( p(n*2,n)// p(n,n)  ) //(n+1)\nC(2n,n) // (n+1)"
+            },
+            {
+              "type": "paragraph",
+              "text": "兩個 equation 等價"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "want=[]\nlarge=0\nfor _ in range(int(input())):\n    d=int(input())\n    want.append(d)\n    if d%2!=0:\n        large=max(large, d//2)\nn_has=[1]\nfor n in range(1,large+1):\n    have=0\n    for a in range(n):\n        have+=n_has[a]*n_has[n-a-1]\n    n_has.append(have)\nfor rs in want:\n    if rs%2==0:\n        print(0)\n    else:\n        print(n_has[rs//2])",
+              "text": "["
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "tree= root+left tree +right tree\n找出 left tree = 找出對稱的 right tree\n找到 n//2 的tree 組合"
             }
           ]
         }
