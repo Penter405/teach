@@ -5282,6 +5282,29 @@
             },
             {
               "type": "heading",
+              "text": "兩種寫法：先看全貌"
+            },
+            {
+              "type": "paragraph",
+              "text": "要回答「被問到的數是不是質數」，有兩種準備方式，差別在於表要建多大。設 M = 被問到的最大數。\n\n寫法 A：建表到 M。先用埃氏篩把 1 ～ M 全部篩好，之後每被問一次就直接查表。\n\n寫法 B：建表到 √M，再除除看。只篩出 √M 以內的質數，被問到 n 時，就拿這些質數去試除，試到 p × p > n 為止。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 寫法 A：建表到 M，之後查表 O(1)\ndef build_table(M):\n    is_p = [True] * (M + 1)\n    is_p[0] = is_p[1] = False\n    p = 2\n    while p * p <= M:\n        if is_p[p]:\n            for m in range(p * p, M + 1, p):\n                is_p[m] = False\n        p += 1\n    return is_p\n\nqueries = [17, 18, 97]\nis_p = build_table(max(queries))     # 表的大小跟著最大的 n 走\nprint([is_p[n] for n in queries])    # [True, False, True]"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 寫法 B：建表到 √M，被問到再拿質數去除\n# build_table 跟寫法 A 一樣\nLIMIT = 31623                        # √10⁹ ≈ 31622.8\nsmall = build_table(LIMIT)\nprimes = [i for i in range(LIMIT + 1) if small[i]]   # 約 3401 個\n\ndef is_prime(n):\n    if n < 2:\n        return False\n    for p in primes:\n        if p * p > n:                # ≤ √n 的質數都試過了\n            break\n        if n % p == 0:\n            return False\n    return True\n\nprint(is_prime(999999937))   # True（10⁹ 以下最大的質數）\nprint(is_prime(1000000))     # False"
+            },
+            {
+              "type": "callout",
+              "label": "差在哪",
+              "text": "寫法 A 把 1 ～ M 每個數都先算好，問的時候 O(1)，但表的大小跟 M 一樣大。寫法 B 只準備 √M 的小表，每次被問時才花時間去除。M 不大、問很多次 → A；M 很大（例如 10⁹）、問的次數不多 → B。下面先分別介紹試除法和埃氏篩，最後再比較兩種寫法實際要花多少時間。"
+            },
+            {
+              "type": "heading",
               "text": "判斷一個數：試除法"
             },
             {
@@ -5605,6 +5628,56 @@
               "code": "N = 100\nspf = list(range(N + 1))          # smallest prime factor\nfor p in range(2, int(N ** 0.5) + 1):\n    if spf[p] == p:                # p 是質數\n        for m in range(p * p, N + 1, p):\n            if spf[m] == m:\n                spf[m] = p\n\ndef factorize(x):\n    res = []\n    while x > 1:\n        res.append(spf[x])\n        x //= spf[x]\n    return res\n\nprint(factorize(84))   # [2, 2, 3, 7]"
             },
             {
+              "type": "heading",
+              "text": "兩種寫法的耗費時間"
+            },
+            {
+              "type": "paragraph",
+              "text": "設 M = 被問到的最大數，T = 被問幾次。√M 以內的質數大約有 √M / ln √M 個（M = 10⁹ 時約 3401 個），所以寫法 B 每次最多只要試除這麼多次。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "寫法 A：建表到 M",
+                  "definition": "建表 O(M log log M)，每次查表 O(1)，總共 O(M log log M + T)。空間 O(M)。"
+                },
+                {
+                  "term": "寫法 B：建表到 √M 再試除",
+                  "definition": "建表 O(√M log log M)，只做一次，可以忽略；每次最多試除 √M / ln √M 個質數，總共 O(T · √M / log M)。空間 O(√M)。"
+                },
+                {
+                  "term": "只看最大的那一項",
+                  "definition": "A 大約是 M，B 大約是 T · √M。兩邊在 T ≈ √M 時差不多：T 遠大於 √M 選 A，T 遠小於 √M 選 B。另外 A 的表一定要放得下：Python 的 list 每格約 8 bytes，10⁹ 格就是約 8 GB。"
+                }
+              ]
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "例 1：M = 10⁶，T = 10⁶（數字不大、問很多次）",
+                  "definition": "A：篩到 10⁶ 再查 10⁶ 次，實測約 0.08 秒。B：每次最多試除 168 個質數（1000 以內），實測約 1 秒。→ 選 A。"
+                },
+                {
+                  "term": "例 2：M = 10⁹，T = 5000（Emirp 題，N 和反轉後的數各判斷一次）",
+                  "definition": "A：篩到 10⁷ 實測就要約 0.9 秒，篩到 10⁹ 要 100 倍以上（約 100 秒），而且 list 要約 8 GB，一定超過時間和記憶體限制。B：最壞情況 5000 × 2 × 3401 ≈ 3.4 × 10⁷ 次試除，實測約 1.5 秒。→ 選 B。"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 自己量量看（build_table、is_prime 用上面寫法 A、B 的版本）\nimport time\n\ns = time.perf_counter()\nbuild_table(10**7)                 # 寫法 A，M = 10⁷\nprint('A', time.perf_counter() - s)\n\nbig = []                           # 找 5000 個接近 10⁹ 的大質數（寫法 B 的最壞情況）\nn = 999999999\nwhile len(big) < 5000:\n    if is_prime(n):\n        big.append(n)\n    n -= 2\n\ns = time.perf_counter()\nfor n in big:\n    is_prime(n)\n    is_prime(n)                    # Emirp：N 和反轉後的數各一次\nprint('B', time.perf_counter() - s)"
+            },
+            {
+              "type": "callout",
+              "label": "Big-O 一樣時",
+              "text": "通常選寫法 B（被問到才算）：程式比較簡單、比較省記憶體，也不會因為一筆很大的 n 就讓整張表爆掉。不過在 Python 裡建表有機會在 C 裡跑（例如切片賦值 is_p[p*p::p] = …），常數會小很多，所以兩邊差不多時最好實際量一下。上面的秒數是在一台電腦上量的，換一台會不一樣，但兩種寫法之間的倍數差距差不多。"
+            },
+            {
               "type": "quiz",
               "questions": [
                 {
@@ -5653,6 +5726,16 @@
                     "每次都試除",
                     "先用埃氏篩篩到 10⁶，再直接查表",
                     "每次都從 2 試到 x − 1",
+                    "都一樣"
+                  ],
+                  "answer": 1
+                },
+                {
+                  "question": "被問 5000 次「n 是不是質數」，n < 10⁹，哪個寫法比較好？",
+                  "options": [
+                    "寫法 A：埃氏篩篩到 10⁹ 再查表",
+                    "寫法 B：篩出 √10⁹ 以內的質數，再拿它們試除",
+                    "每次都從 2 試到 n − 1",
                     "都一樣"
                   ],
                   "answer": 1
