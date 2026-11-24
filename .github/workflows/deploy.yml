@@ -37,7 +37,11 @@ jobs:
         with:
           # 指定你要部署的資料夾是 docs
           path: './docs'
+          # 每次重跑（run_attempt）用不同名字，避免同一個 run 裡出現兩個 github-pages
+          name: github-pages-${{ github.run_attempt }}
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4 # 這裡使用 v4 即可穩定運作
+        with:
+          artifact_name: github-pages-${{ github.run_attempt }}
