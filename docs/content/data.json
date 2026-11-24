@@ -2,7 +2,7 @@
   "course": {
     "title": "PythonClassPenter",
     "subtitle": "Python 課程完整講義（含設計筆記）",
-    "version": "2026y11m23d",
+    "version": "2026y11m24d",
     "language": "zh-TW"
   },
   "modules": [
@@ -5286,7 +5286,15 @@
             },
             {
               "type": "paragraph",
-              "text": "要回答「被問到的數是不是質數」，有兩種準備方式，差別在於表要建多大。設 M = 被問到的最大數。\n\n寫法 A：建表到 M。先用埃氏篩把 1 ～ M 全部篩好，之後每被問一次就直接查表。\n\n寫法 B：建表到 √M，再除除看。只篩出 √M 以內的質數，被問到 n 時，就拿這些質數去試除，試到 p × p > n 為止。"
+              "text": "要回答「被問到的數是不是質數」，有兩種準備方式，差別在於表要建多大。\n\n下面設 M = 被問到的最大數，T = 被問幾次。"
+            },
+            {
+              "type": "heading",
+              "text": "寫法 A：建表到 M，之後查表"
+            },
+            {
+              "type": "paragraph",
+              "text": "先用埃氏篩把 1 ～ M 每個數都篩好，被問到 n 時直接看 is_p[n]。"
             },
             {
               "type": "code",
@@ -5294,14 +5302,66 @@
               "code": "# 寫法 A：建表到 M，之後查表 O(1)\ndef build_table(M):\n    is_p = [True] * (M + 1)\n    is_p[0] = is_p[1] = False\n    p = 2\n    while p * p <= M:\n        if is_p[p]:\n            for m in range(p * p, M + 1, p):\n                is_p[m] = False\n        p += 1\n    return is_p\n\nqueries = [17, 18, 97]\nis_p = build_table(max(queries))     # 表的大小跟著最大的 n 走\nprint([is_p[n] for n in queries])    # [True, False, True]"
             },
             {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "建表",
+                  "definition": "O(M log log M)，表有 M + 1 格。"
+                },
+                {
+                  "term": "每次判斷",
+                  "definition": "O(1)，直接查表。"
+                },
+                {
+                  "term": "適合",
+                  "definition": "M 不大（Python 大約 10⁷ 以內），而且要問很多次。\n例：M = 10⁶、T = 10⁶。"
+                },
+                {
+                  "term": "這時候 B 比較好",
+                  "definition": "M 很大：10⁹ 格的表約 8 GB 放不下，光建表就要跑上百秒。\n只問幾次：卻要把 1 ～ M 全部篩完，大部分都白算。"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "寫法 B：建表到 √M，再除除看"
+            },
+            {
+              "type": "paragraph",
+              "text": "只篩出 √M 以內的質數，被問到 n 時，拿這些質數去試除，試到 p × p > n 為止。"
+            },
+            {
               "type": "code",
               "language": "python",
               "code": "# 寫法 B：建表到 √M，被問到再拿質數去除\n# build_table 跟寫法 A 一樣\nLIMIT = 31623                        # √10⁹ ≈ 31622.8\nsmall = build_table(LIMIT)\nprimes = [i for i in range(LIMIT + 1) if small[i]]   # 約 3401 個\n\ndef is_prime(n):\n    if n < 2:\n        return False\n    for p in primes:\n        if p * p > n:                # ≤ √n 的質數都試過了\n            break\n        if n % p == 0:\n            return False\n    return True\n\nprint(is_prime(999999937))   # True（10⁹ 以下最大的質數）\nprint(is_prime(1000000))     # False"
             },
             {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "建表",
+                  "definition": "O(√M log log M)。M = 10⁹ 時只要篩到 31623，得到約 3401 個質數。"
+                },
+                {
+                  "term": "每次判斷",
+                  "definition": "O(√n / log n)，最多試除約 3401 次。"
+                },
+                {
+                  "term": "適合",
+                  "definition": "M 很大（例如 10⁹），問的次數不多。\n例：M = 10⁹、T = 5000。"
+                },
+                {
+                  "term": "這時候 A 比較好",
+                  "definition": "M 不大但問很多次：B 每次都要重新除，A 篩一次之後每次都是 O(1)。\n例：M = 10⁶、T = 10⁶ 時，A 約 0.08 秒，B 約 1 秒。"
+                }
+              ]
+            },
+            {
               "type": "callout",
-              "label": "差在哪",
-              "text": "寫法 A 把 1 ～ M 每個數都先算好，問的時候 O(1)，但表的大小跟 M 一樣大。寫法 B 只準備 √M 的小表，每次被問時才花時間去除。M 不大、問很多次 → A；M 很大（例如 10⁹）、問的次數不多 → B。下面先分別介紹試除法和埃氏篩，最後再比較兩種寫法實際要花多少時間。"
+              "label": "怎麼選",
+              "text": "先估兩邊的總量：A 大約是 M，B 大約是 T × √M。\nT 遠大於 √M（問很多次）→ 選 A。\nT 遠小於 √M（數字很大、問得少）→ 選 B。\nA 的表還一定要放得下記憶體。最後一節「兩種寫法的耗費時間」會用實際秒數比較。"
             },
             {
               "type": "heading",
@@ -16605,6 +16665,243 @@
               "type": "code",
               "language": "python",
               "code": "if see 0  , 看到0的下一個數字就找到了\nif never 0 and this time 1, 數字+=2\nif last time 0 , 數字+=this time int(數字)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "module-1795515265280",
+      "title": "靜態分析",
+      "titleEn": "",
+      "icon": "📖",
+      "lessons": [
+        {
+          "id": "lesson-1795516795387",
+          "title": "operator 順序",
+          "titleEn": "",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "Python 運算子優先順序（由高到低）"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "1. ()",
+                  "definition": "括號"
+                },
+                {
+                  "term": "2. x[i]、x()、x.attr",
+                  "definition": "索引、函式呼叫、屬性"
+                },
+                {
+                  "term": "3. **",
+                  "definition": "次方（由右往左算）"
+                },
+                {
+                  "term": "4. +x、-x、~x",
+                  "definition": "正負號、位元反轉"
+                },
+                {
+                  "term": "5. *、/、//、%",
+                  "definition": "乘、除、整除、取餘"
+                },
+                {
+                  "term": "6. +、-",
+                  "definition": "加、減"
+                },
+                {
+                  "term": "7. <<、>>",
+                  "definition": "位移"
+                },
+                {
+                  "term": "8. &",
+                  "definition": "位元 AND"
+                },
+                {
+                  "term": "9. ^",
+                  "definition": "位元 XOR"
+                },
+                {
+                  "term": "10. |",
+                  "definition": "位元 OR"
+                },
+                {
+                  "term": "11. == != < > <= >= is in",
+                  "definition": "比較"
+                },
+                {
+                  "term": "12. not",
+                  "definition": "邏輯非"
+                },
+                {
+                  "term": "13. and",
+                  "definition": "邏輯且"
+                },
+                {
+                  "term": "14. or",
+                  "definition": "邏輯或"
+                },
+                {
+                  "term": "15. x if c else y",
+                  "definition": "三元運算"
+                },
+                {
+                  "term": "16. lambda",
+                  "definition": "匿名函式"
+                },
+                {
+                  "term": "17. :=",
+                  "definition": "海象運算子"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "同一層的運算子由左往右算。只有 ** 是例外，它由右往左算。"
+            },
+            {
+              "type": "heading",
+              "text": "陷阱 1：** 由右往左算"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "2 ** 3 ** 2     # 2 ** 9 = 512（不是 8**2 = 64）"
+            },
+            {
+              "type": "heading",
+              "text": "陷阱 2：** 比負號優先"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "-2 ** 2         # -(2**2) = -4（不是 4）\n(-2) ** 2       # 4\n2 ** -1         # 0.5   ← 右邊的負號可以直接用"
+            },
+            {
+              "type": "heading",
+              "text": "陷阱 3：*、//、% 同一層，由左往右算"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "7 // 2 * 3      # (7//2)*3 = 3*3 = 9\n2 * 7 % 4       # (2*7)%4 = 14%4 = 2\n10 - 4 - 3      # (10-4)-3 = 3"
+            },
+            {
+              "type": "heading",
+              "text": "陷阱 4：比較運算可以串接"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "1 < 2 < 3       # 等於 1<2 and 2<3 → True\n3 > 2 == 2      # 等於 3>2 and 2==2 → True\n1 < 3 > 2       # 等於 1<3 and 3>2 → True"
+            },
+            {
+              "type": "heading",
+              "text": "陷阱 5：not 比 == 低"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "not 1 == 2      # not (1==2) → True"
+            },
+            {
+              "type": "heading",
+              "text": "陷阱 6：and 比 or 優先"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "True or False and False   # True or (False and False) → True"
+            },
+            {
+              "type": "heading",
+              "text": "陷阱 7：位元運算子比比較運算子優先"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "5 & 3 == 1      # (5 & 3) == 1 → 1 == 1 → True\n1 + 2 & 3       # (1+2) & 3 = 3 & 3 = 3   ← + 比 & 優先"
+            },
+            {
+              "type": "paragraph",
+              "text": "& 的優先順序比 == 高，所以 5 & 3 == 1 要先算 5 & 3，不是先算 3 == 1。"
+            },
+            {
+              "type": "heading",
+              "text": "陷阱 8：and / or 回傳運算元本身"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "0 or 5          # 5\n3 and 0         # 0\n3 and 5         # 5\n\"\" or \"hi\"      # \"hi\""
+            },
+            {
+              "type": "paragraph",
+              "text": "or 回傳第一個為真的值，and 回傳第一個為假的值。如果沒有這樣的值，就回傳最後一個值。"
+            },
+            {
+              "type": "callout",
+              "label": "口訣",
+              "text": "括號 → 次方 → 正負 → 乘除 → 加減 → 位移 → 位元 → 比較 → not → and → or。不確定的時候就加括號。"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1795515265280",
+          "title": "數字往哪靠",
+          "titleEn": "",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "heading",
+              "text": "%  and   //"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "a%b\na//b\n1 除到兩個商  x,y  \n  x *b 跟 y * b 是兩個最靠近 a 的  ,\n  各個的餘數為 r s\n2 餘數 正負跟隨除數b(% 後面的那個)\na or b is float -> result is float",
+              "text": "Chapter Overview"
+            },
+            {
+              "type": "heading",
+              "text": "/"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "math\n-7/3= -(7/3)  =-2.kk"
+            },
+            {
+              "type": "heading",
+              "text": "int(x)"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "將x 移動到一個更靠近 0的數字\nint(-2.5)  -> -2\nint(2.5)   -> 2\n又稱 把小數直接拿掉"
+            },
+            {
+              "type": "heading",
+              "text": "round(integer, after_dot)"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "4捨 6入\nif 5:\n    find two near 偶數-> pick up the more near one"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "round(2.4)   # 2\nround(2.6)   # 3\nround(2.5)   # 2   ← 2 是偶數\nround(3.5)   # 4   ← 4 是偶數\nround(-2.5)  # -2\nround(-3.5)  # -4"
+            },
+            {
+              "type": "heading",
+              "text": "divmod(a, b)   ->    回傳 (a // b, a % b)"
             }
           ]
         }

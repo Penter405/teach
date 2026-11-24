@@ -40,7 +40,7 @@ function renderBlock(block: ContentBlock, student?: any) {
       return <h2 className="font-headline text-2xl font-semibold text-slate-800 dark:text-white mb-4 leading-snug">{block.text}</h2>;
 
     case 'paragraph':
-      return <p className="text-lg leading-relaxed text-slate-700 dark:text-slate-300 mb-4">{block.text}</p>;
+      return <p className="text-lg leading-relaxed text-slate-700 dark:text-slate-300 mb-4 whitespace-pre-line">{block.text}</p>;
 
     case 'code':
       return <RenderCodeBlock block={block} />;
@@ -196,7 +196,7 @@ function RenderCallout({ block }: { block: ContentBlock }) {
       <div className={`font-sans text-xs font-bold uppercase tracking-widest mb-2 ${labelColor}`}>
         {block.label}
       </div>
-      <div className="text-[15px] leading-relaxed opacity-90">
+      <div className="text-[15px] leading-relaxed opacity-90 whitespace-pre-line">
         {block.text}
       </div>
     </div>
@@ -213,7 +213,7 @@ function RenderList({ block }: { block: ContentBlock }) {
             <span className="font-mono text-sm font-semibold text-purple-600 dark:text-purple-400 shrink-0 min-w-[60px]">
               {item.term}
             </span>
-            <span className="text-[15px] text-slate-700 dark:text-slate-300 leading-relaxed">
+            <span className="text-[15px] text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
               {item.definition}
             </span>
           </li>
