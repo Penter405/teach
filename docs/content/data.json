@@ -11980,6 +11980,63 @@
               "text": "一條長鏈會有 n 層遞迴。n 很大時要 sys.setrecursionlimit，或改成自己用 stack 模擬 DFS。"
             },
             {
+              "type": "heading",
+              "text": "Penter 的寫法：用 return 把 low 往上傳"
+            },
+            {
+              "type": "paragraph",
+              "text": "不用 low 陣列，改成 dfs 回傳「我這個部門（含自己）最高能到哪」。方向是對的，但第一版有幾個問題："
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "worth = [-1] * n          # tin：第幾個走到（越小越高層）\nachieve = [0] * n         # low：子樹最高能碰到的 worth\nt = 0\nbad=[]\ndef dfs(node,last=-1):\n    global t\n    worth[node] = achieve[node] = t\n    t += 1\n    my_child_can_achieve=node\n    i_can_achieve=node\n    for friend in point[node]:\n        if friend == last:\n            continue                                   # 上司不算越級\n        if worth[friend] != -1:                        # 熟人：已經有編號\n            i_can_achieve = min(i_can_achieve, worth[friend])\n        else:                                          # 新部屬：先讓他查完整個部門\n            my_child_can_achieve=min(my_child_can_achieve,dfs(friend,node))\n    if my_child_can_achieve<=node:\n        bad.append(node)\n    return i_can_achieve\nprint(*bad)"
+            },
+            {
+              "type": "paragraph",
+              "text": "拿上面的例子跑（0–1、1–2、2–3、3–0、1–4、4–5、5–1），會得到 bad = [3, 2, 5, 4, 1, 0]，每個點都被當成割點，正確答案只有 1。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "dfs(3)",
+                  "definition": "沒有子節點，my_child_can_achieve 停在初始值 3，3 ≤ 3 → 加入。① 葉子沒有部門，不該判斷；初始值也不該是 node 自己"
+                },
+                {
+                  "term": "dfs(2)",
+                  "definition": "子節點 3 回傳 0，0 ≤ 2 → 加入。② 方向反了：0 < 2 代表越得過 2，是安全的"
+                },
+                {
+                  "term": "dfs(4)",
+                  "definition": "子節點 5 回傳 1，1 ≤ 4 → 加入。同 ②"
+                },
+                {
+                  "term": "2 回傳給 1",
+                  "definition": "回傳 i_can_achieve = 2。③ 3 認識老闆（0）這件事沒傳上去，因為回傳值不含子節點的答案"
+                },
+                {
+                  "term": "dfs(1)",
+                  "definition": "兩個子節點回傳 2、4，取 min = 1，1 ≤ 1 → 加入。碰巧答對；如果部門 A 有傳上 0，min 會變 0，就漏掉部門 B。④ 每個部門要分開判斷，只要有一個越不過就是割點"
+                }
+              ]
+            },
+            {
+              "type": "callout",
+              "label": "⑤ id 和編號",
+              "text": "my_child_can_achieve = node、i_can_achieve = node 用的是 node 的 id。要比的是編號 worth[node]，id 是題目隨便給的，不代表層級。這個例子碰巧走訪順序就是 0、1、2…，所以看不出來。"
+            },
+            {
+              "type": "paragraph",
+              "text": "改好的版本：my_child_can_achieve 不需要。每個子節點回來時當場判斷，再把它的答案併進 i_can_achieve 往上傳，一個變數就夠了。迴圈裡的 r 就是 low[v]，r >= worth[node] 就是 low[v] >= tin[u]。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "worth = [-1] * n          # tin：第幾個走到（越小越高層）\nt = 0\nbad = []\n\ndef dfs(node, last=-1):\n    global t\n    worth[node] = t\n    t += 1\n    i_can_achieve = worth[node]          # ⑤ 用編號，不用 id\n    kids = 0\n    for friend in point[node]:\n        if friend == last:\n            continue                                   # 上司不算越級\n        if worth[friend] != -1:                        # 熟人：已經有編號\n            i_can_achieve = min(i_can_achieve, worth[friend])\n        else:                                          # 新部屬：先讓他查完整個部門\n            r = dfs(friend, node)\n            kids += 1\n            if last != -1 and r >= worth[node]:   # ① 放在迴圈裡：只看有子節點的情況\n                bad.append(node)                  # ② ≥：越不過才是割點\n                                                  # ④ 每個部門分開判斷，不先取 min\n            i_can_achieve = min(i_can_achieve, r) # ③ 子節點的答案也要往上傳\n    if last == -1 and kids >= 2:                  # 根：2 個以上部門才算\n        bad.append(node)\n    return i_can_achieve\n\ndfs(0)\nprint(*sorted(set(bad)))   # 要在 dfs 之後印；set 去掉重複"
+            },
+            {
               "type": "quiz",
               "questions": [
                 {
