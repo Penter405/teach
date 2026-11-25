@@ -13034,6 +13034,127 @@
           ]
         },
         {
+          "id": "lesson-1795603737693",
+          "title": "for 迴圈順序：組合 vs 排列",
+          "titleEn": "Loop order: combination vs permutation",
+          "pdfPages": [],
+          "content": [
+            {
+              "type": "callout",
+              "label": "核心問題",
+              "text": "你要不要把「選擇的順序」視為不同答案？\n以下用無限硬幣（每種 coin 可以使用無限次）為例。"
+            },
+            {
+              "type": "heading",
+              "text": "1. 先 for coin：不在意順序（Combination）"
+            },
+            {
+              "type": "paragraph",
+              "text": "例如硬幣有 [1, 2]，要湊出 3。\n以下兩種視為同一種組合：\n・1 + 2\n・2 + 1"
+            },
+            {
+              "type": "paragraph",
+              "text": "因此答案只有：\n・1 + 1 + 1\n・1 + 2\n共 2 種。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "dp = [0] * (amount + 1)\ndp[0] = 1\nfor coin in coins:\n    for i in range(coin, amount + 1):\n        dp[i] += dp[i - coin]"
+            },
+            {
+              "type": "callout",
+              "label": "為什麼？",
+              "text": "外層固定目前處理的 coin。\n假設目前處理 2，只能在之前的組合上繼續加入 2，不會再回頭加入 1。\n因此不會重複計算 1 + 2 和 2 + 1。"
+            },
+            {
+              "type": "heading",
+              "text": "2. 先 for dp index：在意順序（Permutation）"
+            },
+            {
+              "type": "paragraph",
+              "text": "同樣是 [1, 2]，湊出 3。\n這次 1 + 2 和 2 + 1 被視為不同答案。"
+            },
+            {
+              "type": "paragraph",
+              "text": "所以答案是：\n・1 + 1 + 1\n・1 + 2\n・2 + 1\n共 3 種。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "dp = [0] * (amount + 1)\ndp[0] = 1\nfor i in range(1, amount + 1):\n    for coin in coins:\n        if i >= coin:\n            dp[i] += dp[i - coin]"
+            },
+            {
+              "type": "callout",
+              "label": "為什麼？",
+              "text": "現在固定的是目標金額 i。\ndp[i] 的意思是：考慮所有可能的最後一枚硬幣。\n例如湊出 3：\n・最後放 1：前面必須湊出 2。\n・最後放 2：前面必須湊出 1。\n所以 dp[3] = dp[2] + dp[1]。\n不同的最後一枚硬幣，會產生不同的排列。"
+            },
+            {
+              "type": "heading",
+              "text": "3. 對照表"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "外層 coin，內層 dp index",
+                  "definition": "組合（不在意順序）"
+                },
+                {
+                  "term": "外層 dp index，內層 coin",
+                  "definition": "排列（在意順序）"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "text": "4. 另一個重要因素：能不能重複使用？"
+            },
+            {
+              "type": "paragraph",
+              "text": "以硬幣問題為例，coin 放外層時，dp index 的方向："
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "無限使用（Unbounded）",
+                  "definition": "由小到大"
+                },
+                {
+                  "term": "每種只能使用一次（0/1）",
+                  "definition": "由大到小"
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 無限使用\nfor coin in coins:\n    for i in range(coin, amount + 1):\n        dp[i] += dp[i - coin]"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "# 每種只能使用一次\nfor coin in coins:\n    for i in range(amount, coin - 1, -1):\n        dp[i] += dp[i - coin]"
+            },
+            {
+              "type": "paragraph",
+              "text": "由小到大時，dp[i - coin] 可能已經使用過當前 coin，因此可以重複使用。\n由大到小時，dp[i - coin] 還是上一輪的狀態，因此不會重複使用當前 coin。"
+            },
+            {
+              "type": "callout",
+              "label": "記住",
+              "text": "1. 組合還是排列？決定 coin 和 dp index 哪個放外層。\n2. 能不能重複使用？決定 dp index 要由小到大還是由大到小。"
+            },
+            {
+              "type": "callout",
+              "label": "注意",
+              "text": "這個判斷主要適用於上述一維 Coin Change DP。一般背包題還要看 dp 的狀態定義，不能只靠交換兩層 for 來決定。"
+            }
+          ]
+        },
+        {
           "id": "lesson-1790671625415",
           "title": "Longest common subsequence",
           "titleEn": "Longest common subsequence",
