@@ -103,6 +103,7 @@
 | 103 | Tree algorithm › 樹重心 | 樹重心：由下往上算 sz，max_part(v) = max(各子樹 sz(c), n − sz(v))；從根往 sz > n/2 的子節點走，停下的就是重心（手寫，不是 tracer） | 11 |
 | 104 | graph 演算法 › 割點 (articulation point) | 割點（Tarjan）：三角形 0–1–2 加 1–3，visit = tin / low 設成 t；子節點 low[v] ≥ tin[u] → u 是割點，根要 ≥ 2 個子節點 | 102 |
 | 105 | Dynamic programming › cycle DP | 環 DP 用 DFS：6 → 5 → 1 → 2 → 3 → 4 → 1、7 → 3。呼叫下去點變紫色（dfs 還沒結束），呼叫到紫色的點 = 找到環；return 時把 ans 寫在點旁邊（環上 = 環長、其他 = 1 + 下一個）；7 → 3 用記憶化（手寫，不是 tracer） | 18 |
+| 106 | penter wrongs › 字串刪除2char | 證明只看相鄰的刪法就夠：s = aababcc，R_i = 刪掉 s[i]、s[i+1]。一格一格比 R_1 / R_3（全部一樣）、R_1 / R_4（k = 3 斷了 → 不一樣）→ R_i == R_j ⇔ 中間每個 s[k] == s[k+2]；再連相鄰的線（same = 2），6 − 2 = 4 段（手寫，不是 tracer） | 16 |
 
 ## 還沒有動畫的演算法
 
