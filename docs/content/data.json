@@ -15824,6 +15824,23 @@
               "text": "證明：為什麼只看相鄰的刪法就夠"
             },
             {
+              "type": "paragraph",
+              "text": "先看最小的情況：只看三個字 aba。"
+            },
+            {
+              "type": "code",
+              "language": "example",
+              "code": "its like aba len=3\nremoving ab -> left index 2\nremoving ba -> left index 0\nif index 2 == index 0\nleft = same\nsame result\nand prewords |aba| post words"
+            },
+            {
+              "type": "paragraph",
+              "text": "放回整個字串：s[i]、s[i+1]、s[i+2] 這三個字就是 aba。刪 (i, i+1) 剩 s[i+2]，刪 (i+1, i+2) 剩 s[i]；前面的字（prewords）和後面的字（post words）兩種刪法都沒動到。所以只要 s[i] == s[i+2]，兩個結果就一模一樣。"
+            },
+            {
+              "type": "paragraph",
+              "text": "這證明了相鄰的兩種刪法什麼時候一樣。那隔很遠的兩種刪法呢？下面的動畫一格一格比給你看。"
+            },
+            {
               "type": "animation",
               "animationId": 106,
               "title": "隔很遠的兩種刪法會一樣嗎？一格一格比，再數相鄰的線",
