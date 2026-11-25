@@ -15820,6 +15820,79 @@
               "text": "例如 aaabcc：s[0] = a、s[2] = a 相同，所以 5 − 1 = 4 種。"
             },
             {
+              "type": "heading",
+              "text": "證明：為什麼只看相鄰的刪法就夠"
+            },
+            {
+              "type": "paragraph",
+              "text": "上面只比了「刪 (i, i+1)」和「刪 (i+1, i+2)」這種相鄰的兩種刪法。可是刪 (0, 1) 和刪 (5, 6) 這種隔很遠的，會不會也一樣？如果會，只數 s[i] == s[i+2] 就會漏算。下面證明不會漏。"
+            },
+            {
+              "type": "paragraph",
+              "text": "記號：R_i = 刪掉 s[i]、s[i+1] 後的字串 = s[0..i-1] + s[i+2..]。i 從 0 到 n−2，共 n−1 種。"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "第 1 步：比 R_i 和 R_j（i < j）",
+                  "definition": "兩個字串長度都是 n−2，一格一格比。"
+                },
+                {
+                  "term": "位置 k < i",
+                  "definition": "兩邊都還沒刪到，都是 s[k]，一定相同。"
+                },
+                {
+                  "term": "位置 k ≥ j",
+                  "definition": "兩邊都已經跳過 2 個字，都是 s[k+2]，一定相同。"
+                },
+                {
+                  "term": "位置 i ≤ k < j",
+                  "definition": "R_i 已經跳過 2 個字，是 s[k+2]；R_j 還沒刪到，是 s[k]。"
+                },
+                {
+                  "term": "結論（關鍵）",
+                  "definition": "R_i == R_j ⇔ 對每個 k = i, i+1, …, j−1 都有 s[k] == s[k+2]。"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "把 j = i+1 代進去，就是前面的「s[i] == s[i+2]」。再看一般的 j：條件「k = i … j−1 全部 s[k] == s[k+2]」剛好等於「R_i == R_{i+1}、R_{i+1} == R_{i+2}、…、R_{j-1} == R_j 全部成立」。所以："
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "第 2 步：一樣的刪法連成一段",
+                  "definition": "兩種刪法結果一樣，中間的每一種也一定一樣。把 n−1 種刪法排成一排，相鄰一樣就連一條線，結果相同的刪法會是連續的一段，不會跳著出現。"
+                },
+                {
+                  "term": "第 3 步：數段數",
+                  "definition": "一排 n−1 個東西，連了 same 條線，就剩 n−1−same 段。每一段是一種不同的字串，不同段的字串一定不同（不然中間會連起來）。"
+                },
+                {
+                  "term": "所以",
+                  "definition": "答案 = n − 1 − same，same = 有幾個 i 滿足 s[i] == s[i+2]。不會多算，也不會漏算。"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "例子 ababa（n = 5，4 種刪法）：R_0 = aba、R_1 = aba、R_2 = aba、R_3 = aba，全部一樣。s[0]=s[2]=a、s[1]=s[3]=b、s[2]=s[4]=a，same = 3，答案 4 − 3 = 1。R_0 和 R_3 隔很遠也一樣，但它們是靠中間的線連起來的，沒有另外多算。"
+            },
+            {
+              "type": "paragraph",
+              "text": "反過來看 aaabcc：連線只有 R_0—R_1 一條，分成 {R_0, R_1}、{R_2}、{R_3}、{R_4} 四段：abcc、aacc、aaac、aaab，答案 4。"
+            },
+            {
+              "type": "callout",
+              "label": "為什麼不是「直覺猜的」",
+              "text": "只證明相鄰兩個什麼時候一樣還不夠，一定要再證明「隔很遠的一樣 ⇒ 中間全部一樣」（第 1 步的結論）。有了這一條，「數相鄰的線」才等於「數不同的字串」。"
+            },
+            {
               "type": "code",
               "language": "python",
               "code": "import sys\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    t = int(data[0])\n    out = []\n    pos = 1\n    for _ in range(t):\n        n = int(data[pos]); s = data[pos + 1]; pos += 2\n        # 共有 n-1 種刪法；刪 (i, i+1) 和刪 (i+1, i+2) 結果相同 ⇔ s[i] == s[i+2]\n        same = sum(1 for i in range(n - 2) if s[i] == s[i + 2])\n        out.append(n - 1 - same)\n    print(\"\\n\".join(map(str, out)))\n\nmain()"
