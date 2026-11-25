@@ -8,10 +8,10 @@ on:
   # 允許你在 GitHub Actions 網頁上手動點擊執行
   workflow_dispatch:
 
-# 就是這裡！必須明確給予權限才能解決 id-token 錯誤
+# 必須明確給予權限（id-token 給部署用，actions: read 讓 deploy-pages 讀得到 artifact）
 permissions:
   contents: read
-  actions: read   # deploy-pages@v4 需要這個權限才能讀到 artifact
+  actions: read
   pages: write
   id-token: write
 
@@ -21,10 +21,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  # 第一個 job：只負責打包上傳
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -38,11 +36,19 @@ jobs:
         with:
           # 指定你要部署的資料夾是 docs
           path: './docs'
-          # 每次重跑（run_attempt）用不同名字，避免同一個 run 裡出現兩個 github-pages
+          # 每次重跑（run_attempt）用不同名字，避免同一個 run 裡出現兩個同名 artifact
           name: github-pages-${{ github.run_attempt }}
 
+  # 第二個 job：等 build 完成後才部署，這時 artifact 一定已經查得到
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4 # 這裡使用 v4 即可穩定運作
+        uses: actions/deploy-pages@v4
         with:
           artifact_name: github-pages-${{ github.run_attempt }}
