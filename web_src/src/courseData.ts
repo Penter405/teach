@@ -6,6 +6,22 @@ export interface QuizQuestion {
   answer: number;
 }
 
+/** code-quiz: the student types one Python expression; checked against `answer` on `tests` + random values */
+export interface CodeQuizQuestion {
+  question: string;
+  /** variables the expression can use, with the range random tests are drawn from: { "x": [0, 1000] } */
+  vars: Record<string, [number, number]>;
+  /** reference expression (also shown by 看答案) */
+  answer: string;
+  /** fixed test cases checked first (edge cases): [{ "x": 0 }] */
+  tests?: Record<string, number>[];
+  /** operators the answer may not use: ["%", "//"] */
+  ban?: string[];
+  hint?: string;
+  /** shown next to the answer */
+  explain?: string;
+}
+
 export interface PracticeProblem {
   title: string;
   titleEn?: string;
@@ -15,7 +31,7 @@ export interface PracticeProblem {
 }
 
 export interface ContentBlock {
-  type: 'heading' | 'paragraph' | 'code' | 'callout' | 'diagram' | 'image' | 'list' | 'animation' | 'quiz' | 'practice' | 'ai-chat' | 'matching';
+  type: 'heading' | 'paragraph' | 'code' | 'callout' | 'diagram' | 'image' | 'list' | 'animation' | 'quiz' | 'practice' | 'ai-chat' | 'matching' | 'code-quiz';
   text?: string;
   title?: string;
   subtitle?: string;
@@ -36,7 +52,7 @@ export interface ContentBlock {
   steps?: string[];
   /** what each step leaves behind (shown after 執行); steps[] describe what the step does (shown by 預告) */
   results?: string[];
-  // Quiz
+  // Quiz (code-quiz uses the same key with CodeQuizQuestion items)
   questions?: QuizQuestion[];
   // Practice
   problems?: PracticeProblem[];

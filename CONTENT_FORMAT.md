@@ -121,6 +121,33 @@
 
 `answer` 是正確選項的 index（從 0 開始）。
 
+### code-quiz（自己寫算式，網頁上直接檢查）
+
+```json
+{
+  "type": "code-quiz",
+  "title": "Coding 小測驗：自己寫位元運算",
+  "subtitle": "每題寫一個 Python 算式",
+  "questions": [
+    {
+      "question": "x 的第 i 位是 0 還是 1？",
+      "vars": { "x": [0, 4095], "i": [0, 11] },
+      "tests": [{ "x": 44, "i": 2 }],
+      "answer": "x >> i & 1",
+      "ban": ["%"],
+      "hint": "先把第 i 位搬到最右邊",
+      "explain": ">> 比 & 先算，不用括號"
+    }
+  ]
+}
+```
+
+- 學生每題輸入**一個 Python 算式**（不是整段程式），在瀏覽器裡用 Python 的規則算（`web_src/src/pyExpr.ts`：整數、`& | ^ ~ << >>`、`+ - * // % **`、比較、`and or not`、`True False`、`.bit_count()`、`.bit_length()`、`abs()`）。負數的位元運算和 Python 一樣。
+- `vars`：可以用的變數和隨機測資的範圍（含兩端）。`tests`：先測的固定測資（邊界、隨機很難抽到的情況，例如「是 2 的次方」）。另外會再抽 40 組隨機的（每個學生都一樣）。
+- `answer`：標準答案的算式。學生的算式在每一組測資都要和它一樣（Python 的 `==`，所以 `True == 1`）。標準答案在某組測資出錯（例如位移負的格數）就跳過那一組。
+- `ban`（可省略）：不能用的運算子，例如 `["%", "//"]`、`["-"]`（負號和減號都算）。
+- `hint`、`explain`（可省略）：「提示」按鈕、「看答案」時顯示在答案旁邊。
+
 ### practice（LeetCode / ZeroJudge 題目）
 
 ```json
@@ -169,7 +196,7 @@
 2. `animation`：先看它怎麼動
 3. `code`：可以直接執行的範例（輸出寫在註解）
 4. `callout` / `list`：重點、什麼時候用、時間複雜度
-5. `quiz`
+5. `quiz`、`code-quiz`
 6. `ai-chat`：一題 Coding 練習
 7. `practice`：LeetCode 題目
 

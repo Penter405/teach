@@ -8,6 +8,7 @@ import { CpuBridge, CpuBridgeProvider } from './animation_kit/HardwareKit';
 import { ContentBlock, QuizQuestion, PracticeProblem } from './courseData';
 import { AIChat } from './AIChat';
 import { MatchingExercise } from './MatchingExercise';
+import { CodeQuiz } from './CodeQuiz';
 import { getAnimationRenderer, hasPseudo } from './animation_kit/registry';
 import { CodeLangToggle, PseudoAvailable, useCodeLang } from './animation_kit/codeLang';
 import { useViewVersion } from './animation_kit/viewSettings';
@@ -71,6 +72,9 @@ function renderBlock(block: ContentBlock, student?: any) {
 
     case 'matching':
       return <MatchingExercise block={block} />;
+
+    case 'code-quiz':
+      return <CodeQuiz block={block} />;
 
     default:
       return null;
