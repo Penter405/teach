@@ -14397,46 +14397,125 @@
             },
             {
               "type": "heading",
-              "text": "位元運算"
+              "text": "位元運算子（一次一個）"
+            },
+            {
+              "type": "paragraph",
+              "text": "Python 有 6 個位元運算子，下面由常用排到少用。& | ^ ~ 是每一位各自算；<< >> 是整排往左、往右搬。例子用 a = 12 = 1100₂、b = 10 = 1010₂。"
             },
             {
               "type": "list",
               "style": "definition",
               "items": [
                 {
-                  "term": "a & b",
-                  "definition": "兩個都是 1 才是 1。x & 1 判斷奇偶。"
+                  "term": "a & b（AND）",
+                  "definition": "兩個都是 1 才是 1。1100 & 1010 = 1000（8）。x & 1 只看最右邊一位：1 = 奇數、0 = 偶數。"
                 },
                 {
-                  "term": "a | b",
-                  "definition": "有一個是 1 就是 1。把某一位設成 1。"
+                  "term": "x << k（左移）",
+                  "definition": "整排往左搬 k 格，右邊補 0，等於乘以 2ᵏ。1 << 3 = 1000₂ = 8：只有第 3 位是 1 的數。"
                 },
                 {
-                  "term": "a ^ b",
-                  "definition": "不一樣才是 1。x ^ x = 0，可以找「只出現一次」的數。"
+                  "term": "x >> k（右移）",
+                  "definition": "整排往右搬 k 格，最右邊 k 位丟掉，等於除以 2ᵏ（無條件捨去）。1100 >> 2 = 11₂ = 3。"
                 },
                 {
-                  "term": "x << k、x >> k",
-                  "definition": "乘以 2ᵏ、除以 2ᵏ（無條件捨去）。"
+                  "term": "a | b（OR）",
+                  "definition": "有一個是 1 就是 1。1100 | 1010 = 1110（14）。"
                 },
                 {
-                  "term": "x >> i & 1",
-                  "definition": "x 的第 i 位是 0 還是 1。"
+                  "term": "a ^ b（XOR）",
+                  "definition": "不一樣才是 1。1100 ^ 1010 = 0110（6）。x ^ x = 0、x ^ 0 = x，所以成對的數會互相抵消。"
                 },
                 {
-                  "term": "~x",
-                  "definition": "每一位反過來（0 變 1、1 變 0），等於 -x − 1。"
+                  "term": "~x（NOT）",
+                  "definition": "每一位反過來（0 變 1、1 變 0）。Python 的整數左邊有無限多個 0，反過來就是無限多個 1，所以結果是負數：~x = -x − 1，~12 = -13。"
                 },
                 {
-                  "term": "x & -x",
-                  "definition": "只留最右邊的 1 和它後面的 0（Fenwick tree 的 lowbit），-x = ~x + 1。"
+                  "term": "a &= b、a |= b、a ^= b、x <<= k、x >>= k",
+                  "definition": "算完存回左邊：a &= b 就是 a = a & b，其他一樣。~ 只作用在一個數上，沒有 ~=。"
                 }
               ]
             },
             {
+              "type": "paragraph",
+              "text": "好幾個寫在一起時，誰先算（先 → 後）：~ 和負號 → * / // % → + - → << >> → & → ^ → | → == < > 這些比較。所以 1 << 2 + 1 是 1 << 3 = 8；x & 1 == 0 在 Python 是 (x & 1) == 0。"
+            },
+            {
               "type": "code",
               "language": "python",
-              "code": "x = 0b1101101\nprint(x, bin(x))          # 109 0b1101101\nprint(x >> 2 & 1)         # 1：第 2 位\nprint(x & -x)             # 1：最右邊的 1\nprint(bin(x).count(\"1\"))  # 5：有幾個 1\n\nnums = [4, 1, 2, 1, 2]\nr = 0\nfor v in nums:\n    r ^= v                # 成對的互相抵消\nprint(r)                  # 4"
+              "code": "a, b = 0b1100, 0b1010    # 12, 10\nprint(bin(a & b))        # 0b1000：兩個都是 1\nprint(bin(1 << 3))       # 0b1000：1 往左搬 3 格 = 8\nprint(bin(a >> 2))       # 0b11：往右搬 2 格 = 12 // 4\nprint(bin(a | b))        # 0b1110：有一個是 1\nprint(bin(a ^ b))        # 0b110：不一樣的位\nprint(~a)                # -13：~a = -a - 1\nprint(7 & 1, 8 & 1)      # 1 0：奇數、偶數\n\nnums = [4, 1, 2, 1, 2]\nr = 0\nfor v in nums:\n    r ^= v               # 成對的互相抵消\nprint(r)                 # 4"
+            },
+            {
+              "type": "heading",
+              "text": "常見組合（兩個以上的運算子）"
+            },
+            {
+              "type": "list",
+              "style": "definition",
+              "items": [
+                {
+                  "term": "x >> i & 1",
+                  "definition": "x 的第 i 位是 0 還是 1：先把第 i 位搬到最右邊，再用 & 1 只留那一位。"
+                },
+                {
+                  "term": "(1 << n) - 1",
+                  "definition": "n 個 1，例如 n = 4 → 1111₂。常拿來當「全部都選」的 mask。"
+                },
+                {
+                  "term": "x | 1 << i",
+                  "definition": "把第 i 位設成 1。"
+                },
+                {
+                  "term": "x & -x",
+                  "definition": "只留最右邊的 1 和它後面的 0（Fenwick tree 的 lowbit）。-x = ~x + 1，下面有動畫。"
+                },
+                {
+                  "term": "x & ~(1 << i)",
+                  "definition": "把第 i 位清成 0。"
+                },
+                {
+                  "term": "x ^ 1 << i",
+                  "definition": "把第 i 位翻過來（0 變 1、1 變 0）。"
+                },
+                {
+                  "term": "x & (x - 1)",
+                  "definition": "去掉最右邊的 1。x - 1 會把最右邊的 1 變 0、它右邊的 0 全變 1，AND 之後只少了那一個 1。"
+                },
+                {
+                  "term": "n & (n - 1) == 0",
+                  "definition": "n > 0 時，判斷 n 是不是 2 的次方（只有一個 1）。"
+                },
+                {
+                  "term": "a & b == b",
+                  "definition": "b 的 1 都在 a 裡面 → b 是 a 的子集。"
+                },
+                {
+                  "term": "s = (s - 1) & mask",
+                  "definition": "從 mask 開始一直做，會由大到小列出 mask 的所有非空子集，不用掃過 0 ～ 2ⁿ − 1 全部。"
+                },
+                {
+                  "term": "x.bit_count()",
+                  "definition": "有幾個 1（Python 3.10 以上），舊版用 bin(x).count(\"1\")。"
+                },
+                {
+                  "term": "x.bit_length()",
+                  "definition": "二進位有幾位（最高位的 1 在第幾位 + 1）。"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "注意：Python 的 & | ^ 比 == 先算，所以 n & (n - 1) == 0 不用加括號；C / C++ / Java 剛好相反，要寫成 (n & (n - 1)) == 0。<< >> 又比 & | ^ 先算，所以 x | 1 << i 就是 x | (1 << i)。"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "x = 0b101100                # 44\nprint(x >> 2 & 1)           # 1：第 2 位是 1\nprint(bin(x & -x))          # 0b100：只留最右邊的 1\nprint(bin(x | 1 << 1))      # 0b101110：第 1 位設成 1\nprint(bin(x & ~(1 << 2)))   # 0b101000：第 2 位清成 0\nprint(bin(x ^ 1 << 3))      # 0b100100：第 3 位翻過來\nprint(bin(x & (x - 1)))     # 0b101000：去掉最右邊的 1\nprint(x.bit_length())       # 6：二進位有幾位\nprint(bin((1 << 4) - 1))    # 0b1111：4 個 1\n\ndef is_pow2(n):\n    return n > 0 and n & (n - 1) == 0\nprint(is_pow2(64), is_pow2(48))   # True False\n\ndef popcount(n):\n    c = 0\n    while n:\n        n &= n - 1          # 每次去掉一個 1\n        c += 1\n    return c\nprint(popcount(44))         # 3\n\na, b = 0b1011, 0b0011\nprint(a & b == b)           # True：b 是 a 的子集\n\nmask = 0b1011\ns = mask\nwhile s:\n    print(format(s, \"04b\"), end=\" \")\n    s = (s - 1) & mask\nprint()                     # 1011 1010 1001 1000 0011 0010 0001"
+            },
+            {
+              "type": "paragraph",
+              "text": "popcount 用 n &= n - 1，迴圈只跑「1 的個數」次，不是「位數」次。列舉子集 s = (s - 1) & mask：減 1 會讓 s 變小，再 & mask 把不在 mask 裡的位清掉，所以每次都剛好是下一個比較小的子集。"
             },
             {
               "type": "heading",
@@ -14546,69 +14625,6 @@
               "type": "code",
               "language": "python",
               "code": "def total_hamming(nums):\n    n = len(nums)\n    total = 0\n    for i in range(32):\n        ones = sum(v >> i & 1 for v in nums)   # 這一位是 1 的有幾個\n        total += ones * (n - ones)\n    return total\n\nprint(total_hamming([4, 14, 2]))   # 6"
-            },
-            {
-              "type": "heading",
-              "text": "更多常用技巧"
-            },
-            {
-              "type": "list",
-              "style": "definition",
-              "items": [
-                {
-                  "term": "x | 1 << i",
-                  "definition": "把第 i 位設成 1。"
-                },
-                {
-                  "term": "x & ~(1 << i)",
-                  "definition": "把第 i 位清成 0。"
-                },
-                {
-                  "term": "x ^ 1 << i",
-                  "definition": "把第 i 位翻過來（0 變 1、1 變 0）。"
-                },
-                {
-                  "term": "x & (x - 1)",
-                  "definition": "去掉最右邊的 1。x - 1 會把最右邊的 1 變 0、它右邊的 0 全變 1，AND 之後只少了那一個 1。"
-                },
-                {
-                  "term": "n & (n - 1) == 0",
-                  "definition": "n > 0 時，判斷 n 是不是 2 的次方（只有一個 1）。"
-                },
-                {
-                  "term": "(1 << n) - 1",
-                  "definition": "n 個 1，例如 n = 4 → 1111₂。常拿來當「全部都選」的 mask。"
-                },
-                {
-                  "term": "a & b == b",
-                  "definition": "b 的 1 都在 a 裡面 → b 是 a 的子集。"
-                },
-                {
-                  "term": "s = (s - 1) & mask",
-                  "definition": "從 mask 開始一直做，會由大到小列出 mask 的所有非空子集，不用掃過 0 ～ 2ⁿ − 1 全部。"
-                },
-                {
-                  "term": "x.bit_length()",
-                  "definition": "二進位有幾位（最高位的 1 在第幾位 + 1）。"
-                },
-                {
-                  "term": "x.bit_count()",
-                  "definition": "有幾個 1（Python 3.10 以上），舊版用 bin(x).count(\"1\")。"
-                }
-              ]
-            },
-            {
-              "type": "paragraph",
-              "text": "注意：Python 的 & | ^ 比 == 先算，所以 n & (n - 1) == 0 不用加括號；C / C++ / Java 剛好相反，要寫成 (n & (n - 1)) == 0。<< >> 又比 & | ^ 先算，所以 x | 1 << i 就是 x | (1 << i)。"
-            },
-            {
-              "type": "code",
-              "language": "python",
-              "code": "x = 0b101100                # 44\nprint(bin(x | 1 << 1))      # 0b101110：第 1 位設成 1\nprint(bin(x & ~(1 << 2)))   # 0b101000：第 2 位清成 0\nprint(bin(x ^ 1 << 3))      # 0b100100：第 3 位翻過來\nprint(bin(x & (x - 1)))     # 0b101000：去掉最右邊的 1\nprint(x.bit_length())       # 6：二進位有幾位\nprint(bin((1 << 4) - 1))    # 0b1111：4 個 1\n\ndef is_pow2(n):\n    return n > 0 and n & (n - 1) == 0\nprint(is_pow2(64), is_pow2(48))   # True False\n\ndef popcount(n):\n    c = 0\n    while n:\n        n &= n - 1          # 每次去掉一個 1\n        c += 1\n    return c\nprint(popcount(44))         # 3\n\na, b = 0b1011, 0b0011\nprint(a & b == b)           # True：b 是 a 的子集\n\nmask = 0b1011\ns = mask\nwhile s:\n    print(format(s, \"04b\"), end=\" \")\n    s = (s - 1) & mask\nprint()                     # 1011 1010 1001 1000 0011 0010 0001"
-            },
-            {
-              "type": "paragraph",
-              "text": "popcount 用 n &= n - 1，迴圈只跑「1 的個數」次，不是「位數」次。列舉子集 s = (s - 1) & mask：減 1 會讓 s 變小，再 & mask 把不在 mask 裡的位清掉，所以每次都剛好是下一個比較小的子集。"
             },
             {
               "type": "heading",
