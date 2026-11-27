@@ -162,6 +162,25 @@ export default function MyAnim({ step }: { step: number }) {
 
 **`QueryList`**：查詢小標籤，做完 = 藍、現在 = 黃、還沒 = 灰。`extra={(q) => …}` 可以加答案。
 
+**`ArcBars`**：陣列畫成長條（高度 = 值），上面畫 `from → to` 的弧線箭頭（箭頭在 `to`）。不畫輔助結構、直接在資料上演：單調堆疊的「新來的往左射 ←」、單調佇列的「往左踢掉」。`band` = 視窗（閉區間），`bottom` + `bottomName` 在下面寫答案，`tones` 用 `CellTone`（`stack` 紫色虛線 = 還在等 / 還是候選）。見 111、112。
+
+```tsx
+<ArcBars values={a} tones={a.map((_, i) => tone(i))} arcs={[{ from: 2, to: 0, tone: 'active' }]}
+  band={{ from: l, to: r, label: '視窗' }} bottomName="ans" bottom={(i) => ans[i]} top={(i) => (i === cur ? 'x' : '')} />
+```
+
+弧線的 tone：`active`（這一步）、`chosen`（預設，綠）、`dim`（舊的）、`hit`（踢掉）。
+
+**`PrefixRows`**：幾排格子對齊：`kind: 'cell'` = 陣列的 n 格，`kind: 'gap'` = n + 1 格畫在格子中間的縫上（P[i] = 縫 i 左邊全部）。`spans` 在某一排塗一段格子（`yes`、`blue`、`active`、`hit`，可加 `label`），`links` 畫箭頭（新的值是用哪幾個算出來的）。`v: null` = 還沒算（空格）。前綴和、前綴積、後綴（postfix）見 109、110。
+
+```tsx
+<PrefixRows
+  rows={[{ name: 'a', kind: 'cell', items: a.map((v) => ({ v })) },
+         { name: 'P', dir: '+ →', kind: 'gap', items: P.map((v, i) => ({ v: i <= done ? v : null })) }]}
+  spans={[{ row: 0, from: 0, to: i - 1 }]}
+  links={[{ from: [1, i - 1], to: [1, i] }, { from: [0, i - 1], to: [1, i], tone: 'active' }]} />
+```
+
 **`Stat`**：一個大數字＋標題（總步數、總權重）。`hot` 會亮。
 
 ## HardwareKit.tsx（28 ～ 37 號）
@@ -257,6 +276,8 @@ const big = bigFont.use();
 | 計數、出現次數 | `CountBars` |
 | 離線查詢（Mo's） | `QueryPlot`、`QueryList`、`PointerSeq`、`CountBars` |
 | stack / queue / heap | `StackView`、`Seq left="出" right="進"`、`GraphView` ＋ `heapLayout` |
+| 單調堆疊 / 單調佇列（畫在資料上） | `ArcBars`（← 弧線、`band` = 視窗）＋ `Seq` 顯示 stack / deque |
+| 前綴 / 後綴 | `PrefixRows`（`gap` 排 = 縫上的 P[i]） |
 | DP | `Seq`（1D）或 `Table2D`（2D）＋ `rwTone` |
 | 圖 | `GraphView` ＋ `posNodes` ＋ `sameEdge`；距離陣列用 `Seq size="sm"` |
 | 並查集 | `GraphView` ＋ `forestLayout` |

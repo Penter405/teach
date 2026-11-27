@@ -106,7 +106,11 @@
 | 106 | penter wrongs › 字串刪除2char | 證明只看相鄰的刪法就夠：s = aababcc，R_i = 刪掉 s[i]、s[i+1]。一格一格比 R_1 / R_3（全部一樣）、R_1 / R_4（k = 3 斷了 → 不一樣）→ R_i == R_j ⇔ 中間每個 s[k] == s[k+2]；再連相鄰的線（same = 2），6 − 2 = 4 段（手寫，不是 tracer） | 16 |
 | 107 | graph 演算法 › 割點 (articulation point) | 割點 = 公司組織圖（越級報告）：DFS 樹 = 匯報線、回頭的邊 = 越級認識、tin = 編號（越小越高層）、low[v] = v 的部門最高認識到誰。0 – 1 – 2 – 3（3 認識 0）、1 – 4 – 5（5 只認識 1）：2、4 離職沒事（綠線 = 越級的路），1 離職 4 的部門失聯 → 1 是割點；老闆（根）只有 1 個直屬部門，不是。有中文步驟（手寫，不是 tracer） | 32 |
 | 108 | bit › bit 位元 | x & -x：x = 104 = 01101000₂，~x 每一位反過來，+1 的進位一路吃掉尾巴的 1、停在最右邊的 1 → -x；x 和 -x 在那一位以下一樣、左邊相反，AND 只剩 00001000₂ = 8（手寫，不是 tracer） | 10 |
+| 109 | data sturcture(data type that not built in) › 前綴與後綴 (prefix + × / postfix) | 前綴和 / 前綴積畫在縫上（P[i] = 縫 i 左邊全部）：a = [3,1,4,1,5]，一路加出 P，a[1..3] = P[4] − P[1] = 6；換成 × 做 Q，Q[4] / Q[1]，有 0 就除不回來（手寫，不是 tracer） | 15 |
+| 110 | data sturcture(data type that not built in) › 前綴與後綴 (prefix + × / postfix) | 前綴積 × 後綴積：a = [2,3,0,4]，pre 由左往右、suf（postfix）由右往左，ans[i] = pre[i] × suf[i+1] = [0,0,24,0]，不用除法（手寫，不是 tracer） | 14 |
+| 111 | data sturcture(data type that not built in) › 單調堆疊與單調佇列 | 下一個更大（畫在資料上，長條 + ←）：[2,1,5,3,6,4]，新來的 x 往左射 ← 到還在等、比它小的數；還在等的（紫色虛線）就是 stack，由左到右遞減（手寫，不是 tracer） | 12 |
+| 112 | data sturcture(data type that not built in) › 單調堆疊與單調佇列 | 滑動視窗最大值（畫在資料上）：[5,3,4,1,2,6]，k = 3，新來的往左踢 ← 比它小的候選、滑出視窗的拿掉，視窗最左邊的候選 = 最大（手寫，不是 tracer） | 17 |
 
 ## 還沒有動畫的演算法
 
-`algorithm_tree.py` 裡這些演算法還沒有對應的課和動畫：線性搜尋、插值搜尋、雜湊查找、各種排序（氣泡、插入、合併、快速、堆積、計數）、座標壓縮、雙指標、滑動視窗、Shunting-yard、分支限界、貪婪、前綴和、線段樹、Bellman-Ford、Floyd-Warshall、KMP、字典樹。
+`algorithm_tree.py` 裡這些演算法還沒有對應的課和動畫：線性搜尋、插值搜尋、雜湊查找、各種排序（氣泡、插入、合併、快速、堆積、計數）、座標壓縮、雙指標、滑動視窗、Shunting-yard、分支限界、貪婪、線段樹、Bellman-Ford、Floyd-Warshall、KMP、字典樹。

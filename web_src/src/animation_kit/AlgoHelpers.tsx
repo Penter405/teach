@@ -326,3 +326,168 @@ export const Stat = ({ label, value, hot = false, tone = 'sky' }: { label: React
     </div>
   );
 };
+
+/* ───────────── ArcBars: bars + "<---" arcs between them (monotonic stack / queue on the data) ───────────── */
+
+export type Arc = { from: number; to: number; tone?: 'active' | 'chosen' | 'dim' | 'hit'; label?: string };
+const ARC_COLOR = { active: '#fbbf24', chosen: '#34d399', dim: '#475569', hit: '#fb7185' };
+
+/**
+ * The array drawn as bars (height = value), with arcs `from → to` above them; the arrow head is on `to`.
+ * Use it to show an algorithm on the data itself instead of its helper structure, e.g. next greater:
+ * x arrives and shoots ← at every waiting smaller number.
+ *   <ArcBars values={a} tones={a.map(...)} arcs={[{ from: 2, to: 0, tone: 'chosen' }]} band={{ from: l, to: r }} bottom={(i) => ans[i]} />
+ * `band` = closed range drawn behind the bars (sliding window). `top(i)` / `bottom(i)` are small labels.
+ */
+export const ArcBars = ({
+  values, tones = [], arcs = [], band, top, bottom, bottomName, cell = 58, barMax = 120,
+}: {
+  values: number[];
+  tones?: CellTone[];
+  arcs?: Arc[];
+  band?: { from: number; to: number; label?: string } | null;
+  top?: (i: number) => string | number | null | undefined;
+  bottom?: (i: number) => string | number | null | undefined;
+  /** name written left of the bottom labels (e.g. "ans") */
+  bottomName?: string;
+  cell?: number;
+  barMax?: number;
+}) => {
+  const n = values.length;
+  const left = bottomName ? 44 : 8;
+  const maxSpan = Math.max(1, ...arcs.map((a) => Math.abs(a.from - a.to)), n > 1 ? n - 1 : 1);
+  const arcRoom = 26 + Math.min(56, 12 * maxSpan);
+  const lo = Math.min(0, ...values), hi = Math.max(1, ...values);
+  const barH = (v: number) => 14 + ((v - lo) / (hi - lo || 1)) * barMax;
+  const base = arcRoom + barMax + 22;            // y of the bars' bottom
+  const H = base + 20 + (bottom ? 26 : 0);
+  const W = left + n * cell + 8;
+  const cx = (i: number) => left + i * cell + cell / 2;
+  const topY = (i: number) => base - barH(values[i]);
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ maxWidth: W }} role="img">
+      {band && band.to >= band.from && (
+        <g>
+          <rect x={left + band.from * cell + 2} y={arcRoom - 6} width={(band.to - band.from + 1) * cell - 4} height={base - arcRoom + 26}
+            rx={10} fill="#0c4a6e" fillOpacity={0.35} stroke="#38bdf8" strokeDasharray="5 4" />
+          {band.label && <text x={left + band.from * cell + 8} y={arcRoom + 8} fontSize={11} fill="#7dd3fc" fontWeight={700}>{band.label}</text>}
+        </g>
+      )}
+      {values.map((v, i) => {
+        const [fill, stroke, text] = NODE_FILL[tones[i] ?? 'normal'];
+        const y = topY(i);
+        return (
+          <g key={i}>
+            <motion.rect initial={false} animate={{ y, height: barH(v), fill, stroke }} transition={{ duration: 0.3 }}
+              x={cx(i) - cell * 0.32} width={cell * 0.64} rx={6} strokeWidth={2}
+              strokeDasharray={tones[i] === 'stack' ? '5 3' : undefined} />
+            <text x={cx(i)} y={y + 18} textAnchor="middle" fontSize={15} fontWeight={700} fill={text} fontFamily="ui-monospace, monospace">{v}</text>
+            {top?.(i) != null && top(i) !== '' && <text x={cx(i)} y={y - 6} textAnchor="middle" fontSize={11} fontWeight={700} fill="#fcd34d">{top(i)}</text>}
+            <text x={cx(i)} y={base + 15} textAnchor="middle" fontSize={11} fill="#64748b" fontFamily="ui-monospace, monospace">[{i}]</text>
+            {bottom && (
+              <text x={cx(i)} y={base + 38} textAnchor="middle" fontSize={14} fontWeight={700} fill={bottom(i) == null || bottom(i) === '' ? '#334155' : '#a7f3d0'} fontFamily="ui-monospace, monospace">
+                {bottom(i) == null || bottom(i) === '' ? '·' : bottom(i)}
+              </text>
+            )}
+          </g>
+        );
+      })}
+      {bottom && bottomName && <text x={4} y={base + 38} fontSize={12} fontWeight={700} fill="#94a3b8" fontFamily="ui-monospace, monospace">{bottomName}</text>}
+      {arcs.map((a, k) => {
+        const x1 = cx(a.from), y1 = topY(a.from) - 22, x2 = cx(a.to), y2 = topY(a.to) - 22;
+        const span = Math.abs(a.from - a.to);
+        const qx = (x1 + x2) / 2, qy = Math.min(y1, y2) - 14 - Math.min(60, 12 * span);
+        const color = ARC_COLOR[a.tone ?? 'chosen'];
+        // arrow head along the tangent at the end (end − control)
+        const dx = x2 - qx, dy = y2 - qy, len = Math.hypot(dx, dy) || 1;
+        const ux = dx / len, uy = dy / len, s = 8;
+        const head = `${x2},${y2} ${x2 - ux * s - uy * s * 0.6},${y2 - uy * s + ux * s * 0.6} ${x2 - ux * s + uy * s * 0.6},${y2 - uy * s - ux * s * 0.6}`;
+        return (
+          <g key={k}>
+            <motion.path initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.4 }}
+              d={`M ${x1} ${y1} Q ${qx} ${qy} ${x2} ${y2}`} fill="none" stroke={color} strokeWidth={a.tone === 'dim' ? 1.5 : 2.5} />
+            <polygon points={head} fill={color} />
+            {a.label && <text x={qx} y={(y1 + y2) / 4 + qy / 2 - 4} textAnchor="middle" fontSize={11} fontWeight={700} fill={color}>{a.label}</text>}
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
+
+/* ───────────── PrefixRows: cell rows + boundary rows (prefix / suffix arrays) ───────────── */
+
+export type PRow = {
+  name: string;
+  /** 'cell' = n items under the array cells; 'gap' = n + 1 items on the boundaries between cells (P[i] = everything left of boundary i) */
+  kind: 'cell' | 'gap';
+  items: { v: string | number | null; tone?: CellTone }[];
+  /** small hint after the name, e.g. '→' or '←' (build direction) */
+  dir?: string;
+};
+/** highlight cells from..to (closed) of a 'cell' row, e.g. the part of a that P[i] covers */
+export type PSpan = { row: number; from: number; to: number; tone?: 'yes' | 'blue' | 'active' | 'hit'; label?: string };
+/** arrow from item [row, i] to item [row, i] */
+export type PLink = { from: [number, number]; to: [number, number]; tone?: 'active' | 'chosen' };
+
+/**
+ * Rows of an array and its prefix / suffix arrays, lined up so a boundary value sits between the two
+ * cells it separates: P[i] is drawn under the gap left of a[i]. `spans` shade a range of cells,
+ * `links` draw arrows (which values are read to make the new one). An item with v = null is empty.
+ *   <PrefixRows rows={[{ name: 'a', kind: 'cell', items }, { name: 'P', kind: 'gap', items: P }]} spans={[{ row: 0, from: 0, to: 2 }]} />
+ */
+export const PrefixRows = ({ rows, spans = [], links = [], cell = 62 }: { rows: PRow[]; spans?: PSpan[]; links?: PLink[]; cell?: number }) => {
+  const n = Math.max(...rows.map((r) => (r.kind === 'cell' ? r.items.length : r.items.length - 1)));
+  const left = 70, rowH = 70, box = 40;
+  const W = left + n * cell + cell / 2 + 10;
+  const H = rows.length * rowH + 22;
+  const x = (row: PRow, i: number) => left + (row.kind === 'cell' ? i * cell + cell / 2 : i * cell);
+  const y = (r: number) => r * rowH + 52;        // centre of the boxes of row r (18 on top for span labels)
+  const SPAN = { yes: ['#064e3b', '#34d399'], blue: ['#0c4a6e', '#38bdf8'], active: ['#78350f', '#fbbf24'], hit: ['#881337', '#fb7185'] };
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ maxWidth: W }} role="img">
+      {spans.map((s, k) => {
+        const [fill, stroke] = SPAN[s.tone ?? 'yes'];
+        const x0 = left + s.from * cell + 2, w = (s.to - s.from + 1) * cell - 4;
+        return (
+          <g key={k}>
+            <rect x={x0} y={y(s.row) - box / 2 - 8} width={w} height={box + 16} rx={10} fill={fill} fillOpacity={0.45} stroke={stroke} strokeDasharray="5 4" />
+            {s.label && <text x={x0 + w / 2} y={y(s.row) - box / 2 - 12} textAnchor="middle" fontSize={11} fontWeight={700} fill={stroke}>{s.label}</text>}
+          </g>
+        );
+      })}
+      {rows.map((row, r) => (
+        <g key={r}>
+          <text x={6} y={y(r) + 5} fontSize={15} fontWeight={700} fill="#cbd5e1" fontFamily="ui-monospace, monospace">{row.name}</text>
+          {row.dir && <text x={6} y={y(r) + 22} fontSize={11} fill="#94a3b8">{row.dir}</text>}
+          {row.items.map((it, i) => {
+            const [fill, stroke, text] = NODE_FILL[it.v == null ? 'dim' : it.tone ?? 'normal'];
+            const cx = x(row, i);
+            return (
+              <g key={i}>
+                <motion.rect initial={false} animate={{ fill, stroke }} transition={{ duration: 0.3 }}
+                  x={cx - box / 2} y={y(r) - box / 2} width={box} height={box} rx={row.kind === 'gap' ? 20 : 8} strokeWidth={it.tone === 'active' ? 3 : 2} />
+                <text x={cx} y={y(r) + 6} textAnchor="middle" fontSize={15} fontWeight={700} fill={text} fontFamily="ui-monospace, monospace">{it.v ?? ''}</text>
+                <text x={cx} y={y(r) + box / 2 + 13} textAnchor="middle" fontSize={10} fill="#64748b" fontFamily="ui-monospace, monospace">[{i}]</text>
+              </g>
+            );
+          })}
+        </g>
+      ))}
+      {links.map((l, k) => {
+        const [r1, i1] = l.from, [r2, i2] = l.to;
+        const x1 = x(rows[r1], i1), y1 = y(r1), x2 = x(rows[r2], i2), y2 = y(r2);
+        const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len;
+        const sx = x1 + ux * 22, sy = y1 + uy * 22, ex = x2 - ux * 23, ey = y2 - uy * 23, s = 8;
+        const color = l.tone === 'active' ? '#fbbf24' : '#34d399';
+        const head = `${ex},${ey} ${ex - ux * s - uy * s * 0.6},${ey - uy * s + ux * s * 0.6} ${ex - ux * s + uy * s * 0.6},${ey - uy * s - ux * s * 0.6}`;
+        return (
+          <g key={k}>
+            <line x1={sx} y1={sy} x2={ex} y2={ey} stroke={color} strokeWidth={2.5} />
+            <polygon points={head} fill={color} />
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
